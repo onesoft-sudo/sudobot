@@ -23,30 +23,18 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { getEnvData } from "@main/env/env";
-import {
-    earlyMessageInspectionEntries,
-    EarlyMessageInspectionEntryCreatePayload
-} from "@main/models/EarlyMessageInspectionEntry";
+import { earlyMessageInspectionEntries } from "@main/models/EarlyMessageInspectionEntry";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
-import {
-    type Awaitable,
-    Collection,
-    GuildMember,
-    Message,
-    type PartialMessage,
-    type Snowflake,
-    TextChannel
-} from "discord.js";
-import { and, eq, or, sql } from "drizzle-orm";
+import { GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
+import { and, eq, sql } from "drizzle-orm";
 
 @Name("newMemberMessageInspectionService")
 class NewMemberMessageInspectionService extends Service implements HasEventListeners {
-    private readonly updateQueue = new Collection<`${Snowflake}::${Snowflake}`, number>();
-    private readonly deleteQueue: Array<`${Snowflake}::${Snowflake}`> = [];
+    private readonly trustedCache = new Set<`${Snowflake}::${Snowflake}`>();
 
     @Inject("configManager")
     private readonly configManager!: ConfigurationManager;
@@ -59,76 +47,43 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
 
     public override boot() {
         setInterval(() => {
-            if (this.updateQueue.size) {
-                const values: EarlyMessageInspectionEntryCreatePayload[] = [];
+            this.trustedCache.clear();
+        }, 30_000);
+    }
 
-                for (const [key, value] of this.updateQueue) {
-                    if (value === Number.NEGATIVE_INFINITY) {
-                        this.updateQueue.delete(key);
-                        continue;
-                    }
+    private async getMessageCountAndIncrement(guildId: Snowflake, userId: Snowflake) {
+        if (this.trustedCache.has(`${guildId}::${userId}`)) {
+            this.application.logger.debug(NewMemberMessageInspectionService.name, "This user is known: ", userId);
+            return null;
+        }
 
-                    const [guildId, userId] = key.split("::");
+        const entry = (
+            await this.application.database.drizzle
+                .update(earlyMessageInspectionEntries)
+                .set({
+                    messageCount: sql.raw(`${earlyMessageInspectionEntries.messageCount.name} + 1`)
+                })
+                .where(
+                    and(
+                        eq(earlyMessageInspectionEntries.guildId, guildId),
+                        eq(earlyMessageInspectionEntries.userId, userId)
+                    )
+                )
+                .returning()
+        )?.[0];
 
-                    values.push({
-                        guildId,
-                        userId,
-                        messageCount: value
-                    });
+        if (!entry) {
+            this.trustedCache.add(`${guildId}::${userId}`);
+            return null;
+        }
 
-                    this.updateQueue.delete(key);
-                }
-
-                if (values.length) {
-                    this.application.database.drizzle
-                        .insert(earlyMessageInspectionEntries)
-                        .values(values)
-                        .onConflictDoUpdate({
-                            target: [earlyMessageInspectionEntries.guildId, earlyMessageInspectionEntries.userId],
-                            set: {
-                                messageCount: sql.raw(`excluded.${earlyMessageInspectionEntries.messageCount.name}`)
-                            }
-                        });
-                }
-
-                this.application.logger.debug(NewMemberMessageInspectionService.name, "Keys updated: ", values.length);
-            }
-
-            if (this.deleteQueue.length) {
-                const deleteQueue = this.deleteQueue;
-                this.deleteQueue.length = 0;
-
-                const conditions = [];
-
-                for (const key of deleteQueue) {
-                    const [guildId, userId] = key.split("::");
-
-                    conditions.push(
-                        and(
-                            eq(earlyMessageInspectionEntries.guildId, guildId),
-                            eq(earlyMessageInspectionEntries.userId, userId)
-                        )
-                    );
-                }
-
-                if (conditions.length) {
-                    this.application.database.drizzle.delete(earlyMessageInspectionEntries).where(or(...conditions));
-                }
-
-                this.application.logger.debug(
-                    NewMemberMessageInspectionService.name,
-                    "Keys deleted: ",
-                    conditions.length
-                );
-            }
-        }, 120_000);
+        return entry.messageCount;
     }
 
     private async getMessageCount(guildId: Snowflake, userId: Snowflake) {
-        const existingEntry = this.updateQueue.get(`${guildId}::${userId}`);
-
-        if (existingEntry !== undefined) {
-            return existingEntry === Number.NEGATIVE_INFINITY ? null : existingEntry;
+        if (this.trustedCache.has(`${guildId}::${userId}`)) {
+            this.application.logger.debug(NewMemberMessageInspectionService.name, "This user is known: ", userId);
+            return null;
         }
 
         const entry = await this.application.database.query.earlyMessageInspectionEntries.findFirst({
@@ -139,31 +94,42 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         });
 
         if (!entry) {
-            this.updateQueue.set(`${guildId}::${userId}`, Number.NEGATIVE_INFINITY);
+            this.trustedCache.add(`${guildId}::${userId}`);
             return null;
         }
 
-        this.updateQueue.set(`${entry.guildId}::${entry.userId}`, entry.messageCount);
         return entry.messageCount;
     }
 
     @Override
-    public onGuildMemberAdd(member: GuildMember): Awaitable<void> {
+    public async onGuildMemberAdd(member: GuildMember): Promise<void> {
         if (member.user.bot || !this.configManager.config[member.guild.id]?.new_member_message_inspection?.enabled) {
             return;
         }
 
-        this.updateQueue.set(`${member.guild.id}::${member.user.id}`, 0);
+        this.trustedCache.delete(`${member.guild.id}::${member.user.id}`);
+        await this.application.database.drizzle.insert(earlyMessageInspectionEntries).values({
+            guildId: member.guild.id,
+            userId: member.user.id,
+            messageCount: 0
+        });
     }
 
     @Override
-    public onGuildMemberRemove(member: GuildMember): Awaitable<void> {
+    public async onGuildMemberRemove(member: GuildMember): Promise<void> {
         if (member.user.bot || !this.configManager.config[member.guild.id]?.new_member_message_inspection?.enabled) {
             return;
         }
 
-        this.updateQueue.delete(`${member.guild.id}::${member.user.id}`);
-        this.deleteQueue.push(`${member.guild.id}::${member.user.id}`);
+        this.trustedCache.delete(`${member.guild.id}::${member.user.id}`);
+        await this.application.database.drizzle
+            .delete(earlyMessageInspectionEntries)
+            .where(
+                and(
+                    eq(earlyMessageInspectionEntries.guildId, member.guild.id),
+                    eq(earlyMessageInspectionEntries.userId, member.user.id)
+                )
+            );
     }
 
     @Override
@@ -177,7 +143,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
-        const count = await this.getMessageCount(message.guildId, message.author.id);
+        const count = await this.getMessageCountAndIncrement(message.guildId, message.author.id);
         const maxCount =
             this.configManager.config[message.guildId]?.new_member_message_inspection
                 ?.inspect_member_messages_until_count ?? 10;
@@ -188,12 +154,13 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                 "No entries for this member: ",
                 message.author.id
             );
+
             return;
         }
 
         if (count > maxCount) {
-            this.updateQueue.delete(`${message.guildId}::${message.author.id}`);
-            this.application.database.drizzle
+            this.trustedCache.add(`${message.guildId}::${message.author.id}`);
+            await this.application.database.drizzle
                 .delete(earlyMessageInspectionEntries)
                 .where(
                     and(
@@ -204,9 +171,10 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
 
             this.application.logger.debug(
                 NewMemberMessageInspectionService.name,
-                "Max messages reached, removing entry:",
+                "Max messages reached, trusting member:",
                 message.author.id
             );
+
             return;
         }
 
@@ -217,8 +185,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             await this.onFlag(message, result.data);
         }
 
-        this.updateQueue.set(`${message.guildId}::${message.author.id}`, count + 1);
-        this.application.logger.debug(NewMemberMessageInspectionService.name, `Now: ${count + 1}`);
+        this.application.logger.debug(NewMemberMessageInspectionService.name, `[${message.author.id}] Now: ${count}`);
     }
 
     @Override
@@ -246,8 +213,8 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         }
 
         if (count > maxCount) {
-            this.updateQueue.delete(`${message.guildId}::${message.author.id}`);
-            this.application.database.drizzle
+            this.trustedCache.add(`${message.guildId}::${message.author.id}`);
+            await this.application.database.drizzle
                 .delete(earlyMessageInspectionEntries)
                 .where(
                     and(
@@ -255,6 +222,12 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                         eq(earlyMessageInspectionEntries.userId, message.author.id)
                     )
                 );
+
+            this.application.logger.debug(
+                NewMemberMessageInspectionService.name,
+                "Max messages reached, trusting member:",
+                message.author.id
+            );
 
             return;
         }
@@ -265,7 +238,10 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             await this.onFlag(message, result.data);
         }
 
-        this.application.logger.debug(NewMemberMessageInspectionService.name, `Now: ${count} (not changed)`);
+        this.application.logger.debug(
+            NewMemberMessageInspectionService.name,
+            `[${message.author.id}] Now (unchanged): ${count}`
+        );
     }
 
     private async onFlag(message: Message<true>, data: PaxmodModerateTextSuccessResponse) {
