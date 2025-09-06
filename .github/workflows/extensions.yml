@@ -40,10 +40,10 @@ jobs:
       - name: Build extensions
         run: |
           cd extensions;
-          bash ../scripts/build-extensions.sh;
+          bash ../bin/build-extensions.sh;
 
       - name: Build index
-        run: node scripts/extensions.js --mkindex
+        run: node bin/extensions.js --mkindex
 
       - name: Prepare GPG keys for importing
         run: echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
