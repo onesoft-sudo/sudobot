@@ -2033,7 +2033,7 @@ class AuditLoggingService extends Service {
         return this.send({
             guildId: message.guild!.id,
             messageCreateOptions: {
-                content: mentions.length > 0 ? mentions.join(" ") : undefined,
+                content: mentions.length > 0 ? mentions.map(m => `<@${m}>`).join(" ") : undefined,
                 embeds: [
                     {
                         title: "Early Member Message Inspection Log",
