@@ -17,15 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type {
-    Channel,
-    ChatInputCommandInteraction,
-    ColorResolvable,
-    Guild,
-    Message,
-    User
-} from "discord.js";
-import { ChannelType, EmbedBuilder, resolveColor } from "discord.js";
+import type { ChatInputCommandInteraction, ColorResolvable } from "discord.js";
+import { EmbedBuilder, resolveColor } from "discord.js";
 
 export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
     const getString = (field: string): string | undefined => {
@@ -104,24 +97,4 @@ export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
     return { embed };
 }
 
-export function userInfo(user: User, shortType = false) {
-    return user.id === user.client.user.id
-        ? shortType
-            ? "System"
-            : `Type: __System__\nMention: ${user.toString()}`
-        : `ID: ${user.id}\nUsername: ${user.username}\nMention: ${user.toString()}`;
-}
-
-export function messageInfo(message: Message) {
-    return `ID: ${message.id}\nURL: ${message.url}`;
-}
-
-export function channelInfo(channel: Channel) {
-    return `ID: ${channel.id}\nType: ${ChannelType[channel.type]}\nMention: ${channel.toString()}`;
-}
-
-export function guildInfo(guild: Guild) {
-    return `ID: ${guild.id}\nName: ${guild.name}\nInvite: ${
-        guild.invites.cache.first()?.url ?? "*Unavailable*"
-    }`;
-}
+export { channelInfo, guildInfo, messageInfo, userInfo } from "@framework/utils/embeds";

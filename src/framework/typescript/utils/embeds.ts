@@ -17,17 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Client, PartialUser, Snowflake } from "discord.js";
-import {
-    type GuildBasedChannel,
-    italic,
-    type Message,
-    MessageType,
-    type User
-} from "discord.js";
+import type { Client, Guild, PartialUser, Snowflake } from "discord.js";
+import { type GuildBasedChannel, type Message, MessageType, type User } from "discord.js";
 
-export function userInfo(user: User | PartialUser) {
-    return `ID: ${user.id}\nUsername: ${user.username || italic("Unavailable")}\nMention: <@${user.id}>`;
+export function userInfo(user: User | PartialUser, shortType = false) {
+    return user.id === user.client.user.id
+        ? shortType
+            ? "System"
+            : `Type: __System__\nMention: ${user.toString()}`
+        : `ID: ${user.id}\nUsername: ${user.username}\nMention: ${user.toString()}`;
 }
 
 export function channelInfo(channel: GuildBasedChannel) {
@@ -44,4 +42,8 @@ export function shortUserInfo(client: Client, userId: Snowflake) {
     }
 
     return `<@${userId}> [\`${userId}\`]`;
+}
+
+export function guildInfo(guild: Guild) {
+    return `ID: ${guild.id}\nName: ${guild.name}\nInvite: ${guild.invites.cache.first()?.url ?? "*Unavailable*"}`;
 }
