@@ -2,9 +2,24 @@
 
 ### 06-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **feat(automod:nmmi):** support custom actions and improvements    
+      
+    * custom moderation actions  
+    * renamed EMMI => NMMI  
+    * support for mentioning moderators in log channels  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **fix(schemas):** null value handling    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 06-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.9.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 05-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
