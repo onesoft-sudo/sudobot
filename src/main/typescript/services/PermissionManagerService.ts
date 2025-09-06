@@ -83,9 +83,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
     }
 
     public getManagerForGuild(guildResolvable: Guild | Snowflake) {
-        return this.getManager(
-            typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id
-        );
+        return this.getManager(typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id);
     }
 
     public override async hasPermissions(
@@ -93,25 +91,17 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         permissions: SystemPermissionResolvable[],
         alreadyComputedPermissions?: MemberPermissionData
     ) {
-        return (await this.getManager(member.guild.id)).hasPermissions(
-            member,
-            permissions,
-            alreadyComputedPermissions
-        );
+        return (await this.getManager(member.guild.id)).hasPermissions(member, permissions, alreadyComputedPermissions);
     }
 
-    public override async getMemberPermissions<T extends AbstractPermissionManager>(
-        member: GuildMember
-    ) {
-        return (await this.getManager(member.guild.id)).getMemberPermissions(
-            member
-        ) as GenericAwaited<ReturnType<T["getMemberPermissions"]>>;
+    public override async getMemberPermissions<T extends AbstractPermissionManager>(member: GuildMember) {
+        return (await this.getManager(member.guild.id)).getMemberPermissions(member) as GenericAwaited<
+            ReturnType<T["getMemberPermissions"]>
+        >;
     }
 
     protected async getManager(guildId: string) {
-        const mode =
-            this.application.service("configManager").config[guildId]?.permissions.mode ??
-            "discord";
+        const mode = this.application.service("configManager").config[guildId]?.permissions?.mode ?? "discord";
 
         if (!this.managers[mode]) {
             this.managers[mode] = this.createManager(mode);
@@ -134,10 +124,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         const { invincible } = this.configurationManager.config[member.guild.id]?.permissions ?? {};
 
-        if (
-            invincible?.users?.includes(member.id) ||
-            invincible?.roles?.some(role => member.roles.cache.has(role))
-        ) {
+        if (invincible?.users?.includes(member.id) || invincible?.roles?.some(role => member.roles.cache.has(role))) {
             return false;
         }
 
@@ -145,11 +132,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         return !(await manager.canBypassAutoModeration(member));
     }
 
-    public async canModerate(
-        member: GuildMember,
-        moderator: GuildMember,
-        forceNoSameMemberCheck?: boolean
-    ) {
+    public async canModerate(member: GuildMember, moderator: GuildMember, forceNoSameMemberCheck?: boolean) {
         const moderatorIsSystemAdmin = await this.isSystemAdmin(moderator);
 
         if (member.id === moderator.id && !moderatorIsSystemAdmin && !forceNoSameMemberCheck) {
@@ -171,16 +154,12 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         const { invincible, check_discord_permissions = "always" } =
             this.configurationManager.config[member.guild.id]?.permissions ?? {};
 
-        if (
-            invincible?.users?.includes(member.id) ||
-            invincible?.roles?.some(role => member.roles.cache.has(role))
-        ) {
+        if (invincible?.users?.includes(member.id) || invincible?.roles?.some(role => member.roles.cache.has(role))) {
             return false;
         }
 
         if (
-            (check_discord_permissions === "during_manual_actions" ||
-                check_discord_permissions === "always") &&
+            (check_discord_permissions === "during_manual_actions" || check_discord_permissions === "always") &&
             member.roles.highest.position >= moderator.roles.highest.position
         ) {
             return false;

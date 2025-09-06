@@ -79,14 +79,16 @@ export const GuildConfigSchema = z.object({
                     users: z.array(zSnowflake).default([])
                 })
                 .optional(),
-            mode: PermissionModeSchema.default("discord").optional(),
+            mode: PermissionModeSchema.default("discord"),
             check_discord_permissions: z
                 .enum(["always", "during_automod", "during_manual_actions", "never"])
                 .default("always"),
             command_permission_mode: z.enum(["ignore", "overwrite", "check"]).optional()
         })
         .optional()
-        .prefault({}),
+        .prefault({
+            mode: "discord"
+        }),
     echoing: z
         .object({
             allow_mentions: z.boolean().default(true)
