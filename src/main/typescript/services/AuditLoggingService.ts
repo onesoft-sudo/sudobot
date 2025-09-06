@@ -455,11 +455,14 @@ class AuditLoggingService extends Service {
         try {
             const message = await webhook.send({
                 ...(messageCreateOptions as MessageCreateOptions),
-                allowedMentions: {
-                    parse: [],
-                    roles: [],
-                    users: []
-                }
+                allowedMentions:
+                    "allowedMentions" in messageCreateOptions && messageCreateOptions.allowedMentions
+                        ? messageCreateOptions.allowedMentions
+                        : {
+                              parse: [],
+                              roles: [],
+                              users: []
+                          }
             });
 
             webhookClient.useFailedAttempts = undefined;
@@ -2034,6 +2037,10 @@ class AuditLoggingService extends Service {
             guildId: message.guild!.id,
             messageCreateOptions: {
                 content: mentions.length > 0 ? mentions.map(m => `<@${m}>`).join(" ") : undefined,
+                allowedMentions: {
+                    users: mentions,
+                    roles: []
+                },
                 embeds: [
                     {
                         title: "Early Member Message Inspection Log",
