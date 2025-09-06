@@ -21,7 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
-import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
+import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
@@ -39,8 +39,8 @@ class GuildMemberAddEventListener extends EventListener<Events.GuildMemberAdd> {
     @Inject("antiMemberJoinService")
     protected readonly antiMemberJoinService!: AntiMemberJoinService;
 
-    @Inject("earlyMessageInspectionService")
-    protected readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+    @Inject("newMemberMessageInspectionService")
+    protected readonly newMemberMessageInspectionService!: NewMemberMessageInspectionService;
 
     public override async execute(member: GuildMember): Promise<void> {
         this.auditLoggingService
@@ -48,7 +48,7 @@ class GuildMemberAddEventListener extends EventListener<Events.GuildMemberAdd> {
             .catch(this.application.logger.error);
         await this.antiMemberJoinService.onGuildMemberAdd(member);
         this.infractionManager.reapplyMuteIfNeeded(member).catch(this.application.logger.error);
-        await this.earlyMessageInspectionService.onGuildMemberAdd(member);
+        await this.newMemberMessageInspectionService.onGuildMemberAdd(member);
     }
 }
 

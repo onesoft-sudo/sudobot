@@ -18,7 +18,7 @@
  */
 
 import type Duration from "@framework/datetime/Duration";
-import type { PaxmodModerateTextSuccessResponse } from "@main/automod/EarlyMessageInspectionService";
+import type { PaxmodModerateTextSuccessResponse } from "@main/automod/NewMemberMessageInspectionService";
 import type { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import type { MessageRuleType } from "@main/schemas/MessageRuleSchema";
 import type { ModerationActionType } from "@main/schemas/ModerationActionSchema";
@@ -63,7 +63,7 @@ export enum LogEventType {
     GuildVerificationAttempt = "guild_verification_attempt",
     GuildVerificationSuccess = "guild_verification_success",
     GuildVerificationNotEnoughInfo = "guild_verification_not_enough_info",
-    EarlyMessageInspection = "EarlyMessageInspectionLog"
+    NewMemberMessageInspection = "NewMemberMessageInspectionLog"
 }
 
 const LogEventSchema = z.enum(
@@ -104,13 +104,14 @@ export type LogEventArgs = {
     [LogEventType.GuildVerificationSuccess]: [payload: LogGuildVerificationSuccessPayload];
     [LogEventType.GuildVerificationNotEnoughInfo]: [payload: LogGuildVerificationNotEnoughInfoPayload];
     [LogEventType.GuildVerificationNotEnoughInfo]: [payload: LogGuildVerificationNotEnoughInfoPayload];
-    [LogEventType.EarlyMessageInspection]: [payload: LogEarlyMessageInspectionPayload];
+    [LogEventType.NewMemberMessageInspection]: [payload: LogNewMemberMessageInspectionPayload];
 };
 
-export type LogEarlyMessageInspectionPayload = {
+export type LogNewMemberMessageInspectionPayload = {
     member: GuildMember;
     data: PaxmodModerateTextSuccessResponse;
     message: Message<boolean>;
+    mentions: Snowflake[];
 };
 
 export type LogGuildVerificationNotEnoughInfoPayload = {

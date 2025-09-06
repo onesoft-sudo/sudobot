@@ -21,7 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
-import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
+import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
@@ -37,8 +37,8 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
     @Inject("infractionManager")
     protected readonly infractionManager!: InfractionManager;
 
-    @Inject("earlyMessageInspectionService")
-    protected readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+    @Inject("newMemberMessageInspectionService")
+    protected readonly newMemberMessageInspectionService!: NewMemberMessageInspectionService;
 
     public override async execute(member: GuildMember): Promise<void> {
         if (member.id === this.application.client.user?.id) {
@@ -95,7 +95,7 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
             }
         }, 2500);
 
-        await this.earlyMessageInspectionService.onGuildMemberRemove(member);
+        await this.newMemberMessageInspectionService.onGuildMemberRemove(member);
     }
 }
 

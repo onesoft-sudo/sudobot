@@ -30,12 +30,21 @@ import {
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
-import { type Awaitable, Collection, GuildMember, Message, type PartialMessage, type Snowflake } from "discord.js";
+import {
+    type Awaitable,
+    Collection,
+    GuildMember,
+    Message,
+    type PartialMessage,
+    type Snowflake,
+    TextChannel
+} from "discord.js";
 import { and, eq, or, sql } from "drizzle-orm";
 
-@Name("earlyMessageInspectionService")
-class EarlyMessageInspectionService extends Service implements HasEventListeners {
+@Name("newMemberMessageInspectionService")
+class NewMemberMessageInspectionService extends Service implements HasEventListeners {
     private readonly updateQueue = new Collection<`${Snowflake}::${Snowflake}`, number>();
     private readonly deleteQueue: Array<`${Snowflake}::${Snowflake}`> = [];
 
@@ -44,6 +53,9 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Inject("auditLoggingService")
     private readonly auditLoggingService!: AuditLoggingService;
+
+    @Inject("moderationActionService")
+    private readonly moderationActionService!: ModerationActionService;
 
     public override boot() {
         setInterval(() => {
@@ -129,7 +141,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Override
     public onGuildMemberAdd(member: GuildMember): Awaitable<void> {
-        if (member.user.bot || !this.configManager.config[member.guild.id]?.early_message_inspection?.enabled) {
+        if (member.user.bot || !this.configManager.config[member.guild.id]?.new_member_message_inspection?.enabled) {
             return;
         }
 
@@ -138,7 +150,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Override
     public onGuildMemberRemove(member: GuildMember): Awaitable<void> {
-        if (member.user.bot || !this.configManager.config[member.guild.id]?.early_message_inspection?.enabled) {
+        if (member.user.bot || !this.configManager.config[member.guild.id]?.new_member_message_inspection?.enabled) {
             return;
         }
 
@@ -152,19 +164,19 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             !message.inGuild() ||
             message.author.bot ||
             !message.member ||
-            !this.configManager.config[message.guildId]?.early_message_inspection?.enabled
+            !this.configManager.config[message.guildId]?.new_member_message_inspection?.enabled
         ) {
             return;
         }
 
         const count = await this.getMessageCount(message.guildId, message.author.id);
         const maxCount =
-            this.configManager.config[message.guildId]?.early_message_inspection?.inspect_member_messages_until_count ??
-            10;
+            this.configManager.config[message.guildId]?.new_member_message_inspection
+                ?.inspect_member_messages_until_count ?? 10;
 
         if (count === null) {
             this.application.logger.debug(
-                EarlyMessageInspectionService.name,
+                NewMemberMessageInspectionService.name,
                 "No entries for this member: ",
                 message.author.id
             );
@@ -183,7 +195,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
                 );
 
             this.application.logger.debug(
-                EarlyMessageInspectionService.name,
+                NewMemberMessageInspectionService.name,
                 "Max messages reached, removing entry:",
                 message.author.id
             );
@@ -191,18 +203,14 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
         }
 
         const result = await this.paxmodModerateText(message.content);
-        this.application.logger.debug(EarlyMessageInspectionService.name, "Paxmod response", result.data);
+        this.application.logger.debug(NewMemberMessageInspectionService.name, "Paxmod response", result.data);
 
         if (result.success && result.flagged && result.data) {
-            await this.auditLoggingService.emitLogEvent(message.guildId, LogEventType.EarlyMessageInspection, {
-                data: result.data,
-                member: message.member,
-                message
-            });
+            await this.onFlag(message, result.data);
         }
 
         this.updateQueue.set(`${message.guildId}::${message.author.id}`, count + 1);
-        this.application.logger.debug(EarlyMessageInspectionService.name, `Now: ${count + 1}`);
+        this.application.logger.debug(NewMemberMessageInspectionService.name, `Now: ${count + 1}`);
     }
 
     @Override
@@ -215,15 +223,15 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             message.author.bot ||
             !message.content ||
             !message.member ||
-            !this.configManager.config[message.guildId]?.early_message_inspection?.enabled
+            !this.configManager.config[message.guildId]?.new_member_message_inspection?.enabled
         ) {
             return;
         }
 
         const count = await this.getMessageCount(message.guildId, message.author.id);
         const maxCount =
-            this.configManager.config[message.guildId]?.early_message_inspection?.inspect_member_messages_until_count ??
-            10;
+            this.configManager.config[message.guildId]?.new_member_message_inspection
+                ?.inspect_member_messages_until_count ?? 10;
 
         if (count === null) {
             return;
@@ -246,14 +254,42 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
         const result = await this.paxmodModerateText(message.content);
 
         if (result.success && result.flagged && result.data) {
-            await this.auditLoggingService.emitLogEvent(message.guildId, LogEventType.EarlyMessageInspection, {
-                data: result.data,
-                member: message.member,
-                message
-            });
+            await this.onFlag(message, result.data);
         }
 
-        this.application.logger.debug(EarlyMessageInspectionService.name, `Now: ${count} (not changed)`);
+        this.application.logger.debug(NewMemberMessageInspectionService.name, `Now: ${count} (not changed)`);
+    }
+
+    private async onFlag(message: Message<true>, data: PaxmodModerateTextSuccessResponse) {
+        if (!message.member) {
+            return;
+        }
+
+        const config = this.configManager.config[message.guildId]?.new_member_message_inspection;
+
+        if (!config?.enabled) {
+            return;
+        }
+
+        const promise1 = this.auditLoggingService.emitLogEvent(
+            message.guildId,
+            LogEventType.NewMemberMessageInspection,
+            {
+                data,
+                member: message.member,
+                message,
+                mentions: config?.mention_in_logs_on_flag ?? []
+            }
+        );
+
+        const promise2 = config.action_on_flag?.length
+            ? await this.moderationActionService.takeActions(message.guild, message.member, config.action_on_flag, {
+                  channel: message.channel as TextChannel,
+                  message
+              })
+            : null;
+
+        await Promise.all([promise1, promise2]);
     }
 
     private async paxmodModerateText(text: string) {
@@ -326,4 +362,4 @@ type PaxmodModerateTextErrorResponse = {
 
 type PaxmodModerateTextResponse = PaxmodModerateTextErrorResponse | PaxmodModerateTextSuccessResponse;
 
-export default EarlyMessageInspectionService;
+export default NewMemberMessageInspectionService;

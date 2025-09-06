@@ -36,15 +36,13 @@ type Binding = {
 export type MetadataType = typeof metadata;
 
 class DiscordKernel extends Kernel {
-    protected readonly intents = (process.env.DISCORD_INTENTS?.split(":")?.map(
-        intent => {
-            if (!(intent in GatewayIntentBits)) {
-                throw new Error(`Invalid intent in DISCORD_INTENTS: ${intent}`);
-            }
-
-            return GatewayIntentBits[intent as keyof typeof GatewayIntentBits];
+    protected readonly intents = (process.env.DISCORD_INTENTS?.split(":")?.map(intent => {
+        if (!(intent in GatewayIntentBits)) {
+            throw new Error(`Invalid intent in DISCORD_INTENTS: ${intent}`);
         }
-    ) as GatewayIntentBits[] | undefined) || [
+
+        return GatewayIntentBits[intent as keyof typeof GatewayIntentBits];
+    }) as GatewayIntentBits[] | undefined) || [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessages,
@@ -104,7 +102,7 @@ class DiscordKernel extends Kernel {
         "@services/TranslationService",
         "@services/InterProcessCommunicationService",
         "@services/SystemUpdateService",
-        "@automod/EarlyMessageInspectionService",
+        "@automod/newMemberMessageInspectionService",
         "@root/framework/typescript/api/APIServer"
     ];
 
@@ -153,15 +151,11 @@ class DiscordKernel extends Kernel {
         const logger = new Logger("system", true);
 
         logger.on("log", message => {
-            const logServerEnabled = this.getApplication()?.service(
-                "configManager",
-                false
-            )?.systemConfig?.log_server?.enabled;
+            const logServerEnabled = this.getApplication()?.service("configManager", false)?.systemConfig?.log_server
+                ?.enabled;
 
             if (logServerEnabled) {
-                this.getApplication()
-                    .service("logStreamingService", false)
-                    ?.log(message);
+                this.getApplication().service("logStreamingService", false)?.log(message);
             }
         });
 
@@ -181,14 +175,11 @@ class DiscordKernel extends Kernel {
         this.bindSelf();
 
         for (const binding of this.bindings()) {
-            application.container.bind(
-                binding.value.constructor as AnyConstructor,
-                {
-                    factory: () => binding.value,
-                    singleton: true,
-                    key: binding.key
-                }
-            );
+            application.container.bind(binding.value.constructor as AnyConstructor, {
+                factory: () => binding.value,
+                singleton: true,
+                key: binding.key
+            });
         }
 
         createAxiosClient(application);
@@ -231,14 +222,8 @@ class DiscordKernel extends Kernel {
             });
 
             process.on("exit", () => void (child.killed ? null : child.kill()));
-            process.on(
-                "uncaughtException",
-                () => void (child.killed ? null : child.kill())
-            );
-            process.on(
-                "unhandledRejection",
-                () => void (child.killed ? null : child.kill())
-            );
+            process.on("uncaughtException", () => void (child.killed ? null : child.kill()));
+            process.on("unhandledRejection", () => void (child.killed ? null : child.kill()));
         }
     }
 

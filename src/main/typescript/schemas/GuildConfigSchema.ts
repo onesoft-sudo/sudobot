@@ -242,10 +242,12 @@ export const GuildConfigSchema = z.object({
                 .optional()
         })
         .optional(),
-    early_message_inspection: z
+    new_member_message_inspection: z
         .object({
             enabled: z.boolean().optional().default(false),
-            inspect_member_messages_until_count: z.int().prefault(10)
+            inspect_member_messages_until_count: z.int().prefault(10),
+            action_on_flag: z.array(ModerationActionSchema).default([]),
+            mention_in_logs_on_flag: z.array(zSnowflake).default([])
         })
         .optional(),
     quick_mute: z

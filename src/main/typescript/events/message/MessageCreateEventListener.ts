@@ -22,7 +22,7 @@ import EventListener from "@framework/events/EventListener";
 import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
-import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
+import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import type TriggerService from "@main/automod/TriggerService";
 import { getEnvData } from "@main/env/env";
 import type AFKService from "@main/services/AFKService";
@@ -48,8 +48,8 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject("spamModerationService")
     private readonly spamModerationService!: SpamModerationService;
 
-    @Inject("earlyMessageInspectionService")
-    private readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+    @Inject("newMemberMessageInspectionService")
+    private readonly newMemberMessageInspectionService!: NewMemberMessageInspectionService;
 
     @Inject("triggerService")
     private readonly triggerService!: TriggerService;
@@ -70,7 +70,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
             this.spamModerationService.onMessageCreate.bind(this.spamModerationService),
             this.aiAutoModeration.onMessageCreate.bind(this.aiAutoModeration),
             this.triggerService.onMessageCreate.bind(this.triggerService),
-            this.earlyMessageInspectionService.onMessageCreate.bind(this.earlyMessageInspectionService)
+            this.newMemberMessageInspectionService.onMessageCreate.bind(this.newMemberMessageInspectionService)
         );
     }
 

@@ -24,16 +24,7 @@ import { Service } from "@framework/services/Service";
 import type { Infraction } from "@main/models/Infraction";
 import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import { formatDistanceToNowStrict } from "date-fns";
-import {
-    Guild,
-    GuildMember,
-    Message,
-    TextChannel,
-    User,
-    bold,
-    italic,
-    roleMention
-} from "discord.js";
+import { Guild, GuildMember, GuildTextBasedChannel, Message, User, bold, italic, roleMention } from "discord.js";
 import type InfractionManager from "./InfractionManager";
 
 type MemberOnlyAction = Extract<ModerationActionType, { type: "kick" | "mute" | "role" | "warn" }>;
@@ -44,7 +35,7 @@ type TakeActionResult = {
 };
 
 type TakeActionPayload = {
-    channel?: TextChannel;
+    channel?: GuildTextBasedChannel;
     message?: Message;
 };
 
@@ -118,9 +109,7 @@ class ModerationActionService extends Service {
                     moderator: this.application.client.user!,
                     member: target,
                     reason: action.reason,
-                    duration: action.duration
-                        ? Duration.fromMilliseconds(action.duration)
-                        : undefined,
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined,
                     guildId: guild.id,
                     notify: action.notify
                 });
@@ -134,9 +123,7 @@ class ModerationActionService extends Service {
                     roles: action.roles,
                     notify: action.notify,
                     mode: action.mode,
-                    duration: action.duration
-                        ? Duration.fromMilliseconds(action.duration)
-                        : undefined
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined
                 });
 
             case "warn":
@@ -169,9 +156,7 @@ class ModerationActionService extends Service {
                         ? Duration.fromMilliseconds(action.delete_timeframe)
                         : undefined,
                     guildId: guild.id,
-                    duration: action.duration
-                        ? Duration.fromMilliseconds(action.duration)
-                        : undefined
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined
                 });
 
             case "verbal_warn":
@@ -251,10 +236,7 @@ class ModerationActionService extends Service {
                     summary += `Count: ${action.count ?? italic("None")}\n`;
                     break;
                 case "role":
-                    summary += this.commonSummary(
-                        action,
-                        `Roles ${action.mode === "give" ? "Added" : "Removed"}`
-                    );
+                    summary += this.commonSummary(action, `Roles ${action.mode === "give" ? "Added" : "Removed"}`);
                     summary += `Roles: ${action.roles.map(r => roleMention(r)).join(", ")}\n`;
                     break;
                 case "verbal_warn":

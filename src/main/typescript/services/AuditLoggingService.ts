@@ -27,7 +27,6 @@ import { isDiscordAPIError } from "@framework/utils/errors";
 import { Colors } from "@main/constants/Colors";
 import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import {
-    LogEarlyMessageInspectionPayload,
     LogEventArgs,
     LogEventType,
     LogGuildVerificationAttemptPayload,
@@ -47,6 +46,7 @@ import {
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
     LogMessageReactionClearPayload,
+    LogNewMemberMessageInspectionPayload,
     LogRaidAlertPayload,
     LogUserNoteAddPayload,
     LoggingExclusionType
@@ -130,7 +130,7 @@ class AuditLoggingService extends Service {
         [LogEventType.GuildVerificationAttempt]: this.logGuildVerificationAttempt,
         [LogEventType.GuildVerificationSuccess]: this.logGuildVerificationSuccess,
         [LogEventType.GuildVerificationNotEnoughInfo]: this.logGuildVerificationNotEnoughInfo,
-        [LogEventType.EarlyMessageInspection]: this.logEarlyMessageInspection
+        [LogEventType.NewMemberMessageInspection]: this.logNewMemberMessageInspection
     };
 
     @Inject("configManager")
@@ -2015,7 +2015,12 @@ class AuditLoggingService extends Service {
         });
     }
 
-    public async logEarlyMessageInspection({ data, member, message }: LogEarlyMessageInspectionPayload) {
+    public async logNewMemberMessageInspection({
+        data,
+        member,
+        message,
+        mentions
+    }: LogNewMemberMessageInspectionPayload) {
         let categorySummary = "";
 
         if (data.content_moderation) {
@@ -2028,6 +2033,7 @@ class AuditLoggingService extends Service {
         return this.send({
             guildId: message.guild!.id,
             messageCreateOptions: {
+                content: mentions.length > 0 ? mentions.join(" ") : undefined,
                 embeds: [
                     {
                         title: "Early Member Message Inspection Log",
