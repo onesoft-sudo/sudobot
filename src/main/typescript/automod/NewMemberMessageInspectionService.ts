@@ -291,10 +291,21 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         );
 
         const promise2 = config.action_on_flag?.length
-            ? await this.moderationActionService.takeActions(message.guild, message.member, config.action_on_flag, {
-                  channel: message.channel as TextChannel,
-                  message
-              })
+            ? await this.moderationActionService.takeActions(
+                  message.guild,
+                  message.member,
+                  config.action_on_flag.map(action => ({
+                      ...action,
+                      reason:
+                          "reason" in action && action.reason
+                              ? action.reason
+                              : `Your message was flagged: ${data.reason}`
+                  })),
+                  {
+                      channel: message.channel as TextChannel,
+                      message
+                  }
+              )
             : null;
 
         await Promise.all([promise1, promise2]);
