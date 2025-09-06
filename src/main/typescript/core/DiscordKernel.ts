@@ -102,7 +102,7 @@ class DiscordKernel extends Kernel {
         "@services/TranslationService",
         "@services/InterProcessCommunicationService",
         "@services/SystemUpdateService",
-        "@automod/newMemberMessageInspectionService",
+        "@automod/NewMemberMessageInspectionService",
         "@root/framework/typescript/api/APIServer"
     ];
 
