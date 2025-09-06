@@ -90,6 +90,8 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                             }
                         });
                 }
+
+                this.application.logger.debug(NewMemberMessageInspectionService.name, "Keys updated: ", values.length);
             }
 
             if (this.deleteQueue.length) {
@@ -112,6 +114,12 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                 if (conditions.length) {
                     this.application.database.drizzle.delete(earlyMessageInspectionEntries).where(or(...conditions));
                 }
+
+                this.application.logger.debug(
+                    NewMemberMessageInspectionService.name,
+                    "Keys deleted: ",
+                    conditions.length
+                );
             }
         }, 120_000);
     }
