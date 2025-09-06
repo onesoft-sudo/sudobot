@@ -2,6 +2,10 @@
 
 ### 06-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix:** typo in service name    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **feat(automod:nmmi):** support custom actions and improvements    
       
     * custom moderation actions  
@@ -17,6 +21,10 @@
 
 ### 06-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.10.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.9.2 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
