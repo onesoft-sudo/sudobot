@@ -1,0 +1,12 @@
+{
+    "name": "counting",
+    "id": "org.osndevs.sbext.counting",
+    "icon": "./icon.png",
+    "main": "index.js",
+    "src_main": "index.ts",
+    "language": "typescript",
+    "main_directory": "build/out/main/typescript",
+    "src_directory": "src/main/typescript",
+    "build_command": "npm run build",
+    "resources": "./resources"
+}

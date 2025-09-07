@@ -1,0 +1,24 @@
+{
+    "name": "counting",
+    "version": "1.0.0",
+    "main": "build/index.js",
+    "author": {
+        "name": "Ar Rakin",
+        "email": "rakinar2@osndevs.org"
+    },
+    "license": "AGPL-3.0-or-later",
+    "dependencies": {
+        "sudobot": "file:../.."
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "typescript": "^5"
+    },
+    "_moduleAliases": {
+        "@framework": "node_modules/sudobot/build/out/framework/typescript",
+        "@sudobot": "node_modules/sudobot/build/out/main/typescript"
+    },
+    "scripts": {
+        "build": "tsc"
+    }
+}
