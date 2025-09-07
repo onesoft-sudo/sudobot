@@ -2043,7 +2043,7 @@ class AuditLoggingService extends Service {
                 },
                 embeds: [
                     {
-                        title: "Early Member Message Inspection Log",
+                        title: "New Member Message Inspection Log",
                         description: "The following message was flagged as suspicious by the system.",
                         color: Colors.Gold,
                         timestamp: new Date().toISOString(),
