@@ -2,6 +2,31 @@
 
 ### 07-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix(services:auditlog):** change new member inspection log message title    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **chore(extensions:counting):** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -52,6 +77,25 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.12.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 06-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
