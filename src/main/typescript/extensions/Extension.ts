@@ -28,7 +28,8 @@ import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type ExtensionManager from "@main/services/ExtensionManager";
 import type { Awaitable } from "discord.js";
 import path from "path";
-import { z, type ZodSchema } from "zod";
+import type { ZodType } from "zod";
+import { z } from "zod";
 
 export const ExtensionMetadataSchema = z.object({
     main: z.string().optional(),
@@ -91,9 +92,7 @@ export abstract class Extension {
 
     protected get commandManager(): CommandManager {
         if (!this._commandManager) {
-            throw new Error(
-                `Accessing command manager before it is initialized in extension ${this.name}`
-            );
+            throw new Error(`Accessing command manager before it is initialized in extension ${this.name}`);
         }
 
         return this._commandManager;
@@ -101,9 +100,7 @@ export abstract class Extension {
 
     protected get configManager(): ConfigurationManager {
         if (!this._configManager) {
-            throw new Error(
-                `Accessing config manager before it is initialized in extension ${this.name}`
-            );
+            throw new Error(`Accessing config manager before it is initialized in extension ${this.name}`);
         }
 
         return this._configManager;
@@ -111,9 +108,7 @@ export abstract class Extension {
 
     protected get serviceManager(): ServiceManager {
         if (!this._serviceManager) {
-            throw new Error(
-                `Accessing service manager before it is initialized in extension ${this.name}`
-            );
+            throw new Error(`Accessing service manager before it is initialized in extension ${this.name}`);
         }
 
         return this._serviceManager;
@@ -142,7 +137,7 @@ export abstract class Extension {
 
     public guildConfig(): Awaitable<
         | {
-              [K in PropertyKey]: ZodSchema<unknown>;
+              [K in PropertyKey]: ZodType<unknown>;
           }
         | null
     > {
@@ -151,11 +146,15 @@ export abstract class Extension {
 
     public systemConfig(): Awaitable<
         | {
-              [K in PropertyKey]: ZodSchema<unknown>;
+              [K in PropertyKey]: ZodType<unknown>;
           }
         | null
     > {
         return null;
+    }
+
+    public databaseModels(): Record<string, unknown> {
+        return {};
     }
 
     public async register() {
@@ -163,18 +162,16 @@ export abstract class Extension {
         const events = await this.events();
         const services = await this.services();
 
-        for (const command of commands) {
-            await this.application.classLoader.loadCommandClass(command);
+        for (const service of services) {
+            this.serviceManager.loadServiceClass(service).catch(this.application.logger.error);
         }
 
         for (const event of events) {
             this.manager.loadEventClass(this.id, event);
         }
 
-        for (const service of services) {
-            this.serviceManager
-                .loadServiceClass(service)
-                .catch(this.application.logger.error);
+        for (const command of commands) {
+            await this.application.classLoader.loadCommandClass(command);
         }
     }
 }

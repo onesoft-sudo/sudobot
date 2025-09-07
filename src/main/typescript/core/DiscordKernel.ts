@@ -63,9 +63,9 @@ class DiscordKernel extends Kernel {
     };
     public static readonly services = [
         "@services/StartupManager",
-        "@services/DatabaseService",
         "@services/ConfigurationManager" /* This service is manually booted by the Extension Service. */,
         "@services/ExtensionManager",
+        "@services/DatabaseService",
         "@services/LogStreamingService",
         "@services/CommandManager",
         "@services/PermissionManagerService",

@@ -20,6 +20,7 @@
 import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { BUG } from "@framework/utils/devflow";
 import QueryLogger from "@main/drizzle/QueryLogger";
 import { getEnvData } from "@main/env/env";
 import * as AFKEntrySchemas from "@main/models/AFKEntry";
@@ -37,13 +38,13 @@ import * as UserSchemas from "@main/models/User";
 import * as VerificationEntrySchemas from "@main/models/VerificationEntry";
 import * as VerificationRecordSchemas from "@main/models/VerificationRecord";
 import { sql } from "drizzle-orm";
-
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 @Name("databaseService")
 class DatabaseService extends Service {
     public readonly drizzle: NodePgDatabase<ReturnType<typeof this.buildSchema>>;
+    public readonly drizzleGeneric: ReturnType<typeof drizzle>;
     public readonly pool: Pool;
 
     public constructor(application: Application) {
@@ -54,9 +55,14 @@ class DatabaseService extends Service {
         });
 
         this.drizzle = drizzle(this.pool, {
-            schema: this.buildSchema(),
+            schema: {
+                ...this.buildSchema(),
+                ...this.getExtensionSchemas()
+            },
             logger: new QueryLogger()
-        });
+        } as { logger: QueryLogger });
+
+        this.drizzleGeneric = this.drizzle as unknown as typeof this.drizzleGeneric;
     }
 
     private buildSchema() {
@@ -78,12 +84,38 @@ class DatabaseService extends Service {
         };
     }
 
+    private getExtensionSchemas() {
+        const result: Record<string, unknown> = {};
+
+        for (const extension of this.application.service("extensionManager").getInstalledExtensions()) {
+            this.application.logger.debug("Loading models from extension: ", extension.id);
+            const models = extension.databaseModels();
+
+            for (const key of Object.getOwnPropertyNames(models)) {
+                this.application.logger.debug("Model: ", key);
+
+                if (key in result) {
+                    BUG(
+                        "An extension to overwrite a model previously registered in map: ",
+                        key,
+                        ", extension: ",
+                        extension.id
+                    );
+                }
+
+                result[key] = models[key];
+            }
+        }
+
+        return result;
+    }
+
     public override async boot(): Promise<void> {
         // Test connection
         await this.drizzle.execute(sql`SELECT 1`);
     }
 
-    public get query(): typeof this.drizzle.query {
+    public get query(): NodePgDatabase<ReturnType<typeof this.buildSchema>>["query"] {
         return this.drizzle.query;
     }
 }
