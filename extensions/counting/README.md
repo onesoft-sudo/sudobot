@@ -1,3 +1,3 @@
-# waifu.pics
+# Counting
 
-This extension allows you to get random waifu images from [waifu.pics](https://waifu.pics/).
+This extension can set up a channel where you can play a counting game.

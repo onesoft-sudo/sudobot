@@ -17,7 +17,7 @@ import path from "path";
 class LintTask extends AbstractTask {
     @TaskAction
     protected override async run() {
-        await $`bun x eslint "${process.cwd()}/src"`;
+        await $`bun x eslint "${process.cwd()}/src"`.then();
     }
 
     @TaskInputGenerator
