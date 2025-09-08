@@ -10,8 +10,8 @@ import {
     ChannelType,
     type ChatInputCommandInteraction,
     escapeMarkdown,
-    type Snowflake,
-    PermissionFlagsBits
+    PermissionFlagsBits,
+    type Snowflake
 } from "discord.js";
 import { eq } from "drizzle-orm";
 import { countingEntries } from "../models/CountingEntry";
@@ -34,21 +34,27 @@ class CountCommand extends Command {
     public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly subcommands = ["enable", "set", "reset", "channel", "hardcore"];
     public override readonly isolatedSubcommands = false;
+    public override readonly since = "v11.12.0";
+    public override readonly usage = ["<subcommand: String> [...Args: String[]]"];
     public override readonly subcommandMeta = {
         enable: {
-            description: "Enable or disable counting"
+            description: "Enable or disable counting",
+            usage: ["true", "false"]
         },
         set: {
-            description: "Set the current count manually"
+            description: "Set the current count manually",
+            usage: ["10", "0"]
         },
         reset: {
             description: "Reset count back to zero"
         },
         channel: {
-            description: "Set a counting channel"
+            description: "Set a counting channel",
+            usage: ["3436734472628924", "#general"]
         },
         hardcore: {
-            description: "Enable or disable hardcore mode"
+            description: "Enable or disable hardcore mode",
+            usage: ["true", "false"]
         }
     };
 
