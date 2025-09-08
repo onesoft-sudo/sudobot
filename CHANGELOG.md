@@ -1,47 +1,36 @@
 # Changelog
 
-### 07-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+### 08-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
-  * **fix(services:auditlog):** change new member inspection log message title    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-  * **chore(extensions:counting):** update readme    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-  * **chore(extensions):** trigger rebuild    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-  * **chore(extensions):** trigger rebuild    
+  * **chore(extensions):** rebuild    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
-  * **chore(extensions):** trigger rebuild    
+  * **fix:** type errors    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
-  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+  * **chore(extensions:counting):** add help info    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
-  * **chore(extensions):** trigger rebuild    
+  * **chore:** update vscode settings    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
-  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **docs:** fix broken links    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-  * **feat:** allow extensions to register their own custom database models    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-  * **chore(extensions):** trigger rebuild    
+  * **build:** update lint task    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 08-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
       
-  * **feat(extensions):** add counting extension    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
 
 ### 07-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
@@ -90,12 +79,76 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
 
 ### 07-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.12.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.12.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix(services:auditlog):** change new member inspection log message title    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **chore(extensions:counting):** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **ci:** update extension build workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat:** allow extensions to register their own custom database models    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore(extensions):** trigger rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat(extensions):** add counting extension    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
 
 ### 06-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
