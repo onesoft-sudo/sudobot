@@ -82,7 +82,7 @@
         "drizzle-orm": "^0.44.5",
         "express": "^5.1.0",
         "express-rate-limit": "^8.1.0",
-        "figlet": "^1.8.2",
+        "figlet": "^1.9.0",
         "glob": "^11.0.3",
         "json5": "^2.2.3",
         "jsonwebtoken": "^9.0.2",

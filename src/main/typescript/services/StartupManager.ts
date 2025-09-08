@@ -60,23 +60,8 @@ class StartupManager extends Service implements HasEventListeners {
         console.info(`Version ${chalk.green(version)} -- Booting up`);
     }
 
-    public async getBanner() {
-        return new Promise<string>((resolve, reject) => {
-            figlet.text(
-                "SudoBot",
-                {
-                    font: "Standard"
-                },
-                (error, data) => {
-                    if (error) {
-                        reject(error);
-                        return;
-                    }
-
-                    resolve(data ?? "");
-                }
-            );
-        });
+    public getBanner() {
+        return figlet.text("SudoBot", { font: "Standard" });
     }
 
     public setupEnvironment() {
@@ -99,14 +84,16 @@ class StartupManager extends Service implements HasEventListeners {
             this.application.logger.info("Found restart.json file: ", restartJsonFile);
 
             respond: try {
-                const { guildId, messageId, channelId, time, metadata } =
-                    (await FileSystem.readFileContents(restartJsonFile, { json: true })) as {
-                        guildId?: string;
-                        messageId?: string;
-                        channelId?: string;
-                        time: number;
-                        metadata: unknown;
-                    };
+                const { guildId, messageId, channelId, time, metadata } = (await FileSystem.readFileContents(
+                    restartJsonFile,
+                    { json: true }
+                )) as {
+                    guildId?: string;
+                    messageId?: string;
+                    channelId?: string;
+                    time: number;
+                    metadata: unknown;
+                };
 
                 if (!guildId || !channelId || !messageId) {
                     break respond;
@@ -136,9 +123,7 @@ class StartupManager extends Service implements HasEventListeners {
                             {
                                 author: {
                                     name: "System Update",
-                                    icon_url:
-                                        this.application.client.user?.displayAvatarURL() ??
-                                        undefined
+                                    icon_url: this.application.client.user?.displayAvatarURL() ?? undefined
                                 },
                                 color: Colors.Green,
                                 description: `${emoji(this.application, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
@@ -154,10 +139,7 @@ class StartupManager extends Service implements HasEventListeners {
                                 description: `### ${emoji(this.application, "restart")} System Restart\n${emoji(
                                     this.application,
                                     "check"
-                                )} Operation completed. (took ${(
-                                    (Date.now() - time) /
-                                    1000
-                                ).toFixed(2)}s)`
+                                )} Operation completed. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`
                             }
                         ]
                     });
@@ -183,15 +165,7 @@ class StartupManager extends Service implements HasEventListeners {
         });
     }
 
-    public requestRestart({
-        channelId,
-        guildId,
-        message,
-        messageId,
-        waitFor,
-        key,
-        metadata
-    }: RestartOptions = {}) {
+    public requestRestart({ channelId, guildId, message, messageId, waitFor, key, metadata }: RestartOptions = {}) {
         setTimeout(waitFor)
             .then(async () => {
                 const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
@@ -215,9 +189,7 @@ class StartupManager extends Service implements HasEventListeners {
                     this.application.logger.info(`Broadcasted Message: ${message}`);
                 }
 
-                process.exit(
-                    this.application.service("configManager").systemConfig.restart_exit_code
-                );
+                process.exit(this.application.service("configManager").systemConfig.restart_exit_code);
             })
             .catch(this.application.logger.error);
 
@@ -268,8 +240,7 @@ class StartupManager extends Service implements HasEventListeners {
             this.application.logger.error(reason);
             this.sendErrorLog(
                 `Unhandled promise rejection: ${
-                    typeof reason === "string" ||
-                    typeof (reason as string | undefined)?.toString === "function"
+                    typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
                         ? escapeCodeBlock(
                               (reason as string | undefined)?.toString
                                   ? (reason as string).toString()
@@ -286,8 +257,7 @@ class StartupManager extends Service implements HasEventListeners {
             process.removeAllListeners("uncaughtException");
             this.application.logger.error(error);
             this.sendErrorLog(
-                error.stack ??
-                    `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
+                error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
             )
                 .catch(noOperation)
                 .finally(() => process.exit(-1));
@@ -362,15 +332,11 @@ class StartupManager extends Service implements HasEventListeners {
     }
 
     private setBackupQueue() {
-        const time = process.env.BACKUP_INTERVAL
-            ? parseInt(process.env.BACKUP_INTERVAL)
-            : 1000 * 60 * 60 * 2;
+        const time = process.env.BACKUP_INTERVAL ? parseInt(process.env.BACKUP_INTERVAL) : 1000 * 60 * 60 * 2;
         const finalTime = isNaN(time) ? 1000 * 60 * 60 * 2 : time;
         this.interval = setInterval(this.sendConfigBackupCopy.bind(this), finalTime);
         this.application.logger.info(
-            `Configuration backups will be sent in each ${formatDistanceToNowStrict(
-                new Date(Date.now() - finalTime)
-            )}`
+            `Configuration backups will be sent in each ${formatDistanceToNowStrict(new Date(Date.now() - finalTime))}`
         );
         this.application.logger.info("Sending initial backup");
         this.sendConfigBackupCopy().catch(this.application.logger.error);
