@@ -6,7 +6,6 @@
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "window.commandCenter": true,
-    "typescript.experimental.useTsgo": true,
     "workbench.experimental.share.enabled": true,
     "cSpell.words": [
         "afks",
