@@ -21,4 +21,4 @@ import { z } from "zod";
 
 export const zSnowflake = z
     .string()
-    .regex(/^\d{16,22}$/, "Not a valid snowflake");
+    .regex(/^\d{16,26}$/, "Not a valid snowflake");
