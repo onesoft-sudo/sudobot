@@ -68,6 +68,11 @@ class SystemBanCommand extends Command {
             return;
         }
 
+        if (user.id === this.application.client.user?.id) {
+            await context.error("You cannot ban me from the system!");
+            return;
+        }
+
         if (
             this.configManager.systemConfig.commands?.system_banned_users.includes(
                 user.id
