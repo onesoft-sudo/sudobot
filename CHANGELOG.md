@@ -1,11 +1,44 @@
 # Changelog
 
-### 12-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+### 13-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
-  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
-  * **fix(commands:sysban):** prevent banning the bot itself    
+  * **fix:** type errors    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **fix(limits):** remove logging events configuration from service    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 13-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
 
 ### 12-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
@@ -33,6 +66,56 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 12-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **chore:** add mailmap entry for Ar Rakin    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **ci:** run commitlint only on pull requests    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **deps(axios):** update to latest    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix(commands:sysban):** prevent banning the bot itself    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 12-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.12.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 11-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
