@@ -290,12 +290,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         ).catch(this.application.logger.error);
     }
 
-    private async pushState(
-        guildId: string,
-        id: string,
-        messageId: string,
-        options: ContextReplyOptions
-    ) {
+    private async pushState(guildId: string, id: string, messageId: string, options: ContextReplyOptions) {
         const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
@@ -394,10 +389,9 @@ class GuildSetupService extends Service implements HasEventListeners {
         state.timeout = setTimeout(() => {
             this.setupState.delete(`${guildId}::${id}::${messageId}`);
             const options = this.cancelledOptions([], true);
-            (state.message instanceof Message
-                ? state.message.edit(options)
-                : state.message.editReply(options)
-            ).catch(this.application.logger.error);
+            (state.message instanceof Message ? state.message.edit(options) : state.message.editReply(options)).catch(
+                this.application.logger.error
+            );
         }, this.inactivityTimeout);
     }
 
@@ -412,12 +406,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         this.setupState.delete(`${guildId}::${id}::${messageId}`);
 
         const options = {
-            embeds: [
-                this.embed(
-                    [],
-                    `${emoji(this.application, "check")} Setup has been completed successfully.`
-                )
-            ],
+            embeds: [this.embed([], `${emoji(this.application, "check")} Setup has been completed successfully.`)],
             components: [
                 this.selectMenu("0", true),
                 this.buttonRow("0", "0", messageId, { cancel: false, back: false, finish: false })
@@ -433,9 +422,7 @@ class GuildSetupService extends Service implements HasEventListeners {
     @GatewayEventListener("interactionCreate")
     public async onInteractionCreate(interaction: Interaction) {
         if (
-            (interaction.isButton() ||
-                interaction.isAnySelectMenu() ||
-                interaction.isModalSubmit()) &&
+            (interaction.isButton() || interaction.isAnySelectMenu() || interaction.isModalSubmit()) &&
             interaction.customId.startsWith("setup::")
         ) {
             if (interaction.inGuild() && !interaction.memberPermissions?.has("ManageGuild")) {
@@ -482,12 +469,7 @@ class GuildSetupService extends Service implements HasEventListeners {
 
             switch (id) {
                 case "prefix_modal":
-                    await this.handlePrefixUpdate(
-                        guildId,
-                        interaction.user.id,
-                        message.id,
-                        interaction
-                    );
+                    await this.handlePrefixUpdate(guildId, interaction.user.id, message.id, interaction);
                     break;
                 case "logging_channel_modal":
                     await this.handleLoggingChannelUpdateModalSubmit(
@@ -506,12 +488,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                     );
                     break;
                 case "rule_moderation_word_modal":
-                    await this.handleModerationRuleAddWordModal(
-                        guildId,
-                        interaction.user.id,
-                        message.id,
-                        interaction
-                    );
+                    await this.handleModerationRuleAddWordModal(guildId, interaction.user.id, message.id, interaction);
                     break;
             }
 
@@ -534,35 +511,14 @@ class GuildSetupService extends Service implements HasEventListeners {
 
             this.ping(guildId, interaction.user.id, message.id);
 
-            if (id === "logging" && subId === "events_select") {
-                await this.handleLoggingEventsUpdate(
-                    guildId,
-                    interaction.user.id,
-                    message.id,
-                    interaction
-                );
-
-                return;
-            }
-
             if (id === "spam_protection" && subId === "actions_select") {
-                await this.handleSpamProtectionActionsUpdate(
-                    guildId,
-                    interaction.user.id,
-                    message.id,
-                    interaction
-                );
+                await this.handleSpamProtectionActionsUpdate(guildId, interaction.user.id, message.id, interaction);
 
                 return;
             }
 
             if (id === "rule_moderation" && subId === "actions_select") {
-                await this.handleModerationRuleActionsUpdate(
-                    guildId,
-                    interaction.user.id,
-                    message.id,
-                    interaction
-                );
+                await this.handleModerationRuleActionsUpdate(guildId, interaction.user.id, message.id, interaction);
 
                 return;
             }
@@ -583,17 +539,14 @@ class GuildSetupService extends Service implements HasEventListeners {
             const [, guildId, id, subId] = interaction.customId.split("::");
 
             if (id === "cancel") {
-                const { timeout } =
-                    this.setupState.get(`${guildId}::${interaction.user.id}::${message.id}`) ?? {};
+                const { timeout } = this.setupState.get(`${guildId}::${interaction.user.id}::${message.id}`) ?? {};
 
                 if (timeout) {
                     clearTimeout(timeout);
                     this.setupState.delete(`${guildId}::${interaction.user.id}::${message.id}`);
                 }
 
-                await interaction
-                    .update(this.cancelledOptions([]))
-                    .catch(this.application.logger.error);
+                await interaction.update(this.cancelledOptions([])).catch(this.application.logger.error);
                 return;
             }
 
@@ -688,20 +641,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                     case "logging":
                         switch (subId) {
                             case "enable":
-                                await this.handleLoggingEnable(
-                                    guildId,
-                                    interaction.user.id,
-                                    message.id,
-                                    interaction
-                                );
-                                break;
-                            case "events":
-                                await this.handleLoggingEventsUpdateStart(
-                                    guildId,
-                                    interaction.user.id,
-                                    message.id,
-                                    interaction
-                                );
+                                await this.handleLoggingEnable(guildId, interaction.user.id, message.id, interaction);
                                 break;
                         }
 
@@ -782,9 +722,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await interaction.showModal(modal).catch(this.application.logger.error);
     }
 
-    private async defer(
-        interaction: Extract<Interaction, { deferred: boolean; deferUpdate: unknown }>
-    ) {
+    private async defer(interaction: Extract<Interaction, { deferred: boolean; deferUpdate: unknown }>) {
         if (interaction.deferred) {
             return;
         }
@@ -818,10 +756,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.pushState(guildId, id, messageId, options);
     }
 
-    private loggingButtonRow(
-        guildId: string,
-        { enable = true, channel = true } = {}
-    ) {
+    private loggingButtonRow(guildId: string, { enable = true, channel = true } = {}) {
         return new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
                 .setCustomId(`setup::${guildId}::logging::enable`)
@@ -832,16 +767,11 @@ class GuildSetupService extends Service implements HasEventListeners {
                 .setCustomId(`setup::${guildId}::logging::channel`)
                 .setLabel("Set Logging Channel")
                 .setStyle(ButtonStyle.Secondary)
-                .setDisabled(!channel),
+                .setDisabled(!channel)
         );
     }
 
-    private async handleLoggingEnable(
-        guildId: string,
-        id: string,
-        messageId: string,
-        interaction: ButtonInteraction
-    ) {
+    private async handleLoggingEnable(guildId: string, id: string, messageId: string, interaction: ButtonInteraction) {
         if (!this.configManager.config[guildId]) {
             this.configManager.autoConfigure(guildId);
         }
@@ -951,23 +881,13 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        const me =
-            channel.guild.members.me || (await fetchMember(channel.guild, channel.client.user.id));
+        const me = channel.guild.members.me || (await fetchMember(channel.guild, channel.client.user.id));
 
         if (
             me &&
             !channel
                 .permissionsFor(me)
-                .has(
-                    [
-                        "SendMessages",
-                        "EmbedLinks",
-                        "AttachFiles",
-                        "AddReactions",
-                        "UseExternalEmojis"
-                    ],
-                    true
-                )
+                .has(["SendMessages", "EmbedLinks", "AttachFiles", "AddReactions", "UseExternalEmojis"], true)
         ) {
             await this.pushState(guildId, id, messageId, {
                 embeds: [
@@ -1060,7 +980,7 @@ class GuildSetupService extends Service implements HasEventListeners {
     private getLoggingEvents() {
         return Object.keys(LogEventType).filter(key => /[A-Z]/.test(key));
     }
-    
+
     public async handleAIAutoModSetup(
         guildId: string,
         id: string,
@@ -1143,13 +1063,9 @@ class GuildSetupService extends Service implements HasEventListeners {
 
         await this.pushState(guildId, id, messageId, {
             embeds: [
-                this.embed(
-                    ["Message Moderation Rules"],
-                    "Configure moderation rules for this server.",
-                    {
-                        color: Colors.Primary
-                    }
-                )
+                this.embed(["Message Moderation Rules"], "Configure moderation rules for this server.", {
+                    color: Colors.Primary
+                })
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -1177,8 +1093,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.defer(interaction);
         this.resetState(guildId, id, messageId);
 
-        const keywords =
-            interaction.fields.getTextInputValue("keywords")?.split(/\s+/)?.filter(Boolean) || [];
+        const keywords = interaction.fields.getTextInputValue("keywords")?.split(/\s+/)?.filter(Boolean) || [];
 
         if (keywords.length === 0) {
             await this.pushState(guildId, id, messageId, {
@@ -1215,15 +1130,15 @@ class GuildSetupService extends Service implements HasEventListeners {
                 global_disabled_channels: []
             };
 
-            const firstWordFilterIndex = this.configManager.config[
-                guildId
-            ]!.rule_moderation.rules.findIndex(rule => rule.type === "word_filter");
+            const firstWordFilterIndex = this.configManager.config[guildId]!.rule_moderation.rules.findIndex(
+                rule => rule.type === "word_filter"
+            );
 
             if (firstWordFilterIndex !== -1) {
                 (
-                    this.configManager.config[guildId]!.rule_moderation.rules[
-                        firstWordFilterIndex
-                    ] as { words: string[] }
+                    this.configManager.config[guildId]!.rule_moderation.rules[firstWordFilterIndex] as {
+                        words: string[];
+                    }
                 ).words = keywords;
             } else {
                 this.configManager.config[guildId]!.rule_moderation.rules.push({
@@ -1278,9 +1193,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.defer(interaction);
         this.resetState(guildId, id, messageId);
 
-        const actions = interaction.values as Array<
-            "delete_message" | "mute" | "kick" | "ban" | "clear"
-        >;
+        const actions = interaction.values as Array<"delete_message" | "mute" | "kick" | "ban" | "clear">;
 
         if (!actions.length) {
             await this.pushState(guildId, id, messageId, {
@@ -1324,14 +1237,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                 reason: "AutoMod: Posted a blocked word"
             })) as ModerationActionType[];
 
-            const firstWordFilterIndex = this.configManager.config[
-                guildId
-            ]!.rule_moderation.rules.findIndex(rule => rule.type === "word_filter");
+            const firstWordFilterIndex = this.configManager.config[guildId]!.rule_moderation.rules.findIndex(
+                rule => rule.type === "word_filter"
+            );
 
             if (firstWordFilterIndex !== -1) {
-                this.configManager.config[guildId]!.rule_moderation.rules[
-                    firstWordFilterIndex
-                ].actions = finalActions;
+                this.configManager.config[guildId]!.rule_moderation.rules[firstWordFilterIndex].actions = finalActions;
             } else {
                 this.configManager.config[guildId]!.rule_moderation.rules.push({
                     type: "word_filter",
@@ -1461,13 +1372,9 @@ class GuildSetupService extends Service implements HasEventListeners {
 
         await this.pushState(guildId, id, messageId, {
             embeds: [
-                this.embed(
-                    ["Message Moderation Rules", "Create Rule"],
-                    "Configure moderation rules for this server.",
-                    {
-                        color: Colors.Primary
-                    }
-                )
+                this.embed(["Message Moderation Rules", "Create Rule"], "Configure moderation rules for this server.", {
+                    color: Colors.Primary
+                })
             ],
             components: [
                 ...this.moderationRuleCreateActionRow(guildId),
