@@ -284,7 +284,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
               )
             : null;
 
-        await Promise.all([promise1, promise2]);
+        await Promise.all([promise1, promise2] as unknown as Promise[]);
     }
 
     private async paxmodModerateText(text: string) {
