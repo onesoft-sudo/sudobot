@@ -33,10 +33,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import { getEnvData } from "@main/env/env";
-import {
-    CommandPermissionOverwrite,
-    CommandPermissionOverwriteAction
-} from "@main/models/CommandPermissionOverwrite";
+import { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@main/models/CommandPermissionOverwrite";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import {
     ApplicationCommandDataResolvable,
@@ -74,9 +71,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         await this.registerApplicationCommands();
     }
 
-    public invalidatePermissionOverwrite(
-        overwrite: CommandPermissionOverwrite
-    ) {
+    public invalidatePermissionOverwrite(overwrite: CommandPermissionOverwrite) {
         return this.store.invalidate(overwrite);
     }
 
@@ -84,26 +79,13 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         return this.commands
             .filter(
                 (command, key) =>
-                    !command.name.includes("::") &&
-                    command.name === key &&
-                    command.supportsInteraction()
+                    !command.name.includes("::") && command.name.toLowerCase() === key && command.supportsInteraction()
             )
-            .map(command =>
-                command
-                    .build()
-                    .map(
-                        builder =>
-                            builder.toJSON() as ApplicationCommandDataResolvable
-                    )
-            )
+            .map(command => command.build().map(builder => builder.toJSON() as ApplicationCommandDataResolvable))
             .flat();
     }
 
-    public async updateApplicationCommands({
-        commands,
-        clear,
-        global
-    }: ApplicationCommandUpdateOptions = {}) {
+    public async updateApplicationCommands({ commands, clear, global }: ApplicationCommandUpdateOptions = {}) {
         if (clear) {
             commands = [];
         } else {
@@ -123,53 +105,37 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             await this.client.application?.commands.set(commands);
         }
 
-        this.application.logger.info(
-            `Updated ${commands.length} application ${guildId ? "guild " : ""}commands`
-        );
+        this.application.logger.info(`Updated ${commands.length} application ${guildId ? "guild " : ""}commands`);
 
         return commands.length;
     }
 
     public async registerApplicationCommands() {
-        const existingApplicationCommands =
-            await this.client.application?.commands.fetch();
+        const existingApplicationCommands = await this.client.application?.commands.fetch();
 
         if (existingApplicationCommands?.size && !developmentMode()) {
-            this.application.logger.debug(
-                "Skipped registering application commands as they're already registered"
-            );
+            this.application.logger.debug("Skipped registering application commands as they're already registered");
             return;
         }
 
-        const mode =
-            this.configManager.systemConfig.commands
-                .register_application_commands_on_boot;
+        const mode = this.configManager.systemConfig.commands.register_application_commands_on_boot;
 
         if (mode === "none") {
-            this.application.logger.debug(
-                "Skipped registering application commands as it's disabled"
-            );
+            this.application.logger.debug("Skipped registering application commands as it's disabled");
 
             return;
         }
 
-        const clear =
-            process.argv.includes("--clear-commands") ||
-            process.argv.includes("-c");
-        const global =
-            process.argv.includes("--global-commands") ||
-            process.argv.includes("-g");
-        const commands = clear
-            ? []
-            : this.getApplicationCommandDataResolvableList();
+        const clear = process.argv.includes("--clear-commands") || process.argv.includes("-c");
+        const global = process.argv.includes("--global-commands") || process.argv.includes("-g");
+        const commands = clear ? [] : this.getApplicationCommandDataResolvableList();
 
         if (!clear && !commands.length) {
             this.application.logger.debug("No commands to register");
             return;
         }
 
-        let guildId =
-            mode === "guild" && !global ? process.env.HOME_GUILD_ID : undefined;
+        let guildId = mode === "guild" && !global ? process.env.HOME_GUILD_ID : undefined;
         let registered = false;
 
         if (guildId) {
@@ -180,15 +146,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             this.application.logger.debug(
                 "Registering global commands on every startup is not recommended, as you may hit the global rate limit."
             );
-            this.application.logger.debug(
-                "Please consider using guild commands instead, for testing purposes."
-            );
+            this.application.logger.debug("Please consider using guild commands instead, for testing purposes.");
             registered = true;
         } else if (
             (mode === "auto_global" || global) &&
-            (process.argv.includes("--update-commands") ||
-                process.argv.includes("-u") ||
-                clear)
+            (process.argv.includes("--update-commands") || process.argv.includes("-u") || clear)
         ) {
             if (isDevelopmentMode() && !global) {
                 this.client.guilds.cache
@@ -232,9 +194,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         let aliasGroupSet = false;
 
         if (loadMetadata && previousCommand) {
-            this.application.classLoader.unloadEventsFromMetadata(
-                previousCommand
-            );
+            this.application.classLoader.unloadEventsFromMetadata(previousCommand);
         }
 
         const loweredName = command.name.toLowerCase();
@@ -263,9 +223,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const previousCommand = this.getCommand(command.name);
 
         if (!previousCommand || !previousCommand.file) {
-            this.application.logger.debug(
-                `Command ${command.name} is not reloadable.`
-            );
+            this.application.logger.debug(`Command ${command.name} is not reloadable.`);
             return;
         }
 
@@ -278,10 +236,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         // remove require cache
         delete require.cache[require.resolve(previousCommand.file)];
-        return this.application.classLoader.loadCommand(
-            previousCommand.file,
-            true
-        );
+        return this.application.classLoader.loadCommand(previousCommand.file, true);
     }
 
     public getCanonicalName(name: string) {
@@ -289,11 +244,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromMessage(message: Message<true>) {
-        if (
-            this.configManager.systemConfig.commands.system_banned_users.includes(
-                message.author.id
-            )
-        ) {
+        if (this.configManager.systemConfig.commands.system_banned_users.includes(message.author.id)) {
             return;
         }
 
@@ -305,10 +256,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const prefixes = [config.prefix];
 
-        if (
-            config.commands?.mention_prefix ||
-            this.configManager.systemConfig.commands.mention_prefix
-        ) {
+        if (config.commands?.mention_prefix || this.configManager.systemConfig.commands.mention_prefix) {
             prefixes.push(`<@${this.application.getClient().user!.id}>`);
             prefixes.push(`<@!${this.application.getClient().user!.id}>`);
         }
@@ -333,9 +281,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const command = this.getCommand(commandName);
 
         if (!command) {
-            this.application.logger.debug(
-                `Command not found: ${commandName}: trying to resolve a snippet`
-            );
+            this.application.logger.debug(`Command not found: ${commandName}: trying to resolve a snippet`);
 
             const result = await this.application
                 .service("snippetManagerService")
@@ -357,16 +303,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return false;
         }
 
-        const context = new LegacyContext(
-            commandName,
-            content,
-            message,
-            args,
-            argv
-        );
-        const respondOnFail =
-            this.configManager.config[message.guildId]?.commands
-                .respond_on_precondition_fail;
+        const context = new LegacyContext(commandName, content, message, args, argv);
+        const respondOnFail = this.configManager.config[message.guildId]?.commands.respond_on_precondition_fail;
 
         if (command.isDisabled(message.guildId)) {
             if (respondOnFail) {
@@ -377,9 +315,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         if (command.hasSubcommands) {
-            const subcommandName = argv.find(
-                (a, i) => i !== 0 && !a.startsWith("-")
-            );
+            const subcommandName = argv.find((a, i) => i !== 0 && !a.startsWith("-"));
             const key = command.isolatedSubcommands
                 ? `${this.getCanonicalName(commandName)}::${subcommandName}`
                 : this.getCanonicalName(commandName);
@@ -396,25 +332,16 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             if (!subcommand) {
                 const errorHandler =
                     command?.onSubcommandNotFound?.bind(command) ??
-                    Reflect.getMetadata(
-                        "command:subcommand_not_found_error",
-                        command.constructor
-                    );
+                    Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
 
                 if (typeof errorHandler === "string") {
                     return context.error(errorHandler);
                 } else if (typeof errorHandler === "function") {
-                    await errorHandler(
-                        context,
-                        subcommandName,
-                        !subcommandName ? "not_specified" : "not_found"
-                    );
+                    await errorHandler(context, subcommandName, !subcommandName ? "not_specified" : "not_found");
                     return;
                 } else {
                     await context.error(
-                        subcommandName
-                            ? "Invalid subcommand provided."
-                            : "Please provide a subcommand!"
+                        subcommandName ? "Invalid subcommand provided." : "Please provide a subcommand!"
                     );
                     return;
                 }
@@ -426,11 +353,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         return void (await this.execCommand(command, context));
     }
 
-    private async execCommand(
-        command: Command,
-        context: Context,
-        rootCommand?: Command
-    ) {
+    private async execCommand(command: Command, context: Context, rootCommand?: Command) {
         try {
             await command.run(context, rootCommand);
             return true;
@@ -441,10 +364,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             }
 
             if (error instanceof PermissionDeniedError) {
-                await context.error(
-                    error.message ||
-                        "You don't have permission to run this command."
-                );
+                await context.error(error.message || "You don't have permission to run this command.");
                 return false;
             }
 
@@ -454,11 +374,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromInteraction(interaction: CommandInteraction) {
-        if (
-            this.configManager.systemConfig.commands.system_banned_users.includes(
-                interaction.user.id
-            )
-        ) {
+        if (this.configManager.systemConfig.commands.system_banned_users.includes(interaction.user.id)) {
             await interaction.reply({
                 content: "You are unable to use commands.",
                 ephemeral: true
@@ -475,17 +391,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         const subcommand = (
-            interaction as
-                | ChatInputCommandInteraction
-                | ContextMenuCommandInteraction
-        ).options.data.find(
-            e => e.type === ApplicationCommandOptionType.Subcommand
-        )?.name;
+            interaction as ChatInputCommandInteraction | ContextMenuCommandInteraction
+        ).options.data.find(e => e.type === ApplicationCommandOptionType.Subcommand)?.name;
 
         const command = this.getCommand(
-            subcommand &&
-                baseCommand.isolatedSubcommands &&
-                baseCommand.hasSubcommands
+            subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands
                 ? `${commandName}::${subcommand}`
                 : commandName
         );
@@ -493,25 +403,18 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         if (
             !command ||
             !command.supportsInteraction() ||
-            (subcommand &&
-                baseCommand.hasSubcommands &&
-                !baseCommand.subcommands.includes(subcommand))
+            (subcommand && baseCommand.hasSubcommands && !baseCommand.subcommands.includes(subcommand))
         ) {
             return false;
         }
 
         const context = new InteractionContext(
             commandName,
-            interaction as
-                | ChatInputCommandInteraction
-                | ContextMenuCommandInteraction
+            interaction as ChatInputCommandInteraction | ContextMenuCommandInteraction
         );
 
         if (command.isDisabled(interaction.guildId!)) {
-            if (
-                this.configManager.config[interaction.guildId!]?.commands
-                    .respond_on_precondition_fail
-            ) {
+            if (this.configManager.config[interaction.guildId!]?.commands.respond_on_precondition_fail) {
                 await context.error("This command is disabled.");
             }
 
@@ -521,11 +424,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         try {
             await command.run(
                 context,
-                !!subcommand &&
-                    baseCommand.isolatedSubcommands &&
-                    baseCommand.hasSubcommands
-                    ? baseCommand
-                    : undefined
+                !!subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands ? baseCommand : undefined
             );
             return true;
         } catch (error) {
@@ -600,8 +499,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return true;
         }
 
-        const mode =
-            this.configManager.config[context.guildId]?.permissions.mode;
+        const mode = this.configManager.config[context.guildId]?.permissions.mode;
 
         if (mode !== "levels") {
             this.application.logger.warn(
@@ -610,8 +508,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return true;
         }
 
-        const manager =
-            this.application.service("permissionManager").managers.levels;
+        const manager = this.application.service("permissionManager").managers.levels;
 
         if (manager && manager instanceof LevelBasedPermissionManager) {
             const memberLevel = await manager.getMemberLevel(context.member);
@@ -757,14 +654,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     ) {
         if (!base) {
             return {
-                allow:
-                    onMatch === CommandPermissionOverwriteAction.Allow && other
-                        ? other
-                        : null,
-                deny:
-                    onMatch === CommandPermissionOverwriteAction.Deny && other
-                        ? other
-                        : null
+                allow: onMatch === CommandPermissionOverwriteAction.Allow && other ? other : null,
+                deny: onMatch === CommandPermissionOverwriteAction.Deny && other ? other : null
             } satisfies CachedCommandPermissionOverwrites;
         }
 
@@ -772,10 +663,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return base;
         }
 
-        const target =
-            onMatch === CommandPermissionOverwriteAction.Allow
-                ? "allow"
-                : "deny";
+        const target = onMatch === CommandPermissionOverwriteAction.Allow ? "allow" : "deny";
         const existing = base[target];
 
         if (!existing) {
@@ -783,27 +671,15 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         } else {
             base[target] = {
                 ids: existing.ids.concat(other.ids),
-                requiredChannels: this.store.concatArrays(
-                    other.requiredChannels,
-                    existing.requiredChannels
-                ),
-                requiredRoles: this.store.logicConcat(
-                    other.requiredRoles,
-                    existing.requiredRoles
-                ),
+                requiredChannels: this.store.concatArrays(other.requiredChannels, existing.requiredChannels),
+                requiredRoles: this.store.logicConcat(other.requiredRoles, existing.requiredRoles),
                 requiredLevel: other.requiredLevel ?? existing.requiredLevel,
-                requiredPermissions: this.store.logicConcat(
-                    other.requiredPermissions,
-                    existing.requiredPermissions
-                ),
+                requiredPermissions: this.store.logicConcat(other.requiredPermissions, existing.requiredPermissions),
                 requiredSystemPermissions: this.store.logicConcat(
                     other.requiredSystemPermissions,
                     existing.requiredSystemPermissions
                 ),
-                requiredUsers: this.store.logicConcat(
-                    other.requiredUsers,
-                    existing.requiredUsers
-                )
+                requiredUsers: this.store.logicConcat(other.requiredUsers, existing.requiredUsers)
             };
         }
 
@@ -831,32 +707,16 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             denyMatched = false;
         const memberPermissions =
             alreadyComputedPermissions ??
-            (await this.application
-                .service("permissionManager")
-                .getMemberPermissions(context.member));
+            (await this.application.service("permissionManager").getMemberPermissions(context.member));
 
         if (allow) {
-            if (
-                await this.performChecks(
-                    CommandPermissionOverwriteAction.Allow,
-                    allow,
-                    context,
-                    memberPermissions
-                )
-            ) {
+            if (await this.performChecks(CommandPermissionOverwriteAction.Allow, allow, context, memberPermissions)) {
                 allowMatched = true;
             }
         }
 
         if (deny) {
-            if (
-                await this.performChecks(
-                    CommandPermissionOverwriteAction.Deny,
-                    deny,
-                    context,
-                    memberPermissions
-                )
-            ) {
+            if (await this.performChecks(CommandPermissionOverwriteAction.Deny, deny, context, memberPermissions)) {
                 denyMatched = true;
             }
         }
@@ -871,21 +731,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         memberPermissions: MemberPermissionData
     ) {
         return (
-            this.requirementCheckChannels(
-                action,
-                context,
-                cachedOverwrite.requiredChannels
-            ) &&
-            this.requirementCheckRoles(
-                action,
-                context,
-                cachedOverwrite.requiredRoles
-            ) &&
-            (await this.requirementCheckLevel(
-                action,
-                context,
-                cachedOverwrite.requiredLevel
-            )) &&
+            this.requirementCheckChannels(action, context, cachedOverwrite.requiredChannels) &&
+            this.requirementCheckRoles(action, context, cachedOverwrite.requiredRoles) &&
+            (await this.requirementCheckLevel(action, context, cachedOverwrite.requiredLevel)) &&
             this.requirementCheckPermissions(
                 action,
                 context,
@@ -898,11 +746,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 cachedOverwrite.requiredSystemPermissions,
                 memberPermissions.grantedSystemPermissions.toArray()
             ) &&
-            this.requirementCheckUsers(
-                action,
-                context,
-                cachedOverwrite.requiredUsers
-            )
+            this.requirementCheckUsers(action, context, cachedOverwrite.requiredUsers)
         );
     }
 
