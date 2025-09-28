@@ -54,17 +54,11 @@ class RestRoleArgument<E extends boolean = false> extends Argument<If<E, Role[],
 
     protected resolve(resolvable: string) {
         if ((resolvable.startsWith("<@&") && resolvable.endsWith(">")) || isSnowflake(resolvable)) {
-            return fetchRole(this.context.guild, this.toSnowflake(resolvable)) as Promise<
-                If<E, Role, Role | null>
-            >;
+            return fetchRole(this.context.guild, this.toSnowflake(resolvable)) as Promise<If<E, Role, Role | null>>;
         }
 
         return Promise.resolve(
-            (this.context.guild.roles.cache.find(role => role.name === resolvable) ?? null) as If<
-                E,
-                Role,
-                Role | null
-            >
+            (this.context.guild.roles.cache.find(role => role.name === resolvable) ?? null) as If<E, Role, Role | null>
         );
     }
 
@@ -91,11 +85,11 @@ class RestRoleArgument<E extends boolean = false> extends Argument<If<E, Role[],
 
     protected override async resolveFromInteraction(interaction: ChatInputCommandInteraction) {
         type FunctionReturnType = If<E, Role[], (Role | null)[]>;
-        const value = interaction.options.getString(this.name!);
+        const value = interaction.options.getString(this.interactionName!);
         const roles = [] as unknown as FunctionReturnType;
 
         if (value === null && this.rules?.["interaction:no_required_check"] !== false) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         if (!value) {

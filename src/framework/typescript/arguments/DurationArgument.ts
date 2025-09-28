@@ -52,9 +52,7 @@ class DurationArgument extends Argument<Duration> {
 
     public override postTransformValidation(): boolean {
         const durationValue =
-            typeof this.transformedValue === "number"
-                ? this.transformedValue
-                : this.transformedValue.toMilliseconds();
+            typeof this.transformedValue === "number" ? this.transformedValue : this.transformedValue.toMilliseconds();
 
         if (this.rules?.["range:min"] && durationValue < this.rules?.["range:min"]) {
             return this.error("Duration is too small", ErrorType.InvalidRange);
@@ -67,13 +65,11 @@ class DurationArgument extends Argument<Duration> {
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<Duration> {
-        const value = interaction.options.getString(this.name!, this.isRequired);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<Duration> {
+        const value = interaction.options.getString(this.interactionName!, this.isRequired);
 
         if (value === null) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
         try {
             return Duration.fromDurationStringExpression(value);

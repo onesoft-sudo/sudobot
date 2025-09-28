@@ -19,11 +19,7 @@
 
 import { fetchChannel } from "@framework/utils/entities";
 import { isSnowflake } from "@framework/utils/utils";
-import {
-    type Awaitable,
-    type ChatInputCommandInteraction,
-    type GuildBasedChannel
-} from "discord.js";
+import { type Awaitable, type ChatInputCommandInteraction, type GuildBasedChannel } from "discord.js";
 import type { If } from "../types/Utils";
 import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";
@@ -42,13 +38,8 @@ class ChannelArgument<E extends boolean = false> extends EntityArgument<
         return true;
     }
 
-    protected override async transform(): Promise<
-        If<E, GuildBasedChannel, GuildBasedChannel | null>
-    > {
-        if (
-            (this.stringValue.startsWith("<#") && this.stringValue.endsWith(">")) ||
-            isSnowflake(this.stringValue)
-        ) {
+    protected override async transform(): Promise<If<E, GuildBasedChannel, GuildBasedChannel | null>> {
+        if ((this.stringValue.startsWith("<#") && this.stringValue.endsWith(">")) || isSnowflake(this.stringValue)) {
             return fetchChannel(this.context.guild, this.toSnowflake()) as Promise<
                 If<E, GuildBasedChannel, GuildBasedChannel | null>
             >;
@@ -65,13 +56,11 @@ class ChannelArgument<E extends boolean = false> extends EntityArgument<
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<GuildBasedChannel> {
-        const value = interaction.options.getChannel(this.name!);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<GuildBasedChannel> {
+        const value = interaction.options.getChannel(this.interactionName!);
 
         if (value === null && this.rules?.["interaction:no_required_check"] !== false) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value as GuildBasedChannel;

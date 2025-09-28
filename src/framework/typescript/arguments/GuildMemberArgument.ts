@@ -23,9 +23,7 @@ import type { If } from "../types/Utils";
 import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";
 
-class GuildMemberArgument<E extends boolean = false> extends EntityArgument<
-    If<E, GuildMember, GuildMember | null>
-> {
+class GuildMemberArgument<E extends boolean = false> extends EntityArgument<If<E, GuildMember, GuildMember | null>> {
     public static readonly defaultErrors = {
         [ErrorType.Required]: "You must specify a member to perform this action!",
         [ErrorType.InvalidType]: "You must specify a valid member to perform this action.",
@@ -34,9 +32,7 @@ class GuildMemberArgument<E extends boolean = false> extends EntityArgument<
     protected override readonly mentionStart: string[] = ["<@!", "<@"];
 
     protected override transform(): Promise<If<E, GuildMember, GuildMember | null>> {
-        return fetchMember(this.context.guild, this.toSnowflake()) as Promise<
-            If<E, GuildMember, GuildMember | null>
-        >;
+        return fetchMember(this.context.guild, this.toSnowflake()) as Promise<If<E, GuildMember, GuildMember | null>>;
     }
 
     public override postTransformValidation() {
@@ -47,13 +43,11 @@ class GuildMemberArgument<E extends boolean = false> extends EntityArgument<
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<GuildMember> {
-        const value = interaction.options.getMember(this.name!);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<GuildMember> {
+        const value = interaction.options.getMember(this.interactionName!);
 
         if (value === null && this.rules?.["interaction:no_required_check"] !== false) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value as GuildMember;

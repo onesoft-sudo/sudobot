@@ -9,91 +9,91 @@ importers:
   .:
     dependencies:
       archiver:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1
       ascii-table3:
-        specifier: ^1.0.1
+        specifier: 1.0.1
         version: 1.0.1
       axios:
-        specifier: ^1.12.0
+        specifier: 1.12.0
         version: 1.12.0
       bcrypt:
-        specifier: ^6.0.0
+        specifier: 6.0.0
         version: 6.0.0
       chalk:
-        specifier: ^4.1.2
+        specifier: 4.1.2
         version: 4.1.2
       cors:
-        specifier: ^2.8.5
+        specifier: 2.8.5
         version: 2.8.5
       date-fns:
-        specifier: ^4.1.0
+        specifier: 4.1.0
         version: 4.1.0
       discord.js:
-        specifier: ^14.22.1
+        specifier: 14.22.1
         version: 14.22.1
       dotenv:
-        specifier: ^17.2.2
+        specifier: 17.2.2
         version: 17.2.2
       drizzle-orm:
-        specifier: ^0.44.5
-        version: 0.44.5(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3)
+        specifier: 0.44.0
+        version: 0.44.0(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3)
       express:
-        specifier: ^5.1.0
+        specifier: 5.1.0
         version: 5.1.0
       express-rate-limit:
-        specifier: ^8.1.0
+        specifier: 8.1.0
         version: 8.1.0(express@5.1.0)
       figlet:
-        specifier: ^1.9.0
+        specifier: 1.9.0
         version: 1.9.0
       glob:
-        specifier: ^11.0.3
+        specifier: 11.0.3
         version: 11.0.3
       json5:
-        specifier: ^2.2.3
+        specifier: 2.2.3
         version: 2.2.3
       jsonwebtoken:
-        specifier: ^9.0.2
+        specifier: 9.0.2
         version: 9.0.2
       mlkem:
-        specifier: ^2.5.0
+        specifier: 2.5.0
         version: 2.5.0
       module-alias:
-        specifier: ^2.2.3
+        specifier: 2.2.3
         version: 2.2.3
       pg:
-        specifier: ^8.16.3
+        specifier: 8.16.3
         version: 8.16.3
       pm2:
-        specifier: ^6.0.10
+        specifier: 6.0.10
         version: 6.0.10
       reflect-metadata:
-        specifier: ^0.2.2
+        specifier: 0.2.2
         version: 0.2.2
       semver:
-        specifier: ^7.7.2
+        specifier: 7.7.2
         version: 7.7.2
       sharp:
-        specifier: ^0.34.3
+        specifier: 0.34.3
         version: 0.34.3
       socket.io:
-        specifier: ^4.8.1
+        specifier: 4.8.1
         version: 4.8.1
       tar:
-        specifier: ^7.4.3
+        specifier: 7.4.3
         version: 7.4.3
       tslib:
-        specifier: ^2.8.1
+        specifier: 2.8.1
         version: 2.8.1
       undici:
-        specifier: ^7.15.0
+        specifier: 7.15.0
         version: 7.15.0
       uuid:
-        specifier: ^11.1.0
+        specifier: 11.1.0
         version: 11.1.0
       ws:
-        specifier: ^8.18.3
+        specifier: 8.18.3
         version: 8.18.3
     devDependencies:
       '@commitlint/cli':
@@ -1507,8 +1507,8 @@ packages:
     resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
     engines: {node: '>=12'}
 
-  drizzle-orm@0.44.5:
-    resolution: {integrity: sha512-jBe37K7d8ZSKptdKfakQFdeljtu3P2Cbo7tJoJSVZADzIKOBo9IAJPOmMsH2bZl90bZgh8FQlD8BjxXA/zuBkQ==}
+  drizzle-orm@0.44.0:
+    resolution: {integrity: sha512-/8wYepe887Gp1eCVILKitNegclGLPUMdK4oDDyDftKJOeHoCylY+XM++chMJloy9oKTceWOALiQMl2aAuFuPTw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -4560,7 +4560,7 @@ snapshots:
 
   dotenv@17.2.2: {}
 
-  drizzle-orm@0.44.5(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3):
+  drizzle-orm@0.44.0(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3):
     optionalDependencies:
       '@types/pg': 8.15.5
       bun-types: 1.2.21(@types/react@19.1.12)

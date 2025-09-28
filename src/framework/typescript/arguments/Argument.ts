@@ -40,6 +40,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected transformedValue!: T;
     public readonly position: number;
     public readonly name?: string;
+    public readonly interactionName?: string;
     protected readonly rules?: Partial<ArgumentRules>;
     protected readonly interaction?: ChatInputCommandInteraction;
     protected isRequired = false;
@@ -52,6 +53,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
+        interactionName?: string,
         rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
@@ -61,6 +63,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         this.position = position;
         this.rules = rules;
         this.name = name;
+        this.interactionName = interactionName ?? name;
         this.interaction = interaction;
     }
 
@@ -75,28 +78,20 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
 
     public abstract toString(): string;
     protected abstract transform(): Awaitable<T>;
-    protected abstract resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<T>;
+    protected abstract resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<T>;
 
     public static async performCastFromInteraction(
         context: Context,
         interaction: ChatInputCommandInteraction,
         name: string,
+        interactionName: string,
         rules?: Partial<ArgumentRules>,
         isRequired = false
     ) {
         try {
-            const casted = this.castFrom(
-                context,
-                "",
-                [],
-                "",
-                0,
-                name,
-                rules,
-                interaction
-            ).setRequired(isRequired);
+            const casted = this.castFrom(context, "", [], "", 0, name, interactionName, rules, interaction).setRequired(
+                isRequired
+            );
 
             return {
                 value: await casted.toTransformed(),
@@ -137,25 +132,15 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         return this.transformedValue;
     }
 
-    protected error(
-        message: string,
-        type: ErrorType,
-        ruleLike?: string | { message?: string }
-    ): never {
-        throw new InvalidArgumentError(
-            (typeof ruleLike === "string" ? ruleLike : ruleLike?.message) ?? message,
-            {
-                type
-            }
-        );
+    protected error(message: string, type: ErrorType, ruleLike?: string | { message?: string }): never {
+        throw new InvalidArgumentError((typeof ruleLike === "string" ? ruleLike : ruleLike?.message) ?? message, {
+            type
+        });
     }
 
     protected attemptValidation() {
         if (this.rules?.choices?.length && !this.rules?.choices.includes(this.stringValue)) {
-            return this.error(
-                `Invalid choice received at position #${this.position}`,
-                ErrorType.InvalidType
-            );
+            return this.error(`Invalid choice received at position #${this.position}`, ErrorType.InvalidType);
         }
 
         return this.validate();
@@ -168,6 +153,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
+        interactionName?: string,
         rules?: Partial<ArgumentRules>,
         isRequired = false
     ): Promise<Casted<unknown>> {
@@ -179,16 +165,14 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
                 value,
                 position,
                 name,
+                interactionName,
                 rules
             ).setRequired(isRequired);
 
             if (!casted.attemptValidation()) {
-                throw new InvalidArgumentError(
-                    `Invalid argument received at position #${position}`,
-                    {
-                        type: ErrorType.InvalidType
-                    }
-                );
+                throw new InvalidArgumentError(`Invalid argument received at position #${position}`, {
+                    type: ErrorType.InvalidType
+                });
             }
 
             return {
@@ -213,6 +197,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
+        interactionName?: string,
         rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
@@ -225,6 +210,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
             value,
             position,
             name,
+            interactionName,
             rules,
             interaction
         );

@@ -50,30 +50,22 @@ class RestStringArgument extends Argument<string> {
             return this.error("Invalid argument received", ErrorType.InvalidType);
         }
 
-        if (
-            this.rules?.["range:min"] &&
-            this.transformedValue.length < this.rules?.["range:min"]
-        ) {
+        if (this.rules?.["range:min"] && this.transformedValue.length < this.rules?.["range:min"]) {
             return this.error("String is too short", ErrorType.InvalidRange);
         }
 
-        if (
-            this.rules?.["range:max"] &&
-            this.transformedValue.length > this.rules?.["range:max"]
-        ) {
+        if (this.rules?.["range:max"] && this.transformedValue.length > this.rules?.["range:max"]) {
             return this.error("String is too long", ErrorType.InvalidRange);
         }
 
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<string> {
-        const value = interaction.options.getString(this.name!, this.isRequired);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<string> {
+        const value = interaction.options.getString(this.interactionName!, this.isRequired);
 
         if (value === null) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value;

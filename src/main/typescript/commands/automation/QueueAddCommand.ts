@@ -57,8 +57,7 @@ type QueueAddCommandArgs = {
 class QueueAddCommand extends Command {
     public override readonly name = "queue::add";
     public override readonly description: string = "Add a command execution queued job.";
-    public override readonly detailedDescription: string =
-        "Queues the given command to be run at a later time.";
+    public override readonly detailedDescription: string = "Queues the given command to be run at a later time.";
     public override readonly defer = true;
     public override readonly permissions = [PermissionFlags.ManageGuild];
 
@@ -69,6 +68,8 @@ class QueueAddCommand extends Command {
     private readonly queueManager!: QueueService;
 
     public override async execute(context: Context, args: QueueAddCommandArgs): Promise<void> {
+        console.log("args", args);
+
         const { command, runAfter } = args;
         const spaceIndex = command.indexOf(" ");
         const newLineIndex = command.indexOf("\n");
@@ -79,9 +80,7 @@ class QueueAddCommand extends Command {
         const commandName = command.slice(0, index === -1 ? command.length : index);
 
         if (!this.commandManager.commands.has(commandName)) {
-            return void context.error(
-                `The specified command ${inlineCode(commandName)} does not exist.`
-            );
+            return void context.error(`The specified command ${inlineCode(commandName)} does not exist.`);
         }
 
         let messageId: string;

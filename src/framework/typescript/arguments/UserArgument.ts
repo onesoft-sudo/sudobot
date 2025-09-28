@@ -33,9 +33,7 @@ class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User,
     protected override readonly mentionStart: string[] = ["<@!", "<@"];
 
     protected override transform(): Promise<If<E, User, User | null>> {
-        return fetchUser(Application.current().getClient(), this.toSnowflake()) as Promise<
-            If<E, User, User | null>
-        >;
+        return fetchUser(Application.current().getClient(), this.toSnowflake()) as Promise<If<E, User, User | null>>;
     }
 
     public override postTransformValidation() {
@@ -46,13 +44,11 @@ class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User,
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<User> {
-        const value = interaction.options.getUser(this.name!, this.isRequired);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<User> {
+        const value = interaction.options.getUser(this.interactionName!, this.isRequired);
 
         if (value === null) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value;

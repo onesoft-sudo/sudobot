@@ -34,13 +34,11 @@ class IntegerArgument extends NumberArgument {
         return parseInt(this.stringValue);
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<number> {
-        const value = interaction.options.getInteger(this.name!, this.isRequired);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<number> {
+        const value = interaction.options.getInteger(this.interactionName!, this.isRequired);
 
         if (value === null) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value;

@@ -29,11 +29,7 @@ import type {
     Snowflake,
     User
 } from "discord.js";
-import {
-    ContextMenuCommandBuilder,
-    InteractionContextType,
-    SlashCommandBuilder
-} from "discord.js";
+import { ContextMenuCommandBuilder, InteractionContextType, SlashCommandBuilder } from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
 import type ArgumentParser from "../arguments/ArgumentParser";
@@ -56,13 +52,8 @@ import { ContextType } from "./ContextType";
 import type InteractionContext from "./InteractionContext";
 import type LegacyContext from "./LegacyContext";
 
-export type CommandMessage =
-    | Message<true>
-    | ChatInputCommandInteraction
-    | ContextMenuCommandInteraction;
-export type ChatContext =
-    | LegacyContext
-    | InteractionContext<ChatInputCommandInteraction>;
+export type CommandMessage = Message<true> | ChatInputCommandInteraction | ContextMenuCommandInteraction;
+export type ChatContext = LegacyContext | InteractionContext<ChatInputCommandInteraction>;
 export type CommandBuilders = Array<Buildable>;
 export type AnyCommand = Command<ContextType>;
 
@@ -85,15 +76,11 @@ export type SubcommandMeta = {
 };
 
 export type CommandGuardLike = GuardLike | typeof Guard;
-export type CommandPermissionLike =
-    | PermissionLike
-    | PermissionsString
-    | typeof Permission;
+export type CommandPermissionLike = PermissionLike | PermissionsString | typeof Permission;
 export type PlainPermissionResolvable = PermissionsString | bigint;
 
-abstract class Command<
-    T extends ContextType = ContextType.ChatInput | ContextType.Legacy
-> implements Builder<CommandBuilders>
+abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
+    implements Builder<CommandBuilders>
 {
     public abstract readonly name: string;
 
@@ -108,10 +95,7 @@ abstract class Command<
     /**
      * The supported contexts of the command.
      */
-    public readonly supportedContexts: readonly T[] = [
-        ContextType.Legacy,
-        ContextType.ChatInput
-    ] as T[];
+    public readonly supportedContexts: readonly T[] = [ContextType.Legacy, ContextType.ChatInput] as T[];
 
     /**
      * Whether the command should be deferred.
@@ -256,9 +240,7 @@ abstract class Command<
      */
     public constructor(protected readonly application: Application) {
         this.argumentParser = (
-            application.service(
-                "commandManager"
-            ) satisfies CommandManagerServiceInterface
+            application.service("commandManager") satisfies CommandManagerServiceInterface
         ).getArgumentParser();
         this.internalPermissionManager = application.service(
             "permissionManager"
@@ -321,9 +303,7 @@ abstract class Command<
      * @returns True if the command supports message context menu, false otherwise.
      */
     public supportsMessageContextMenu(): this is Command<ContextType.MessageContextMenu> {
-        return this.supportedContexts.includes(
-            ContextType.MessageContextMenu as T
-        );
+        return this.supportedContexts.includes(ContextType.MessageContextMenu as T);
     }
 
     /**
@@ -332,9 +312,7 @@ abstract class Command<
      * @returns True if the command supports user context menu, false otherwise.
      */
     public supportsUserContextMenu(): this is Command<ContextType.UserContextMenu> {
-        return this.supportedContexts.includes(
-            ContextType.UserContextMenu as T
-        );
+        return this.supportedContexts.includes(ContextType.UserContextMenu as T);
     }
 
     /**
@@ -342,40 +320,24 @@ abstract class Command<
      *
      * @returns True if the command supports any context menu, false otherwise.
      */
-    public supportsContextMenu(): this is Command<
-        ContextType.MessageContextMenu | ContextType.UserContextMenu
-    > {
-        return (
-            this.supportsMessageContextMenu() || this.supportsUserContextMenu()
-        );
+    public supportsContextMenu(): this is Command<ContextType.MessageContextMenu | ContextType.UserContextMenu> {
+        return this.supportsMessageContextMenu() || this.supportsUserContextMenu();
     }
 
     public supportsInteraction(): this is Command<
-        | ContextType.MessageContextMenu
-        | ContextType.UserContextMenu
-        | ContextType.ChatInput
+        ContextType.MessageContextMenu | ContextType.UserContextMenu | ContextType.ChatInput
     > {
         return this.supportsChatInput() || this.supportsContextMenu();
     }
 
     public isDisabled(guildId?: Snowflake): boolean {
-        const configManager = this.application.service(
-            "configManager"
-        ) as ConfigurationManagerServiceInterface;
+        const configManager = this.application.service("configManager") as ConfigurationManagerServiceInterface;
         const name = this.name.replace("::", " ");
 
         return (
             this.disabled ||
-            (
-                configManager.systemConfig.commands.global_disabled as string[]
-            ).includes(name) ||
-            !!(
-                guildId &&
-                (
-                    configManager.config[guildId]?.commands
-                        ?.disabled_commands as string[]
-                )?.includes(name)
-            )
+            (configManager.systemConfig.commands.global_disabled as string[]).includes(name) ||
+            !!(guildId && (configManager.config[guildId]?.commands?.disabled_commands as string[])?.includes(name))
         );
     }
 
@@ -397,9 +359,7 @@ abstract class Command<
      * @returns The context menu command builder.
      */
     protected buildContextMenu() {
-        return new ContextMenuCommandBuilder()
-            .setName(this.name)
-            .setContexts(InteractionContextType.Guild);
+        return new ContextMenuCommandBuilder().setName(this.name).setContexts(InteractionContextType.Guild);
     }
 
     /**
@@ -466,9 +426,7 @@ abstract class Command<
      * @param context - The command context.
      * @returns The result of the precondition check.
      */
-    public async runPreconditions(
-        context: Context
-    ): Promise<PreconditionExecutionResult> {
+    public async runPreconditions(context: Context): Promise<PreconditionExecutionResult> {
         const state: CommandExecutionState<false> = {
             memberPermissions: undefined,
             isSystemAdmin: undefined
@@ -505,21 +463,11 @@ abstract class Command<
 
         if (!state.isSystemAdmin) {
             const ratelimiter = (
-                this.application.service(
-                    "commandManager"
-                ) as CommandManagerServiceInterface
+                this.application.service("commandManager") as CommandManagerServiceInterface
             ).getRateLimiter();
 
-            if (
-                await ratelimiter.isRateLimitedWithHit(
-                    this.name,
-                    context.guildId,
-                    context.userId
-                )
-            ) {
-                await context.error(
-                    "You're being rate limited. Please try again later."
-                );
+            if (await ratelimiter.isRateLimitedWithHit(this.name, context.guildId, context.userId)) {
+                await context.error("You're being rate limited. Please try again later.");
                 return;
             }
         }
@@ -544,11 +492,7 @@ abstract class Command<
                 return;
             }
 
-            await this.execute(
-                context,
-                value?.parsedArgs ?? {},
-                value?.parsedOptions ?? {}
-            );
+            await this.execute(context, value?.parsedArgs ?? {}, value?.parsedOptions ?? {});
         } else {
             await this.execute(context);
         }
@@ -574,9 +518,7 @@ abstract class Command<
     }
 
     private isInDisabledChannel(guildId: Snowflake, channelId: Snowflake) {
-        const configManager = this.application.service(
-            "configManager"
-        ) satisfies ConfigurationManagerServiceInterface;
+        const configManager = this.application.service("configManager") satisfies ConfigurationManagerServiceInterface;
 
         const channels = configManager.config[guildId]?.commands?.channels;
 
@@ -594,10 +536,7 @@ abstract class Command<
      * @param state
      * @returns {Promise<boolean>} True if the preconditions are met, false otherwise.
      */
-    protected async checkPreconditions(
-        context: Context,
-        state: CommandExecutionState<false>
-    ): Promise<boolean> {
+    protected async checkPreconditions(context: Context, state: CommandExecutionState<false>): Promise<boolean> {
         if (this.isDisabled(context.guildId)) {
             await context.error("This command is disabled.");
             return false;
@@ -612,50 +551,34 @@ abstract class Command<
             return false;
         }
 
-        state.memberPermissions =
-            await this.internalPermissionManager.getMemberPermissions(
-                context.member
-            );
+        state.memberPermissions = await this.internalPermissionManager.getMemberPermissions(context.member);
 
-        const isSystemAdmin =
-            await this.internalPermissionManager.isSystemAdmin(
-                context.member,
-                state.memberPermissions
-            );
-
-        state.isSystemAdmin = isSystemAdmin;
-        this.application.logger.debug(
-            "Member permissions: ",
+        const isSystemAdmin = await this.internalPermissionManager.isSystemAdmin(
+            context.member,
             state.memberPermissions
         );
+
+        state.isSystemAdmin = isSystemAdmin;
+        this.application.logger.debug("Member permissions: ", state.memberPermissions);
 
         if (isSystemAdmin) {
             return true;
         }
 
         if (!isSystemAdmin && this.systemAdminOnly) {
-            throw new PermissionDeniedError(
-                "This command can only be used by system administrators."
-            );
+            throw new PermissionDeniedError("This command can only be used by system administrators.");
         }
 
         try {
             if (
-                !(await this.checkPermissions(
-                    context,
-                    state as unknown as CommandExecutionState<true>
-                )) &&
+                !(await this.checkPermissions(context, state as unknown as CommandExecutionState<true>)) &&
                 (await this.checkGuards(context))
             ) {
-                throw new PermissionDeniedError(
-                    "You don't have permission to run this command."
-                );
+                throw new PermissionDeniedError("You don't have permission to run this command.");
             }
         } catch (error) {
             if (error instanceof PermissionDeniedError) {
-                context
-                    .error(error.message)
-                    .catch(this.application.logger.error);
+                context.error(error.message).catch(this.application.logger.error);
                 return false;
             }
 
@@ -670,26 +593,19 @@ abstract class Command<
             return;
         }
 
-        this.application.logger.debug(
-            "Computing persistent permissions for command: ",
-            this.name
-        );
+        this.application.logger.debug("Computing persistent permissions for command: ", this.name);
         this.cachedPersistentCustomPermissions = [];
 
         for (const permission of this.persistentCustomPermissions) {
             const instance =
                 typeof permission === "string"
-                    ? this.internalPermissionManager.getPermissionByName(
-                          permission
-                      )
+                    ? this.internalPermissionManager.getPermissionByName(permission)
                     : typeof permission === "function"
                       ? await permission.getInstance<Permission>()
                       : permission;
 
             if (!instance) {
-                this.application.logger.debug(
-                    `Invalid permission: ${permission?.toString()}: Not found`
-                );
+                this.application.logger.debug(`Invalid permission: ${permission?.toString()}: Not found`);
                 continue;
             }
 
@@ -704,21 +620,14 @@ abstract class Command<
      * @param state
      * @returns True if the permissions are met, false otherwise.
      */
-    protected async checkPermissions(
-        context: Context,
-        state: CommandExecutionState<true>
-    ) {
+    protected async checkPermissions(context: Context, state: CommandExecutionState<true>) {
         const permissionManager = this.internalPermissionManager;
 
         if (this.systemPermissions) {
-            const me =
-                context.guild.members.me ??
-                (await context.guild.members.fetchMe());
+            const me = context.guild.members.me ?? (await context.guild.members.fetchMe());
 
             if (!me.permissions.has(this.systemPermissions, true)) {
-                throw new PermissionDeniedError(
-                    "The system is missing permissions to perform this action."
-                );
+                throw new PermissionDeniedError("The system is missing permissions to perform this action.");
             }
         }
 
@@ -735,20 +644,14 @@ abstract class Command<
         if (this.persistentDiscordPermissions) {
             if (
                 this.permissionCheckingMode === "and" &&
-                !context.member.permissions.has(
-                    this.persistentDiscordPermissions,
-                    true
-                )
+                !context.member.permissions.has(this.persistentDiscordPermissions, true)
             ) {
                 return false;
             }
 
             if (
                 this.permissionCheckingMode === "or" &&
-                !context.member.permissions.any(
-                    this.persistentDiscordPermissions,
-                    true
-                )
+                !context.member.permissions.any(this.persistentDiscordPermissions, true)
             ) {
                 return false;
             }
@@ -762,17 +665,12 @@ abstract class Command<
             }
         }
 
-        const configManager = this.application.service(
-            "configManager"
-        ) satisfies ConfigurationManagerServiceInterface;
+        const configManager = this.application.service("configManager") satisfies ConfigurationManagerServiceInterface;
         const mode =
-            configManager.config[context.guildId]?.permissions
-                ?.command_permission_mode ??
+            configManager.config[context.guildId]?.permissions?.command_permission_mode ??
             configManager.systemConfig.command_permission_mode;
 
-        const commandManager = this.application.service(
-            "commandManager"
-        ) satisfies CommandManagerServiceInterface;
+        const commandManager = this.application.service("commandManager") satisfies CommandManagerServiceInterface;
 
         const result = await commandManager.checkCommandPermissionOverwrites(
             context,
@@ -781,17 +679,12 @@ abstract class Command<
         );
 
         if (!result?.allow) {
-            throw new PermissionDeniedError(
-                "You don't have enough permissions to run this command."
-            );
+            throw new PermissionDeniedError("You don't have enough permissions to run this command.");
         }
 
         const { overwrite } = result;
 
-        if (
-            ((!overwrite && mode === "overwrite") || mode === "check") &&
-            this.permissions
-        ) {
+        if (((!overwrite && mode === "overwrite") || mode === "check") && this.permissions) {
             if (this.permissionCheckingMode === "and") {
                 return await permissionManager.hasPermissions(
                     context.member,
@@ -836,8 +729,7 @@ abstract class Command<
      */
     protected async checkGuards(context: Context): Promise<boolean> {
         for (const guard of this.guards) {
-            const instance =
-                typeof guard === "function" ? await guard.getInstance() : guard;
+            const instance = typeof guard === "function" ? await guard.getInstance() : guard;
 
             if (!(await instance.check(this, context as ContextOf<this>))) {
                 return false;
@@ -862,9 +754,7 @@ abstract class Command<
         const { action, args, policy, errorMessage, onFail } = options;
         const result = await policy.can(
             action,
-            contextOrUser instanceof Context
-                ? contextOrUser.user
-                : contextOrUser,
+            contextOrUser instanceof Context ? contextOrUser.user : contextOrUser,
             ...args
         );
 
@@ -874,10 +764,7 @@ abstract class Command<
                 return false;
             }
 
-            throw new PermissionDeniedError(
-                errorMessage ??
-                    "You're missing permissions to perform this action."
-            );
+            throw new PermissionDeniedError(errorMessage ?? "You're missing permissions to perform this action.");
         }
 
         return result;
@@ -897,15 +784,11 @@ export type ArgumentPayload<N extends boolean = false> =
     | Array<Argument<unknown> | null | (N extends true ? undefined : never)>
     | [Arguments | (N extends true ? undefined : never)];
 export type CommandExecutionState<L extends boolean = false> = {
-    memberPermissions:
-        | MemberPermissionData
-        | (L extends false ? undefined : never);
+    memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
     isSystemAdmin: boolean | (L extends false ? undefined : never);
 };
 export type Buildable = Pick<
-    | SlashCommandBuilder
-    | ContextMenuCommandBuilder
-    | SlashCommandOptionsOnlyBuilder,
+    SlashCommandBuilder | ContextMenuCommandBuilder | SlashCommandOptionsOnlyBuilder,
     "name" | "toJSON"
 >;
 export type PreconditionExecutionResult = {

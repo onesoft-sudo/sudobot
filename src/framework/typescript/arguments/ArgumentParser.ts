@@ -164,10 +164,9 @@ class ArgumentParser {
 
         const schema =
             (subcommandParseResult?.value
-                ? ((Reflect.getMetadata(
-                      "command:schema",
-                      subcommandParseResult.value.constructor
-                  ) as ArgumentParserSchema | undefined) ?? {
+                ? ((Reflect.getMetadata("command:schema", subcommandParseResult.value.constructor) as
+                      | ArgumentParserSchema
+                      | undefined) ?? {
                       overloads: []
                   })
                 : null) ?? baseSchema;
@@ -228,9 +227,7 @@ class ArgumentParser {
                     optionSchema.id;
                 const optType =
                     optionSchema.canonicalNameType ??
-                    (optionSchema.longNames?.at(0) || !optionSchema.shortNames?.at(0)
-                        ? "long"
-                        : "short");
+                    (optionSchema.longNames?.at(0) || !optionSchema.shortNames?.at(0) ? "long" : "short");
                 return {
                     error:
                         optionSchema.errors?.[ErrorType.Required] ??
@@ -414,11 +411,7 @@ class ArgumentParser {
 
         Application.current().logger.debug("Initial state", defaultState);
 
-        for (
-            let definitionIndex = 0;
-            definitionIndex < overload.definitions.length;
-            definitionIndex++
-        ) {
+        for (let definitionIndex = 0; definitionIndex < overload.definitions.length; definitionIndex++) {
             const result = await this.parseArgumentDefinition({
                 context,
                 definition: overload.definitions[definitionIndex],
@@ -534,9 +527,7 @@ class ArgumentParser {
         for (let typeIndex = 0; typeIndex < definition.types.length; typeIndex++) {
             result = await this.parseType({
                 context,
-                type:
-                    (context.isChatInput() ? definition.interactionType : null) ??
-                    definition.types[typeIndex],
+                type: (context.isChatInput() ? definition.interactionType : null) ?? definition.types[typeIndex],
                 typeIndex,
                 schema,
                 definition,
@@ -605,9 +596,7 @@ class ArgumentParser {
 
             const value =
                 immediateValue ??
-                (context.args[state.argIndex + 1]?.startsWith("-") === false
-                    ? context.args[state.argIndex + 1]
-                    : null);
+                (context.args[state.argIndex + 1]?.startsWith("-") === false ? context.args[state.argIndex + 1] : null);
 
             if (optionSchema.requiresValue) {
                 if (value === null) {
@@ -695,16 +684,14 @@ class ArgumentParser {
         state: ParserGlobalState;
         typeIndex: number;
         command: Command;
-    }>): Promise<
-        CommonResult<{ name: string; value: unknown }> & { abortParsingDefinitions?: boolean }
-    > {
+    }>): Promise<CommonResult<{ name: string; value: unknown }> & { abortParsingDefinitions?: boolean }> {
         const useCanonical = definition.useCanonical !== false && definition.names.length === 1;
         const name = definition.names[useCanonical ? 0 : typeIndex];
+        const interactionName = definition.interactionName ?? name;
         const errorMessageRecord = definition.errorMessages?.[useCanonical ? 0 : typeIndex];
         const rules =
             definition.rules?.[
-                (context.isChatInput() ? definition.interactionRuleIndex : null) ??
-                    (useCanonical ? 0 : typeIndex)
+                (context.isChatInput() ? definition.interactionRuleIndex : null) ?? (useCanonical ? 0 : typeIndex)
             ];
 
         try {
@@ -716,6 +703,7 @@ class ArgumentParser {
                       context.args[state.argIndex],
                       state.argIndex,
                       name,
+                      interactionName,
                       rules,
                       !definition.optional
                   )
@@ -723,15 +711,14 @@ class ArgumentParser {
                       context,
                       context.commandMessage,
                       name,
+                      interactionName,
                       rules,
                       !definition.optional
                   );
 
             if (error) {
                 return {
-                    error:
-                        (error.meta.type ? errorMessageRecord?.[error.meta.type] : null) ??
-                        error.message,
+                    error: (error.meta.type ? errorMessageRecord?.[error.meta.type] : null) ?? error.message,
                     errorTypeForwarded: error.meta.type
                 };
             }

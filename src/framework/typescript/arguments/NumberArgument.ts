@@ -50,13 +50,11 @@ class NumberArgument extends Argument<number> {
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<number> {
-        const value = interaction.options.getNumber(this.name!, this.isRequired);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<number> {
+        const value = interaction.options.getNumber(this.interactionName!, this.isRequired);
 
         if (value === null) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value;

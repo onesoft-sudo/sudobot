@@ -37,18 +37,16 @@ class RoleArgument<E extends boolean = false> extends EntityArgument<If<E, Role,
     }
 
     protected override transform(): Promise<If<E, Role, Role | null>> {
-        if (
-            (this.stringValue.startsWith("<@&") && this.stringValue.endsWith(">")) ||
-            isSnowflake(this.stringValue)
-        ) {
-            return fetchRole(this.context.guild, this.toSnowflake()) as Promise<
-                If<E, Role, Role | null>
-            >;
+        if ((this.stringValue.startsWith("<@&") && this.stringValue.endsWith(">")) || isSnowflake(this.stringValue)) {
+            return fetchRole(this.context.guild, this.toSnowflake()) as Promise<If<E, Role, Role | null>>;
         }
 
         return Promise.resolve(
-            (this.context.guild.roles.cache.find(role => role.name === this.stringValue) ??
-                null) as If<E, Role, Role | null>
+            (this.context.guild.roles.cache.find(role => role.name === this.stringValue) ?? null) as If<
+                E,
+                Role,
+                Role | null
+            >
         );
     }
 
@@ -60,13 +58,11 @@ class RoleArgument<E extends boolean = false> extends EntityArgument<If<E, Role,
         return true;
     }
 
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<Role> {
-        const value = interaction.options.getRole(this.name!);
+    protected override resolveFromInteraction(interaction: ChatInputCommandInteraction): Awaitable<Role> {
+        const value = interaction.options.getRole(this.interactionName!);
 
         if (value === null && this.rules?.["interaction:no_required_check"] !== false) {
-            return this.error(`${this.name} is required!`, ErrorType.Required);
+            return this.error(`${this.interactionName} is required!`, ErrorType.Required);
         }
 
         return value as Role;
