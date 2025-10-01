@@ -26,6 +26,7 @@ import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageIns
 import type TriggerService from "@main/automod/TriggerService";
 import { getEnvData } from "@main/env/env";
 import type AFKService from "@main/services/AFKService";
+import { EndEventSymbol } from "@main/types/EndEvent";
 import { ChannelType, Message, MessageType, WebhookClient } from "discord.js";
 import type RuleModerationService from "../../automod/RuleModerationService";
 import type SpamModerationService from "../../automod/SpamModerationService";
@@ -110,7 +111,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
         }
 
         for (const listener of this.listeners) {
-            if ((await listener(message)) === false) {
+            if ((await listener(message)) === EndEventSymbol) {
                 return;
             }
         }
