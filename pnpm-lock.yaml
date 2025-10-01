@@ -37,7 +37,7 @@ importers:
         version: 17.2.2
       drizzle-orm:
         specifier: 0.44.0
-        version: 0.44.0(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3)
+        version: 0.44.0(@types/pg@8.15.5)(bun-types@1.2.23(@types/react@19.1.12))(pg@8.16.3)
       express:
         specifier: 5.1.0
         version: 5.1.0
@@ -121,8 +121,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       '@types/bun':
-        specifier: ^1.2.21
-        version: 1.2.21(@types/react@19.1.12)
+        specifier: ^1.2.23
+        version: 1.2.23(@types/react@19.1.12)
       '@types/cors':
         specifier: ^2.8.19
         version: 2.8.19
@@ -880,8 +880,8 @@ packages:
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
-  '@types/bun@1.2.21':
-    resolution: {integrity: sha512-NiDnvEqmbfQ6dmZ3EeUO577s4P5bf4HCTXtI6trMc6f6RzirY5IrF3aIookuSpyslFzrnvv2lmEWv5HyC1X79A==}
+  '@types/bun@1.2.23':
+    resolution: {integrity: sha512-le8ueOY5b6VKYf19xT3McVbXqLqmxzPXHsQT/q9JHgikJ2X22wyTW3g3ohz2ZMnp7dod6aduIiq8A14Xyimm0A==}
 
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
@@ -1248,8 +1248,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bun-types@1.2.21:
-    resolution: {integrity: sha512-sa2Tj77Ijc/NTLS0/Odjq/qngmEPZfbfnOERi0KRUYhT9R8M4VBioWVmMWE5GrYbKMc+5lVybXygLdibHaqVqw==}
+  bun-types@1.2.23:
+    resolution: {integrity: sha512-R9f0hKAZXgFU3mlrA0YpE/fiDvwV0FT9rORApt2aQVWSuJDzZOyB5QLc0N/4HF57CS8IXJ6+L5E4W1bW6NS2Aw==}
     peerDependencies:
       '@types/react': ^19
 
@@ -3868,9 +3868,9 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 24.3.1
 
-  '@types/bun@1.2.21(@types/react@19.1.12)':
+  '@types/bun@1.2.23(@types/react@19.1.12)':
     dependencies:
-      bun-types: 1.2.21(@types/react@19.1.12)
+      bun-types: 1.2.23(@types/react@19.1.12)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -4318,7 +4318,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bun-types@1.2.21(@types/react@19.1.12):
+  bun-types@1.2.23(@types/react@19.1.12):
     dependencies:
       '@types/node': 24.3.1
       '@types/react': 19.1.12
@@ -4560,10 +4560,10 @@ snapshots:
 
   dotenv@17.2.2: {}
 
-  drizzle-orm@0.44.0(@types/pg@8.15.5)(bun-types@1.2.21(@types/react@19.1.12))(pg@8.16.3):
+  drizzle-orm@0.44.0(@types/pg@8.15.5)(bun-types@1.2.23(@types/react@19.1.12))(pg@8.16.3):
     optionalDependencies:
       '@types/pg': 8.15.5
-      bun-types: 1.2.21(@types/react@19.1.12)
+      bun-types: 1.2.23(@types/react@19.1.12)
       pg: 8.16.3
 
   dunder-proto@1.0.1:
