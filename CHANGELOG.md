@@ -1,5 +1,19 @@
 # Changelog
 
+### 01-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix:** message filters aborting without any valid reason    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 28-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.12.9 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 28-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix(arguments):** interaction arguments with uppercased params could not be parsed    
