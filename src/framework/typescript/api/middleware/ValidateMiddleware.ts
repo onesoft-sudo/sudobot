@@ -34,6 +34,12 @@ export default async function ValidateMiddleware(
         next();
     } catch (error) {
         Application.current().logger.error(error);
-        response.status(400).json(error instanceof ZodError ? { ...error, stack: undefined } : { error: `${error}` });
+        response
+            .status(400)
+            .json(
+                error instanceof ZodError
+                    ? { message: "Validation error", issues: error.issues }
+                    : { error: "Unknown error occurred" }
+            );
     }
 }
