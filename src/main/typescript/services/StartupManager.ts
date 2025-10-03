@@ -235,18 +235,20 @@ class StartupManager extends Service implements HasEventListeners {
     }
 
     private setupErrorHandlers() {
-        process.on("unhandledRejection", (reason: unknown) => {
+        process.on("unhandledRejection", reason => {
             process.removeAllListeners("unhandledRejection");
             this.application.logger.error(reason);
             this.sendErrorLog(
                 `Unhandled promise rejection: ${
-                    typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
-                        ? escapeCodeBlock(
-                              (reason as string | undefined)?.toString
-                                  ? (reason as string).toString()
-                                  : (reason as string)
-                          )
-                        : (reason as string)
+                    reason instanceof Error
+                        ? "\n" + reason.stack
+                        : typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
+                          ? escapeCodeBlock(
+                                (reason as string | undefined)?.toString
+                                    ? (reason as string).toString()
+                                    : (reason as string)
+                            )
+                          : (reason as string)
                 }`
             )
                 .catch(noOperation)
