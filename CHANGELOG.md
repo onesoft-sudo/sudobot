@@ -7,6 +7,11 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
       
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix:** hide stack trace    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **feat:** error stack reporting for promise rejections    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -14,6 +19,10 @@
 
 ### 03-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.13.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.13.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
