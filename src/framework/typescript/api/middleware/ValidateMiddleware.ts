@@ -18,7 +18,7 @@
  */
 
 import type { NextFunction, Response } from "express";
-import type { ZodSchema } from "zod";
+import { ZodError, type ZodSchema } from "zod";
 import Application from "../../app/Application";
 import type Request from "../http/Request";
 
@@ -32,8 +32,8 @@ export default async function ValidateMiddleware(
         const parsedBody = (await schema.parseAsync(request.body)) as Record<string, string>;
         request.parsedBody = parsedBody;
         next();
-    } catch (e) {
-        Application.current().logger.error(e);
-        response.status(400).json(e);
+    } catch (error) {
+        Application.current().logger.error(error);
+        response.status(400).json(error instanceof ZodError ? { ...error, stack: undefined } : { error: `${error}` });
     }
 }
