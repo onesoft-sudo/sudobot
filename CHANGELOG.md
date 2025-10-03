@@ -1,10 +1,185 @@
 # Changelog
 
+### 03-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat:** error stack reporting for promise rejections    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
 ### 01-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **deps(dev):** Bump typescript from 5.8.3 to 5.9.3    
+      
+      
+  * **docs:** revise privacy policy and update contact details    
+      
+    Updated privacy policy with new contact information and data collection details.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **docs:** revise terms of service with updated date and eligibility    
+      
+    Updated the last updated date and modified server eligibility restrictions.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+  * **ci:** Bump codecov/codecov-action from 5.5.0 to 5.5.1    
+      
+      
+  * **ci:** Bump actions/setup-node from 4 to 5    
+      
+      
+  * **ci:** Bump actions/labeler from 5 to 6    
+      
+      
+  * **deps(dev):** Bump @eslint/js from 9.35.0 to 9.36.0    
+      
+      
+  * **deps:** Bump undici from 7.15.0 to 7.16.0    
+      
+      
+  * **deps(dev):** Bump @types/bun from 1.2.21 to 1.2.23    
+      
+      
+  * **deps:** Bump pm2 from 6.0.10 to 6.0.13    
+      
+      
   * **fix:** message filters aborting without any valid reason    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 01-10-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps(dev):** Bump typescript from 5.8.3 to 5.9.3    
+      
+    **Bumps [typescript](https:** //github.com/microsoft/TypeScript) from 5.8.3 to 5.9.3.  
+    **- [Release notes](https:** //github.com/microsoft/TypeScript/releases)  
+    **- [Changelog](https:** //github.com/microsoft/TypeScript/blob/main/azure-pipelines.release-publish.yml)  
+    **- [Commits](https:** //github.com/microsoft/TypeScript/compare/v5.8.3...v5.9.3)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  typescript  
+    **  dependency-version:**  5.9.3  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-minor  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps:** Bump undici from 7.15.0 to 7.16.0    
+      
+    **Bumps [undici](https:** //github.com/nodejs/undici) from 7.15.0 to 7.16.0.  
+    **- [Release notes](https:** //github.com/nodejs/undici/releases)  
+    **- [Commits](https:** //github.com/nodejs/undici/compare/v7.15.0...v7.16.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  undici  
+    **  dependency-version:**  7.16.0  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-minor  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** Bump actions/labeler from 5 to 6    
+      
+    **Bumps [actions/labeler](https:** //github.com/actions/labeler) from 5 to 6.  
+    **- [Release notes](https:** //github.com/actions/labeler/releases)  
+    **- [Commits](https:** //github.com/actions/labeler/compare/v5...v6)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  actions/labeler  
+    **  dependency-version:**  '6'  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps(dev):** Bump @eslint/js from 9.35.0 to 9.36.0    
+      
+    **Bumps [@eslint/js](https:** //github.com/eslint/eslint/tree/HEAD/packages/js) from 9.35.0 to 9.36.0.  
+    **- [Release notes](https:** //github.com/eslint/eslint/releases)  
+    **- [Changelog](https:** //github.com/eslint/eslint/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/eslint/eslint/commits/v9.36.0/packages/js)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@eslint/js"  
+    **  dependency-version:**  9.36.0  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-minor  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** Bump actions/setup-node from 4 to 5    
+      
+    **Bumps [actions/setup-node](https:** //github.com/actions/setup-node) from 4 to 5.  
+    **- [Release notes](https:** //github.com/actions/setup-node/releases)  
+    **- [Commits](https:** //github.com/actions/setup-node/compare/v4...v5)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  actions/setup-node  
+    **  dependency-version:**  '5'  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** Bump codecov/codecov-action from 5.5.0 to 5.5.1    
+      
+    **Bumps [codecov/codecov-action](https:** //github.com/codecov/codecov-action) from 5.5.0 to 5.5.1.  
+    **- [Release notes](https:** //github.com/codecov/codecov-action/releases)  
+    **- [Changelog](https:** //github.com/codecov/codecov-action/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/codecov/codecov-action/compare/v5.5.0...v5.5.1)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  codecov/codecov-action  
+    **  dependency-version:**  5.5.1  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps(dev):** Bump @types/bun from 1.2.21 to 1.2.23    
+      
+    **Bumps [@types/bun](https:** //github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/bun) from 1.2.21 to 1.2.23.  
+    **- [Release notes](https:** //github.com/DefinitelyTyped/DefinitelyTyped/releases)  
+    **- [Commits](https:** //github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/bun)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@types/bun"  
+    **  dependency-version:**  1.2.23  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps:** Bump pm2 from 6.0.10 to 6.0.13    
+      
+    **Bumps [pm2](https:** //github.com/Unitech/pm2) from 6.0.10 to 6.0.13.  
+    **- [Release notes](https:** //github.com/Unitech/pm2/releases)  
+    **- [Changelog](https:** //github.com/Unitech/pm2/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/Unitech/pm2/compare/v6.0.10...v6.0.13)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  pm2  
+    **  dependency-version:**  6.0.13  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 01-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.12.10 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 28-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
