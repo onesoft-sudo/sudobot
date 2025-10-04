@@ -20,6 +20,7 @@
 import FileSystem from "@framework/polyfills/FileSystem";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { isDiscordAPIError } from "@framework/utils/errors";
 import { noOperation } from "@framework/utils/utils";
 import { emoji } from "@main/utils/emoji";
 import { version } from "@root/package.json";
@@ -234,21 +235,28 @@ class StartupManager extends Service implements HasEventListeners {
             .catch(this.application.logger.error);
     }
 
+    private errorToString(error: Error): string {
+        return `${error.stack}${"code" in error ? `\nCode: ${error.code}` : ""}${error ? `\nCaused by: ${error.cause instanceof Error ? this.errorToString(error.cause) : `${error.cause}`}` : ""}`;
+    }
+
     private setupErrorHandlers() {
         process.on("unhandledRejection", reason => {
             process.removeAllListeners("unhandledRejection");
             this.application.logger.error(reason);
             this.sendErrorLog(
-                `Unhandled promise rejection: ${
-                    reason instanceof Error
-                        ? "\n" + reason.stack
-                        : typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
-                          ? escapeCodeBlock(
-                                (reason as string | undefined)?.toString
-                                    ? (reason as string).toString()
-                                    : (reason as string)
-                            )
-                          : (reason as string)
+                `Unhandled promise rejection:\n${
+                    isDiscordAPIError(reason)
+                        ? `Method: ${reason.method}\nEndpoint: ${reason.url}\nStatus: ${reason.status}\n` +
+                          this.errorToString(reason)
+                        : reason instanceof Error
+                          ? this.errorToString(reason)
+                          : typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
+                            ? escapeCodeBlock(
+                                  (reason as string | undefined)?.toString
+                                      ? (reason as string).toString()
+                                      : (reason as string)
+                              )
+                            : (reason as string)
                 }`
             )
                 .catch(noOperation)
