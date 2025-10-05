@@ -1,5 +1,18 @@
 # Changelog
 
+### 05-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat(welcomer):** new welcome messages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 04-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.13.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 04-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix:** report metadata along with errors to error webhook    
