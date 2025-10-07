@@ -144,7 +144,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly deprecated: boolean = false;
 
     /**
-     * The cooldown of the command in milliseconds.
+     * The cooldown timeframe of the command in milliseconds.
      */
     public readonly cooldown?: number;
 
