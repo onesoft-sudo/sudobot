@@ -1,5 +1,39 @@
 # Changelog
 
+### 07-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat:** add a command to request data deletion    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat(framework):** add fetchGuild() helper function    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **style:** proper docs    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat(commands):** direct message command support    
+      
+    *** introduce new boolean command class property:**  'supportsDirectMessages'  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 06-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **chore:** update genchangelog    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 05-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.14.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 05-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **feat(welcomer):** new welcome messages    
