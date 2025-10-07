@@ -159,6 +159,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly disabled: boolean = false;
 
     /**
+     * Whether the command supports DM mode.
+     */
+    public readonly supportsDirectMessages: boolean = false;
+
+    /**
      * The required permissions for the member running this command.
      * Can be modified or removed by the permission manager.
      */

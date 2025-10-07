@@ -408,6 +408,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return false;
         }
 
+        if (!command.supportsDirectMessages && !interaction.inGuild()) {
+            return false;
+        }
+
         const context = new InteractionContext(
             commandName,
             interaction as ChatInputCommandInteraction | ContextMenuCommandInteraction
