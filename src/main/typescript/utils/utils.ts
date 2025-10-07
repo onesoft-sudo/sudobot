@@ -17,10 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { fetchGuild } from "@framework/utils/entities";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import type {
     Channel,
+    Client,
     GuildBasedChannel,
     GuildMember,
     PermissionOverwrites,
@@ -37,10 +39,7 @@ export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
 }
 
-export function pick<T, K extends Array<keyof T>>(
-    object: T,
-    keys: K
-): Pick<T, K extends Array<infer E> ? E : never> {
+export function pick<T, K extends Array<keyof T>>(object: T, keys: K): Pick<T, K extends Array<infer E> ? E : never> {
     if (typeof object === "object" && object !== null) {
         const picked: Partial<T> = {};
 
@@ -99,9 +98,7 @@ export function getPermissionNames(permissionsBit: bigint) {
     const result = [];
     const permissions = new PermissionsBitField(permissionsBit);
 
-    for (const permission of Object.keys(
-        PermissionsBitField.Flags
-    ) as (keyof typeof PermissionsBitField.Flags)[]) {
+    for (const permission of Object.keys(PermissionsBitField.Flags) as (keyof typeof PermissionsBitField.Flags)[]) {
         if (permissions.has(PermissionsBitField.Flags[permission])) {
             result.push(permission);
         }
@@ -160,11 +157,7 @@ export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
-export function safeMessageContent(
-    content: string,
-    member: GuildMember,
-    channel?: TextBasedChannel
-) {
+export function safeMessageContent(content: string, member: GuildMember, channel?: TextBasedChannel) {
     return member.permissions.has("MentionEveryone") &&
         (!channel || member.permissionsIn(channel as TextChannel).has("MentionEveryone"))
         ? content
@@ -172,10 +165,7 @@ export function safeMessageContent(
               .replaceAll(/@everyone/gi, "`@everyone`")
               .replaceAll(/@here/gi, "`@here`")
               .replaceAll(`<@&${member.guild.id}>`, "`@everyone`")
-              .replace(
-                  /<@&(\d+)>/gim,
-                  (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`
-              );
+              .replace(/<@&(\d+)>/gim, (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`);
 }
 
 export function assertUnreachable(_value: never): never {
@@ -192,4 +182,12 @@ export async function request<D = unknown>(options: AxiosRequestConfig<D>) {
     } catch (error) {
         return [null, error] as const;
     }
+}
+
+export function getHomeGuild(client: Client) {
+    if (!process.env.HOME_GUILD_ID) {
+        return null;
+    }
+
+    return fetchGuild(client, process.env.HOME_GUILD_ID);
 }
