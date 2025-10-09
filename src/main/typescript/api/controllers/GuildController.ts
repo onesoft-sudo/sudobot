@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { APIErrorCode } from "@api/APIErrorCode";
 import { Action } from "@framework/api/decorators/Action";
 import { EnableGuildAccessControl } from "@framework/api/decorators/EnableGuildAccessControl";
 import { RequireAuth } from "@framework/api/decorators/RequireAuth";
 import Controller from "@framework/api/http/Controller";
 import type Request from "@framework/api/http/Request";
-import { APIErrorCode } from "@main/types/APIErrorCode";
 
 class GuildController extends Controller {
     @Action("GET", "/guilds/:guild")

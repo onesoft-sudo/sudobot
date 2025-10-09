@@ -1,0 +1,34 @@
+name: Publish packages
+
+on:
+  push:
+    tags: v*
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: cd src/api/typescript && npm ci
+
+      - name: Run tests
+        run: cd src/api/typescript && npm test
+
+      - name: Publish
+        run: cd src/api/typescript && npm publish --provenance --ignore-scripts

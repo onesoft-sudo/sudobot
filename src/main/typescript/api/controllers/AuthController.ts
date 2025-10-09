@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { APIErrorCode } from "@api/APIErrorCode";
 import { Action } from "@framework/api/decorators/Action";
 import { Validate } from "@framework/api/decorators/Validate";
 import Controller from "@framework/api/http/Controller";
@@ -27,7 +28,6 @@ import { fetchUser } from "@framework/utils/entities";
 import { getEnvData } from "@main/env/env";
 import { users } from "@main/models/User";
 import AuthService from "@main/services/AuthService";
-import { APIErrorCode } from "@main/types/APIErrorCode";
 import { APIGuild, User } from "discord.js";
 import { eq } from "drizzle-orm";
 import undici from "undici";
@@ -68,8 +68,7 @@ class AuthController extends Controller {
 
         const { user } = result;
         const discordUser =
-            this.linkedUserCache.get(user.id) ??
-            (await fetchUser(this.application.client, user.discordId));
+            this.linkedUserCache.get(user.id) ?? (await fetchUser(this.application.client, user.discordId));
 
         if (!discordUser) {
             return new Response({
@@ -188,9 +187,7 @@ class AuthController extends Controller {
 
             const avatarURL = `https://cdn.discordapp.com/avatars/${encodeURIComponent(
                 userData.id
-            )}/${encodeURIComponent(userData.avatar)}.${
-                userData.avatar.startsWith("a_") ? "gif" : "webp"
-            }?size=512`;
+            )}/${encodeURIComponent(userData.avatar)}.${userData.avatar.startsWith("a_") ? "gif" : "webp"}?size=512`;
 
             const user = await this.application.database.query.users.findFirst({
                 where: eq(users.discordId, userData.id)

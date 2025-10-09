@@ -29,6 +29,7 @@
             "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
+            "@api/*": ["./src/api/typescript/*"],
             "@root/*": ["./*"],
             "*": ["./*"]
         }

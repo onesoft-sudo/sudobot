@@ -17,15 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { APIErrorCode } from "@main/types/APIErrorCode";
+import { APIErrorCode } from "@api/APIErrorCode";
 import type { NextFunction, Response } from "express";
 import type Request from "../http/Request";
 
-export default function GuildAccessControl(
-    request: Request,
-    response: Response,
-    next: NextFunction
-) {
+export default function GuildAccessControl(request: Request, response: Response, next: NextFunction) {
     if (!request.params.guild) {
         response.status(401).send({
             error: "Cannot authorize access without a Guild ID.",
