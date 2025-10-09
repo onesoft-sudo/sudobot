@@ -1,4 +1,4 @@
 export * from "./APIErrorCode";
-export * from "./APIEndpoint";
+export * from "./APIEndpoints";
 
 export const API_VERSION = 1;
