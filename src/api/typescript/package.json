@@ -44,7 +44,9 @@
         "test": "true",
         "build": "tsc"
     },
-    "dependencies": {
-        "typescript": "^5"
+    "devDependencies": {
+        "@types/bun": "^1.2.23",
+        "@types/node": "^24.3.1",
+        "typescript": "^5.9.3"
     }
 }
