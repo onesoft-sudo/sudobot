@@ -3,6 +3,8 @@ name: Publish packages
 on:
   push:
     tags: v*
+    paths: src/api
+  workflow_call:
 
 permissions:
   id-token: write
@@ -31,4 +33,4 @@ jobs:
         run: cd src/api/typescript && npm test
 
       - name: Publish
-        run: cd src/api/typescript && npm publish --provenance --ignore-scripts
+        run: cd src/api/typescript && npm publish --provenance --ignore-scripts || true

@@ -27,26 +27,26 @@ jobs:
         with:
           node-version: 24.x
 
-#      - name: Install Programs, Libraries and Tools (Linux)
-#        run: |
-#          sudo apt update;
-#          sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
-#        if: matrix.os == 'ubuntu-latest'
+      #      - name: Install Programs, Libraries and Tools (Linux)
+      #        run: |
+      #          sudo apt update;
+      #          sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
+      #        if: matrix.os == 'ubuntu-latest'
 
-#      - name: Install Programs, Libraries and Tools (macOS)
-#        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
-#        if: matrix.os == 'macos-latest'
+      #      - name: Install Programs, Libraries and Tools (macOS)
+      #        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
+      #        if: matrix.os == 'macos-latest'
 
-#      - name: "Install Native Libraries"
-#        run: |
-#          git clone https://github.com/Cogmasters/concord;
-#          cd concord;
-#          make;
-#          sudo make install;
-#          cd ..;
+      #      - name: "Install Native Libraries"
+      #        run: |
+      #          git clone https://github.com/Cogmasters/concord;
+      #          cd concord;
+      #          make;
+      #          sudo make install;
+      #          cd ..;
 
-#      - name: "Build Native Libraries with GNU Make"
-#        run: make
+      #      - name: "Build Native Libraries with GNU Make"
+      #        run: make
 
       - name: "Build with BlazeBuild"
         run: ./blazew build
@@ -171,6 +171,11 @@ jobs:
             ./sudobot-release-darwin.tar.gz
             ${{ steps.linux_package.outputs.files }}
 
+  publish:
+    needs: [build, release]
+    if: github.repository_owner == 'onesoft-sudo'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
 #  deploy-staging:
 #    needs: [build, release]
 #    if: github.repository_owner == 'onesoft-sudo'
