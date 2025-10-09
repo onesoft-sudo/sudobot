@@ -41,7 +41,8 @@ body:
       description: What version of SudoBot are you running?
       options:
         - 10.x (LTS)
-      default: 0
+        - 11.x (Latest)
+      default: 1
     validations:
       required: true
   - type: dropdown
@@ -81,8 +82,7 @@ body:
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com).
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
-
