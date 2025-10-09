@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "src/api/**"
+      - ".github/workflows/publish.yml"
 
 permissions:
   id-token: write
@@ -26,7 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: cd src/api/typescript && npm ci
+        run: cd src/api/typescript && npm install
 
       - name: Run tests
         run: cd src/api/typescript && npm test
