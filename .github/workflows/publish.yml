@@ -3,7 +3,8 @@ name: Publish packages
 on:
   push:
     tags: v*
-    paths: src/api
+    paths:
+      - "src/api/**"
   workflow_call:
 
 permissions:
