@@ -41,7 +41,10 @@
         "tsconfig.json"
     ],
     "scripts": {
-        "test": "true"
+        "test": "true",
+        "build": "tsc"
     },
-    "dependencies": {}
+    "dependencies": {
+        "typescript": "^5"
+    }
 }
