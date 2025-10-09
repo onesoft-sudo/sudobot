@@ -1,5 +1,19 @@
 # Changelog
 
+### 09-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat:** add @onesoftnet/sudobot-api package    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 07-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.17.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 07-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **feat:** add a command to request data deletion    
