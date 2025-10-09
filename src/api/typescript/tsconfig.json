@@ -10,7 +10,6 @@
         "outDir": "./js",
         "importHelpers": true,
         "newLine": "lf",
-        "noEmitHelpers": true,
         "noEmitOnError": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -18,8 +17,6 @@
         "strict": true,
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "noImplicitOverride": true,
         "importsNotUsedAsValues": "remove",
         "sourceMap": true
