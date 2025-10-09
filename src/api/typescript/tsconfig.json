@@ -8,7 +8,6 @@
         "resolveJsonModule": true,
         "declaration": true,
         "outDir": "./js",
-        "importHelpers": true,
         "newLine": "lf",
         "noEmitOnError": true,
         "allowSyntheticDefaultImports": true,
