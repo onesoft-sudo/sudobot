@@ -179,9 +179,7 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
             }
 
             if (value < 0) {
-                throw new DurationParseError(
-                    "Negative numbers are not allowed in duration expressions"
-                );
+                throw new DurationParseError("Negative numbers are not allowed in duration expressions");
             }
 
             let unit = "";
@@ -296,21 +294,18 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return Date.now() - this.toMilliseconds();
     }
 
-    
     public format(): string {
         let formatted = formatDuration(this);
 
         if (this.milliseconds) {
-            formatted += ` ${this.milliseconds} milliseconds`;
+            formatted += `${formatted ? " " : ""}${this.milliseconds} millisecond${this.milliseconds === 1 ? "" : "s"}`;
         }
 
         return formatted;
     }
 
-    
     public formatForDiscord(): `<t:${bigint}>`;
 
-    
     public formatForDiscord<S extends TimestampStylesString>(style: S): `<t:${bigint}:${S}>`;
 
     public formatForDiscord<S extends TimestampStylesString>(style?: S) {
@@ -321,19 +316,16 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return time(this.fromNow(), style);
     }
 
-    
     @Override
     public toString() {
         return this.format();
     }
 
-    
     @Override
     public toJSON(): number {
         return this.toMilliseconds();
     }
 
-    
     public [Symbol.toPrimitive](hint: "string" | "number" | "default") {
         if (hint === "number") {
             return this.toMilliseconds();

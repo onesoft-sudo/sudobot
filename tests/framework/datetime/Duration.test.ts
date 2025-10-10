@@ -51,14 +51,7 @@ describe("Duration", () => {
             });
 
             expect(duration.toJSON()).toBe(
-                1 * 31536000000 +
-                    2 * 2592000000 +
-                    3 * 604800000 +
-                    4 * 86400000 +
-                    5 * 3600000 +
-                    6 * 60000 +
-                    7 * 1000 +
-                    8
+                1 * 31536000000 + 2 * 2592000000 + 3 * 604800000 + 4 * 86400000 + 5 * 3600000 + 6 * 60000 + 7 * 1000 + 8
             );
         });
     });
@@ -89,9 +82,7 @@ describe("Duration", () => {
                 seconds: 7,
                 milliseconds: 8
             });
-            expect(duration.toString()).toBe(
-                "1 year 4 days 5 hours 6 minutes 7 seconds 8 milliseconds"
-            );
+            expect(duration.toString()).toBe("1 year 4 days 5 hours 6 minutes 7 seconds 8 milliseconds");
         });
     });
 
@@ -108,9 +99,7 @@ describe("Duration", () => {
                 milliseconds: 8
             });
 
-            expect(String(duration)).toBe(
-                "1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds 8 milliseconds"
-            );
+            expect(String(duration)).toBe("1 year 2 months 3 weeks 4 days 5 hours 6 minutes 7 seconds 8 milliseconds");
         });
 
         it("should return the duration as a number", () => {
@@ -126,14 +115,7 @@ describe("Duration", () => {
             });
 
             expect(+duration).toBe(
-                1 * 31536000000 +
-                    2 * 2592000000 +
-                    3 * 604800000 +
-                    4 * 86400000 +
-                    5 * 3600000 +
-                    6 * 60000 +
-                    7 * 1000 +
-                    8
+                1 * 31536000000 + 2 * 2592000000 + 3 * 604800000 + 4 * 86400000 + 5 * 3600000 + 6 * 60000 + 7 * 1000 + 8
             );
         });
     });
@@ -152,14 +134,7 @@ describe("Duration", () => {
             });
 
             expect(duration.toMilliseconds()).toBe(
-                1 * 31536000000 +
-                    2 * 2592000000 +
-                    3 * 604800000 +
-                    4 * 86400000 +
-                    5 * 3600000 +
-                    6 * 60000 +
-                    7 * 1000 +
-                    8
+                1 * 31536000000 + 2 * 2592000000 + 3 * 604800000 + 4 * 86400000 + 5 * 3600000 + 6 * 60000 + 7 * 1000 + 8
             );
         });
     });
@@ -189,6 +164,22 @@ describe("Duration", () => {
                     milliseconds: 0
                 })
             );
+        });
+    });
+
+    describe("fromMilliseconds", () => {
+        it("should create a Duration object from milliseconds correctly", () => {
+            const timestamp1 = Date.now();
+            const timestamp2 = timestamp1 + 5000;
+            const duration = Duration.fromMilliseconds(timestamp2 - timestamp1);
+            expect(duration.toString()).toBe("5 seconds");
+        });
+
+        it("should correctly pluralize units when needed", () => {
+            const duration1 = Duration.fromMilliseconds(1);
+            const duration2 = Duration.fromMilliseconds(2);
+            expect(duration1.toString()).toBe("1 millisecond");
+            expect(duration2.toString()).toBe("2 milliseconds");
         });
     });
 });
