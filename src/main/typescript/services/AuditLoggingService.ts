@@ -43,6 +43,8 @@ import {
     LogMemberMuteRemovePayload,
     LogMemberNicknameModificationPayload,
     LogMemberRoleModificationPayload,
+    LogMemberTimeoutAddPayload,
+    LogMemberTimeoutRemovePayload,
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
     LogMessageReactionClearPayload,
@@ -119,6 +121,8 @@ class AuditLoggingService extends Service {
         [LogEventType.GuildMemberKick]: this.logGuildMemberKick,
         [LogEventType.MemberMuteAdd]: this.logMemberMute,
         [LogEventType.MemberMuteRemove]: this.logMemberUnmute,
+        [LogEventType.MemberTimeoutAdd]: this.logMemberTimeoutAdd,
+        [LogEventType.MemberTimeoutRemove]: this.logMemberTimeoutRemove,
         [LogEventType.MemberWarningAdd]: this.logMemberWarn,
         [LogEventType.MemberModeratorMessageAdd]: this.logMemberModMessageAdd,
         [LogEventType.UserNoteAdd]: this.logUserNoteAdd,
@@ -1698,6 +1702,119 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberMuteRemove
+        });
+    }
+
+    private async logMemberTimeoutAdd({ guild, member, moderator, infractionId, reason, duration }: LogMemberTimeoutAddPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            }
+        ];
+
+        if (duration) {
+            fields.push({
+                name: "Duration",
+                value: duration.toString()
+            });
+        }
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        fields.push({
+            name: "Reason",
+            value: reason ?? italic("No reason provided")
+        });
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Timed Out",
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Timed out"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberTimeoutAdd
+        });
+    }
+
+    private async logMemberTimeoutRemove({ guild, member, moderator, infractionId, reason }: LogMemberTimeoutRemovePayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        fields.push({
+            name: "Reason",
+            value: reason ?? italic("No reason provided")
+        });
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Timeout Removed",
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Removed"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberTimeoutRemove
         });
     }
 

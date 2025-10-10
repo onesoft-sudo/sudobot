@@ -52,6 +52,8 @@ export enum LogEventType {
     GuildMemberKick = "guild_member_kick",
     MemberMuteAdd = "member_mute_add",
     MemberMuteRemove = "member_mute_remove",
+    MemberTimeoutAdd = "member_timeout_add",
+    MemberTimeoutRemove = "member_timeout_remove",
     MemberWarningAdd = "member_warning_add",
     MemberModeratorMessageAdd = "member_mod_message_add",
     UserNoteAdd = "user_note_add",
@@ -93,6 +95,8 @@ export type LogEventArgs = {
     [LogEventType.GuildMemberKick]: [payload: LogMemberKickPayload];
     [LogEventType.MemberMuteAdd]: [payload: LogMemberMuteAddPayload];
     [LogEventType.MemberMuteRemove]: [payload: LogMemberMuteRemovePayload];
+    [LogEventType.MemberTimeoutAdd]: [payload: LogMemberTimeoutAddPayload];
+    [LogEventType.MemberTimeoutRemove]: [payload: LogMemberTimeoutRemovePayload];
     [LogEventType.MemberWarningAdd]: [payload: LogMemberWarningAddPayload];
     [LogEventType.MemberModeratorMessageAdd]: [payload: LogMemberModMessageAddPayload];
     [LogEventType.UserNoteAdd]: [payload: LogUserNoteAddPayload];
@@ -153,7 +157,7 @@ export type LogRaidAlertPayload = {
 
 type LogModerationActionCommonPayload = {
     guild: Guild;
-    moderator: User;
+    moderator: User | PartialUser;
     reason?: string;
 };
 
@@ -185,6 +189,15 @@ export type LogMemberMuteRemovePayload = LogModerationActionCommonPayload & {
 
 export type LogMemberMuteAddPayload = LogMemberMuteRemovePayload & {
     duration?: Duration;
+};
+
+export type LogMemberTimeoutRemovePayload = LogModerationActionCommonPayload & {
+    member: GuildMember;
+    infractionId?: number;
+};
+
+export type LogMemberTimeoutAddPayload = LogMemberTimeoutRemovePayload & {
+    duration: Duration;
 };
 
 export type LogMessageBulkDeletePayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {

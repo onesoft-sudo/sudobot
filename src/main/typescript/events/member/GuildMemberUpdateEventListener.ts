@@ -18,6 +18,7 @@
  */
 
 import { Inject } from "@framework/container/Inject";
+import Duration from "@framework/datetime/Duration";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { LogEventType } from "@main/schemas/LoggingSchema";
@@ -31,47 +32,83 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
     protected readonly auditLoggingService!: AuditLoggingService;
 
     public override execute(oldMember: GuildMember, newMember: GuildMember) {
-        if (oldMember.nickname === newMember.nickname) {
-            return;
-        }
+        if (
+            oldMember.nickname !== newMember.nickname ||
+            oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp
+        ) {
+            setTimeout(async () => {
+                const logs = await newMember.guild.fetchAuditLogs({
+                    type: AuditLogEvent.MemberUpdate,
+                    limit: 1
+                });
 
-        setTimeout(async () => {
-            const logs = await newMember.guild.fetchAuditLogs({
-                type: AuditLogEvent.MemberUpdate,
-                limit: 1
-            });
+                const log = logs.entries.first();
 
-            const log = logs.entries.first();
-
-            if (!log) {
-                return;
-            }
-
-            if (log.createdTimestamp < Date.now() - 5000) {
-                return;
-            }
-
-            const executor = log.executor;
-
-            if (executor && executor.id === this.client.user?.id) {
-                return;
-            }
-
-            await this.auditLoggingService.emitLogEvent(
-                newMember.guild.id,
-                LogEventType.MemberNicknameModification,
-                {
-                    member: newMember,
-                    oldNickname: oldMember.nickname,
-                    newNickname: newMember.nickname,
-                    guild: newMember.guild,
-                    moderator:
-                        executor && executor.id === newMember.id
-                            ? undefined
-                            : (executor ?? undefined)
+                if (!log) {
+                    return;
                 }
-            );
-        }, 2500);
+
+                if (log.createdTimestamp < Date.now() - 5000) {
+                    return;
+                }
+
+                const executor = log.executor;
+
+                if (executor && executor.id === this.client.user?.id) {
+                    return;
+                }
+
+                const moderator = executor && executor.id === newMember.id ? undefined : (executor ?? undefined);
+
+                if (oldMember.nickname !== newMember.nickname) {
+                    await this.auditLoggingService.emitLogEvent(
+                        newMember.guild.id,
+                        LogEventType.MemberNicknameModification,
+                        {
+                            member: newMember,
+                            oldNickname: oldMember.nickname,
+                            newNickname: newMember.nickname,
+                            guild: newMember.guild,
+                            moderator
+                        }
+                    );
+                }
+
+                if (
+                    oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp &&
+                    moderator
+                ) {
+                    const added =
+                        oldMember.communicationDisabledUntilTimestamp === null &&
+                        newMember.communicationDisabledUntilTimestamp !== null;
+
+                    if (added) {
+                        await this.auditLoggingService.emitLogEvent(newMember.guild.id, LogEventType.MemberTimeoutAdd, {
+                            member: newMember,
+                            guild: newMember.guild,
+                            moderator,
+                            reason: log.reason ?? undefined,
+                            duration: Duration.fromMilliseconds(
+                                Math.round(
+                                    ((newMember.communicationDisabledUntilTimestamp ?? 0) - log.createdTimestamp) / 1000
+                                ) * 1000
+                            )
+                        });
+                    } else {
+                        await this.auditLoggingService.emitLogEvent(
+                            newMember.guild.id,
+                            LogEventType.MemberTimeoutRemove,
+                            {
+                                member: newMember,
+                                guild: newMember.guild,
+                                moderator,
+                                reason: log.reason ?? undefined
+                            }
+                        );
+                    }
+                }
+            }, 2500);
+        }
     }
 }
 
