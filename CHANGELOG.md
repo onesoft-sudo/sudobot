@@ -2,6 +2,14 @@
 
 ### 10-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **refactor:** use the new API types    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat(sudobot-api):** auth endpoint types    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **fix(framework):** duration toString pluralization issue with ms units    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -9,6 +17,13 @@
   * **feat:** restore timeout logging    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 10-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.20.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 09-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
