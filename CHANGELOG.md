@@ -1,5 +1,31 @@
 # Changelog
 
+### 10-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix(framework):** duration toString pluralization issue with ms units    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat:** restore timeout logging    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 09-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.19.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.19.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.18.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 09-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **release(sudobot-api):** v1.1.1    
@@ -61,17 +87,6 @@
   * **feat:** add @onesoftnet/sudobot-api package    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-
-### 09-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.19.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v11.18.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 07-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
