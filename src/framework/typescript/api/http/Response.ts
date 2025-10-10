@@ -30,7 +30,7 @@ export default class Response<T = unknown> {
     public body: T;
     public headers: Record<string, string | number>;
 
-    public constructor({ status, body, headers }: CreateResponseOptions) {
+    public constructor({ status, body, headers }: CreateResponseOptions<T>) {
         this.status = status ?? 200;
         this.body = (body ?? "") as T;
         this.headers = headers ?? {};
@@ -39,7 +39,9 @@ export default class Response<T = unknown> {
     public send(response: ExpressResponse) {
         const tmp = response.status(this.status);
 
-        for (const header in this.headers) tmp.header(header, this.headers[header].toString());
+        for (const header in this.headers) {
+            tmp.header(header, this.headers[header].toString());
+        }
 
         tmp.send(this.body);
     }

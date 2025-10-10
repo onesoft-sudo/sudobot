@@ -18,6 +18,7 @@
  */
 
 import { APIErrorCode } from "@api/APIErrorCode";
+import { AuthResponse } from "@api/index";
 import { Action } from "@framework/api/decorators/Action";
 import { Validate } from "@framework/api/decorators/Validate";
 import Controller from "@framework/api/http/Controller";
@@ -56,7 +57,7 @@ class AuthController extends Controller {
         });
 
         if (!result.success) {
-            return new Response({
+            return new Response<AuthResponse>({
                 status: 400,
                 body: {
                     success: false,
@@ -71,7 +72,7 @@ class AuthController extends Controller {
             this.linkedUserCache.get(user.id) ?? (await fetchUser(this.application.client, user.discordId));
 
         if (!discordUser) {
-            return new Response({
+            return new Response<AuthResponse>({
                 status: 403,
                 body: {
                     success: false,
@@ -111,12 +112,13 @@ class AuthController extends Controller {
                 name: user.name ?? undefined,
                 username: user.username,
                 discordId: user.discordId,
-                avatar: discordUser.displayAvatarURL()
+                avatar: discordUser.avatar,
+                avatarURL: discordUser.displayAvatarURL()
             },
-            token: user.token,
-            expires: user.tokenExpiresAt?.getTime(),
+            token: user.token || "",
+            expires: user.tokenExpiresAt?.getTime() ?? Date.now(),
             guilds
-        };
+        } satisfies AuthResponse;
     }
 
     @Action("POST", "/challenge/auth/discord")
@@ -129,9 +131,9 @@ class AuthController extends Controller {
         const { code } = request.parsedBody ?? ({} as Record<string, string>);
 
         if (!code) {
-            return new Response({
+            return new Response<AuthResponse>({
                 status: 400,
-                body: { error: "Invalid request", code: APIErrorCode.InvalidCredentials }
+                body: { message: "Invalid request", code: APIErrorCode.InvalidCredentials, success: false }
             });
         }
 
@@ -194,10 +196,10 @@ class AuthController extends Controller {
             });
 
             if (!user) {
-                return new Response({
+                return new Response<AuthResponse>({
                     status: 400,
                     body: {
-                        error: "We're unable to log you in.",
+                        message: "We're unable to log you in.",
                         code: APIErrorCode.InvalidCredentials,
                         success: false
                     }
@@ -224,20 +226,21 @@ class AuthController extends Controller {
                     name: user.name ?? undefined,
                     username: user.username,
                     discordId: user.discordId,
-                    avatar: avatarURL
+                    avatar: userData.avatar,
+                    avatarURL
                 },
                 token,
-                expires: user.tokenExpiresAt?.getTime(),
+                expires: user.tokenExpiresAt?.getTime() ?? Date.now(),
                 guilds
-            };
+            } satisfies AuthResponse;
         } catch (error) {
             this.application.logger.error(error);
         }
 
-        return new Response({
+        return new Response<AuthResponse>({
             status: 403,
             body: {
-                error: "We're unable to log you in.",
+                message: "We're unable to log you in.",
                 code: APIErrorCode.InvalidCredentials,
                 success: false
             }
