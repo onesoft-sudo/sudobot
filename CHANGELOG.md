@@ -2,6 +2,15 @@
 
 ### 10-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix(sudobot-api):** publishing issues    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **release(sudobot-api):** v1.2.0    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **refactor:** use the new API types    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -21,6 +30,10 @@
 
 ### 10-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.21.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.20.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
