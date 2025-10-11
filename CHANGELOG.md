@@ -2,6 +2,15 @@
 
 ### 11-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **feat(sudobot-api):** add discord auth endpoint    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore:** refactor pull request template for clarity    
+      
+    Removed introductory text and streamlined the pull request template for SudoBot.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
   * **fix:** random crashes due to promise rejection    
       
     This happens due to calling fetchAuditLogs() without handling errors.  
@@ -20,6 +29,10 @@
 
 ### 11-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.21.5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.21.3 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
