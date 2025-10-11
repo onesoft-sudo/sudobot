@@ -2,6 +2,14 @@
 
 ### 11-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix:** random crashes due to promise rejection    
+      
+    This happens due to calling fetchAuditLogs() without handling errors.  
+    This commit adds try-catch around the calls to fix it.  
+    **Closes:**  #371  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **fix:** type errors    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -9,6 +17,13 @@
   * **fix:** ensure an infraction is created when a member is timed out    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 11-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.21.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
 
 ### 10-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
