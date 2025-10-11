@@ -38,90 +38,101 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
             oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp
         ) {
             setTimeout(async () => {
-                const logs = await newMember.guild.fetchAuditLogs({
-                    type: AuditLogEvent.MemberUpdate,
-                    limit: 1
-                });
+                try {
+                    const logs = await newMember.guild.fetchAuditLogs({
+                        type: AuditLogEvent.MemberUpdate,
+                        limit: 1
+                    });
 
-                const log = logs.entries.first();
+                    const log = logs.entries.first();
 
-                if (!log) {
-                    return;
-                }
+                    if (!log) {
+                        return;
+                    }
 
-                if (log.createdTimestamp < Date.now() - 5000) {
-                    return;
-                }
+                    if (log.createdTimestamp < Date.now() - 5000) {
+                        return;
+                    }
 
-                const executor = log.executor;
+                    const executor = log.executor;
 
-                if (executor && executor.id === this.client.user?.id) {
-                    return;
-                }
+                    if (executor && executor.id === this.client.user?.id) {
+                        return;
+                    }
 
-                const moderator = executor && executor.id === newMember.id ? undefined : (executor ?? undefined);
+                    const moderator = executor && executor.id === newMember.id ? undefined : (executor ?? undefined);
 
-                if (oldMember.nickname !== newMember.nickname) {
-                    await this.auditLoggingService.emitLogEvent(
-                        newMember.guild.id,
-                        LogEventType.MemberNicknameModification,
-                        {
-                            member: newMember,
-                            oldNickname: oldMember.nickname,
-                            newNickname: newMember.nickname,
-                            guild: newMember.guild,
-                            moderator
-                        }
-                    );
-                }
-
-                if (
-                    oldMember.communicationDisabledUntilTimestamp !== newMember.communicationDisabledUntilTimestamp &&
-                    moderator
-                ) {
-                    const added =
-                        oldMember.communicationDisabledUntilTimestamp === null &&
-                        newMember.communicationDisabledUntilTimestamp !== null;
-
-                    const [infraction] = await this.application.database.drizzle
-                        .insert(infractions)
-                        .values({
-                            guildId: newMember.guild.id,
-                            moderatorId: executor?.id ?? "0",
-                            userId: newMember.user.id,
-                            type: added ? InfractionType.Timeout : InfractionType.TimeoutRemove,
-                            reason: log.reason ?? undefined,
-                            deliveryStatus: InfractionDeliveryStatus.NotDelivered,
-                            expiresAt: added ? newMember.communicationDisabledUntil : undefined
-                        })
-                        .returning({ id: infractions.id });
-
-                    if (added) {
-                        await this.auditLoggingService.emitLogEvent(newMember.guild.id, LogEventType.MemberTimeoutAdd, {
-                            member: newMember,
-                            guild: newMember.guild,
-                            moderator,
-                            reason: log.reason ?? undefined,
-                            duration: Duration.fromMilliseconds(
-                                Math.round(
-                                    ((newMember.communicationDisabledUntilTimestamp ?? 0) - log.createdTimestamp) / 1000
-                                ) * 1000
-                            ),
-                            infractionId: infraction.id
-                        });
-                    } else {
+                    if (oldMember.nickname !== newMember.nickname) {
                         await this.auditLoggingService.emitLogEvent(
                             newMember.guild.id,
-                            LogEventType.MemberTimeoutRemove,
+                            LogEventType.MemberNicknameModification,
                             {
                                 member: newMember,
+                                oldNickname: oldMember.nickname,
+                                newNickname: newMember.nickname,
                                 guild: newMember.guild,
-                                moderator,
-                                reason: log.reason ?? undefined,
-                                infractionId: infraction.id
+                                moderator
                             }
                         );
                     }
+
+                    if (
+                        oldMember.communicationDisabledUntilTimestamp !==
+                            newMember.communicationDisabledUntilTimestamp &&
+                        moderator
+                    ) {
+                        const added =
+                            oldMember.communicationDisabledUntilTimestamp === null &&
+                            newMember.communicationDisabledUntilTimestamp !== null;
+
+                        const [infraction] = await this.application.database.drizzle
+                            .insert(infractions)
+                            .values({
+                                guildId: newMember.guild.id,
+                                moderatorId: executor?.id ?? "0",
+                                userId: newMember.user.id,
+                                type: added ? InfractionType.Timeout : InfractionType.TimeoutRemove,
+                                reason: log.reason ?? undefined,
+                                deliveryStatus: InfractionDeliveryStatus.NotDelivered,
+                                expiresAt: added ? newMember.communicationDisabledUntil : undefined
+                            })
+                            .returning({ id: infractions.id });
+
+                        if (added) {
+                            await this.auditLoggingService.emitLogEvent(
+                                newMember.guild.id,
+                                LogEventType.MemberTimeoutAdd,
+                                {
+                                    member: newMember,
+                                    guild: newMember.guild,
+                                    moderator,
+                                    reason: log.reason ?? undefined,
+                                    duration: Duration.fromMilliseconds(
+                                        Math.round(
+                                            ((newMember.communicationDisabledUntilTimestamp ?? 0) -
+                                                log.createdTimestamp) /
+                                                1000
+                                        ) * 1000
+                                    ),
+                                    infractionId: infraction.id
+                                }
+                            );
+                        } else {
+                            await this.auditLoggingService.emitLogEvent(
+                                newMember.guild.id,
+                                LogEventType.MemberTimeoutRemove,
+                                {
+                                    member: newMember,
+                                    guild: newMember.guild,
+                                    moderator,
+                                    reason: log.reason ?? undefined,
+                                    infractionId: infraction.id
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    this.application.logger.error(error);
                 }
             }, 2500);
         }
