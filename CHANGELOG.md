@@ -1,5 +1,30 @@
 # Changelog
 
+### 11-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix:** type errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **fix:** ensure an infraction is created when a member is timed out    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 10-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.21.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.21.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.20.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 10-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix(sudobot-api):** publishing issues    
@@ -26,17 +51,6 @@
   * **feat:** restore timeout logging    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-
-### 10-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.21.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v11.20.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 09-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
