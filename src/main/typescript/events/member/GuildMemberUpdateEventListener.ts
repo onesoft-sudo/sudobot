@@ -21,6 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
+import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { AuditLogEvent, type GuildMember } from "discord.js";
@@ -89,9 +90,9 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
                             moderatorId: executor?.id ?? "0",
                             userId: newMember.user.id,
                             type: added ? InfractionType.Timeout : InfractionType.TimeoutRemove,
-                            reason: auditLogEntry.reason ?? undefined,
+                            reason: log.reason ?? undefined,
                             deliveryStatus: InfractionDeliveryStatus.NotDelivered,
-                            expiresAt: added ? newMember.communicationDisabledUntil : undefined,
+                            expiresAt: added ? newMember.communicationDisabledUntil : undefined
                         })
                         .returning({ id: infractions.id });
 
@@ -109,13 +110,17 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
                             infractionId: infraction.id
                         });
                     } else {
-                        await this.auditLoggingService.emitLogEvent(newMember.guild.id, LogEventType.MemberTimeoutRemove, {
-                            member: newMember,
-                            guild: newMember.guild,
-                            moderator,
-                            reason: log.reason ?? undefined,
-                            infractionId: infraction.id
-                        });
+                        await this.auditLoggingService.emitLogEvent(
+                            newMember.guild.id,
+                            LogEventType.MemberTimeoutRemove,
+                            {
+                                member: newMember,
+                                guild: newMember.guild,
+                                moderator,
+                                reason: log.reason ?? undefined,
+                                infractionId: infraction.id
+                            }
+                        );
                     }
                 }
             }, 2500);
