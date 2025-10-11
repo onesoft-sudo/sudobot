@@ -2,6 +2,10 @@
 
 ### 11-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix:** build packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **feat(sudobot-api):** add discord auth endpoint    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -29,6 +33,10 @@
 
 ### 11-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.22.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.21.5 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
