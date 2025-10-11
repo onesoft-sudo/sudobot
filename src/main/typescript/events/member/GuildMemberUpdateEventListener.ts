@@ -82,6 +82,19 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
                         oldMember.communicationDisabledUntilTimestamp === null &&
                         newMember.communicationDisabledUntilTimestamp !== null;
 
+                    const [infraction] = await this.application.database.drizzle
+                        .insert(infractions)
+                        .values({
+                            guildId: newMember.guild.id,
+                            moderatorId: executor?.id ?? "0",
+                            userId: newMember.user.id,
+                            type: added ? InfractionType.Timeout : InfractionType.TimeoutRemove,
+                            reason: auditLogEntry.reason ?? undefined,
+                            deliveryStatus: InfractionDeliveryStatus.NotDelivered,
+                            expiresAt: added ? newMember.communicationDisabledUntil : undefined,
+                        })
+                        .returning({ id: infractions.id });
+
                     if (added) {
                         await this.auditLoggingService.emitLogEvent(newMember.guild.id, LogEventType.MemberTimeoutAdd, {
                             member: newMember,
@@ -92,19 +105,17 @@ class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpd
                                 Math.round(
                                     ((newMember.communicationDisabledUntilTimestamp ?? 0) - log.createdTimestamp) / 1000
                                 ) * 1000
-                            )
+                            ),
+                            infractionId: infraction.id
                         });
                     } else {
-                        await this.auditLoggingService.emitLogEvent(
-                            newMember.guild.id,
-                            LogEventType.MemberTimeoutRemove,
-                            {
-                                member: newMember,
-                                guild: newMember.guild,
-                                moderator,
-                                reason: log.reason ?? undefined
-                            }
-                        );
+                        await this.auditLoggingService.emitLogEvent(newMember.guild.id, LogEventType.MemberTimeoutRemove, {
+                            member: newMember,
+                            guild: newMember.guild,
+                            moderator,
+                            reason: log.reason ?? undefined,
+                            infractionId: infraction.id
+                        });
                     }
                 }
             }, 2500);
