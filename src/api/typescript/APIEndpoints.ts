@@ -1,3 +1,4 @@
 export enum APIEndpoints {
-	Login = "/login"
+	Login = "/login",
+        LoginWithDiscord = "/challenge/auth/discord"
 }
