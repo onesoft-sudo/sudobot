@@ -1,6 +1,6 @@
 {
     "name": "@onesoftnet/sudobot-api",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "license": "LGPL-3.0-or-later",
     "main": "index.js",
     "type": "commonjs",
