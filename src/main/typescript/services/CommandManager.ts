@@ -256,7 +256,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const prefixes = [config.prefix];
 
-        if (config.commands?.mention_prefix || this.configManager.systemConfig.commands.mention_prefix) {
+        if (config.commands?.mention_prefix && this.configManager.systemConfig.commands.mention_prefix) {
             prefixes.push(`<@${this.application.getClient().user!.id}>`);
             prefixes.push(`<@!${this.application.getClient().user!.id}>`);
         }
