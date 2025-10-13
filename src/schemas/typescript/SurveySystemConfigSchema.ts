@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { zSnowflake } from "@main/schemas/SnowflakeSchema";
 import { z } from "zod";
+import { zSnowflake } from "./SnowflakeSchema";
 
 const SurveyQuestion = z.object({
     type: z.enum(["paragraph", "short"]),

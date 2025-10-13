@@ -23,19 +23,16 @@ import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
 import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { type MessageContextMenuCommandInteraction } from "discord.js";
 
 class SaveMessageCommand extends Command<ContextType.MessageContextMenu> {
     public override readonly name: string = "Save Message";
     public override readonly description: string = "Saves a message for later review.";
-    public override readonly detailedDescription: string =
-        "Saves a message for later review, in the log channel.";
+    public override readonly detailedDescription: string = "Saves a message for later review, in the log channel.";
     public override readonly permissions = [PermissionFlags.ManageMessages];
-    public override readonly supportedContexts: ContextType.MessageContextMenu[] = [
-        ContextType.MessageContextMenu
-    ];
+    public override readonly supportedContexts: ContextType.MessageContextMenu[] = [ContextType.MessageContextMenu];
 
     @Inject("auditLoggingService")
     protected readonly auditLoggingService!: AuditLoggingService;
@@ -44,9 +41,7 @@ class SaveMessageCommand extends Command<ContextType.MessageContextMenu> {
         return [this.buildContextMenu().setType(ApplicationCommandType.Message)];
     }
 
-    public override async execute(
-        context: Context<MessageContextMenuCommandInteraction>
-    ): Promise<void> {
+    public override async execute(context: Context<MessageContextMenuCommandInteraction>): Promise<void> {
         const { commandMessage: interaction } = context;
 
         await interaction.deferReply({
@@ -66,15 +61,12 @@ class SaveMessageCommand extends Command<ContextType.MessageContextMenu> {
         );
 
         if (!message) {
-            await interaction.editReply(
-                "Failed to save message. Maybe you do not have logging enabled?"
-            );
+            await interaction.editReply("Failed to save message. Maybe you do not have logging enabled?");
             return;
         }
 
         await interaction.editReply(
-            "Message saved successfully." +
-                (message ? ` [Click here](${message.url}) to see the saved message.` : "")
+            "Message saved successfully." + (message ? ` [Click here](${message.url}) to see the saved message.` : "")
         );
     }
 }

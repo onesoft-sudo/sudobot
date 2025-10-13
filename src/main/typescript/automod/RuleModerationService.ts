@@ -23,15 +23,15 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
-import { LogEventType } from "@main/schemas/LoggingSchema";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { Awaitable, GuildMember, Message, Snowflake, TextChannel } from "discord.js";
+import { MessageRuleType } from "../../../schemas/typescript/MessageRuleSchema";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
     MessageRuleScope,
     ModerationRuleContextType,
     type default as ModerationRuleHandlerContract
 } from "../contracts/ModerationRuleHandlerContract";
-import { MessageRuleType } from "../schemas/MessageRuleSchema";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
 import type AuditLoggingService from "../services/AuditLoggingService";
 import type ConfigurationManager from "../services/ConfigurationManager";
@@ -40,10 +40,7 @@ import type PermissionManagerService from "../services/PermissionManagerService"
 import { safeMemberFetch } from "../utils/fetch";
 
 @Name("ruleModerationService")
-class RuleModerationService
-    extends Service
-    implements MessageAutoModServiceContract, HasEventListeners
-{
+class RuleModerationService extends Service implements MessageAutoModServiceContract, HasEventListeners {
     @Inject("configManager")
     private readonly configurationManager!: ConfigurationManager;
 
@@ -94,13 +91,13 @@ class RuleModerationService
                 name: "Managed Word Filter Rule"
             });
 
-            index =
-                (this.configurationManager.config[guildId]?.rule_moderation?.rules.length ?? 1) - 1;
+            index = (this.configurationManager.config[guildId]?.rule_moderation?.rules.length ?? 1) - 1;
         }
 
-        return this.configurationManager.config[guildId]?.rule_moderation?.rules[
-            index ?? 0
-        ] as Extract<MessageRuleType, { type: "word_filter" }>;
+        return this.configurationManager.config[guildId]?.rule_moderation?.rules[index ?? 0] as Extract<
+            MessageRuleType,
+            { type: "word_filter" }
+        >;
     }
 
     public async onMessageCreate(message: Message<boolean>) {
@@ -142,9 +139,7 @@ class RuleModerationService
             }
         }
 
-        this.application.logger.debug(
-            `Checking member profile ${newMember.user.id} in guild ${newMember.guild.id}`
-        );
+        this.application.logger.debug(`Checking member profile ${newMember.user.id} in guild ${newMember.guild.id}`);
         await this.moderateMemberOrMessage({
             member: newMember,
             guildId: newMember.guild.id,
@@ -217,10 +212,7 @@ class RuleModerationService
             | {
                   [key in Type]?: MessageRuleScope[];
               }
-            | undefined = Reflect.getMetadata(
-            "rule:context:scopes",
-            this.ruleHandler.constructor.prototype
-        );
+            | undefined = Reflect.getMetadata("rule:context:scopes", this.ruleHandler.constructor.prototype);
         const bypassedRules = new FluentSet<string>();
 
         for (const rule of rules) {
@@ -232,26 +224,19 @@ class RuleModerationService
             if (
                 scopes !== undefined &&
                 options.scopes !== undefined &&
-                scopes?.[rule.type]?.find((scope: MessageRuleScope) =>
-                    options.scopes?.includes(scope)
-                ) === undefined
+                scopes?.[rule.type]?.find((scope: MessageRuleScope) => options.scopes?.includes(scope)) === undefined
             ) {
                 this.application.logger.debug("Unsupported scope", rule.type);
                 continue;
             }
 
             if (!rule.enabled || !(await this.checkPreconditions(member, rule, message))) {
-                this.application.logger.debug(
-                    "Rule is not enabled or preconditions do not match",
-                    rule.type
-                );
+                this.application.logger.debug("Rule is not enabled or preconditions do not match", rule.type);
                 continue;
             }
 
             if (rule.actions.length === 0) {
-                this.application.logger.warn(
-                    `Rule ${count} has no actions defined. Considering it as disabled.`
-                );
+                this.application.logger.warn(`Rule ${count} has no actions defined. Considering it as disabled.`);
                 continue;
             }
 
@@ -266,9 +251,7 @@ class RuleModerationService
             const ruleContextType = contextTypes?.[rule.type] ?? ["message"];
 
             if (ruleContextType && !ruleContextType.includes(contextType)) {
-                this.application.logger.debug(
-                    `Rule type ${rule.type} does not expect a ${contextType} context`
-                );
+                this.application.logger.debug(`Rule type ${rule.type} does not expect a ${contextType} context`);
 
                 continue;
             }
@@ -286,9 +269,7 @@ class RuleModerationService
 
             if (rule.is_bypasser && rule.bypasses?.length && result.matched) {
                 bypassedRules.add(...rule.bypasses);
-                this.application.logger.debug(
-                    `Rule ${rule.name} (${rule.type}) has been queued to be bypassed`
-                );
+                this.application.logger.debug(`Rule ${rule.name} (${rule.type}) has been queued to be bypassed`);
                 continue;
             }
 
@@ -397,11 +378,7 @@ class RuleModerationService
         return instance;
     }
 
-    private checkPreconditions(
-        member: GuildMember,
-        rule: MessageRuleType,
-        message?: Message
-    ): Awaitable<boolean> {
+    private checkPreconditions(member: GuildMember, rule: MessageRuleType, message?: Message): Awaitable<boolean> {
         if (rule.for) {
             const { roles, users, channels } = rule.for;
 
@@ -412,10 +389,7 @@ class RuleModerationService
             }
 
             if (users !== undefined) {
-                if (
-                    (message && !users.includes(message.author.id)) ||
-                    !users.includes(member.user.id)
-                ) {
+                if ((message && !users.includes(message.author.id)) || !users.includes(member.user.id)) {
                     return false;
                 }
             }
@@ -437,10 +411,7 @@ class RuleModerationService
             }
 
             if (users !== undefined) {
-                if (
-                    (message && users.includes(message.author.id)) ||
-                    users.includes(member.user.id)
-                ) {
+                if ((message && users.includes(message.author.id)) || users.includes(member.user.id)) {
                     return false;
                 }
             }

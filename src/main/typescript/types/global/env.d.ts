@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { EnvironmentVariableRecord } from "@main/schemas/EnvironmentVariableSchema";
+import type { EnvironmentVariableRecord } from "@schemas/EnvironmentVariableSchema";
 
 declare global {
     namespace NodeJS {

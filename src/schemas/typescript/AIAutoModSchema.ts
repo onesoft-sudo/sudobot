@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModerationActionSchema } from "@main/schemas/ModerationActionSchema";
 import { z } from "zod";
+import { ModerationActionSchema } from "./ModerationActionSchema";
 
 export const AIAutoModSchema = z.object({
     enabled: z.boolean().optional().default(false),
@@ -40,9 +40,7 @@ export const AIAutoModSchema = z.object({
             unsubstantial: z.number().int().default(7)
         })
         .optional(),
-    exception_regex_patterns: z
-        .array(z.string().or(z.tuple([z.string(), z.string()])))
-        .default([]),
+    exception_regex_patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([]),
     evaluate_after_attempts: z.number().int().default(-1),
     evaluation_cache_expires_in: z.number().int().default(3_000),
     actions: z.array(ModerationActionSchema).default([]),

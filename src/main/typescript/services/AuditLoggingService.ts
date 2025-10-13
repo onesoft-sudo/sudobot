@@ -53,9 +53,9 @@ import {
     LogUserNoteAddPayload,
     LoggingExclusionType
 } from "@main/schemas/LoggingSchema";
-import { MessageRuleType } from "@main/schemas/MessageRuleSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import { chunkedString } from "@main/utils/utils";
+import { MessageRuleType } from "@schemas/MessageRuleSchema";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
@@ -1705,7 +1705,14 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberTimeoutAdd({ guild, member, moderator, infractionId, reason, duration }: LogMemberTimeoutAddPayload) {
+    private async logMemberTimeoutAdd({
+        guild,
+        member,
+        moderator,
+        infractionId,
+        reason,
+        duration
+    }: LogMemberTimeoutAddPayload) {
         const fields = [
             {
                 name: "User",
@@ -1765,7 +1772,13 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberTimeoutRemove({ guild, member, moderator, infractionId, reason }: LogMemberTimeoutRemovePayload) {
+    private async logMemberTimeoutRemove({
+        guild,
+        member,
+        moderator,
+        infractionId,
+        reason
+    }: LogMemberTimeoutRemovePayload) {
         const fields = [
             {
                 name: "User",

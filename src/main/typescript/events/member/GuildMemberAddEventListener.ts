@@ -22,9 +22,9 @@ import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
 import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
+import { LogEventType } from "@schemas/LoggingSchema";
 import type { GuildMember } from "discord.js";
 
 class GuildMemberAddEventListener extends EventListener<Events.GuildMemberAdd> {

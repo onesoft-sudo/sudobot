@@ -22,9 +22,9 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
-import { TriggerType } from "@main/schemas/TriggerSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { isTextBasedChannel } from "@main/utils/utils";
+import { TriggerType } from "@schemas/TriggerSchema";
 import {
     ActionRowBuilder,
     ActivityType,
@@ -55,8 +55,7 @@ type TriggerHandlerContext<M extends boolean = false> = {
 
 @Name("triggerService")
 class TriggerService extends Service implements HasEventListeners {
-    private readonly lastStickyMessages: Record<`${Snowflake}_${Snowflake}`, Message | undefined> =
-        {};
+    private readonly lastStickyMessages: Record<`${Snowflake}_${Snowflake}`, Message | undefined> = {};
     private readonly lastStickyMessageQueues: Record<`${Snowflake}_${Snowflake}`, boolean> = {};
 
     @Inject("configManager")
@@ -199,10 +198,8 @@ class TriggerService extends Service implements HasEventListeners {
             return;
         }
 
-        const oldStatus =
-            oldPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
-        const newStatus =
-            newPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
+        const oldStatus = oldPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
+        const newStatus = newPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
 
         if (newPresence.status === "offline" || newPresence.status === "invisible") {
             return;
@@ -251,14 +248,12 @@ class TriggerService extends Service implements HasEventListeners {
                     return;
                 }
 
-                const lastStickyMessage =
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`];
+                const lastStickyMessage = this.lastStickyMessages[`${message.guildId!}_${message.channelId}`];
 
                 if (lastStickyMessage) {
                     try {
                         await lastStickyMessage.delete();
-                        this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
-                            undefined;
+                        this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] = undefined;
                     } catch (error) {
                         this.logger.error(error);
                         return;
@@ -274,19 +269,14 @@ class TriggerService extends Service implements HasEventListeners {
                                 : [
                                       new ActionRowBuilder<ButtonBuilder>().addComponents(
                                           ...trigger.buttons.map(({ label, url }) =>
-                                              new ButtonBuilder()
-                                                  .setStyle(ButtonStyle.Link)
-                                                  .setURL(url)
-                                                  .setLabel(label)
+                                              new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(url).setLabel(label)
                                           )
                                       )
                                   ]
                     });
 
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
-                        sentMessage;
-                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] =
-                        false;
+                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] = sentMessage;
+                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] = false;
                 } catch (error) {
                     this.logger.error(error);
                 }

@@ -21,8 +21,8 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { NonPartialGroupDMChannel } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { AuditLogEvent, Events, Message, PartialMessage, Snowflake } from "discord.js";
 
 class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
@@ -56,13 +56,9 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
                     return false;
                 }
 
-                const prevCount =
-                    this.deleteCountMap.get(`${message.guildId!}_${entry.executorId}`) ?? 0;
+                const prevCount = this.deleteCountMap.get(`${message.guildId!}_${entry.executorId}`) ?? 0;
                 const result = prevCount + 1 === entry.extra.count;
-                this.deleteCountMap.set(
-                    `${message.guildId!}_${entry.executorId}`,
-                    entry.extra.count
-                );
+                this.deleteCountMap.set(`${message.guildId!}_${entry.executorId}`, entry.extra.count);
                 return result;
             });
 
@@ -70,10 +66,7 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
                 return log.executor ?? (await fetchUser(this.client, log.executorId!)) ?? undefined;
             }
         } catch (error) {
-            this.application.logger.error(
-                "An error occurred while processing a message delete event",
-                error
-            );
+            this.application.logger.error("An error occurred while processing a message delete event", error);
         }
 
         return undefined;
@@ -84,10 +77,7 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
             try {
                 await message.fetch();
             } catch (error) {
-                this.application.logger.error(
-                    "Failed to fetch message in MessageDeleteEventListener",
-                    error
-                );
+                this.application.logger.error("Failed to fetch message in MessageDeleteEventListener", error);
                 return;
             }
         }

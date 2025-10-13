@@ -35,11 +35,11 @@ import {
 } from "@main/models/Infraction";
 import { muteRecords } from "@main/models/MuteRecord";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { downloadFile } from "@main/utils/download";
 import { emoji } from "@main/utils/emoji";
 import { systemPrefix } from "@main/utils/utils";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
@@ -73,11 +73,11 @@ import { and, eq, inArray, not } from "drizzle-orm";
 import { existsSync } from "fs";
 import { unlink } from "fs/promises";
 import path, { basename } from "path";
+import { GuildConfig } from "../../../schemas/typescript/GuildConfigSchema";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
 import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
 import UnmuteQueue from "../queues/UnmuteQueue";
-import { GuildConfig } from "../schemas/GuildConfigSchema";
 import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
 import QueueService from "./QueueService";
@@ -119,9 +119,7 @@ class InfractionManager extends Service {
         [InfractionType.Unban]: "unban",
         [InfractionType.ReactionClear]: "reaction_clear"
     } satisfies {
-        [K in InfractionType]?: keyof NonNullable<
-            GuildConfig["infractions"]
-        >["points"];
+        [K in InfractionType]?: keyof NonNullable<GuildConfig["infractions"]>["points"];
     };
 
     @Inject()
@@ -147,32 +145,20 @@ class InfractionManager extends Service {
         return clone;
     }
 
-    public processReason(
-        guildId: Snowflake,
-        reason: string | undefined,
-        abortOnNotFound = true
-    ) {
+    public processReason(guildId: Snowflake, reason: string | undefined, abortOnNotFound = true) {
         if (!reason?.length) {
             return null;
         }
 
         let finalReason = reason;
         const configManager = this.application.getService(ConfigurationManager);
-        const templates =
-            configManager.config[guildId]?.infractions?.reason_templates ?? {};
+        const templates = configManager.config[guildId]?.infractions?.reason_templates ?? {};
         const templateWrapper =
-            configManager.config[guildId]?.infractions
-                ?.reason_template_placeholder_wrapper ?? "{{%name%}}";
+            configManager.config[guildId]?.infractions?.reason_template_placeholder_wrapper ?? "{{%name%}}";
 
         for (const key in templates) {
-            const placeholder = templateWrapper.replace(
-                "%name%",
-                `( *)${key}( *)`
-            );
-            finalReason = finalReason.replace(
-                new RegExp(placeholder, "gi"),
-                templates[key]
-            );
+            const placeholder = templateWrapper.replace("%name%", `( *)${key}( *)`);
+            finalReason = finalReason.replace(new RegExp(placeholder, "gi"), templates[key]);
         }
 
         if (abortOnNotFound) {
@@ -211,9 +197,7 @@ class InfractionManager extends Service {
             return "notified";
         } catch {
             if (infraction) {
-                return (await this.handleFallback(user, infraction, options))
-                    ? "fallback"
-                    : "failed";
+                return (await this.handleFallback(user, infraction, options)) ? "fallback" : "failed";
             }
 
             return "failed";
@@ -226,9 +210,7 @@ class InfractionManager extends Service {
         transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed,
         _troll = false
     ) {
-        const guild = this.application
-            .getClient()
-            .guilds.cache.get(infraction.guildId);
+        const guild = this.application.getClient().guilds.cache.get(infraction.guildId);
 
         if (!guild) {
             return false;
@@ -253,10 +235,7 @@ class InfractionManager extends Service {
                     value: infraction.reason ?? "No reason provided"
                 }
             ],
-            color:
-                actionDoneName === "bean" || actionDoneName.startsWith("un")
-                    ? Colors.Green
-                    : Colors.Red,
+            color: actionDoneName === "bean" || actionDoneName.startsWith("un") ? Colors.Green : Colors.Red,
             timestamp: new Date().toISOString()
         } satisfies APIEmbed;
 
@@ -267,18 +246,14 @@ class InfractionManager extends Service {
             });
         }
 
-        if (
-            this.configManager.config[guild.id]?.infractions?.send_ids_to_user
-        ) {
+        if (this.configManager.config[guild.id]?.infractions?.send_ids_to_user) {
             embed.fields.push({
                 name: "Infraction ID",
                 value: infraction.id.toString()
             });
         }
 
-        const transformed = transformNotificationEmbed
-            ? transformNotificationEmbed(embed)
-            : embed;
+        const transformed = transformNotificationEmbed ? transformNotificationEmbed(embed) : embed;
         const attachmentStoragePath = systemPrefix("storage/attachments", true);
 
         return this.sendDirectMessage(
@@ -289,21 +264,13 @@ class InfractionManager extends Service {
                 files:
                     infraction.type === InfractionType.Bean || _troll
                         ? infraction.attachments
-                        : infraction.attachments
-                              .map(file =>
-                                  path.join(attachmentStoragePath, file)
-                              )
-                              .filter(existsSync)
+                        : infraction.attachments.map(file => path.join(attachmentStoragePath, file)).filter(existsSync)
             },
             infraction
         );
     }
 
-    private async handleFallback(
-        user: User,
-        infraction: Infraction,
-        options: MessagePayload | MessageCreateOptions
-    ) {
+    private async handleFallback(user: User, infraction: Infraction, options: MessagePayload | MessageCreateOptions) {
         if (
             (
                 [
@@ -317,17 +284,12 @@ class InfractionManager extends Service {
             return false;
         }
 
-        const config =
-            this.configManager.config[infraction.guildId]?.infractions;
+        const config = this.configManager.config[infraction.guildId]?.infractions;
         let channel: TextBasedChannel | PrivateThreadChannel | null = null;
 
         try {
             if (config?.dm_fallback === "create_channel") {
-                channel = await this.createFallbackChannel(
-                    user,
-                    infraction,
-                    config
-                );
+                channel = await this.createFallbackChannel(user, infraction, config);
             } else if (config?.dm_fallback === "create_thread") {
                 channel = await this.createFallbackThread(infraction, config);
             }
@@ -342,17 +304,10 @@ class InfractionManager extends Service {
 
         await channel.send({
             ...(options as MessageCreateOptions),
-            content:
-                `${userMention(user.id)}` +
-                ("content" in options && options.content
-                    ? " " + options.content
-                    : "")
+            content: `${userMention(user.id)}` + ("content" in options && options.content ? " " + options.content : "")
         });
 
-        if (
-            config?.dm_fallback_channel_expires_in &&
-            config.dm_fallback_channel_expires_in > 0
-        ) {
+        if (config?.dm_fallback_channel_expires_in && config.dm_fallback_channel_expires_in > 0) {
             const guild = this.client.guilds.cache.get(infraction.guildId);
 
             if (!guild) {
@@ -364,15 +319,10 @@ class InfractionManager extends Service {
                 .create(InfractionChannelDeleteQueue, {
                     data: {
                         channelId: channel.id,
-                        type:
-                            config.dm_fallback === "create_channel"
-                                ? "channel"
-                                : "thread"
+                        type: config.dm_fallback === "create_channel" ? "channel" : "thread"
                     },
                     guildId: guild.id,
-                    runsAt: new Date(
-                        Date.now() + config.dm_fallback_channel_expires_in
-                    )
+                    runsAt: new Date(Date.now() + config.dm_fallback_channel_expires_in)
                 })
                 .schedule();
         }
@@ -380,11 +330,7 @@ class InfractionManager extends Service {
         return true;
     }
 
-    private async createFallbackChannel(
-        user: User,
-        infraction: Infraction,
-        config: InfractionConfig
-    ) {
+    private async createFallbackChannel(user: User, infraction: Infraction, config: InfractionConfig) {
         const guild = this.client.guilds.cache.get(infraction.guildId);
 
         if (!guild) {
@@ -407,10 +353,7 @@ class InfractionManager extends Service {
                 },
                 {
                     id: user.id,
-                    allow: [
-                        PermissionFlagsBits.ViewChannel,
-                        PermissionFlagsBits.ReadMessageHistory
-                    ]
+                    allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory]
                 }
             ],
             reason: `Creating DM Fallback for Infraction #${infraction.id}`
@@ -421,10 +364,7 @@ class InfractionManager extends Service {
         const attachmentFileLocalNames: string[] = [];
 
         for (const attachment of attachments) {
-            const attachmentFileURL =
-                typeof attachment === "string"
-                    ? attachment
-                    : attachment.proxyURL;
+            const attachmentFileURL = typeof attachment === "string" ? attachment : attachment.proxyURL;
             const attachmentFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(attachmentFileURL.substring(0, attachmentFileURL.indexOf("?")))}`;
 
             await downloadFile({
@@ -439,19 +379,14 @@ class InfractionManager extends Service {
         return attachmentFileLocalNames;
     }
 
-    private async createFallbackThread(
-        infraction: Infraction,
-        config: InfractionConfig
-    ) {
+    private async createFallbackThread(infraction: Infraction, config: InfractionConfig) {
         const guild = this.client.guilds.cache.get(infraction.guildId);
 
         if (!guild || !config.dm_fallback_parent_channel) {
             return null;
         }
 
-        const channel = guild.channels.cache.get(
-            config.dm_fallback_parent_channel
-        );
+        const channel = guild.channels.cache.get(config.dm_fallback_parent_channel);
 
         if (
             !channel ||
@@ -471,9 +406,7 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    public async createInfraction<E extends boolean>(
-        options: InfractionCreateOptions<E>
-    ): Promise<Infraction> {
+    public async createInfraction<E extends boolean>(options: InfractionCreateOptions<E>): Promise<Infraction> {
         const {
             callback,
             guildId,
@@ -487,86 +420,68 @@ class InfractionManager extends Service {
             processReason = true,
             failIfNotNotified = false
         } = options;
-        const user =
-            "member" in options && options.member
-                ? options.member.user
-                : (options as { user: User }).user;
+        const user = "member" in options && options.member ? options.member.user : (options as { user: User }).user;
 
         if (attachments.length > 10) {
-            throw new Error(
-                "Cannot create an infraction with more than 10 attachments"
-            );
+            throw new Error("Cannot create an infraction with more than 10 attachments");
         }
 
-        const attachmentFileLocalNames: string[] =
-            await this.saveAttachments(attachments);
+        const attachmentFileLocalNames: string[] = await this.saveAttachments(attachments);
 
         try {
-            const infraction: Infraction =
-                await this.application.database.drizzle.transaction(
-                    async (tx): Promise<Infraction> => {
-                        let [newInfraction] = await tx
-                            .insert(infractions)
-                            .values({
-                                userId: user.id,
-                                guildId,
-                                moderatorId: moderator.id,
-                                reason: processReason
-                                    ? this.processReason(guildId, reason)
-                                    : reason,
-                                type,
-                                deliveryStatus:
-                                    type === InfractionType.Unban || !notify
-                                        ? InfractionDeliveryStatus.NotDelivered
-                                        : InfractionDeliveryStatus.Success,
-                                attachments: attachmentFileLocalNames,
-                                ...payload
-                            })
-                            .returning();
+            const infraction: Infraction = await this.application.database.drizzle.transaction(
+                async (tx): Promise<Infraction> => {
+                    let [newInfraction] = await tx
+                        .insert(infractions)
+                        .values({
+                            userId: user.id,
+                            guildId,
+                            moderatorId: moderator.id,
+                            reason: processReason ? this.processReason(guildId, reason) : reason,
+                            type,
+                            deliveryStatus:
+                                type === InfractionType.Unban || !notify
+                                    ? InfractionDeliveryStatus.NotDelivered
+                                    : InfractionDeliveryStatus.Success,
+                            attachments: attachmentFileLocalNames,
+                            ...payload
+                        })
+                        .returning();
 
-                        if (type !== InfractionType.Unban && notify) {
-                            const status = await this.notify(
-                                user,
-                                newInfraction,
-                                transformNotificationEmbed
-                            );
+                    if (type !== InfractionType.Unban && notify) {
+                        const status = await this.notify(user, newInfraction, transformNotificationEmbed);
 
-                            if (status !== "notified") {
-                                const [updatedInfraction] = await tx
-                                    .update(infractions)
-                                    .set({
-                                        deliveryStatus:
-                                            status === "failed"
-                                                ? InfractionDeliveryStatus.Failed
-                                                : InfractionDeliveryStatus.Fallback
-                                    })
-                                    .where(eq(infractions.id, newInfraction.id))
-                                    .returning();
+                        if (status !== "notified") {
+                            const [updatedInfraction] = await tx
+                                .update(infractions)
+                                .set({
+                                    deliveryStatus:
+                                        status === "failed"
+                                            ? InfractionDeliveryStatus.Failed
+                                            : InfractionDeliveryStatus.Fallback
+                                })
+                                .where(eq(infractions.id, newInfraction.id))
+                                .returning();
 
-                                newInfraction = updatedInfraction;
-                            }
+                            newInfraction = updatedInfraction;
                         }
-
-                        const promise = callback?.(newInfraction);
-
-                        if (promise instanceof Promise) {
-                            promise.catch(this.application.logger.error);
-                        }
-
-                        return newInfraction;
                     }
-                );
 
-            if (
-                failIfNotNotified &&
-                infraction.deliveryStatus === InfractionDeliveryStatus.Failed
-            ) {
+                    const promise = callback?.(newInfraction);
+
+                    if (promise instanceof Promise) {
+                        promise.catch(this.application.logger.error);
+                    }
+
+                    return newInfraction;
+                }
+            );
+
+            if (failIfNotNotified && infraction.deliveryStatus === InfractionDeliveryStatus.Failed) {
                 throw new Error("Failed to notify user");
             }
 
-            this.application
-                .getClient()
-                .emit("infractionCreate", infraction, user, moderator);
+            this.application.getClient().emit("infractionCreate", infraction, user, moderator);
             return infraction;
         } catch (error) {
             await this.deleteAttachments(attachmentFileLocalNames);
@@ -574,37 +489,23 @@ class InfractionManager extends Service {
         }
     }
 
-    public async getById(
-        guildId: Snowflake,
-        id: number
-    ): Promise<Infraction | undefined> {
+    public async getById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
         return await this.application.database.query.infractions.findFirst({
             where: and(eq(infractions.id, id), eq(infractions.guildId, guildId))
         });
     }
 
-    public async updateReasonById(
-        guildId: Snowflake,
-        id: number,
-        reason: string,
-        notify = true
-    ): Promise<boolean> {
+    public async updateReasonById(guildId: Snowflake, id: number, reason: string, notify = true): Promise<boolean> {
         reason = this.processReason(guildId, reason) ?? reason;
 
-        const infraction: Infraction | undefined = await this.getById(
-            guildId,
-            id
-        );
+        const infraction: Infraction | undefined = await this.getById(guildId, id);
 
         if (!infraction) {
             return false;
         }
 
         if (notify) {
-            const user = await fetchUser(
-                this.application.getClient(),
-                infraction.userId
-            );
+            const user = await fetchUser(this.application.getClient(), infraction.userId);
             const guild = this.getGuild(guildId);
 
             if (user && guild) {
@@ -638,22 +539,14 @@ class InfractionManager extends Service {
             await this.application.database.drizzle
                 .update(infractions)
                 .set({ reason })
-                .where(
-                    and(
-                        eq(infractions.id, id),
-                        eq(infractions.guildId, guildId)
-                    )
-                )
+                .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
                 .returning({
                     id: infractions.id
                 })
         )[0];
     }
 
-    private async updateInfractionQueues(
-        infraction: Infraction,
-        duration: Duration | null
-    ): Promise<void> {
+    private async updateInfractionQueues(infraction: Infraction, duration: Duration | null): Promise<void> {
         if (!infraction.expiresAt && !duration) {
             return;
         }
@@ -770,10 +663,7 @@ class InfractionManager extends Service {
         duration: Duration | null,
         notify: boolean
     ): Promise<DurationUpdateResult> {
-        const infraction: Infraction | undefined = await this.getById(
-            guildId,
-            id
-        );
+        const infraction: Infraction | undefined = await this.getById(guildId, id);
 
         if (!infraction || infraction.guildId !== guildId) {
             return {
@@ -783,15 +673,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (
-            !(
-                [
-                    InfractionType.Ban,
-                    InfractionType.Mute,
-                    InfractionType.Role
-                ] as string[]
-            ).includes(infraction.type)
-        ) {
+        if (!([InfractionType.Ban, InfractionType.Mute, InfractionType.Role] as string[]).includes(infraction.type)) {
             return {
                 success: false,
                 error: "invalid_infraction_type",
@@ -799,10 +681,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (
-            infraction.expiresAt &&
-            Date.now() >= infraction.expiresAt.getTime()
-        ) {
+        if (infraction.expiresAt && Date.now() >= infraction.expiresAt.getTime()) {
             return {
                 success: false,
                 error: "infraction_expired",
@@ -813,10 +692,7 @@ class InfractionManager extends Service {
         if (infraction.type === InfractionType.Mute && duration) {
             const config = this.configManager.config[guildId]?.muting;
 
-            if (
-                !config?.role &&
-                duration.toMilliseconds() > 28 * 24 * 60 * 60 * 1000
-            ) {
+            if (!config?.role && duration.toMilliseconds() > 28 * 24 * 60 * 60 * 1000) {
                 return {
                     success: false,
                     error: "invalid_duration",
@@ -833,16 +709,11 @@ class InfractionManager extends Service {
                 expiresAt: duration?.fromNow() ?? null,
                 metadata: { duration: duration?.toMilliseconds() ?? undefined }
             })
-            .where(
-                and(eq(infractions.id, id), eq(infractions.guildId, guildId))
-            )
+            .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
             .returning();
 
         if (notify) {
-            const user = await fetchUser(
-                this.application.getClient(),
-                infraction.userId
-            );
+            const user = await fetchUser(this.application.getClient(), infraction.userId);
             const guild = this.getGuild(guildId);
 
             if (user && guild) {
@@ -860,8 +731,7 @@ class InfractionManager extends Service {
                                 fields: [
                                     {
                                         name: "New Duration",
-                                        value:
-                                            duration?.toString() ?? "Indefinite"
+                                        value: duration?.toString() ?? "Indefinite"
                                     }
                                 ],
                                 timestamp: new Date().toISOString()
@@ -884,19 +754,11 @@ class InfractionManager extends Service {
         return path.join(storagePath, attachment);
     }
 
-    public async deleteById(
-        guildId: Snowflake,
-        id: number
-    ): Promise<Infraction | undefined> {
+    public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
         const infraction = (
             await this.application.database.drizzle
                 .delete(infractions)
-                .where(
-                    and(
-                        eq(infractions.id, id),
-                        eq(infractions.guildId, guildId)
-                    )
-                )
+                .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
                 .returning()
         )[0];
 
@@ -904,13 +766,7 @@ class InfractionManager extends Service {
             return undefined;
         }
 
-        if (
-            [
-                InfractionType.Ban,
-                InfractionType.Mute,
-                InfractionType.Role
-            ].includes(infraction.type)
-        ) {
+        if ([InfractionType.Ban, InfractionType.Mute, InfractionType.Role].includes(infraction.type)) {
             await this.updateInfractionQueues(infraction, null);
         }
 
@@ -930,11 +786,7 @@ class InfractionManager extends Service {
         }
     }
 
-    public async deleteForUser(
-        guildId: Snowflake,
-        userId: string,
-        type?: InfractionType
-    ): Promise<number> {
+    public async deleteForUser(guildId: Snowflake, userId: string, type?: InfractionType): Promise<number> {
         const returnedInfractions = await this.application.database.drizzle
             .delete(infractions)
             .where(
@@ -953,16 +805,8 @@ class InfractionManager extends Service {
         const attachmentStoragePath = systemPrefix("storage/attachments", true);
 
         for (const infraction of returnedInfractions) {
-            if (
-                [
-                    InfractionType.Ban,
-                    InfractionType.Mute,
-                    InfractionType.Role
-                ].includes(infraction.type)
-            ) {
-                this.updateInfractionQueues(infraction, null).catch(
-                    this.application.logger.error
-                );
+            if ([InfractionType.Ban, InfractionType.Mute, InfractionType.Role].includes(infraction.type)) {
+                this.updateInfractionQueues(infraction, null).catch(this.application.logger.error);
             }
 
             for (const file of infraction.attachments) {
@@ -977,15 +821,9 @@ class InfractionManager extends Service {
         return returnedInfractions.length;
     }
 
-    public async getUserInfractions(
-        guildId: Snowflake,
-        id: Snowflake
-    ): Promise<Infraction[]> {
+    public async getUserInfractions(guildId: Snowflake, id: Snowflake): Promise<Infraction[]> {
         return await this.application.database.query.infractions.findMany({
-            where: and(
-                eq(infractions.userId, id),
-                eq(infractions.guildId, guildId)
-            )
+            where: and(eq(infractions.userId, id), eq(infractions.guildId, guildId))
         });
     }
 
@@ -1028,9 +866,7 @@ class InfractionManager extends Service {
         return this.client.guilds.cache.get(guildId);
     }
 
-    public async createBean<E extends boolean>(
-        payload: CreateBeanPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createBean<E extends boolean>(payload: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
         const {
             moderator,
             user,
@@ -1061,9 +897,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createShot<E extends boolean>(
-        payload: CreateShotPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createShot<E extends boolean>(payload: CreateShotPayload<E>): Promise<InfractionCreateResult<E>> {
         const {
             moderator,
             user,
@@ -1089,20 +923,12 @@ class InfractionManager extends Service {
             expiresAt: null,
             metadata: null,
             attachments:
-                attachments?.map(attachment =>
-                    typeof attachment === "string"
-                        ? attachment
-                        : attachment.proxyURL
-                ) ?? []
+                attachments?.map(attachment => (typeof attachment === "string" ? attachment : attachment.proxyURL)) ??
+                []
         };
 
         if (notify) {
-            const status = await this.notify(
-                user,
-                infraction,
-                transformNotificationEmbed,
-                true
-            ); // *trollface*
+            const status = await this.notify(user, infraction, transformNotificationEmbed, true); // *trollface*
             infraction.deliveryStatus =
                 status === "notified"
                     ? InfractionDeliveryStatus.Success
@@ -1120,9 +946,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createFakeBan<E extends boolean>(
-        payload: CreateBanPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createFakeBan<E extends boolean>(payload: CreateBanPayload<E>): Promise<InfractionCreateResult<E>> {
         const guild = this.getGuild(payload.guildId);
 
         if (!guild) {
@@ -1164,20 +988,12 @@ class InfractionManager extends Service {
             queueId: 0,
             updatedAt: new Date(),
             attachments:
-                attachments?.map(attachment =>
-                    typeof attachment === "string"
-                        ? attachment
-                        : attachment.proxyURL
-                ) ?? []
+                attachments?.map(attachment => (typeof attachment === "string" ? attachment : attachment.proxyURL)) ??
+                []
         };
 
         if (notify) {
-            const status = await this.notify(
-                user,
-                infraction,
-                transformNotificationEmbed,
-                true
-            ); // *trollface*
+            const status = await this.notify(user, infraction, transformNotificationEmbed, true); // *trollface*
             infraction.deliveryStatus =
                 status === "notified"
                     ? InfractionDeliveryStatus.Success
@@ -1197,9 +1013,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createBan<E extends boolean>(
-        payload: CreateBanPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createBan<E extends boolean>(payload: CreateBanPayload<E>): Promise<InfractionCreateResult<E>> {
         const guild = this.getGuild(payload.guildId);
 
         if (!guild) {
@@ -1234,8 +1048,7 @@ class InfractionManager extends Service {
             payload: {
                 expiresAt: payload.duration?.fromNow(),
                 metadata: {
-                    deletionTimeframe:
-                        payload.deletionTimeframe?.fromNowMilliseconds(),
+                    deletionTimeframe: payload.deletionTimeframe?.fromNowMilliseconds(),
                     duration: payload.duration?.fromNowMilliseconds(),
                     softban: immediateUnban
                 }
@@ -1286,10 +1099,7 @@ class InfractionManager extends Service {
             }
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
-                return (
-                    queue.data.userId === user.id &&
-                    queue.data.guildId === guild.id
-                );
+                return queue.data.userId === user.id && queue.data.guildId === guild.id;
             });
 
             if (payload.duration) {
@@ -1345,15 +1155,11 @@ class InfractionManager extends Service {
         return {
             status: "success",
             infraction,
-            overviewEmbed: overviewEmbed as E extends true
-                ? APIEmbed
-                : undefined
+            overviewEmbed: overviewEmbed as E extends true ? APIEmbed : undefined
         };
     }
 
-    public async createUnban<E extends boolean>(
-        payload: CreateUnbanPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createUnban<E extends boolean>(payload: CreateUnbanPayload<E>): Promise<InfractionCreateResult<E>> {
         const guild = this.getGuild(payload.guildId);
 
         if (!guild) {
@@ -1377,10 +1183,7 @@ class InfractionManager extends Service {
         const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
         try {
-            await guild.bans.remove(
-                user,
-                `${moderator.username} - ${reason ?? "No reason provided"}`
-            );
+            await guild.bans.remove(user, `${moderator.username} - ${reason ?? "No reason provided"}`);
         } catch (error) {
             this.application.logger.error(error);
 
@@ -1389,8 +1192,7 @@ class InfractionManager extends Service {
                     status: "failed",
                     infraction: null,
                     overviewEmbed: null,
-                    errorType:
-                        error.code === 10026 ? "unknown_ban" : "api_Error",
+                    errorType: error.code === 10026 ? "unknown_ban" : "api_Error",
                     code: +error.code
                 });
             }
@@ -1418,11 +1220,7 @@ class InfractionManager extends Service {
 
         try {
             await this.queueService.bulkCancel(UnbanQueue, queue => {
-                return (
-                    queue.data.userId === user.id &&
-                    queue.data.guildId === guild.id &&
-                    !queue.isExecuting
-                );
+                return queue.data.userId === user.id && queue.data.guildId === guild.id && !queue.isExecuting;
             });
         } catch (error) {
             this.application.logger.error(error);
@@ -1455,9 +1253,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createKick<E extends boolean>(
-        payload: CreateKickPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createKick<E extends boolean>(payload: CreateKickPayload<E>): Promise<InfractionCreateResult<E>> {
         const {
             moderator,
             member,
@@ -1492,9 +1288,7 @@ class InfractionManager extends Service {
         });
 
         try {
-            await member.kick(
-                `${moderator.username} - ${infraction.reason ?? "No reason provided"}`
-            );
+            await member.kick(`${moderator.username} - ${infraction.reason ?? "No reason provided"}`);
         } catch (error) {
             this.application.logger.error(error);
 
@@ -1534,9 +1328,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createMute<E extends boolean>(
-        payload: CreateMutePayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createMute<E extends boolean>(payload: CreateMutePayload<E>): Promise<InfractionCreateResult<E>> {
         const {
             moderator,
             member,
@@ -1554,10 +1346,7 @@ class InfractionManager extends Service {
         let { mode } = payload;
         const guild = this.getGuild(payload.guildId);
 
-        if (
-            (channel && !clearMessagesCount) ||
-            (clearMessagesCount && !channel)
-        ) {
+        if ((channel && !clearMessagesCount) || (clearMessagesCount && !channel)) {
             throw new Error("Must provide both channel and clearMessagesCount");
         }
 
@@ -1571,8 +1360,7 @@ class InfractionManager extends Service {
         }
 
         const config = this.configManager.config[guildId]?.muting;
-        const role =
-            config?.role && mode !== "timeout" ? config?.role : undefined;
+        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
 
         if (!role && mode === "role") {
             return {
@@ -1620,17 +1408,13 @@ class InfractionManager extends Service {
             };
         }
 
-        if (
-            mode === "timeout" &&
-            (duration?.toMilliseconds() ?? 0) >= 28 * 24 * 60 * 60 * 1000
-        ) {
+        if (mode === "timeout" && (duration?.toMilliseconds() ?? 0) >= 28 * 24 * 60 * 60 * 1000) {
             return {
                 status: "failed",
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "invalid_duration",
-                errorDescription:
-                    "Duration must be less than 28 days when timing out!",
+                errorDescription: "Duration must be less than 28 days when timing out!",
                 code: 0
             };
         }
@@ -1661,9 +1445,7 @@ class InfractionManager extends Service {
         }
 
         const reason = this.processReason(guildId, rawReason) ?? rawReason;
-        let rolesTaken = roleTakeout
-            ? member.roles.cache.map(r => r.id)
-            : undefined;
+        let rolesTaken = roleTakeout ? member.roles.cache.map(r => r.id) : undefined;
 
         if (rolesTaken && !member.manageable) {
             return {
@@ -1671,33 +1453,23 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "cannot_manage",
-                errorDescription:
-                    "This member cannot be managed by me, so I cannot take their roles!",
+                errorDescription: "This member cannot be managed by me, so I cannot take their roles!",
                 code: 0
             };
         }
 
         try {
             if (mode === "timeout" && duration) {
-                await member.timeout(
-                    duration.toMilliseconds(),
-                    `${moderator.username} - ${reason}`
-                );
+                await member.timeout(duration.toMilliseconds(), `${moderator.username} - ${reason}`);
             } else if (mode === "role" && role) {
-                await member.roles.add(
-                    role,
-                    `${moderator.username} - ${reason}`
-                );
+                await member.roles.add(role, `${moderator.username} - ${reason}`);
             } else {
                 throw new Error("Unreachable");
             }
 
             if (rolesTaken) {
                 try {
-                    await member.roles.set(
-                        [],
-                        `${moderator.username} - ${reason}`
-                    );
+                    await member.roles.set([], `${moderator.username} - ${reason}`);
                 } catch (error) {
                     this.application.logger.error(error);
                     rolesTaken = [];
@@ -1759,11 +1531,7 @@ class InfractionManager extends Service {
 
         if (mode === "role" && role) {
             await this.queueService.bulkCancel(UnmuteQueue, queue => {
-                return (
-                    queue.data.memberId === member.id &&
-                    queue.data.guildId === guild.id &&
-                    !queue.isExecuting
-                );
+                return queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
             });
 
             if (duration) {
@@ -1803,9 +1571,7 @@ class InfractionManager extends Service {
         };
     }
 
-    public async createUnmute<E extends boolean>(
-        payload: CreateUnmutePayload<E>
-    ): Promise<InfractionCreateResult<E>> {
+    public async createUnmute<E extends boolean>(payload: CreateUnmutePayload<E>): Promise<InfractionCreateResult<E>> {
         const guild = this.getGuild(payload.guildId);
 
         if (!guild) {
@@ -1829,8 +1595,7 @@ class InfractionManager extends Service {
         } = payload;
         const { mode = "auto" } = payload;
         const config = this.configManager.config[guildId]?.muting;
-        const role =
-            config?.role && mode !== "timeout" ? config?.role : undefined;
+        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
         const finalMode = mode === "auto" ? (role ? "role" : "timeout") : mode;
 
         if (finalMode === "role" && !member.manageable) {
@@ -1868,8 +1633,7 @@ class InfractionManager extends Service {
 
         if (
             (finalMode === "role" && role && !member.roles.cache.has(role)) ||
-            (finalMode === "timeout" &&
-                !member.communicationDisabledUntilTimestamp)
+            (finalMode === "timeout" && !member.communicationDisabledUntilTimestamp)
         ) {
             return {
                 status: "failed",
@@ -1884,30 +1648,16 @@ class InfractionManager extends Service {
         const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
         try {
-            if (
-                finalMode === "timeout" &&
-                member.communicationDisabledUntilTimestamp &&
-                member.moderatable
-            ) {
-                await member.disableCommunicationUntil(
-                    null,
-                    `${moderator.username} - ${reason}`
-                );
+            if (finalMode === "timeout" && member.communicationDisabledUntilTimestamp && member.moderatable) {
+                await member.disableCommunicationUntil(null, `${moderator.username} - ${reason}`);
             }
 
             if (finalMode === "role" && role && member.roles.cache.has(role)) {
-                await member.roles.remove(
-                    role,
-                    `${moderator.username} - ${reason}`
-                );
+                await member.roles.remove(role, `${moderator.username} - ${reason}`);
             }
 
             await this.queueService.bulkCancel(UnmuteQueue, queue => {
-                return (
-                    queue.data.memberId === member.id &&
-                    queue.data.guildId === guild.id &&
-                    !queue.isExecuting
-                );
+                return queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
             });
         } catch (error) {
             this.application.logger.error(error);
@@ -1947,22 +1697,15 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        const records =
-            await this.application.database.query.muteRecords.findMany({
-                where: and(
-                    eq(muteRecords.memberId, member.id),
-                    eq(muteRecords.guildId, guild.id)
-                )
-            });
+        const records = await this.application.database.query.muteRecords.findMany({
+            where: and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, guild.id))
+        });
 
         let roleRestoreSuccess = true;
 
         if (records?.length) {
             try {
-                await member.roles.add(
-                    records[0].roles,
-                    `${moderator.username} - ${reason}`
-                );
+                await member.roles.add(records[0].roles, `${moderator.username} - ${reason}`);
             } catch (error) {
                 this.application.logger.error(error);
                 roleRestoreSuccess = false;
@@ -1994,21 +1737,14 @@ class InfractionManager extends Service {
             status: "success",
             infraction,
             overviewEmbed: (generateOverviewEmbed
-                ? also(
-                      this.createOverviewEmbed(
-                          infraction,
-                          member.user,
-                          moderator
-                      ),
-                      embed => {
-                          if (!roleRestoreSuccess) {
-                              embed.fields.push({
-                                  name: "Role Restoration",
-                                  value: "Failed to restore roles"
-                              });
-                          }
+                ? also(this.createOverviewEmbed(infraction, member.user, moderator), embed => {
+                      if (!roleRestoreSuccess) {
+                          embed.fields.push({
+                              name: "Role Restoration",
+                              value: "Failed to restore roles"
+                          });
                       }
-                  )
+                  })
                 : undefined) as E extends true ? APIEmbed : undefined
         };
     }
@@ -2016,12 +1752,7 @@ class InfractionManager extends Service {
     public async recordMute(member: GuildMember, roles: Snowflake[]) {
         await this.application.database.drizzle
             .delete(muteRecords)
-            .where(
-                and(
-                    eq(muteRecords.memberId, member.id),
-                    eq(muteRecords.guildId, member.guild.id)
-                )
-            );
+            .where(and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, member.guild.id)));
 
         await this.application.database.drizzle.insert(muteRecords).values({
             memberId: member.id,
@@ -2038,13 +1769,9 @@ class InfractionManager extends Service {
             return;
         }
 
-        const existing =
-            await this.application.database.query.muteRecords.findFirst({
-                where: and(
-                    eq(muteRecords.memberId, member.id),
-                    eq(muteRecords.guildId, member.guild.id)
-                )
-            });
+        const existing = await this.application.database.query.muteRecords.findFirst({
+            where: and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, member.guild.id))
+        });
 
         if (!existing) {
             return;
@@ -2096,15 +1823,9 @@ class InfractionManager extends Service {
 
         try {
             if (mode === "give") {
-                await member.roles.add(
-                    roles,
-                    `${moderator.username} - ${reason}`
-                );
+                await member.roles.add(roles, `${moderator.username} - ${reason}`);
             } else {
-                await member.roles.remove(
-                    roles,
-                    `${moderator.username} - ${reason}`
-                );
+                await member.roles.remove(roles, `${moderator.username} - ${reason}`);
             }
         } catch (error) {
             this.application.logger.error(error);
@@ -2153,9 +1874,7 @@ class InfractionManager extends Service {
                     data: {
                         memberId: member.id,
                         guildId: guild.id,
-                        roleIds: roles.map(role =>
-                            typeof role === "string" ? role : role.id
-                        ),
+                        roleIds: roles.map(role => (typeof role === "string" ? role : role.id)),
                         mode: mode === "give" ? "remove" : "add",
                         reason: `${moderator.username} - ${reason}`,
                         infractionId: infraction.id
@@ -2182,8 +1901,7 @@ class InfractionManager extends Service {
 
                     return `${acc}, <@&${role.id}>`;
                 }, "")
-                .slice(2) +
-            (roles.length > 8 ? " **+ " + (roles.length - 8) + " more**" : "");
+                .slice(2) + (roles.length > 8 ? " **+ " + (roles.length - 8) + " more**" : "");
 
         overviewEmbed?.fields.push({
             name: `${mode === "give" ? "Added" : "Removed"} Roles`,
@@ -2196,14 +1914,8 @@ class InfractionManager extends Service {
                 moderator,
                 reason,
                 infractionId: infraction?.id,
-                added:
-                    mode === "give"
-                        ? roles.map(r => (r instanceof Role ? r.id : r))
-                        : undefined,
-                removed:
-                    mode === "take"
-                        ? roles.map(r => (r instanceof Role ? r.id : r))
-                        : undefined,
+                added: mode === "give" ? roles.map(r => (r instanceof Role ? r.id : r)) : undefined,
+                removed: mode === "take" ? roles.map(r => (r instanceof Role ? r.id : r)) : undefined,
                 guild
             })
             .catch(this.application.logger.error);
@@ -2211,15 +1923,11 @@ class InfractionManager extends Service {
         return {
             status: "success",
             infraction,
-            overviewEmbed: overviewEmbed as E extends true
-                ? APIEmbed
-                : undefined
+            overviewEmbed: overviewEmbed as E extends true ? APIEmbed : undefined
         };
     }
 
-    public async createClearMessages(
-        payload: CreateClearMessagesPayload<false>
-    ): Promise<MessageBulkDeleteResult> {
+    public async createClearMessages(payload: CreateClearMessagesPayload<false>): Promise<MessageBulkDeleteResult> {
         const {
             moderator,
             user,
@@ -2239,9 +1947,7 @@ class InfractionManager extends Service {
         }
 
         if (count && count > 100) {
-            throw new Error(
-                "Cannot bulk delete more than 100 messages at once"
-            );
+            throw new Error("Cannot bulk delete more than 100 messages at once");
         }
 
         const guild = this.getGuild(payload.guildId);
@@ -2273,14 +1979,10 @@ class InfractionManager extends Service {
         let finalCount: number = 0;
 
         if (user) {
-            finalFilters.push(
-                (message: Message) => message.author.id === user.id
-            );
+            finalFilters.push((message: Message) => message.author.id === user.id);
         }
 
-        let deletedMessages:
-            | Collection<Snowflake, Message | PartialMessage | undefined>
-            | undefined;
+        let deletedMessages: Collection<Snowflake, Message | PartialMessage | undefined> | undefined;
 
         try {
             const messages = await channel.messages.fetch({
@@ -2305,10 +2007,7 @@ class InfractionManager extends Service {
             }
 
             if (messagesToDelete.length > 0) {
-                deletedMessages = await channel.bulkDelete(
-                    messagesToDelete,
-                    true
-                );
+                deletedMessages = await channel.bulkDelete(messagesToDelete, true);
                 finalCount = deletedMessages.size;
             }
         } catch (error) {
@@ -2389,9 +2088,7 @@ class InfractionManager extends Service {
         }
 
         if (count && count > 100) {
-            throw new Error(
-                "Cannot bulk delete more than 100 messages at once"
-            );
+            throw new Error("Cannot bulk delete more than 100 messages at once");
         }
 
         const guild = this.getGuild(payload.guildId);
@@ -2437,9 +2134,7 @@ class InfractionManager extends Service {
                     }
 
                     if (user) {
-                        reaction.users
-                            .remove(user.id)
-                            .catch(this.application.logger.error);
+                        reaction.users.remove(user.id).catch(this.application.logger.error);
                     } else {
                         reaction.remove().catch(this.application.logger.error);
                     }
@@ -2615,11 +2310,7 @@ class InfractionManager extends Service {
                 status: "success",
                 infraction,
                 overviewEmbed: (generateOverviewEmbed
-                    ? this.createOverviewEmbed(
-                          infraction,
-                          member.user,
-                          moderator
-                      )
+                    ? this.createOverviewEmbed(infraction, member.user, moderator)
                     : undefined) as E extends true ? APIEmbed : undefined
             };
         } catch {
@@ -2632,18 +2323,9 @@ class InfractionManager extends Service {
         }
     }
 
-    public async createNote<E extends boolean>(
-        payload: CreateNotePayload<E>
-    ): Promise<InfractionCreateResult<E>> {
-        const {
-            moderator,
-            user,
-            reason,
-            guildId,
-            generateOverviewEmbed,
-            transformNotificationEmbed,
-            attachments
-        } = payload;
+    public async createNote<E extends boolean>(payload: CreateNotePayload<E>): Promise<InfractionCreateResult<E>> {
+        const { moderator, user, reason, guildId, generateOverviewEmbed, transformNotificationEmbed, attachments } =
+            payload;
 
         const guild = this.getGuild(payload.guildId);
 
@@ -2688,29 +2370,18 @@ class InfractionManager extends Service {
         };
     }
 
-    private createOverviewEmbed(
-        infraction: Infraction,
-        user: User,
-        moderator: User,
-        options?: CreateOverviewOptions
-    ) {
+    private createOverviewEmbed(infraction: Infraction, user: User, moderator: User, options?: CreateOverviewOptions) {
         const fields = [
             {
                 name: "Reason",
                 value: infraction.reason ?? italic("No reason provided")
             },
             {
-                name:
-                    infraction.type === InfractionType.Shot
-                        ? "Patient"
-                        : "User",
+                name: infraction.type === InfractionType.Shot ? "Patient" : "User",
                 value: userInfo(user)
             },
             {
-                name:
-                    infraction.type === InfractionType.Shot
-                        ? "💉 Doctor"
-                        : "Moderator",
+                name: infraction.type === InfractionType.Shot ? "💉 Doctor" : "Moderator",
                 value: userInfo(moderator)
             }
         ];
@@ -2727,18 +2398,13 @@ class InfractionManager extends Service {
             });
         }
 
-        if (
-            infraction.deliveryStatus !== InfractionDeliveryStatus.Success &&
-            includeNotificationStatusInEmbed
-        ) {
+        if (infraction.deliveryStatus !== InfractionDeliveryStatus.Success && includeNotificationStatusInEmbed) {
             fields.push({
                 name: "Notification",
                 value:
-                    infraction.deliveryStatus ===
-                    InfractionDeliveryStatus.Failed
+                    infraction.deliveryStatus === InfractionDeliveryStatus.Failed
                         ? "Failed to deliver a DM to this user."
-                        : infraction.deliveryStatus ===
-                            InfractionDeliveryStatus.Fallback
+                        : infraction.deliveryStatus === InfractionDeliveryStatus.Fallback
                           ? "Sent to fallback channel."
                           : "Not delivered."
             });
@@ -2805,9 +2471,7 @@ class InfractionManager extends Service {
             };
         }
 
-        const attachmentFileLocalNames = attachments
-            ? await this.saveAttachments(attachments)
-            : [];
+        const attachmentFileLocalNames = attachments ? await this.saveAttachments(attachments) : [];
 
         await onMassBanStart?.();
 
@@ -2819,17 +2483,13 @@ class InfractionManager extends Service {
         const infractionCreatePayloads: InfractionCreatePayload[] = [];
 
         try {
-            const response = (await this.client.rest.post(
-                `/guilds/${encodeURIComponent(guild.id)}/bulk-ban`,
-                {
-                    reason: `${moderator.username} - ${reason ?? "No reason provided"}`,
-                    body: {
-                        user_ids: allUsers,
-                        delete_message_seconds:
-                            deletionTimeframe?.toSeconds("floor")
-                    }
+            const response = (await this.client.rest.post(`/guilds/${encodeURIComponent(guild.id)}/bulk-ban`, {
+                reason: `${moderator.username} - ${reason ?? "No reason provided"}`,
+                body: {
+                    user_ids: allUsers,
+                    delete_message_seconds: deletionTimeframe?.toSeconds("floor")
                 }
-            )) as {
+            })) as {
                 banned_users: Snowflake[];
                 failed_users: Snowflake[];
             };
@@ -2841,9 +2501,7 @@ class InfractionManager extends Service {
 
             if (error instanceof DiscordAPIError && error.code === 500000) {
                 suppressErrorNoReturn(onError?.("failed_to_ban"));
-                suppressErrorNoReturn(
-                    onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban")
-                );
+                suppressErrorNoReturn(onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban"));
 
                 return {
                     status: "failed",
@@ -2852,9 +2510,7 @@ class InfractionManager extends Service {
             }
 
             suppressErrorNoReturn(onError?.("bulk_ban_failed"));
-            suppressErrorNoReturn(
-                onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed")
-            );
+            suppressErrorNoReturn(onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed"));
 
             return {
                 status: "failed",
@@ -2940,9 +2596,7 @@ class InfractionManager extends Service {
             };
         }
 
-        const attachmentFileLocalNames = attachments
-            ? await this.saveAttachments(attachments)
-            : [];
+        const attachmentFileLocalNames = attachments ? await this.saveAttachments(attachments) : [];
         await onMassKickStart?.();
 
         const members: GuildMember[] = [];
@@ -2951,21 +2605,12 @@ class InfractionManager extends Service {
 
         await Promise.all(
             memberResolvables.map(async resolvable => {
-                await onKickAttempt?.(
-                    typeof resolvable === "string" ? resolvable : resolvable.id
-                );
+                await onKickAttempt?.(typeof resolvable === "string" ? resolvable : resolvable.id);
 
-                const member =
-                    typeof resolvable === "string"
-                        ? await fetchMember(guild, resolvable)
-                        : resolvable;
+                const member = typeof resolvable === "string" ? await fetchMember(guild, resolvable) : resolvable;
 
                 if (!member) {
-                    await onInvalidMember?.(
-                        typeof resolvable === "string"
-                            ? resolvable
-                            : resolvable.id
-                    );
+                    await onInvalidMember?.(typeof resolvable === "string" ? resolvable : resolvable.id);
                     return;
                 }
 
@@ -2977,9 +2622,7 @@ class InfractionManager extends Service {
                         throw new Error("Member is not kickable");
                     }
 
-                    await member.kick(
-                        `${moderator.username} - ${reason ?? "No reason provided"}`
-                    );
+                    await member.kick(`${moderator.username} - ${reason ?? "No reason provided"}`);
                     await onKickSuccess?.(member);
 
                     infractionCreatePayloads.push({
@@ -3028,21 +2671,13 @@ class InfractionManager extends Service {
         user,
         onlyNotified = false
     }: GeneratePlainTextExportOptions) {
-        const infractionList =
-            await this.application.database.query.infractions.findMany({
-                where: and(
-                    eq(infractions.guildId, guild.id),
-                    eq(infractions.userId, user.id),
-                    onlyNotified
-                        ? not(
-                              eq(
-                                  infractions.deliveryStatus,
-                                  InfractionDeliveryStatus.NotDelivered
-                              )
-                          )
-                        : undefined
-                )
-            });
+        const infractionList = await this.application.database.query.infractions.findMany({
+            where: and(
+                eq(infractions.guildId, guild.id),
+                eq(infractions.userId, user.id),
+                onlyNotified ? not(eq(infractions.deliveryStatus, InfractionDeliveryStatus.NotDelivered)) : undefined
+            )
+        });
 
         const table = new AsciiTable3("Infractions");
 
@@ -3080,46 +2715,40 @@ class InfractionManager extends Service {
         );
 
         for (const infraction of infractionList) {
-            const row: (string | Date | number | null)[] = columnsToInclude.map(
-                column => {
-                    switch (column) {
-                        case "id":
-                            return infraction.id;
-                        case "type":
-                            return this.prettifyInfractionType(infraction.type);
-                        case "userId":
-                            return infraction.userId;
-                        case "moderatorId":
-                            return infraction.moderatorId;
-                        case "reason":
-                            return infraction.reason ?? "None";
-                        case "createdAt":
-                            return infraction.createdAt;
-                        case "updatedAt":
-                            return infraction.updatedAt;
-                        case "expiresAt":
-                            return infraction.expiresAt ?? "Never";
-                        case "metadata":
-                            return JSON.stringify(infraction.metadata);
-                        case "duration":
-                            return infraction.expiresAt
-                                ? formatDistanceStrict(
-                                      infraction.expiresAt,
-                                      infraction.createdAt
-                                  )
-                                : "None";
-                        case "deliveryStatus":
-                            return infraction.deliveryStatus;
-                        case "attachments":
-                            return infraction.attachments.length > 0
-                                ? `${infraction.attachments.length} total\n` +
-                                      infraction.attachments.join("\n")
-                                : "None";
-                        default:
-                            throw new Error("Invalid column");
-                    }
+            const row: (string | Date | number | null)[] = columnsToInclude.map(column => {
+                switch (column) {
+                    case "id":
+                        return infraction.id;
+                    case "type":
+                        return this.prettifyInfractionType(infraction.type);
+                    case "userId":
+                        return infraction.userId;
+                    case "moderatorId":
+                        return infraction.moderatorId;
+                    case "reason":
+                        return infraction.reason ?? "None";
+                    case "createdAt":
+                        return infraction.createdAt;
+                    case "updatedAt":
+                        return infraction.updatedAt;
+                    case "expiresAt":
+                        return infraction.expiresAt ?? "Never";
+                    case "metadata":
+                        return JSON.stringify(infraction.metadata);
+                    case "duration":
+                        return infraction.expiresAt
+                            ? formatDistanceStrict(infraction.expiresAt, infraction.createdAt)
+                            : "None";
+                    case "deliveryStatus":
+                        return infraction.deliveryStatus;
+                    case "attachments":
+                        return infraction.attachments.length > 0
+                            ? `${infraction.attachments.length} total\n` + infraction.attachments.join("\n")
+                            : "None";
+                    default:
+                        throw new Error("Invalid column");
                 }
-            );
+            });
 
             table.addRow(...row);
         }
@@ -3127,26 +2756,17 @@ class InfractionManager extends Service {
         return { output: table.toString(), count: infractionList.length };
     }
 
-    public async getUserValidInfractions(
-        guildId: Snowflake,
-        userId: Snowflake
-    ) {
+    public async getUserValidInfractions(guildId: Snowflake, userId: Snowflake) {
         return await this.application.database.query.infractions.findMany({
             where: and(
                 eq(infractions.guildId, guildId),
                 eq(infractions.userId, userId),
-                inArray(
-                    infractions.type,
-                    Object.keys(this.typeToPointKeyMap) as InfractionType[]
-                )
+                inArray(infractions.type, Object.keys(this.typeToPointKeyMap) as InfractionType[])
             )
         });
     }
 
-    public async getInfractionStatistics(
-        guildId: Snowflake,
-        userId: Snowflake
-    ): Promise<InfractionStatistics | null> {
+    public async getInfractionStatistics(guildId: Snowflake, userId: Snowflake): Promise<InfractionStatistics | null> {
         type Key = keyof NonNullable<GuildConfig["infractions"]>["points"];
         const infractions = await this.getUserInfractions(guildId, userId);
         const config = this.configManager.config[guildId]?.infractions;
@@ -3182,10 +2802,7 @@ class InfractionManager extends Service {
                 continue;
             }
 
-            let key: Key =
-                this.typeToPointKeyMap[
-                    type as keyof typeof this.typeToPointKeyMap
-                ];
+            let key: Key = this.typeToPointKeyMap[type as keyof typeof this.typeToPointKeyMap];
 
             if (type === InfractionType.Ban) {
                 if (infraction.expiresAt) {
@@ -3217,10 +2834,7 @@ class InfractionManager extends Service {
                 const keys = Object.keys(groupedInfractions);
 
                 for (const type of keys) {
-                    const infractions =
-                        groupedInfractions[
-                            type as keyof typeof groupedInfractions
-                        ];
+                    const infractions = groupedInfractions[type as keyof typeof groupedInfractions];
 
                     if (!infractions) {
                         continue;
@@ -3239,10 +2853,7 @@ class InfractionManager extends Service {
                 return summary;
             },
             recommendAction: (): string => {
-                if (
-                    (groupedInfractions.tempban?.length ?? 0) > 1 ||
-                    (groupedInfractions.softban?.length ?? 0) > 1
-                ) {
+                if ((groupedInfractions.tempban?.length ?? 0) > 1 || (groupedInfractions.softban?.length ?? 0) > 1) {
                     return "Consider banning this user permanently.";
                 }
 
@@ -3254,18 +2865,13 @@ class InfractionManager extends Service {
                     );
                 }
 
-                if (
-                    (groupedInfractions.mute?.length ?? 0) > 1 ||
-                    (groupedInfractions.timeout?.length ?? 0) > 1
-                ) {
+                if ((groupedInfractions.mute?.length ?? 0) > 1 || (groupedInfractions.timeout?.length ?? 0) > 1) {
                     return "Consider kicking or temporarily banning this user.";
                 }
 
                 if ((groupedInfractions.warning?.length ?? 0) > 1) {
                     return (
-                        "Consider muting this user for " +
-                        (groupedInfractions.warning?.length ?? 1) * 2 +
-                        " hours(s)."
+                        "Consider muting this user for " + (groupedInfractions.warning?.length ?? 1) * 2 + " hours(s)."
                     );
                 }
 
@@ -3291,14 +2897,8 @@ export type GeneratePlainTextExportColumn =
 
 export type InfractionStatistics = {
     total: number;
-    points: Record<
-        keyof NonNullable<GuildConfig["infractions"]>["points"],
-        number
-    >;
-    infractions: Record<
-        keyof NonNullable<GuildConfig["infractions"]>["points"],
-        Infraction[] | undefined
-    >;
+    points: Record<keyof NonNullable<GuildConfig["infractions"]>["points"], number>;
+    infractions: Record<keyof NonNullable<GuildConfig["infractions"]>["points"], Infraction[] | undefined>;
     recommendAction(): string;
     summarize(): string;
 };
@@ -3335,10 +2935,7 @@ type CreateShotPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
 };
 
-type CreateUnbanPayload<E extends boolean> = Omit<
-    CommonOptions<E>,
-    "notify"
-> & {
+type CreateUnbanPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user: User;
 };
 
@@ -3363,10 +2960,7 @@ type CreateModeratorMessage<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
 };
 
-type CreateClearMessagesPayload<E extends boolean> = Omit<
-    CommonOptions<E>,
-    "notify"
-> & {
+type CreateClearMessagesPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user?: User;
     channel: GuildTextBasedChannel;
     count?: number;
@@ -3375,10 +2969,7 @@ type CreateClearMessagesPayload<E extends boolean> = Omit<
     beforeId?: Snowflake;
 };
 
-type CreateClearMessageReactionsPayload<E extends boolean> = Omit<
-    CommonOptions<E>,
-    "notify"
-> & {
+type CreateClearMessageReactionsPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user?: User;
     channel: GuildTextBasedChannel;
     count?: number;
@@ -3463,10 +3054,7 @@ type MessageBulkDeleteResult =
           count: number;
           infraction?: Infraction;
       }
-    | Omit<
-          Extract<InfractionCreateResult<false>, { status: "failed" }>,
-          "infraction"
-      >;
+    | Omit<Extract<InfractionCreateResult<false>, { status: "failed" }>, "infraction">;
 
 type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     payload?: Partial<Omit<InfractionCreatePayload, "type">>;

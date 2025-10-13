@@ -25,11 +25,11 @@ import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { fetchChannel, fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
-import { AIAutoModSchema } from "@main/schemas/AIAutoModSchema";
-import { LogEventType } from "@main/schemas/LoggingSchema";
-import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { emoji } from "@main/utils/emoji";
+import { AIAutoModSchema } from "@schemas/AIAutoModSchema";
+import { LogEventType } from "@schemas/LoggingSchema";
+import { ModerationActionType } from "@schemas/ModerationActionSchema";
 import {
     ActionRowBuilder,
     APIEmbed,

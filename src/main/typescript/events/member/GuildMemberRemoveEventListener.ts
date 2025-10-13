@@ -23,9 +23,9 @@ import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
 import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { AuditLogEvent, User, type GuildMember } from "discord.js";
 
 class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRemove> {

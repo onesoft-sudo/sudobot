@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "ES2022",
+        "module": "CommonJS",
+        "types": ["node", "bun"],
+        "lib": ["ES2022", "Decorators", "DOM"],
+        "resolveJsonModule": true,
+        "declaration": true,
+        "outDir": "./js",
+        "newLine": "lf",
+        "noEmitOnError": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "noImplicitOverride": true,
+        "importsNotUsedAsValues": "remove",
+        "sourceMap": true
+    },
+    "include": ["./**/*.ts"]
+}

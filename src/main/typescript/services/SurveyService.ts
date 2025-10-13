@@ -23,10 +23,10 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { userInfo } from "@framework/utils/embeds";
-import { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { safeChannelFetch } from "@main/utils/fetch";
 import { chunkedString } from "@main/utils/utils";
+import { GuildConfig } from "@schemas/GuildConfigSchema";
 import {
     ActionRowBuilder,
     ButtonInteraction,
@@ -146,9 +146,7 @@ class SurveyService extends Service implements HasEventListeners {
         )}\n${userInfo(interaction.user)}\n\n`;
 
         for (const question of surveyConfig.questions) {
-            const answer = interaction.fields.getTextInputValue(
-                `survey_${customId}_question_${i++}`
-            );
+            const answer = interaction.fields.getTextInputValue(`survey_${customId}_question_${i++}`);
 
             if (question.required && !answer) {
                 await interaction.reply({
@@ -177,9 +175,7 @@ class SurveyService extends Service implements HasEventListeners {
         const logChannel = await safeChannelFetch(interaction.guild!, logChannelId);
 
         if (!logChannel?.isTextBased()) {
-            this.logger.warn(
-                "Log channel specified for survey completion does not exist or is not text-based."
-            );
+            this.logger.warn("Log channel specified for survey completion does not exist or is not text-based.");
 
             return;
         }
@@ -210,15 +206,11 @@ class SurveyService extends Service implements HasEventListeners {
                     surveyConfig.required_permissions as PermissionsString[],
                     true
                 )) &&
-            (!surveyConfig.required_users?.length ||
-                surveyConfig.required_users.includes(interaction.user.id))
+            (!surveyConfig.required_users?.length || surveyConfig.required_users.includes(interaction.user.id))
         );
     }
 
-    public buildModal(
-        customId: string,
-        surveyConfig: NonNullable<GuildConfig["survey_system"]>["surveys"][string]
-    ) {
+    public buildModal(customId: string, surveyConfig: NonNullable<GuildConfig["survey_system"]>["surveys"][string]) {
         const components: ActionRowBuilder<TextInputBuilder>[] = [];
         let i = 0;
 
@@ -246,11 +238,7 @@ class SurveyService extends Service implements HasEventListeners {
             const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
                 input
                     .setRequired(question.required)
-                    .setStyle(
-                        question.type === "paragraph"
-                            ? TextInputStyle.Paragraph
-                            : TextInputStyle.Short
-                    )
+                    .setStyle(question.type === "paragraph" ? TextInputStyle.Paragraph : TextInputStyle.Short)
             );
 
             components.push(row);

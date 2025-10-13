@@ -23,33 +23,19 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { Events } from "@framework/types/ClientEvents";
 import { BUG } from "@framework/utils/devflow";
-import {
-    fetchChannel,
-    fetchMember,
-    fetchUser
-} from "@framework/utils/entities";
+import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { getEnvData } from "@main/env/env";
-import {
-    AltFingerprintCreatePayload,
-    altFingerprints,
-    AltFingerprintType
-} from "@main/models/AltFingerprint";
-import {
-    verificationEntries,
-    VerificationStatus
-} from "@main/models/VerificationEntry";
-import {
-    VerificationMethod,
-    verificationRecords
-} from "@main/models/VerificationRecord";
+import { AltFingerprintCreatePayload, altFingerprints, AltFingerprintType } from "@main/models/AltFingerprint";
+import { verificationEntries, VerificationStatus } from "@main/models/VerificationEntry";
+import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     ActionRowBuilder,
@@ -83,11 +69,7 @@ class VerificationService extends Service {
     }
 
     public async onInteractionCreate(interaction: Interaction) {
-        if (
-            !interaction.isButton() ||
-            !interaction.inGuild() ||
-            !interaction.customId.startsWith("verify_")
-        ) {
+        if (!interaction.isButton() || !interaction.inGuild() || !interaction.customId.startsWith("verify_")) {
             return;
         }
 
@@ -110,36 +92,27 @@ class VerificationService extends Service {
         }
 
         if (
-            (memberId !== "static" &&
-                config.method !== "channel_interaction") ||
-            (memberId === "static" &&
-                config.method !== "channel_static_interaction")
+            (memberId !== "static" && config.method !== "channel_interaction") ||
+            (memberId === "static" && config.method !== "channel_static_interaction")
         ) {
             return;
         }
 
         await interaction.deferReply({ ephemeral: true });
 
-        const entry =
-            await this.application.database.query.verificationEntries.findFirst(
-                {
-                    where(fields, operators) {
-                        return operators.and(
-                            operators.eq(fields.userId, interaction.user.id),
-                            operators.eq(fields.guildId, interaction.guildId),
-                            operators.gt(fields.expiresAt, new Date())
-                        );
-                    }
-                }
-            );
+        const entry = await this.application.database.query.verificationEntries.findFirst({
+            where(fields, operators) {
+                return operators.and(
+                    operators.eq(fields.userId, interaction.user.id),
+                    operators.eq(fields.guildId, interaction.guildId),
+                    operators.gt(fields.expiresAt, new Date())
+                );
+            }
+        });
 
         if (memberId === "static") {
             const url = entry
-                ? this.getVerificationURL(
-                      interaction.guildId,
-                      interaction.user.id,
-                      entry.token
-                  )
+                ? this.getVerificationURL(interaction.guildId, interaction.user.id, entry.token)
                 : await this.startVerification(
                       interaction.member as GuildMember,
                       "Verification requested by user.",
@@ -156,10 +129,7 @@ class VerificationService extends Service {
                 content: `Hi **${interaction.user.username}**! Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setLabel("Verify")
-                            .setURL(url)
+                        new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Verify").setURL(url)
                     )
                 ]
             });
@@ -173,20 +143,13 @@ class VerificationService extends Service {
             }));
         }
 
-        const url = this.getVerificationURL(
-            interaction.guildId,
-            interaction.user.id,
-            entry.token
-        );
+        const url = this.getVerificationURL(interaction.guildId, interaction.user.id, entry.token);
 
         await interaction.editReply({
             content: `Hi **${interaction.user.username}**! Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setLabel("Verify")
-                        .setURL(url)
+                    new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Verify").setURL(url)
                 )
             ]
         });
@@ -202,11 +165,7 @@ class VerificationService extends Service {
 
         const { age_less_than, always, no_avatar } = config.conditions;
 
-        if (
-            !always &&
-            age_less_than &&
-            member.user.createdTimestamp > Date.now() - age_less_than
-        ) {
+        if (!always && age_less_than && member.user.createdTimestamp > Date.now() - age_less_than) {
             return this.startVerification(member, "Account is too young.");
         }
 
@@ -215,10 +174,7 @@ class VerificationService extends Service {
         }
 
         if (always) {
-            return this.startVerification(
-                member,
-                "Account requires verification."
-            );
+            return this.startVerification(member, "Account requires verification.");
         }
     }
 
@@ -226,37 +182,21 @@ class VerificationService extends Service {
     public async onGuildMemberRemove(member: GuildMember) {
         await this.application.database.drizzle
             .delete(verificationEntries)
-            .where(
-                and(
-                    eq(verificationEntries.userId, member.id),
-                    eq(verificationEntries.guildId, member.guild.id)
-                )
-            );
+            .where(and(eq(verificationEntries.userId, member.id), eq(verificationEntries.guildId, member.guild.id)));
 
         await this.clearVerificationQueues(member.guild.id, member.id);
     }
 
     private getVerificationDomain() {
-        return (
-            getEnvData().FRONTEND_GUILD_MEMBER_VERIFICATION_URL ??
-            getEnvData().FRONTEND_URL
-        );
+        return getEnvData().FRONTEND_GUILD_MEMBER_VERIFICATION_URL ?? getEnvData().FRONTEND_URL;
     }
 
-    private getVerificationURL(
-        guildId: string,
-        memberId: string,
-        token: string
-    ) {
+    private getVerificationURL(guildId: string, memberId: string, token: string) {
         const domain = this.getVerificationDomain();
         return `${domain}${domain === getEnvData().FRONTEND_URL ? "/verify" : ""}/guilds/${encodeURIComponent(guildId)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(memberId)}`;
     }
 
-    public async startVerification(
-        member: GuildMember,
-        reason: string,
-        silent = false
-    ) {
+    public async startVerification(member: GuildMember, reason: string, silent = false) {
         const config = this.configFor(member.guild.id);
 
         if (!config || !member.manageable) {
@@ -265,12 +205,8 @@ class VerificationService extends Service {
 
         const env = getEnvData();
 
-        await member.roles
-            .add(config.unverified_roles, reason)
-            .catch(this.logger.error);
-        await member.roles
-            .remove(config.verified_roles, reason)
-            .catch(this.logger.error);
+        await member.roles.add(config.unverified_roles, reason).catch(this.logger.error);
+        await member.roles.remove(config.verified_roles, reason).catch(this.logger.error);
 
         const options = {
             expiresIn: config.max_duration,
@@ -281,11 +217,7 @@ class VerificationService extends Service {
             delete options.expiresIn;
         }
 
-        const token = jwt.sign(
-            { id: member.id, guildId: member.guild.id },
-            env.JWT_SECRET,
-            options
-        );
+        const token = jwt.sign({ id: member.id, guildId: member.guild.id }, env.JWT_SECRET, options);
 
         await this.application.database.drizzle
             .insert(verificationEntries)
@@ -294,9 +226,7 @@ class VerificationService extends Service {
                 userId: member.id,
                 token,
                 method: config.method as VerificationMethod,
-                expiresAt: config.max_duration
-                    ? new Date(Date.now() + config.max_duration * 1000)
-                    : null
+                expiresAt: config.max_duration ? new Date(Date.now() + config.max_duration * 1000) : null
             })
             .execute();
 
@@ -314,20 +244,16 @@ class VerificationService extends Service {
 
                 if (!config.message_id_internal) {
                     try {
-                        const channel = await fetchChannel(
-                            member.guild,
-                            config.channel
-                        );
+                        const channel = await fetchChannel(member.guild, config.channel);
 
                         if (!channel?.isTextBased()) {
                             break;
                         }
 
-                        const { data, output } =
-                            await this.directiveParsingService.parse(
-                                config.verification_message ??
-                                    "Welcome to the server! Please verify yourself by clicking the button below."
-                            );
+                        const { data, output } = await this.directiveParsingService.parse(
+                            config.verification_message ??
+                                "Welcome to the server! Please verify yourself by clicking the button below."
+                        );
                         const options = {
                             content: output.trim() === "" ? undefined : output,
                             embeds: (data.embeds as APIEmbed[]) ?? [],
@@ -348,20 +274,12 @@ class VerificationService extends Service {
 
                         const { id } = await channel.send(options);
 
-                        if (
-                            this.configManager.config[member.guild.id]
-                                ?.member_verification
-                        ) {
-                            this.configManager.config[
-                                member.guild.id
-                            ]!.member_verification!.message_id_internal = id;
+                        if (this.configManager.config[member.guild.id]?.member_verification) {
+                            this.configManager.config[member.guild.id]!.member_verification!.message_id_internal = id;
                             await this.configManager.write();
                         }
                     } catch (error) {
-                        this.logger.error(
-                            "Failed to send verification message to channel: ",
-                            error
-                        );
+                        this.logger.error("Failed to send verification message to channel: ", error);
                     }
                 }
 
@@ -373,10 +291,7 @@ class VerificationService extends Service {
                 }
 
                 try {
-                    const channel = await fetchChannel(
-                        member.guild,
-                        config.channel
-                    );
+                    const channel = await fetchChannel(member.guild, config.channel);
 
                     if (!channel?.isTextBased()) {
                         break;
@@ -394,10 +309,7 @@ class VerificationService extends Service {
                         ]
                     });
                 } catch (error) {
-                    this.logger.error(
-                        "Failed to send verification message to channel: ",
-                        error
-                    );
+                    this.logger.error("Failed to send verification message to channel: ", error);
                 }
 
                 break;
@@ -420,13 +332,9 @@ class VerificationService extends Service {
                             `Hello **${member.user.username}**,\n\n**${member.guild.name}** requires new members to verify themselves before they can interact with others. Please verify yourself by clicking the button below.\n\nAlternatively, you can verify yourself copy-pasting the following link in your browser: ${url}\n\nSincerely,\n*The Staff of ${member.guild.name}*`
                     };
 
-                    const row =
-                        new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            new ButtonBuilder()
-                                .setStyle(ButtonStyle.Link)
-                                .setURL(url)
-                                .setLabel("Verify")
-                        );
+                    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(url).setLabel("Verify")
+                    );
 
                     try {
                         await member.send({
@@ -434,10 +342,7 @@ class VerificationService extends Service {
                             components: [row]
                         });
                     } catch (error) {
-                        this.logger.error(
-                            "Failed to send verification message to user: ",
-                            error
-                        );
+                        this.logger.error("Failed to send verification message to user: ", error);
                     }
                 }
 
@@ -464,12 +369,7 @@ class VerificationService extends Service {
     public async onVerificationExpire(guildId: Snowflake, memberId: Snowflake) {
         await this.application.database.drizzle
             .delete(verificationEntries)
-            .where(
-                and(
-                    eq(verificationEntries.userId, memberId),
-                    eq(verificationEntries.guildId, guildId)
-                )
-            );
+            .where(and(eq(verificationEntries.userId, memberId), eq(verificationEntries.guildId, guildId)));
 
         const guild = this.application.client.guilds.cache.get(guildId);
 
@@ -483,39 +383,22 @@ class VerificationService extends Service {
             return;
         }
 
-        const target =
-            (await fetchMember(guild, memberId)) ??
-            (await fetchUser(this.application.client, memberId));
+        const target = (await fetchMember(guild, memberId)) ?? (await fetchUser(this.application.client, memberId));
 
         if (!target) {
             return;
         }
 
-        await this.moderationActionService.takeActions(
-            guild,
-            target,
-            config.expired_actions
-        );
+        await this.moderationActionService.takeActions(guild, target, config.expired_actions);
     }
 
-    public async clearVerificationQueues(
-        guildId: Snowflake,
-        memberId: Snowflake
-    ) {
-        await this.application
-            .service("queueService")
-            .bulkCancel(VerificationExpiredQueue, queue => {
-                return (
-                    queue.data.memberId === memberId &&
-                    queue.data.guildId === guildId
-                );
-            });
+    public async clearVerificationQueues(guildId: Snowflake, memberId: Snowflake) {
+        await this.application.service("queueService").bulkCancel(VerificationExpiredQueue, queue => {
+            return queue.data.memberId === memberId && queue.data.guildId === guildId;
+        });
     }
 
-    public async isProxy(
-        ip: string,
-        config: { vpn_proxy_check_enabled: boolean }
-    ) {
+    public async isProxy(ip: string, config: { vpn_proxy_check_enabled: boolean }) {
         if (!config.vpn_proxy_check_enabled) {
             return false;
         }
@@ -523,9 +406,7 @@ class VerificationService extends Service {
         const env = getEnvData();
         const response = await getAxiosClient().get(
             `https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1` +
-                (env.PROXYCHECKIO_API_KEY
-                    ? `&key=${encodeURIComponent(env.PROXYCHECKIO_API_KEY)}`
-                    : "")
+                (env.PROXYCHECKIO_API_KEY ? `&key=${encodeURIComponent(env.PROXYCHECKIO_API_KEY)}` : "")
         );
 
         this.logger.debug(ip, response.data);
@@ -543,12 +424,7 @@ class VerificationService extends Service {
         );
     }
 
-    public async connectDiscord(
-        guildId: string,
-        memberId: string,
-        token: string,
-        discordCode: string
-    ) {
+    public async connectDiscord(guildId: string, memberId: string, token: string, discordCode: string) {
         try {
             const body = new URLSearchParams({
                 client_id: getEnvData().CLIENT_ID,
@@ -560,24 +436,16 @@ class VerificationService extends Service {
                 state: `${guildId}|${memberId}|${token}`
             }).toString();
 
-            const tokenResponse = await undici.request(
-                "https://discord.com/api/oauth2/token",
-                {
-                    method: "POST",
-                    body,
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
+            const tokenResponse = await undici.request("https://discord.com/api/oauth2/token", {
+                method: "POST",
+                body,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
                 }
-            );
+            });
 
-            if (
-                tokenResponse.statusCode > 299 ||
-                tokenResponse.statusCode < 200
-            ) {
-                throw new Error(
-                    `Failed to communicate with Discord: ${tokenResponse.statusCode}`
-                );
+            if (tokenResponse.statusCode > 299 || tokenResponse.statusCode < 200) {
+                throw new Error(`Failed to communicate with Discord: ${tokenResponse.statusCode}`);
             }
 
             const oauthData = await tokenResponse.body.json();
@@ -586,33 +454,19 @@ class VerificationService extends Service {
                 throw new Error("Invalid response from Discord");
             }
 
-            const { access_token, token_type } = oauthData as Record<
-                string,
-                string
-            >;
-            const userResponse = await undici.request(
-                "https://discord.com/api/users/@me",
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `${token_type} ${access_token}`
-                    }
+            const { access_token, token_type } = oauthData as Record<string, string>;
+            const userResponse = await undici.request("https://discord.com/api/users/@me", {
+                method: "GET",
+                headers: {
+                    Authorization: `${token_type} ${access_token}`
                 }
-            );
+            });
 
-            if (
-                userResponse.statusCode > 299 ||
-                userResponse.statusCode < 200
-            ) {
-                throw new Error(
-                    `Failed to get user info: ${userResponse.statusCode}`
-                );
+            if (userResponse.statusCode > 299 || userResponse.statusCode < 200) {
+                throw new Error(`Failed to get user info: ${userResponse.statusCode}`);
             }
 
-            const userData = (await userResponse.body.json()) as Record<
-                string,
-                string
-            >;
+            const userData = (await userResponse.body.json()) as Record<string, string>;
 
             if (typeof userData !== "object" || !userData) {
                 throw new Error("Invalid user response");
@@ -628,29 +482,18 @@ class VerificationService extends Service {
                 throw new Error("Discord ID mismatch");
             }
 
-            const guildsResponse = await undici.request(
-                "https://discord.com/api/users/@me/guilds",
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `${token_type} ${access_token}`
-                    }
+            const guildsResponse = await undici.request("https://discord.com/api/users/@me/guilds", {
+                method: "GET",
+                headers: {
+                    Authorization: `${token_type} ${access_token}`
                 }
-            );
+            });
 
-            if (
-                guildsResponse.statusCode > 299 ||
-                guildsResponse.statusCode < 200
-            ) {
-                throw new Error(
-                    `Failed to get user guild list: ${guildsResponse.statusCode}`
-                );
+            if (guildsResponse.statusCode > 299 || guildsResponse.statusCode < 200) {
+                throw new Error(`Failed to get user guild list: ${guildsResponse.statusCode}`);
             }
 
-            const guildsData = (await guildsResponse.body.json()) as Record<
-                string,
-                string
-            >;
+            const guildsData = (await guildsResponse.body.json()) as Record<string, string>;
 
             if (!Array.isArray(guildsData) || !guildsData) {
                 throw new Error("Invalid guilds response");
@@ -660,9 +503,7 @@ class VerificationService extends Service {
                 throw new Error(guildsData.error);
             }
 
-            const guildIds = guildsData.map(
-                (guild: { id: string }) => guild.id
-            );
+            const guildIds = guildsData.map((guild: { id: string }) => guild.id);
 
             const result = await this.application.database.drizzle
                 .update(verificationEntries)
@@ -673,10 +514,7 @@ class VerificationService extends Service {
                         eq(verificationEntries.guildId, guildId),
                         eq(verificationEntries.token, token),
                         gt(verificationEntries.expiresAt, new Date()),
-                        eq(
-                            verificationEntries.status,
-                            VerificationStatus.Pending
-                        )
+                        eq(verificationEntries.status, VerificationStatus.Pending)
                     )
                 )
                 .execute();
@@ -692,10 +530,7 @@ class VerificationService extends Service {
             this.logger.error("Failed to connect Discord account: ", error);
 
             return {
-                error:
-                    error instanceof Error
-                        ? error?.message
-                        : "Failed to connect Discord account."
+                error: error instanceof Error ? error?.message : "Failed to connect Discord account."
             };
         }
     }
@@ -708,9 +543,7 @@ class VerificationService extends Service {
         fingerprints: Record<AltFingerprintType, string>
     ) {
         const config = this.configFor(guildId);
-        const proxyCheck = config?.vpn_proxy_check_enabled
-            ? await this.isProxy(ip, config)
-            : false;
+        const proxyCheck = config?.vpn_proxy_check_enabled ? await this.isProxy(ip, config) : false;
         let error: string | undefined;
         let reason: string | undefined;
 
@@ -735,28 +568,21 @@ class VerificationService extends Service {
 
         verify: {
             if (proxyCheck) {
-                error =
-                    "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
+                error = "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
                 reason = "VPN or Proxy detected.";
                 break verify;
             }
 
-            const entry =
-                await this.application.database.query.verificationEntries.findFirst(
-                    {
-                        where(fields, operators) {
-                            return operators.and(
-                                operators.eq(fields.userId, memberId),
-                                operators.eq(fields.guildId, guildId),
-                                operators.eq(fields.token, token),
-                                operators.eq(
-                                    fields.status,
-                                    VerificationStatus.DiscordAuthorized
-                                )
-                            );
-                        }
-                    }
-                );
+            const entry = await this.application.database.query.verificationEntries.findFirst({
+                where(fields, operators) {
+                    return operators.and(
+                        operators.eq(fields.userId, memberId),
+                        operators.eq(fields.guildId, guildId),
+                        operators.eq(fields.token, token),
+                        operators.eq(fields.status, VerificationStatus.DiscordAuthorized)
+                    );
+                }
+            });
 
             if (!entry) {
                 return { error: "We're unable to verify you." };
@@ -769,12 +595,10 @@ class VerificationService extends Service {
             }
 
             fpCheck: if (config?.alt_detection?.enabled) {
-                const fingerprintsArray = Object.entries(fingerprints).map(
-                    ([type, fingerprint]) => ({
-                        type: +type,
-                        fingerprint
-                    })
-                );
+                const fingerprintsArray = Object.entries(fingerprints).map(([type, fingerprint]) => ({
+                    type: +type,
+                    fingerprint
+                }));
 
                 if (fingerprintsArray.length <= 4) {
                     incomplete = true;
@@ -842,12 +666,7 @@ class VerificationService extends Service {
 
                     if (config?.alt_detection?.actions?.moderationActions) {
                         this.moderationActionService
-                            .takeActions(
-                                guild,
-                                member,
-                                config?.alt_detection?.actions
-                                    ?.moderationActions
-                            )
+                            .takeActions(guild, member, config?.alt_detection?.actions?.moderationActions)
                             .catch(this.logger.error);
                     }
 
@@ -896,12 +715,8 @@ class VerificationService extends Service {
 
             await this.clearVerificationQueues(guildId, memberId);
 
-            await member.roles
-                .add(config.verified_roles, "User has been verified.")
-                .catch(this.logger.error);
-            await member.roles
-                .remove(config.unverified_roles, "User has been verified.")
-                .catch(this.logger.error);
+            await member.roles.add(config.verified_roles, "User has been verified.").catch(this.logger.error);
+            await member.roles.remove(config.unverified_roles, "User has been verified.").catch(this.logger.error);
 
             this.auditLoggingService
                 .emitLogEvent(guildId, LogEventType.GuildVerificationSuccess, {

@@ -21,9 +21,9 @@ import { Inject } from "@framework/container/Inject";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { getEnvData } from "@main/env/env";
-import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { safeMemberFetch } from "@main/utils/fetch";
+import type { GuildConfig } from "@schemas/GuildConfigSchema";
 import { GuildMember, Message, PartialMessage, TextChannel } from "discord.js";
 import undici from "undici";
 

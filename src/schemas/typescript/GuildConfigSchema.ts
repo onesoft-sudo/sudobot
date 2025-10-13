@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AIAutoModSchema } from "@main/schemas/AIAutoModSchema";
-import { LoggingSchema } from "@main/schemas/LoggingSchema";
-import { SurveySystemConfigSchema } from "@main/schemas/SurveySystemConfigSchema";
-import { TriggerSchema } from "@main/schemas/TriggerSchema";
 import { z } from "zod";
+import { AIAutoModSchema } from "./AIAutoModSchema";
+import { LoggingSchema } from "./LoggingSchema";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationActionSchema } from "./ModerationActionSchema";
 import { zSnowflake } from "./SnowflakeSchema";
+import { SurveySystemConfigSchema } from "./SurveySystemConfigSchema";
+import { TriggerSchema } from "./TriggerSchema";
 
 export const PermissionModeSchema = z.union([z.literal("discord"), z.literal("levels"), z.literal("layered")]);
 

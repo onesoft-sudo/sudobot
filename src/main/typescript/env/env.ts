@@ -18,8 +18,8 @@
  */
 
 import Environment from "@framework/env/Environment";
-import type { EnvironmentVariableRecord } from "@main/schemas/EnvironmentVariableSchema";
-import { EnvironmentVariableSchema } from "@main/schemas/EnvironmentVariableSchema";
+import type { EnvironmentVariableRecord } from "@schemas/EnvironmentVariableSchema";
+import { EnvironmentVariableSchema } from "@schemas/EnvironmentVariableSchema";
 
 let envData: EnvironmentVariableRecord | undefined;
 

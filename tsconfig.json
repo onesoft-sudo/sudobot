@@ -30,6 +30,7 @@
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
             "@api/*": ["./src/api/typescript/*"],
+            "@schemas/*": ["./src/schemas/typescript/*"],
             "@root/*": ["./*"],
             "*": ["./*"]
         }

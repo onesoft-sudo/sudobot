@@ -1,10 +1,10 @@
-name: Publish packages
+name: Publish schema package
 
 on:
   push:
     paths:
-      - "src/api/**"
-      - ".github/workflows/publish.yml"
+      - "src/schemas/**"
+      - ".github/workflows/publish-schemas.yml"
 
 permissions:
   id-token: write
@@ -27,13 +27,13 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: cd src/api/typescript && npm install
+        run: cd src/schemas/typescript && npm install
 
       - name: Build
-        run: cd src/api/typescript && npm run build
+        run: cd src/schemas/typescript && npm run build
 
       - name: Run tests
-        run: cd src/api/typescript && npm test
+        run: cd src/schemas/typescript && npm test
 
       - name: Publish
-        run: cd src/api/typescript && npm publish --provenance --ignore-scripts || true
+        run: cd src/schemas/typescript && npm publish --provenance --ignore-scripts || true

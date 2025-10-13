@@ -22,8 +22,8 @@ import EventListener from "@framework/events/EventListener";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import type RuleModerationService from "@main/automod/RuleModerationService";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { Events, Message, OmitPartialGroupDMChannel, PartialMessage } from "discord.js";
 
 class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {

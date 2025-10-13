@@ -21,8 +21,8 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import {
     AuditLogEvent,
     ReadonlyCollection,
@@ -49,9 +49,7 @@ class MessageBulkDeleteEventListener extends EventListener<Events.MessageDeleteB
                 });
 
                 const log = logs.entries.find(
-                    entry =>
-                        entry.target?.id === channel.id &&
-                        Date.now() - entry.createdTimestamp < 2200
+                    entry => entry.target?.id === channel.id && Date.now() - entry.createdTimestamp < 2200
                 );
 
                 const executorId = log?.executor?.id ?? log?.executorId;
@@ -60,25 +58,16 @@ class MessageBulkDeleteEventListener extends EventListener<Events.MessageDeleteB
                     return;
                 }
 
-                await this.auditLoggingService.emitLogEvent(
-                    channel.guildId,
-                    LogEventType.MessageDeleteBulk,
-                    {
-                        messages,
-                        channel,
-                        moderator:
-                            log?.executor ??
-                            (executorId
-                                ? ((await fetchUser(this.client, executorId)) ?? undefined)
-                                : undefined),
-                        reason: log?.reason ?? undefined
-                    }
-                );
+                await this.auditLoggingService.emitLogEvent(channel.guildId, LogEventType.MessageDeleteBulk, {
+                    messages,
+                    channel,
+                    moderator:
+                        log?.executor ??
+                        (executorId ? ((await fetchUser(this.client, executorId)) ?? undefined) : undefined),
+                    reason: log?.reason ?? undefined
+                });
             } catch (error) {
-                this.application.logger.error(
-                    "An error occurred while processing a message bulk delete event",
-                    error
-                );
+                this.application.logger.error("An error occurred while processing a message bulk delete event", error);
             }
         }, 1500);
     }

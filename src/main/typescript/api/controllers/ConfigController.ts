@@ -23,8 +23,8 @@ import { Validate } from "@framework/api/decorators/Validate";
 import Controller from "@framework/api/http/Controller";
 import type Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
-import { GuildConfigSchema } from "@main/schemas/GuildConfigSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import { GuildConfigSchema } from "@schemas/GuildConfigSchema";
 import { ZodError, z } from "zod";
 
 class ConfigController extends Controller {
@@ -47,8 +47,7 @@ class ConfigController extends Controller {
 
         if (!request.user?.guilds.includes(guild.id)) {
             return this.response(403, {
-                message:
-                    "You do not have permission to view this guild's configuration."
+                message: "You do not have permission to view this guild's configuration."
             });
         }
 
@@ -72,8 +71,7 @@ class ConfigController extends Controller {
         if (!request.user?.guilds.includes(guild.id)) {
             return this.response(403, {
                 success: false,
-                message:
-                    "You do not have permission to update this guild's configuration."
+                message: "You do not have permission to update this guild's configuration."
             });
         }
 

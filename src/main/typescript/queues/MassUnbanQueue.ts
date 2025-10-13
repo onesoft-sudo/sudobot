@@ -20,7 +20,7 @@
 import Queue from "@framework/queues/Queue";
 import type { InfractionCreatePayload } from "@main/models/Infraction";
 import { infractions, InfractionType } from "@main/models/Infraction";
-import { LogEventType } from "@main/schemas/LoggingSchema";
+import { LogEventType } from "@schemas/LoggingSchema";
 import type { Snowflake } from "discord.js";
 
 type MassUnbanQueuePayload = {

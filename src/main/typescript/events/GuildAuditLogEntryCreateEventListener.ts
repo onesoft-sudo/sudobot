@@ -22,8 +22,8 @@ import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { AuditLogEvent, Guild, GuildAuditLogsEntry, GuildMember, User } from "discord.js";
 
 class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAuditLogEntryCreate> {
@@ -56,12 +56,8 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
                 return;
             }
 
-            const removed = auditLogEntry.changes
-                .find(change => change.key === "$remove")
-                ?.new?.map(r => r.id);
-            const added = auditLogEntry.changes
-                .find(change => change.key === "$add")
-                ?.new?.map(r => r.id);
+            const removed = auditLogEntry.changes.find(change => change.key === "$remove")?.new?.map(r => r.id);
+            const added = auditLogEntry.changes.find(change => change.key === "$add")?.new?.map(r => r.id);
 
             if (!removed?.length && !added?.length) {
                 return;
@@ -110,9 +106,7 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
                     moderatorId: executor?.id ?? "0",
                     userId: user.id,
                     type:
-                        auditLogEntry.action === AuditLogEvent.MemberBanAdd
-                            ? InfractionType.Ban
-                            : InfractionType.Unban,
+                        auditLogEntry.action === AuditLogEvent.MemberBanAdd ? InfractionType.Ban : InfractionType.Unban,
                     reason: auditLogEntry.reason ?? undefined,
                     deliveryStatus: InfractionDeliveryStatus.NotDelivered
                 })

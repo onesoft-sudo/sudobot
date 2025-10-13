@@ -29,7 +29,7 @@ import {
 import { Name } from "@framework/services/Name";
 import { OptionalRecord } from "@framework/types/OptionalRecord";
 import { Guild, GuildMember, Snowflake } from "discord.js";
-import { PermissionMode } from "../schemas/GuildConfigSchema";
+import { PermissionMode } from "../../../schemas/typescript/GuildConfigSchema";
 import DiscordPermissionManager from "../security/DiscordPermissionManager";
 import LayeredPermissionManager from "../security/LayeredPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";

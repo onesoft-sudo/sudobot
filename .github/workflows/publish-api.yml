@@ -1,0 +1,39 @@
+name: Publish API package
+
+on:
+  push:
+    paths:
+      - "src/api/**"
+      - ".github/workflows/publish-api.yml"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: cd src/api/typescript && npm install
+
+      - name: Build
+        run: cd src/api/typescript && npm run build
+
+      - name: Run tests
+        run: cd src/api/typescript && npm test
+
+      - name: Publish
+        run: cd src/api/typescript && npm publish --provenance --ignore-scripts || true

@@ -22,10 +22,10 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
-import { GuildConfig } from "@main/schemas/GuildConfigSchema";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { assertUnreachable } from "@main/utils/utils";
+import { GuildConfig } from "@schemas/GuildConfigSchema";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { Collection, Guild, GuildMember, Snowflake } from "discord.js";
 
 @Name("raidProtectionService")
@@ -104,12 +104,7 @@ class RaidProtectionService extends Service implements HasEventListeners {
         entry.actionTaken = true;
     }
 
-    private async takeAction(
-        guild: Guild,
-        config: RaidProtectionConfig,
-        count: number,
-        duration: number
-    ) {
+    private async takeAction(guild: Guild, config: RaidProtectionConfig, count: number, duration: number) {
         const action =
             config.action === "auto"
                 ? duration < 60_000 && count >= 15
@@ -138,15 +133,13 @@ class RaidProtectionService extends Service implements HasEventListeners {
                 assertUnreachable(action);
         }
 
-        await this.application
-            .service("auditLoggingService")
-            .emitLogEvent(guild.id, LogEventType.RaidAlert, {
-                actions: config.member_actions,
-                duration,
-                guild,
-                membersJoined: count,
-                serverAction: action
-            });
+        await this.application.service("auditLoggingService").emitLogEvent(guild.id, LogEventType.RaidAlert, {
+            actions: config.member_actions,
+            duration,
+            guild,
+            membersJoined: count,
+            serverAction: action
+        });
     }
 
     private async enableAntiJoin(guild: Guild) {
@@ -167,9 +160,7 @@ class RaidProtectionService extends Service implements HasEventListeners {
                 : channel => channels.includes(channel.id)
         );
 
-        return await this.application
-            .service("channelLockManager")
-            .lockAll(guild, channelsToLock.values());
+        return await this.application.service("channelLockManager").lockAll(guild, channelsToLock.values());
     }
 
     private async takeMemberAction(member: GuildMember, config: RaidProtectionConfig) {

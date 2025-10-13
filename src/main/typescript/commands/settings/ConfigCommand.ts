@@ -27,10 +27,10 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { get, has, set, unset } from "@framework/utils/objects";
 import { getZodPropertyPaths } from "@framework/utils/zod";
 import { Colors } from "@main/constants/Colors";
-import { GuildConfigSchema } from "@main/schemas/GuildConfigSchema";
-import { SystemConfigSchema } from "@main/schemas/SystemConfigSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
+import { GuildConfigSchema } from "@schemas/GuildConfigSchema";
+import { SystemConfigSchema } from "@schemas/SystemConfigSchema";
 import {
     ChatInputCommandInteraction,
     EmbedBuilder,
@@ -95,19 +95,16 @@ class ConfigCommand extends Command {
                                 .setRequired(true)
                         )
                         .addStringOption(option =>
-                            option
-                                .setName("config_type")
-                                .setDescription("The configuration type")
-                                .setChoices(
-                                    {
-                                        name: "Guild",
-                                        value: "guild"
-                                    },
-                                    {
-                                        name: "System",
-                                        value: "system"
-                                    }
-                                )
+                            option.setName("config_type").setDescription("The configuration type").setChoices(
+                                {
+                                    name: "Guild",
+                                    value: "guild"
+                                },
+                                {
+                                    name: "System",
+                                    value: "system"
+                                }
+                            )
                         )
                 )
                 .addSubcommand(subcommand =>
@@ -122,19 +119,16 @@ class ConfigCommand extends Command {
                                 .setRequired(true)
                         )
                         .addStringOption(option =>
-                            option
-                                .setName("config_type")
-                                .setDescription("The configuration type")
-                                .setChoices(
-                                    {
-                                        name: "Guild",
-                                        value: "guild"
-                                    },
-                                    {
-                                        name: "System",
-                                        value: "system"
-                                    }
-                                )
+                            option.setName("config_type").setDescription("The configuration type").setChoices(
+                                {
+                                    name: "Guild",
+                                    value: "guild"
+                                },
+                                {
+                                    name: "System",
+                                    value: "system"
+                                }
+                            )
                         )
                 )
                 .addSubcommand(subcommand =>
@@ -155,61 +149,49 @@ class ConfigCommand extends Command {
                                 .setRequired(true)
                         )
                         .addStringOption(option =>
-                            option
-                                .setName("cast")
-                                .setDescription("The type to cast the value to.")
-                                .setChoices(
-                                    {
-                                        name: "String",
-                                        value: "string"
-                                    },
-                                    {
-                                        name: "Number",
-                                        value: "number"
-                                    },
-                                    {
-                                        name: "Boolean",
-                                        value: "boolean"
-                                    },
-                                    {
-                                        name: "JSON",
-                                        value: "json"
-                                    }
-                                )
+                            option.setName("cast").setDescription("The type to cast the value to.").setChoices(
+                                {
+                                    name: "String",
+                                    value: "string"
+                                },
+                                {
+                                    name: "Number",
+                                    value: "number"
+                                },
+                                {
+                                    name: "Boolean",
+                                    value: "boolean"
+                                },
+                                {
+                                    name: "JSON",
+                                    value: "json"
+                                }
+                            )
                         )
                         .addBooleanOption(option =>
-                            option
-                                .setName("save")
-                                .setDescription("Save the current configuration immediately.")
+                            option.setName("save").setDescription("Save the current configuration immediately.")
                         )
                         .addBooleanOption(option =>
-                            option
-                                .setName("no_create")
-                                .setDescription("Do not create the key if it does not exist.")
+                            option.setName("no_create").setDescription("Do not create the key if it does not exist.")
                         )
                         .addStringOption(option =>
-                            option
-                                .setName("config_type")
-                                .setDescription("The configuration type")
-                                .setChoices(
-                                    {
-                                        name: "Guild",
-                                        value: "guild"
-                                    },
-                                    {
-                                        name: "System",
-                                        value: "system"
-                                    }
-                                )
+                            option.setName("config_type").setDescription("The configuration type").setChoices(
+                                {
+                                    name: "Guild",
+                                    value: "guild"
+                                },
+                                {
+                                    name: "System",
+                                    value: "system"
+                                }
+                            )
                         )
                 )
                 .addSubcommand(subcommand =>
                     subcommand.setName("save").setDescription("Save the current configuration.")
                 )
                 .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("restore")
-                        .setDescription("Restore the previously saved configuration.")
+                    subcommand.setName("restore").setDescription("Restore the previously saved configuration.")
                 )
         ];
     }
@@ -217,9 +199,7 @@ class ConfigCommand extends Command {
     public override async execute(
         context: LegacyContext | InteractionContext<ChatInputCommandInteraction>
     ): Promise<void> {
-        const subcommand = context.isLegacy()
-            ? context.argv[1]
-            : context.options.getSubcommand(true);
+        const subcommand = context.isLegacy() ? context.argv[1] : context.options.getSubcommand(true);
 
         if (!subcommand) {
             await context.error("You must provide a subcommand.");
@@ -232,9 +212,7 @@ class ConfigCommand extends Command {
             context.options.getString("config_type") === "system" &&
             !(await this.permissionManagerService.isSystemAdmin(context.member!))
         ) {
-            await context.error(
-                "You do not have permission to view or change system configuration."
-            );
+            await context.error("You do not have permission to view or change system configuration.");
 
             return;
         }
@@ -264,18 +242,12 @@ class ConfigCommand extends Command {
 
     @GatewayEventListener("interactionCreate")
     public async onInteractionCreate(interaction: Interaction) {
-        if (
-            !interaction.isAutocomplete() ||
-            interaction.commandName !== this.name ||
-            !interaction.inGuild()
-        ) {
+        if (!interaction.isAutocomplete() || interaction.commandName !== this.name || !interaction.inGuild()) {
             return;
         }
 
         const query = interaction.options.getFocused();
-        const configType = (interaction.options.getString("config_type") ?? "guild") as
-            | "guild"
-            | "system";
+        const configType = (interaction.options.getString("config_type") ?? "guild") as "guild" | "system";
 
         if (
             configType === "system" &&
@@ -285,10 +257,7 @@ class ConfigCommand extends Command {
             return;
         }
 
-        const config =
-            configType === "guild"
-                ? (this.dottedConfig?.guild ?? [])
-                : (this.dottedConfig?.system ?? []);
+        const config = configType === "guild" ? (this.dottedConfig?.guild ?? []) : (this.dottedConfig?.system ?? []);
         const keys = [];
 
         for (const key of config) {
@@ -312,9 +281,9 @@ class ConfigCommand extends Command {
             return;
         }
 
-        const configType = (
-            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
-        ) as "guild" | "system";
+        const configType = (context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")) as
+            | "guild"
+            | "system";
         const config = configType === "guild" ? context.config : this.configManager.systemConfig;
 
         if (!config) {
@@ -323,9 +292,7 @@ class ConfigCommand extends Command {
         }
 
         if (!has(config, key)) {
-            await context.error(
-                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
-            );
+            await context.error(`The configuration key \`${escapeInlineCode(key)}\` does not exist.`);
             return;
         }
 
@@ -356,9 +323,9 @@ class ConfigCommand extends Command {
             return;
         }
 
-        const configType = (
-            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
-        ) as "guild" | "system";
+        const configType = (context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")) as
+            | "guild"
+            | "system";
         const config = configType === "guild" ? context.config : this.configManager.systemConfig;
 
         if (!config) {
@@ -367,9 +334,7 @@ class ConfigCommand extends Command {
         }
 
         if (!has(config, key)) {
-            await context.error(
-                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
-            );
+            await context.error(`The configuration key \`${escapeInlineCode(key)}\` does not exist.`);
             return;
         }
 
@@ -415,14 +380,12 @@ class ConfigCommand extends Command {
                   .slice(context.argv[2].length)
                   .trim()
             : context.options.getString("value", true);
-        const cast = (
-            context.isLegacy() ? "json" : (context.options.getString("cast") ?? "string")
-        ) as CastType;
+        const cast = (context.isLegacy() ? "json" : (context.options.getString("cast") ?? "string")) as CastType;
         const save = context.isLegacy() ? false : context.options.getBoolean("save");
         const noCreate = context.isLegacy() ? false : context.options.getBoolean("no_create");
-        const configType = (
-            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
-        ) as "guild" | "system";
+        const configType = (context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")) as
+            | "guild"
+            | "system";
         const config = configType === "guild" ? context.config : this.configManager.systemConfig;
 
         if (!config) {
@@ -436,9 +399,7 @@ class ConfigCommand extends Command {
         }
 
         if (noCreate && !has(config, key)) {
-            await context.error(
-                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
-            );
+            await context.error(`The configuration key \`${escapeInlineCode(key)}\` does not exist.`);
             return;
         }
 
@@ -452,9 +413,7 @@ class ConfigCommand extends Command {
                 finalValue = parseFloat(value);
 
                 if (isNaN(finalValue)) {
-                    await context.error(
-                        `The value \`${escapeInlineCode(value)}\` is not a valid number.`
-                    );
+                    await context.error(`The value \`${escapeInlineCode(value)}\` is not a valid number.`);
                     return;
                 }
 
@@ -464,9 +423,7 @@ class ConfigCommand extends Command {
                     const lowerCased = value.toLowerCase();
 
                     if (lowerCased !== "true" && lowerCased !== "false") {
-                        await context.error(
-                            `The value \`${escapeInlineCode(value)}\` is not a valid boolean.`
-                        );
+                        await context.error(`The value \`${escapeInlineCode(value)}\` is not a valid boolean.`);
                         return;
                     }
 
@@ -477,18 +434,14 @@ class ConfigCommand extends Command {
                 try {
                     finalValue = JSON5.parse(value);
                 } catch (e) {
-                    const error = codeBlock(
-                        e instanceof Object && "message" in e ? `${e.message}` : `${e}`
-                    );
+                    const error = codeBlock(e instanceof Object && "message" in e ? `${e.message}` : `${e}`);
                     await context.reply({
                         embeds: [
                             {
                                 description: `### ${context.emoji(
                                     "error"
                                 )} Failed to parse the value as JSON\n\n${codeBlock(error.slice(0, 1800))}${
-                                    error.length > 1800
-                                        ? "\n... The error message is loo long."
-                                        : ""
+                                    error.length > 1800 ? "\n... The error message is loo long." : ""
                                 }`,
                                 color: Colors.Red,
                                 footer: {
@@ -568,9 +521,7 @@ class ConfigCommand extends Command {
         await context.success("The configuration was saved.");
     }
 
-    private async restore(
-        context: LegacyContext | InteractionContext<ChatInputCommandInteraction>
-    ) {
+    private async restore(context: LegacyContext | InteractionContext<ChatInputCommandInteraction>) {
         await this.configManager.load();
         await context.success("The configuration was restored.");
     }

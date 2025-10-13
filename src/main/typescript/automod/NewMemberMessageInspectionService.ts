@@ -24,11 +24,11 @@ import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { getEnvData } from "@main/env/env";
 import { earlyMessageInspectionEntries } from "@main/models/EarlyMessageInspectionEntry";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
 import { and, eq, sql } from "drizzle-orm";
 

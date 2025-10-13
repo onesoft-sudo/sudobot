@@ -59,6 +59,8 @@
         "@sudobot": "build/out",
         "@framework": "build/out/framework/typescript",
         "@main": "build/out/main/typescript",
+        "@api": "build/out/api/typescript",
+        "@schemas": "build/out/schemas/typescript",
         "@root": "."
     },
     "trustedDependencies": [

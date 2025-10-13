@@ -1,0 +1,56 @@
+{
+    "name": "@onesoftnet/sudobot-schemas",
+    "version": "1.0.0",
+    "license": "LGPL-3.0-or-later",
+    "main": "./js/index.js",
+    "type": "commonjs",
+    "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "description": "SudoBot shared data schemas",
+    "author": {
+        "name": "Ar Rakin",
+        "email": "rakinar2@osndevs.org"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/onesoft-sudo/sudobot.git"
+    },
+    "bugs": {
+        "url": "https://github.com/onesoft-sudo/sudobot/issues",
+        "email": "sudobot@onesoftnet.eu.org"
+    },
+    "keywords": [
+        "bot",
+        "discord-bot",
+        "moderation",
+        "automoderation",
+        "discord-moderation",
+        "discord-moderation-bot",
+        "discord-automoderation",
+        "discord-automoderation-bot"
+    ],
+    "homepage": "https://github.com/onesoft-sudo/sudobot",
+    "exports": {
+        "default": "./js/index.js"
+    },
+    "types": "js/index.d.ts",
+    "files": [
+        "js",
+        "tsconfig.json"
+    ],
+    "scripts": {
+        "test": "true",
+        "build": "tsc",
+        "pkgpublish": "tsc && npm publish"
+    },
+    "devDependencies": {
+        "@types/bun": "^1.2.23",
+        "@types/node": "^24.3.1",
+        "typescript": "^5.9.3"
+    },
+    "peerDependencies": {
+        "zod": "^4"
+    }
+}

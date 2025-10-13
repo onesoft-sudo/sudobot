@@ -22,8 +22,8 @@ import Duration from "@framework/datetime/Duration";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
-import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@schemas/LoggingSchema";
 import { AuditLogEvent, type GuildMember } from "discord.js";
 
 class GuildMemberUpdateEventListener extends EventListener<Events.GuildMemberUpdate> {

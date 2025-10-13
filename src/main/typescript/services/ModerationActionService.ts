@@ -22,7 +22,7 @@ import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type { Infraction } from "@main/models/Infraction";
-import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
+import { ModerationActionType } from "@schemas/ModerationActionSchema";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Guild, GuildMember, GuildTextBasedChannel, Message, User, bold, italic, roleMention } from "discord.js";
 import type InfractionManager from "./InfractionManager";

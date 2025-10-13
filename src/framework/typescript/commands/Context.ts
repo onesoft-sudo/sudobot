@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
-import type { SystemConfig } from "@main/schemas/SystemConfigSchema";
+import type { GuildConfig } from "@schemas/GuildConfigSchema";
+import type { SystemConfig } from "@schemas/SystemConfigSchema";
 import type {
     APIEmbed,
     Attachment,
@@ -53,10 +53,7 @@ export type ContextOf<T extends Command<ContextType>> =
     T extends Command<infer U>
         ?
               | (U extends ContextType.Legacy ? LegacyContext : never)
-              | (U extends
-                    | ContextType.ChatInput
-                    | ContextType.MessageContextMenu
-                    | ContextType.UserContextMenu
+              | (U extends ContextType.ChatInput | ContextType.MessageContextMenu | ContextType.UserContextMenu
                     ? InteractionContext
                     : never)
         : never;
@@ -99,9 +96,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public get config(): GuildConfig | undefined {
-        return Application.current().service("configManager").config[
-            this.guildId
-        ];
+        return Application.current().service("configManager").config[this.guildId];
     }
 
     public get systemConfig(): SystemConfig {
@@ -113,9 +108,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     public abstract get user(): User;
 
     public get attachments(): Collection<Snowflake, Attachment> {
-        return this.commandMessage instanceof Message
-            ? this.commandMessage.attachments
-            : new Collection();
+        return this.commandMessage instanceof Message ? this.commandMessage.attachments : new Collection();
     }
 
     public isLegacy(): this is LegacyContext {
@@ -127,10 +120,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public isContextMenu(): this is InteractionContext<ContextMenuCommandInteraction> {
-        return (
-            this.type === ContextType.MessageContextMenu ||
-            this.type === ContextType.UserContextMenu
-        );
+        return this.type === ContextType.MessageContextMenu || this.type === ContextType.UserContextMenu;
     }
 
     public isMessageContextMenu(): this is InteractionContext<MessageContextMenuCommandInteraction> {
@@ -141,20 +131,15 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return this.type === ContextType.UserContextMenu;
     }
 
-    public reply(
-        options: Parameters<this["commandMessage"]["reply"]>[0]
-    ): Promise<Message> {
-        const optionsToPass = options as unknown as MessageCreateOptions &
-            InteractionReplyOptions;
+    public reply(options: Parameters<this["commandMessage"]["reply"]>[0]): Promise<Message> {
+        const optionsToPass = options as unknown as MessageCreateOptions & InteractionReplyOptions;
 
         if (this.commandMessage instanceof Message) {
             return this.commandMessage.reply(optionsToPass);
         }
 
         if (this.commandMessage.deferred) {
-            return this.commandMessage.editReply(
-                optionsToPass as InteractionEditReplyOptions
-            );
+            return this.commandMessage.editReply(optionsToPass as InteractionEditReplyOptions);
         }
 
         return this.commandMessage.reply(
@@ -186,11 +171,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
 
     public async defer(
         options?: InteractionDeferReplyOptions
-    ): Promise<
-        | InteractionCallbackResponse
-        | InteractionResponse<BooleanCache<CacheType>>
-        | undefined
-    > {
+    ): Promise<InteractionCallbackResponse | InteractionResponse<BooleanCache<CacheType>> | undefined> {
         if (this.commandMessage instanceof Message) {
             return undefined;
         }
@@ -202,37 +183,29 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return emoji(Application.current(), name);
     }
 
-    public async error(
-        options: Parameters<this["commandMessage"]["reply"]>[0]
-    ) {
+    public async error(options: Parameters<this["commandMessage"]["reply"]>[0]) {
         return this.reply(
             typeof options === "string"
                 ? `${this.emoji("error") ?? ""} ${options}`
                 : {
-                      ...(options as unknown as MessageCreateOptions &
-                          InteractionReplyOptions),
+                      ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
                       ephemeral: true,
                       content: `${this.emoji("error")} ${
-                          (options as MessageCreateOptions).content ??
-                          "An error has occurred."
+                          (options as MessageCreateOptions).content ?? "An error has occurred."
                       }`
                   }
         );
     }
 
-    public async success(
-        options: Parameters<this["commandMessage"]["reply"]>[0]
-    ) {
+    public async success(options: Parameters<this["commandMessage"]["reply"]>[0]) {
         const args =
             typeof options === "string"
                 ? `${this.emoji("check") ?? ""} ${options}`
                 : {
-                      ...(options as unknown as MessageCreateOptions &
-                          InteractionReplyOptions),
+                      ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
                       ephemeral: true,
                       content: `${this.emoji("check")} ${
-                          (options as MessageCreateOptions).content ??
-                          "Operation successful."
+                          (options as MessageCreateOptions).content ?? "Operation successful."
                       }`
                   };
         return this.reply(args);
