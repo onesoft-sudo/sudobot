@@ -17,6 +17,8 @@ export default defineConfig({
             "@": path.resolve(import.meta.dirname, "./src/main/typescript"),
             "@framework": path.resolve(import.meta.dirname, "./src/framework/typescript"),
             "@main": path.resolve(import.meta.dirname, "./src/main/typescript"),
+            "@api": path.resolve(import.meta.dirname, "./src/api/typescript"),
+            "@schemas": path.resolve(import.meta.dirname, "./src/schemas/typescript"),
         }
     }
 });
