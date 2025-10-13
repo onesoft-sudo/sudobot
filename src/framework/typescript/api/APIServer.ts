@@ -45,20 +45,11 @@ export default class APIServer extends Service {
         standardHeaders: true,
         legacyHeaders: false
     });
-    protected readonly configRateLimiter = ratelimiter({
-        windowMs: 10 * 1000,
-        max: 7,
-        standardHeaders: true,
-        legacyHeaders: false
-    });
     public readonly port = process.env.PORT ?? 4000;
     public expressServer?: HttpServer;
     protected override readonly logger = new Logger("server", true);
 
-    private _controllerDirectory = path.resolve(
-        __dirname,
-        "../../../main/typescript/api/controllers"
-    );
+    private _controllerDirectory = path.resolve(__dirname, "../../../main/typescript/api/controllers");
 
     public setControllerDirectory(directory: string) {
         this._controllerDirectory = directory;
@@ -66,11 +57,7 @@ export default class APIServer extends Service {
 
     public async onReady() {
         if (
-            (
-                this.application.service(
-                    "configManager"
-                ) as ConfigurationManagerServiceInterface
-            ).systemConfig.api.enabled
+            (this.application.service("configManager") as ConfigurationManagerServiceInterface).systemConfig.api.enabled
         ) {
             await this.setup();
             this.start();
@@ -81,9 +68,7 @@ export default class APIServer extends Service {
         this.expressApp.use(this.onError);
         this.expressApp.use(cors());
 
-        const configManager = this.application.service(
-            "configManager"
-        ) as ConfigurationManagerServiceInterface;
+        const configManager = this.application.service("configManager") as ConfigurationManagerServiceInterface;
 
         if (configManager.systemConfig.trust_proxies !== undefined) {
             this.application.logger.info(
@@ -91,18 +76,13 @@ export default class APIServer extends Service {
                 configManager.systemConfig.trust_proxies
             );
 
-            this.expressApp.set(
-                "trust proxy",
-                configManager.systemConfig.trust_proxies
-            );
+            this.expressApp.set("trust proxy", configManager.systemConfig.trust_proxies);
         }
 
         this.expressApp.use(this.rateLimiter);
 
         this.expressApp.use((req, res, next) => {
-            this.logger.info(
-                `${req.method.toUpperCase()} ${req.path} -- from ${req.ip}`
-            );
+            this.logger.info(`${req.method.toUpperCase()} ${req.path} -- from ${req.ip}`);
             next();
         });
 
@@ -114,50 +94,44 @@ export default class APIServer extends Service {
 
     private async createRouter() {
         const router = express.Router();
-        await this.application.classLoader.loadControllers(
-            router,
-            this._controllerDirectory
-        );
+        await this.application.classLoader.loadControllers(router, this._controllerDirectory);
         return router;
     }
 
-    private getMetadata<T>(
-        controllerClass: typeof Controller,
-        key: string,
-        alternativeKey: string
-    ): T | null {
+    private getMetadata<T>(controllerClass: typeof Controller, key: string, alternativeKey: string): T | null {
         return (
-            Symbol.metadata in controllerClass &&
-            controllerClass[Symbol.metadata]
-                ? (controllerClass[Symbol.metadata] as Record<string, T>)?.[
-                      alternativeKey
-                  ]
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? (controllerClass[Symbol.metadata] as Record<string, T>)?.[alternativeKey]
                 : Reflect.getMetadata(key, controllerClass.prototype)
         ) as T | null;
     }
 
-    public loadController(
-        controller: Controller,
-        controllerClass: typeof Controller,
-        router: Router
-    ) {
+    public loadController(controller: Controller, controllerClass: typeof Controller, router: Router) {
         const actions = this.getMetadata<Record<string, RouteMetadata>>(
             controllerClass,
             "action_methods",
             "actionMethods"
         );
-        const aacMiddlewareList = this.getMetadata<
-            Record<string, (...args: unknown[]) => unknown>
-        >(controllerClass, "aac_middleware", "adminAccessControlMiddleware");
-        const gacMiddlewareList = this.getMetadata<
-            Record<string, (...args: unknown[]) => unknown>
-        >(controllerClass, "gac_middleware", "guildAccessControlMiddleware");
-        const requireAuthMiddlewareList = this.getMetadata<
-            Record<string, (...args: unknown[]) => unknown>
-        >(controllerClass, "auth_middleware", "authMiddleware");
-        const validationMiddlewareList = this.getMetadata<
-            Record<string, (...args: unknown[]) => unknown>
-        >(controllerClass, "validation_middleware", "validationMiddleware");
+        const aacMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
+            controllerClass,
+            "aac_middleware",
+            "adminAccessControlMiddleware"
+        );
+        const gacMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
+            controllerClass,
+            "gac_middleware",
+            "guildAccessControlMiddleware"
+        );
+        const requireAuthMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
+            controllerClass,
+            "auth_middleware",
+            "authMiddleware"
+        );
+        const validationMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
+            controllerClass,
+            "validation_middleware",
+            "validationMiddleware"
+        );
 
         if (!actions) {
             return;
@@ -165,10 +139,7 @@ export default class APIServer extends Service {
 
         for (const callbackName in actions) {
             for (const method in actions[callbackName]) {
-                const data =
-                    actions[callbackName][
-                        method as keyof (typeof actions)[keyof typeof actions]
-                    ];
+                const data = actions[callbackName][method as keyof (typeof actions)[keyof typeof actions]];
 
                 if (!data) {
                     continue;
@@ -195,22 +166,15 @@ export default class APIServer extends Service {
                 middleware.push(...(data.middleware ?? []));
 
                 const wrappedMiddleware = middleware.map(
-                    m =>
-                        (
-                            request: ExpressRequest,
-                            response: ExpressResponse,
-                            next: NextFunction
-                        ) =>
-                            m(this.application, request, response, next)
+                    m => (request: ExpressRequest, response: ExpressResponse, next: NextFunction) =>
+                        m(this.application, request, response, next)
                 );
 
                 router[data.method.toLowerCase() as "head"].call(
                     router,
                     data.path,
                     ...(wrappedMiddleware as []),
-                    <Application>(
-                        this.wrapControllerAction(controller, callbackName)
-                    )
+                    <Application>this.wrapControllerAction(controller, callbackName)
                 );
 
                 this.application.logger.debug(
@@ -222,25 +186,16 @@ export default class APIServer extends Service {
 
     private wrapControllerAction(controller: Controller, callbackName: string) {
         return async (request: ExpressRequest, response: ExpressResponse) => {
-            const callback = controller[
-                callbackName as keyof typeof controller
-            ] as (
+            const callback = controller[callbackName as keyof typeof controller] as (
                 request: ExpressRequest,
                 response: ExpressResponse
             ) => unknown;
-            const controllerResponse = await callback.call(
-                controller,
-                request,
-                response
-            );
+            const controllerResponse = await callback.call(controller, request, response);
 
             if (!response.headersSent) {
                 if (controllerResponse instanceof Response) {
                     controllerResponse.send(response);
-                } else if (
-                    controllerResponse &&
-                    typeof controllerResponse === "object"
-                ) {
+                } else if (controllerResponse && typeof controllerResponse === "object") {
                     response.json(controllerResponse);
                 } else if (typeof controllerResponse === "string") {
                     response.send(controllerResponse);
@@ -255,19 +210,8 @@ export default class APIServer extends Service {
         };
     }
 
-    private onError(
-        this: void,
-        err: unknown,
-        _: ExpressRequest,
-        res: ExpressResponse,
-        next: NextFunction
-    ) {
-        if (
-            err instanceof SyntaxError &&
-            "status" in err &&
-            err.status === 400 &&
-            "body" in err
-        ) {
+    private onError(this: void, err: unknown, _: ExpressRequest, res: ExpressResponse, next: NextFunction) {
+        if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
             res.status(400).json({
                 error: "Invalid JSON payload"
             });
@@ -280,9 +224,7 @@ export default class APIServer extends Service {
 
     public start() {
         this.expressServer = this.expressApp.listen(this.port, () =>
-            this.application.logger.info(
-                `API server is listening at port ${this.port}`
-            )
+            this.application.logger.info(`API server is listening at port ${this.port}`)
         );
     }
 }

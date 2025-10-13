@@ -23,6 +23,8 @@ import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import NewMemberMessageInspectionService from "@main/automod/NewMemberMessageInspectionService";
 import type RuleModerationService from "@main/automod/RuleModerationService";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import type CommandManager from "@main/services/CommandManager";
+import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { LogEventType } from "@schemas/LoggingSchema";
 import { Events, Message, OmitPartialGroupDMChannel, PartialMessage } from "discord.js";
 
@@ -40,6 +42,12 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
 
     @Inject("newMemberMessageInspectionService")
     private readonly newMemberMessageInspectionService!: NewMemberMessageInspectionService;
+
+    @Inject("commandManager")
+    private readonly commandManager!: CommandManager;
+
+    @Inject("configManager")
+    private readonly configManager!: ConfigurationManager;
 
     public override async execute(
         oldMessage: OmitPartialGroupDMChannel<Message | PartialMessage>,
@@ -64,6 +72,14 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
         }
 
         await this.aiAutoModeration.onMessageUpdate(oldMessage, newMessage);
+
+        if (this.configManager.config[newMessage.guildId]?.commands.rerun_on_edit) {
+            const value = await this.commandManager.runCommandFromMessage(newMessage);
+
+            if (value === false) {
+                this.application.logger.debug("Command or snippet not found: all strategies failed");
+            }
+        }
     }
 }
 
