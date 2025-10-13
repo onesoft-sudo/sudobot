@@ -23,5 +23,6 @@ export enum APIErrorCode {
     AccountDisabled,
     GuildNotFound,
     Unauthorized,
-    RestrictedGuildAccess
+    RestrictedGuildAccess,
+    InvalidPayload
 }

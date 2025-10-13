@@ -17,6 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { APIErrorCode } from "@api/APIErrorCode";
+import { GetGuildConfigurationResponse } from "@api/responses/GetGuildConfigurationResponse";
+import { SetGuildConfigurationResponse } from "@api/responses/SetGuildConfigurationResponse";
 import { Action } from "@framework/api/decorators/Action";
 import { RequireAuth } from "@framework/api/decorators/RequireAuth";
 import { Validate } from "@framework/api/decorators/Validate";
@@ -24,7 +27,7 @@ import Controller from "@framework/api/http/Controller";
 import type Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
-import { GuildConfigSchema } from "@schemas/GuildConfigSchema";
+import { GuildConfig, GuildConfigSchema } from "@schemas/GuildConfigSchema";
 import { ZodError, z } from "zod";
 
 class ConfigController extends Controller {
@@ -40,18 +43,23 @@ class ConfigController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.response(404, {
+            return this.response<GetGuildConfigurationResponse<GuildConfig>>(404, {
+                code: APIErrorCode.GuildNotFound,
                 message: "Guild not found."
             });
         }
 
         if (!request.user?.guilds.includes(guild.id)) {
-            return this.response(403, {
+            return this.response<GetGuildConfigurationResponse<GuildConfig>>(403, {
+                code: APIErrorCode.RestrictedGuildAccess,
                 message: "You do not have permission to view this guild's configuration."
             });
         }
 
-        return this.configManager.getOrDefault(guild.id);
+        return this.response<GetGuildConfigurationResponse<GuildConfig>>(200, {
+            code: APIErrorCode.Success,
+            configuration: this.configManager.getOrDefault(guild.id)
+        });
     }
 
     @Action("PATCH", "/guilds/:id/config")
@@ -62,15 +70,15 @@ class ConfigController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.response(404, {
-                success: false,
+            return this.response<SetGuildConfigurationResponse>(404, {
+                code: APIErrorCode.GuildNotFound,
                 message: "Guild not found."
             });
         }
 
         if (!request.user?.guilds.includes(guild.id)) {
-            return this.response(403, {
-                success: false,
+            return this.response<SetGuildConfigurationResponse>(403, {
+                code: APIErrorCode.RestrictedGuildAccess,
                 message: "You do not have permission to update this guild's configuration."
             });
         }
@@ -78,15 +86,15 @@ class ConfigController extends Controller {
         const config = request.parsedBody;
 
         if (!config) {
-            return this.response(400, {
-                success: false,
+            return this.response<SetGuildConfigurationResponse>(400, {
+                code: APIErrorCode.InvalidPayload,
                 message: "No configuration provided."
             });
         }
 
         if (typeof config !== "object" || !config) {
-            return this.response(400, {
-                success: false,
+            return this.response<SetGuildConfigurationResponse>(400, {
+                code: APIErrorCode.InvalidPayload,
                 message: "Invalid configuration provided."
             });
         }
@@ -97,8 +105,8 @@ class ConfigController extends Controller {
                 ...config
             });
         } catch (error) {
-            return this.response(400, {
-                success: false,
+            return this.response<SetGuildConfigurationResponse>(400, {
+                code: APIErrorCode.InvalidPayload,
                 message: "Invalid configuration provided.",
                 errors:
                     error instanceof ZodError
@@ -119,10 +127,10 @@ class ConfigController extends Controller {
             this._saveQueueTimeout = undefined;
         }, 10_000);
 
-        return {
-            success: true,
+        return this.response<SetGuildConfigurationResponse>(200, {
+            code: APIErrorCode.Success,
             message: "Successfully updated the guild configuration."
-        };
+        });
     }
 }
 

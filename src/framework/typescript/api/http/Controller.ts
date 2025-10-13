@@ -21,12 +21,10 @@ import Response from "@framework/api/http/Response";
 import Application from "../../app/Application";
 
 export default abstract class Controller {
-    public constructor(
-        @((..._: unknown[]) => undefined) protected readonly application: Application
-    ) {}
+    public constructor(@((..._: unknown[]) => undefined) protected readonly application: Application) {}
 
-    protected response(status: number, body?: unknown, headers?: Record<string, string>) {
-        return new Response({
+    protected response<T>(status: number, body?: T, headers?: Record<string, string>) {
+        return new Response<T>({
             status,
             body,
             headers
