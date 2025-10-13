@@ -434,7 +434,12 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         } catch (error) {
             if (error instanceof CommandAbortedError) {
                 await error.sendMessage(context);
-                return false;
+                return;
+            }
+
+            if (error instanceof PermissionDeniedError) {
+                await context.error(error.message || "You don't have permission to run this command.");
+                return;
             }
 
             this.application.logger.error(error);
