@@ -2,6 +2,10 @@
 
 ### 13-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix:** no response when using a sysadmin command via interaction without permissions    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **fix:** update vitest config    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -26,6 +30,13 @@
   * **refactor:** extract schemas into a public package    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 13-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.24.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 11-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
