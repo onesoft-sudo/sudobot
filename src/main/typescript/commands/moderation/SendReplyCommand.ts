@@ -28,17 +28,18 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
+import type PermissionManagerService from "@main/services/PermissionManagerService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
 import { isTextBasedChannel } from "@main/utils/utils";
 import {
     ActionRowBuilder,
     type APIEmbed,
+    GuildMember,
     type Interaction,
     type MessageContextMenuCommandInteraction,
     type MessageCreateOptions,
     type MessagePayload,
     ModalBuilder,
-    PermissionFlagsBits,
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
@@ -61,6 +62,9 @@ class SendReplyCommand
 
     @Inject("systemAuditLogging")
     protected readonly systemAuditLogging!: SystemAuditLoggingService;
+
+    @Inject("permissionManager")
+    protected readonly permissionManager!: PermissionManagerService;
 
     @Inject()
     protected readonly directiveParsingService!: DirectiveParsingService;
@@ -104,7 +108,8 @@ class SendReplyCommand
             !interaction.isModalSubmit() ||
             !interaction.customId.startsWith("send_reply_") ||
             !interaction.channel ||
-            !interaction.memberPermissions?.has(PermissionFlagsBits.ManageMessages)
+            !interaction.member ||
+            !await this.permissionManager.hasPermissions(interaction.member as GuildMember, this.permissions)
         ) {
             return;
         }
