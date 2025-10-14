@@ -1,5 +1,23 @@
 # Changelog
 
+### 14-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix(commands):** sendreply command must not require hardcoded permissions (#373)    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 13-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.24.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.24.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 13-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix:** no response when using a sysadmin command via interaction without permissions    
@@ -30,13 +48,6 @@
   * **refactor:** extract schemas into a public package    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-
-### 13-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.24.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 11-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
