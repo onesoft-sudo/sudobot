@@ -109,7 +109,7 @@
         "@faker-js/faker": "^9.9.0",
         "@onesoftnet/blazebuild": "latest",
         "@onesoftnet/pm2-config": "^0.0.7",
-        "@types/archiver": "^6.0.3",
+        "@types/archiver": "^7.0.0",
         "@types/bcrypt": "^6.0.0",
         "@types/bun": "^1.2.23",
         "@types/cors": "^2.8.19",
