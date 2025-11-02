@@ -21,7 +21,7 @@ import { z } from "zod";
 
 export const EnvironmentVariableSchema = z.object({
     PORT: z.string().regex(/^\d+$/).default("4000"),
-    TOKEN: z.string(),
+    BOT_TOKEN: z.string(),
     CLIENT_ID: z.string(),
     CLIENT_SECRET: z.string(),
     DB_URL: z.string(),

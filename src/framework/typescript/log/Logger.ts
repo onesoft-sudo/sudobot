@@ -43,7 +43,8 @@ export class Logger {
 
     public constructor(
         private readonly name: string,
-        private readonly logTime: boolean = false
+        private readonly logTime: boolean = false,
+        private readonly formattedTime: boolean = false
     ) {
         (this as unknown as Logger).log = (this as unknown as Logger).log.bind(this);
         this.print = this.print.bind(this);
@@ -77,10 +78,12 @@ export class Logger {
                     ? "warn"
                     : "error";
         const beginning = `${
-            (this as unknown as Logger).logTime
-                ? `${chalk.gray(this.formatter.format(new Date()))} `
+            this.logTime
+                ? this.formattedTime
+                    ? `${chalk.gray(this.formatter.format(new Date()))} `
+                    : `${(methodName === "error" || methodName === "warn" ? chalk.red : chalk.green)(`[${process.uptime().toFixed(7).toString().padStart(13, " ")}]`)} `
                 : ""
-        }${this.colorize(`[${this.name}:${levelName}]`, level)}`;
+        }${this.colorize(`${levelName}:`, level)} ${chalk.yellowBright(this.name)}:`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
@@ -89,10 +92,7 @@ export class Logger {
         }
     }
 
-    public print(
-        methodName: "log" | "info" | "warn" | "error" | "debug" | "trace",
-        ...args: unknown[]
-    ) {
+    public print(methodName: "log" | "info" | "warn" | "error" | "debug" | "trace", ...args: unknown[]) {
         if (process.env.SUPPRESS_LOGS) {
             return;
         }
@@ -106,9 +106,7 @@ export class Logger {
         }
 
         console[methodName].call(console, ...args);
-        const message = args
-            .map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)))
-            .join(" ");
+        const message = args.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))).join(" ");
 
         this.eventEmitter.emit("log", message);
     }
@@ -198,5 +196,10 @@ export class Logger {
 
     public event(this: void, ...args: unknown[]) {
         (this as unknown as Logger).log(LogLevel.Event, ...args);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    public static getLogger(constructor: Function) {
+        return new Logger(constructor.name, true);
     }
 }

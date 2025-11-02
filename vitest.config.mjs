@@ -5,11 +5,12 @@ export default defineConfig({
     test: {
         coverage: {
             reportsDirectory: "coverage",
-            include: ["src"]
+            include: ["src"],
+            exclude: ["src/tests"]
         },
-        dir: "tests",
+        dir: "src/tests/typescript",
         exclude: ["**/node_modules/**", "**/build/**", "**/extensions/**"],
-        setupFiles: ["./tests/setup.ts"]
+        setupFiles: ["./src/tests/typescript/setup.ts"]
     },
     plugins: [],
     resolve: {
@@ -19,6 +20,7 @@ export default defineConfig({
             "@main": path.resolve(import.meta.dirname, "./src/main/typescript"),
             "@api": path.resolve(import.meta.dirname, "./src/api/typescript"),
             "@schemas": path.resolve(import.meta.dirname, "./src/schemas/typescript"),
+            "@tests": path.resolve(import.meta.dirname, "./src/tests/typescript")
         }
     }
 });

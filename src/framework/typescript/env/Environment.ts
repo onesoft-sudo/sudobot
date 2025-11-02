@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { z, ZodSchema } from "zod";
+import type { z, ZodType } from "zod";
 
 class Environment {
     public static isProduction(): boolean {
@@ -40,7 +40,7 @@ class Environment {
         return process.env;
     }
 
-    public static parseVariables<T extends ZodSchema>(schema: T): z.infer<T> {
+    public static parseVariables<T extends ZodType>(schema: T): z.infer<T> {
         return schema.parse(this.variables());
     }
 }

@@ -1,0 +1,36 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "ES2022",
+        "module": "CommonJS",
+        "types": ["node", "bun"],
+        "lib": ["ES2022", "Decorators", "DOM"],
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "importHelpers": true,
+        "newLine": "lf",
+        "noEmitHelpers": true,
+        "noEmitOnError": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noImplicitOverride": true,
+        "importsNotUsedAsValues": "remove",
+        /* These paths are only used in BlazeBuild scripts, when ran with bun. */
+        "paths": {
+            "@main/*": ["../main/typescript/*"],
+            "@framework/*": ["../framework/typescript/*"],
+            "@api/*": ["../api/typescript/*"],
+            "@schemas/*": ["../schemas/typescript/*"],
+            "@tests/*": ["./typescript/*"],
+            "@root/*": ["../../*"],
+            "*": ["./*"]
+        }
+    },
+    "include": ["typescript/**/*.ts"]
+}

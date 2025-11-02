@@ -24,11 +24,11 @@ import "reflect-metadata";
 import Application from "@framework/app/Application";
 import { Logger } from "@framework/log/Logger";
 import { isDevelopmentMode } from "@framework/utils/utils";
+import AppKernel from "@main/core/AppKernel";
 import { setEnvData } from "@main/env/env";
 import { version } from "@root/package.json";
 import type { DotenvParseOutput } from "dotenv";
 import path from "path";
-import DiscordKernel from "./core/DiscordKernel";
 
 const logger = new Logger("preboot", true);
 
@@ -83,13 +83,13 @@ async function main() {
 
     const rootDirectoryPath = path.resolve(__dirname);
     const projectRootDirectoryPath = path.resolve(__dirname, "../../..");
-    const application = new Application(
+    const application = new Application({
         rootDirectoryPath,
         projectRootDirectoryPath,
-        process.env.SUDOBOT_VERSION ?? version
-    );
+        version: process.env.SUDOBOT_VERSION ?? version
+    });
 
-    await application.run(new DiscordKernel());
+    await application.run(new AppKernel());
 }
 
 export default main();
