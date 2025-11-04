@@ -1,5 +1,6 @@
 onlyBuiltDependencies:
-  - "@heroui/shared-utils"
+  - '@heroui/shared-utils'
+  - '@swc/core'
   - bcrypt
   - esbuild
   - sharp

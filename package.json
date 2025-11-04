@@ -134,6 +134,7 @@
         "typedoc-theme-hierarchy": "^6.0.0",
         "typescript": "5.9.3",
         "typescript-eslint": "^8.42.0",
+        "unplugin-swc": "^1.5.8",
         "vitest": "^3.2.4",
         "zod": "^4.1.5"
     }

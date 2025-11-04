@@ -1,5 +1,6 @@
 import path from "path";
 import { defineConfig } from "vitest/config";
+import swc from "unplugin-swc";
 
 export default defineConfig({
     test: {
@@ -10,9 +11,12 @@ export default defineConfig({
         },
         dir: "src/tests/typescript",
         exclude: ["**/node_modules/**", "**/build/**", "**/extensions/**"],
-        setupFiles: ["./src/tests/typescript/setup.ts"]
+        setupFiles: ["./src/tests/typescript/setup.ts"],
+        typecheck: {
+            tsconfig: "./src/tests/tsconfig.json"
+        }
     },
-    plugins: [],
+    plugins: [swc.vite()],
     resolve: {
         alias: {
             "@": path.resolve(import.meta.dirname, "./src/main/typescript"),
