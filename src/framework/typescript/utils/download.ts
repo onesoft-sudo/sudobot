@@ -18,22 +18,23 @@
  */
 
 import Application from "@framework/app/Application";
+import { systemPrefix } from "@main/utils/utils";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";
 import { promisify } from "util";
-import { systemPrefix } from "./utils";
+import { prefixedPath } from "./filesystem";
 
 export const finished = promisify(stream.finished);
 
 export async function downloadFile({ url, path, name, axiosOptions }: DownloadFileOptions) {
-    const logger = Application.current().getLogger();
+    const logger = Application.current().logger;
 
     logger.info("Attempting to download file: " + url);
 
-    const storagePath = path ?? systemPrefix("storage");
+    const storagePath = path ?? (await prefixedPath("storage"));
     const filePath = join(storagePath, name ?? basename(url));
     const writer = createWriteStream(filePath);
     const response = await axios.request({

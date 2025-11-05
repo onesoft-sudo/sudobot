@@ -1,4 +1,4 @@
-import type { AnyFunction } from "@framework/types/types";
+import type { AnyFunction } from "@framework/types/Utils";
 import DependencyResolveError from "./DependencyResolveError";
 import {
     INJECT_SYMBOL_CONSTRUCT,

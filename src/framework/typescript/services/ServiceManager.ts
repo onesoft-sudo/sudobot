@@ -1,6 +1,6 @@
 import type Application from "@framework/app/Application";
 import Service from "./Service";
-import type { DefaultExport } from "@framework/types/types";
+import type { DefaultExport } from "@framework/types/Utils";
 import { Collection } from "discord.js";
 import { Logger } from "@framework/log/Logger";
 
