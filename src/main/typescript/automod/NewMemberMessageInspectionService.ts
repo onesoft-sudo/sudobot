@@ -274,7 +274,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                       ...action,
                       reason:
                           "reason" in action && action.reason
-                              ? action.reason
+                              ? action.reason?.replace("{{reason}}", data.reason)
                               : `Your message was flagged: ${data.reason}`
                   })),
                   {
