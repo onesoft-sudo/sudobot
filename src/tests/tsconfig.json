@@ -2,7 +2,8 @@
     "compilerOptions": {
         "incremental": true,
         "target": "ES2022",
-        "module": "CommonJS",
+        "module": "ESNext",
+        "moduleResolution": "node",
         "types": ["node", "bun"],
         "lib": ["ES2022", "Decorators", "DOM"],
         "resolveJsonModule": true,

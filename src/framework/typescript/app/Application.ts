@@ -1,5 +1,8 @@
+import ClassLoader from "@framework/class/ClassLoader";
+import Container from "@framework/container/Container";
 import type Kernel from "@framework/core/Kernel";
 import { Logger } from "@framework/log/Logger";
+import ServiceManager from "@framework/services/ServiceManager";
 import type { Client } from "discord.js";
 
 export type ApplicationOptions = {
@@ -14,6 +17,12 @@ class Application {
     public readonly version: string;
     public readonly logger = Logger.getLogger(Application);
 
+    public readonly container: Container;
+    public readonly classLoader: ClassLoader;
+    public readonly serviceManager: ServiceManager;
+
+    private static _self: Application;
+
     public get client(): Client {
         throw new TypeError("Client is not available yet");
     }
@@ -22,6 +31,15 @@ class Application {
         this.rootDirectoryPath = options.rootDirectoryPath;
         this.projectRootDirectoryPath = options.projectRootDirectoryPath;
         this.version = options.version;
+        this.container = new Container();
+        this.classLoader = new ClassLoader();
+        this.serviceManager = new ServiceManager(this);
+
+        Application._self = this;
+    }
+
+    public static current() {
+        return Application._self;
     }
 
     public async run(kernel: Kernel) {

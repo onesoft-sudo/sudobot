@@ -23,6 +23,10 @@ type ContainerOptions = {
     strict?: boolean;
 };
 
+type GetObjectOptions = {
+    constructorArgs?: unknown[];
+};
+
 class Container {
     private readonly options: ContainerOptions;
 
@@ -48,7 +52,7 @@ class Container {
         }
     }
 
-    private getInstance<T extends object>(idOrType: string | ConstructorOf<T>): T {
+    private getInstance<T extends object>(idOrType: string | ConstructorOf<T>, constructorArgs: unknown[]): T {
         const options = this.factories.get(idOrType);
 
         if (!options) {
@@ -58,23 +62,25 @@ class Container {
                 );
             }
 
-            return this.resolveObject(this.createInstance(idOrType));
+            return this.resolveObject(this.createInstance(idOrType, constructorArgs));
         }
 
         if (options.singleton) {
             if (!options.singletonValue) {
                 options.singletonValue = this.resolveObject(
-                    options.factory ? options.factory(this) : this.createInstance(options.type)
+                    options.factory ? options.factory(this) : this.createInstance(options.type, constructorArgs)
                 );
             }
 
             return options.singletonValue as T;
         }
 
-        return this.resolveObject(options.factory ? options.factory(this) : this.createInstance(options.type)) as T;
+        return this.resolveObject(
+            options.factory ? options.factory(this) : this.createInstance(options.type, constructorArgs)
+        ) as T;
     }
 
-    private createInstance<T>(constructorFn: ConstructorOf<T>): T {
+    private createInstance<T>(constructorFn: ConstructorOf<T>, args: unknown[]): T {
         const propertiesToResolve = Reflect.getMetadata(INJECT_SYMBOL_LIST, constructorFn) as Set<string> | undefined;
 
         if (propertiesToResolve?.has("constructor")) {
@@ -84,23 +90,23 @@ class Container {
             );
 
             if (methodInjectData) {
-                const args = [];
+                const finalArgs = [...args];
 
                 for (const [index, details] of methodInjectData) {
-                    args[index] = this.get(details.type as ConstructorOf<object>);
+                    finalArgs[index] = this.get(details.type as ConstructorOf<object>);
                 }
 
-                return new constructorFn(...(args as never[]));
+                return new constructorFn(...(finalArgs as never[]));
             }
         }
 
-        return new constructorFn();
+        return new constructorFn(...(args as never[]));
     }
 
-    public get<T extends object>(id: string): T;
-    public get<T extends object>(type: ConstructorOf<T>): T;
-    public get<T extends object>(idOrType: string | ConstructorOf<T>): T {
-        return this.getInstance(idOrType);
+    public get<T extends object>(id: string, options?: GetObjectOptions): T;
+    public get<T extends object>(type: ConstructorOf<T>, options?: GetObjectOptions): T;
+    public get<T extends object>(idOrType: string | ConstructorOf<T>, options?: GetObjectOptions): T {
+        return this.getInstance(idOrType, options?.constructorArgs ?? []);
     }
 
     public resolveObject<T extends object>(object: T): T {

@@ -41,7 +41,7 @@ jobs:
           bash ../bin/build-extensions.sh;
 
       - name: Build index
-        run: node bin/extensions.js --mkindex
+        run: node bin/extensions.cjs --mkindex
 
       - name: Prepare GPG keys for importing
         run: echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
