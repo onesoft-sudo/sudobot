@@ -1,9 +1,12 @@
 import Application from "@framework/app/Application";
 import ClassLoader from "@framework/class/ClassLoader";
 import Kernel from "@framework/core/Kernel";
+import type EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
+import type { Events } from "@framework/types/ClientEvents";
+import type { DefaultExport } from "@framework/types/Utils";
 import { getEnvData } from "@main/env/env";
-import { type Awaitable, Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
 
 class AppKernel extends Kernel {
@@ -14,7 +17,14 @@ class AppKernel extends Kernel {
         services: path.resolve(__dirname, "../services"),
         automod: path.resolve(__dirname, "../automod")
     };
-    public readonly services: readonly string[] = ["@services/StartupManagerService"];
+    public readonly services: readonly string[] = [
+        "@services/StartupManagerService",
+        "@services/ConfigurationManagerService",
+        "@services/CommandManagerService"
+    ];
+
+    public readonly eventListenersDirectory: string = path.join(__dirname, "../events");
+    public readonly commandsDirectory: string = path.join(__dirname, "../commands");
 
     private createClient(): Client {
         return new Client({
@@ -74,15 +84,34 @@ class AppKernel extends Kernel {
         await application.serviceManager.load(this.services, this.aliases);
     }
 
+    private async loadEventListeners(application: Application): Promise<void> {
+        await application.classLoader.loadClassesRecursive<
+            DefaultExport<new (application: Application) => EventListener<Events>>
+        >(this.eventListenersDirectory, {
+            preLoad: filepath => {
+                application.logger.debug("Loading event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+            },
+            postLoad: async (filepath, { default: EventListenerClass }) => {
+                const eventListener = application.container.get(EventListenerClass, {
+                    constructorArgs: [application]
+                });
+                await eventListener.onAppBoot?.();
+                this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
+                application.logger.info("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+            }
+        });
+    }
+
     public async boot(application: Application): Promise<void> {
         this.registerFactories(application);
         await this.loadServices(application);
+        await this.loadEventListeners(application);
     }
 
     public async run(application: Application): Promise<void> {
-        application.logger.info("Login reached");
+        application.logger.warn("Login reached");
         await Promise.resolve();
-        // await this.client.login(getEnvData().BOT_TOKEN);
+        await this.client.login(getEnvData().BOT_TOKEN);
     }
 }
 

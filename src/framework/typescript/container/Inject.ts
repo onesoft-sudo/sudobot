@@ -5,11 +5,17 @@ export const INJECT_SYMBOL_CONSTRUCT = Symbol("INJECT_CONSTRUCT");
 export const INJECT_SYMBOL_FIELD = Symbol("INJECT_FIELD");
 export const INJECT_SYMBOL_LIST = Symbol("INJECT_SYMBOLS");
 
-export type InjectionData = {
-    type: object;
-};
+export type InjectionData =
+    | {
+          type: object;
+          id: undefined;
+      }
+    | {
+          type: undefined;
+          id: string;
+      };
 
-function Inject() {
+function Inject(id?: string) {
     return (target: object, key: PropertyKey | undefined, extra?: number | ClassFieldDecoratorContext) => {
         const safeKey = (typeof key === "number" ? key.toString() : key) as string;
         const injectProperties: Set<PropertyKey> = Reflect.getMetadata(INJECT_SYMBOL_LIST, target) ?? new Set();
@@ -21,13 +27,14 @@ function Inject() {
                 Reflect.getMetadata(isConstructor ? INJECT_SYMBOL_CONSTRUCT : INJECT_SYMBOL_METHOD, target, safeKey) ??
                 new Map();
 
-            if (!paramTypes[extra]) {
+            if (!paramTypes[extra] && !id) {
                 throw new TypeError("Dependency injection metadata could not determined automatically");
             }
 
             methodInjectData.set(extra, {
-                type: paramTypes[extra]
-            });
+                type: paramTypes[extra],
+                id
+            } as InjectionData);
 
             Reflect.defineMetadata(
                 isConstructor ? INJECT_SYMBOL_CONSTRUCT : INJECT_SYMBOL_METHOD,
@@ -42,13 +49,13 @@ function Inject() {
         } else if (key) {
             const propertyType = Reflect.getMetadata("design:type", target, safeKey);
 
-            if (!propertyType) {
+            if (!propertyType && !id) {
                 throw new TypeError("Dependency injection metadata could not determined automatically");
             }
 
             Reflect.defineMetadata(
                 INJECT_SYMBOL_FIELD,
-                { type: propertyType } satisfies InjectionData,
+                { type: propertyType, id } satisfies InjectionData,
                 target,
                 safeKey
             );

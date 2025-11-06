@@ -23,7 +23,7 @@ class StartupManagerService extends Service {
 
     private async printBanner() {
         console.info();
-        console.info(chalk.whiteBright((await figlet.text("SudoBot")).replace(/\s+$/, "")));
+        console.info(chalk.blueBright((await figlet.text("SudoBot")).replace(/\s+$/, "")));
         console.info();
         console.info(`      Version ${chalk.green(version)} -- booting up`);
         console.info();

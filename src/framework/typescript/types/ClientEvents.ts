@@ -17,13 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Channel, Client, ClientEvents as DiscordClientEvents, Message, PartialGroupDMChannel } from "discord.js";
+import type { Channel, Client, ClientEvents as DiscordClientEvents, PartialGroupDMChannel } from "discord.js";
 
 declare global {
     interface ClientEvents extends DiscordClientEvents {
-        normalMessageCreate: [message: Message];
-        normalMessageUpdate: [oldMessage: Message, newMessage: Message];
-        normalMessageDelete: [message: Message];
         clientReady: [client: Client<true>];
         raw: [data: { t: string; d: unknown }];
     }
@@ -81,7 +78,7 @@ enum Events {
     MessageReactionRemoveEmoji = "messageReactionRemoveEmoji",
     MessageUpdate = "messageUpdate",
     PresenceUpdate = "presenceUpdate",
-    Ready = "clientReady",
+    ClientReady = "clientReady",
     RoleCreate = "roleCreate",
     RoleDelete = "roleDelete",
     RoleUpdate = "roleUpdate",
@@ -108,11 +105,9 @@ enum Events {
     Warn = "warn",
     WebhooksUpdate = "webhooksUpdate",
     WebhookUpdate = "webhookUpdate",
-    Raw = "raw",
-
-    NormalMessageCreate = "normalMessageCreate",
-    NormalMessageUpdate = "normalMessageUpdate",
-    NormalMessageDelete = "normalMessageDelete"
+    Raw = "raw"
 }
 
-export { ClientEvents, Events };
+type ArgsOfEventListener<T extends Events> = ClientEvents[T];
+
+export { ClientEvents, Events, ArgsOfEventListener };

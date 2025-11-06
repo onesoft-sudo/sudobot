@@ -18,14 +18,17 @@ importers:
         specifier: 14.24.2
         version: 14.24.2
       dotenv:
-        specifier: 17.2.2
-        version: 17.2.2
+        specifier: 17.2.3
+        version: 17.2.3
       drizzle-orm:
         specifier: 0.44.7
         version: 0.44.7(@types/pg@8.15.6)(bun-types@1.3.1(@types/react@19.1.12))(pg@8.16.3)
       figlet:
         specifier: ^1.9.3
         version: 1.9.3
+      lru-cache:
+        specifier: ^11.2.2
+        version: 11.2.2
       mlkem:
         specifier: ^2.5.0
         version: 2.5.0
@@ -35,6 +38,12 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
+      typebox:
+        specifier: ^1.0.51
+        version: 1.0.51
     devDependencies:
       '@commitlint/cli':
         specifier: 19.8.1
@@ -135,9 +144,6 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
 
 packages:
 
@@ -1207,8 +1213,8 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
-  dotenv@17.2.2:
-    resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
   drizzle-orm@0.44.7:
@@ -2131,6 +2137,9 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
+  typebox@1.0.51:
+    resolution: {integrity: sha512-HbnSM17BFdKubGlk4jgAqIxLoDoB6eNg5anbi8Hqs5vFiisNxOmIpNi9s3hOoUIccIV+diQuQFvHyx4IQCtHdg==}
+
   typedoc-plugin-rename-defaults@0.7.3:
     resolution: {integrity: sha512-fDtrWZ9NcDfdGdlL865GW7uIGQXlthPscURPOhDkKUe4DBQSRRFUf33fhWw41FLlsz8ZTeSxzvvuNmh54MynFA==}
     peerDependencies:
@@ -2328,9 +2337,6 @@ packages:
   yocto-queue@1.2.1:
     resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
     engines: {node: '>=12.20'}
-
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
 snapshots:
 
@@ -3397,7 +3403,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv@17.2.2: {}
+  dotenv@17.2.3: {}
 
   drizzle-orm@0.44.7(@types/pg@8.15.6)(bun-types@1.3.1(@types/react@19.1.12))(pg@8.16.3):
     optionalDependencies:
@@ -4198,6 +4204,8 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
+  typebox@1.0.51: {}
+
   typedoc-plugin-rename-defaults@0.7.3(typedoc@0.28.14(typescript@5.9.3)):
     dependencies:
       camelcase: 8.0.0
@@ -4384,5 +4392,3 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.2.1: {}
-
-  zod@4.1.12: {}

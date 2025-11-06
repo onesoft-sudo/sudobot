@@ -17,7 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { z, ZodType } from "zod";
+import type { Type } from "typebox";
+import { Value } from "typebox/value";
 
 class Environment {
     public static isProduction(): boolean {
@@ -40,8 +41,8 @@ class Environment {
         return process.env;
     }
 
-    public static parseVariables<T extends ZodType>(schema: T): z.infer<T> {
-        return schema.parse(this.variables());
+    public static parseVariables<T extends Type.TObject>(schema: T): Type.Static<T> {
+        return Value.Parse(schema, this.variables());
     }
 }
 

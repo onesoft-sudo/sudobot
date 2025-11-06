@@ -38,6 +38,12 @@ class ServiceManager {
 
             this.services.set(serviceInstance.name, serviceInstance);
             this.services.set(ServiceClass, serviceInstance);
+            this.application.container.register({
+                type: ServiceClass,
+                factory: () => serviceInstance,
+                singleton: true,
+                id: serviceInstance.name
+            });
 
             await serviceInstance.boot?.();
             this.logger.info("Loaded service: ", service, " (" + ServiceClass.name + ")");

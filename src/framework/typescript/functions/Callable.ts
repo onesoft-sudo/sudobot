@@ -17,20 +17,30 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Environment from "@framework/env/Environment";
-import { Value } from "typebox/value";
-import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/EnvironmentVariableSchema";
+const CallableSymbol = Symbol("Callable");
 
-let envData: EnvironmentVariableType | undefined;
+abstract class Callable extends Function {
+    public readonly [CallableSymbol]: this;
 
-export function getEnvData(): EnvironmentVariableType {
-    if (envData === undefined) {
-        envData = Environment.parseVariables(EnvironmentVariableSchema);
+    public constructor() {
+        super("...args", "return this._invoke(...args)");
+        this[CallableSymbol] = this.bind(this) as this;
+        return this[CallableSymbol];
     }
 
-    return envData;
+    protected abstract invoke(...args: unknown[]): unknown;
+
+    private _invoke(...args: unknown[]) {
+        return this.invoke(...args);
+    }
+
+    public [Symbol.toStringTag]() {
+        return this.toString();
+    }
+
+    public override toString() {
+        return this.constructor.name;
+    }
 }
 
-export function setEnvData(data: Record<string, string | undefined>): void {
-    envData = Value.Parse(EnvironmentVariableSchema, data);
-}
+export default Callable;

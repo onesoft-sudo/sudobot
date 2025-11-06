@@ -47,3 +47,5 @@ export function sourceFile(moduleName: string): string {
 
     return `${moduleName}.js`;
 }
+
+export const effectiveExtension = process.isBun ? "ts" : "js";

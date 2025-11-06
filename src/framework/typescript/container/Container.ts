@@ -93,7 +93,7 @@ class Container {
                 const finalArgs = [...args];
 
                 for (const [index, details] of methodInjectData) {
-                    finalArgs[index] = this.get(details.type as ConstructorOf<object>);
+                    finalArgs[index] = this.get((details.type ?? details.id) as ConstructorOf<object> | string);
                 }
 
                 return new constructorFn(...(finalArgs as never[]));
@@ -103,8 +103,6 @@ class Container {
         return new constructorFn(...(args as never[]));
     }
 
-    public get<T extends object>(id: string, options?: GetObjectOptions): T;
-    public get<T extends object>(type: ConstructorOf<T>, options?: GetObjectOptions): T;
     public get<T extends object>(idOrType: string | ConstructorOf<T>, options?: GetObjectOptions): T {
         return this.getInstance(idOrType, options?.constructorArgs ?? []);
     }
@@ -124,7 +122,7 @@ class Container {
                 );
             }
 
-            const targetObject = this.get(details.type as ConstructorOf<object>);
+            const targetObject = this.get((details.type ?? details.id) as ConstructorOf<object> | string);
 
             Object.defineProperty(object, property, {
                 value: targetObject
@@ -166,8 +164,8 @@ class Container {
 
         const finalArgs = [...((args ?? []) as [])] as object[];
 
-        for (const [index, { type }] of details) {
-            finalArgs[index] = this.get(type as ConstructorOf<object>);
+        for (const [index, { type, id }] of details) {
+            finalArgs[index] = this.get((type ?? id) as ConstructorOf<object> | string);
         }
 
         return (object[method] as AnyFunction).call(object, ...(finalArgs as [])) as R;

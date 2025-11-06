@@ -19,7 +19,6 @@
 
 import { isDevelopmentMode } from "@framework/utils/utils";
 import chalk from "chalk";
-import { EventEmitter } from "events";
 
 export enum LogLevel {
     Debug,
@@ -39,7 +38,6 @@ export class Logger {
         dateStyle: "long",
         timeStyle: "long"
     });
-    private readonly eventEmitter = new EventEmitter();
 
     public constructor(
         private readonly name: string,
@@ -63,10 +61,6 @@ export class Logger {
         this.bug = this.bug.bind(this as unknown as void);
     }
 
-    public on(event: "log", listener: (message: string) => void) {
-        this.eventEmitter.on(event, listener);
-    }
-
     public log(level: LogLevel, ...args: unknown[]) {
         const levelName = LogLevel[level].toLowerCase();
         const methodName =
@@ -83,7 +77,7 @@ export class Logger {
                     ? `${chalk.gray(this.formatter.format(new Date()))} `
                     : `${(methodName === "error" || methodName === "warn" ? chalk.red : chalk.green)(`[${process.uptime().toFixed(7).toString().padStart(13, " ")}]`)} `
                 : ""
-        }${this.colorize(`${levelName}:`, level)} ${chalk.yellowBright(this.name)}:`;
+        }${this.colorize(`${levelName}:`.padEnd(6), level)} ${chalk.yellowBright(this.name)}:`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
@@ -100,15 +94,10 @@ export class Logger {
         if (args.length === 1 && args[0] instanceof Error) {
             console[methodName].call(console, "\n");
             console[methodName].call(console, args[0]);
-            const message = args[0].message + "\n" + (args[0].stack ?? "");
-            this.eventEmitter.emit("log", message);
             return;
         }
 
         console[methodName].call(console, ...args);
-        const message = args.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))).join(" ");
-
-        this.eventEmitter.emit("log", message);
     }
 
     private colorize(text: string, level: LogLevel) {

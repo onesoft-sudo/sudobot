@@ -17,20 +17,24 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Environment from "@framework/env/Environment";
-import { Value } from "typebox/value";
-import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/EnvironmentVariableSchema";
+import { promiseWithResolvers } from "@framework/polyfills/Promise";
 
-let envData: EnvironmentVariableType | undefined;
+class Condition {
+    private readonly resolvers: Array<() => void> = [];
 
-export function getEnvData(): EnvironmentVariableType {
-    if (envData === undefined) {
-        envData = Environment.parseVariables(EnvironmentVariableSchema);
+    public async wait() {
+        const { promise, resolve } = promiseWithResolvers<void>();
+        this.resolvers.push(resolve);
+        return promise;
     }
 
-    return envData;
+    public signal() {
+        const resolver = this.resolvers.shift();
+
+        if (resolver) {
+            resolver();
+        }
+    }
 }
 
-export function setEnvData(data: Record<string, string | undefined>): void {
-    envData = Value.Parse(EnvironmentVariableSchema, data);
-}
+export default Condition;
