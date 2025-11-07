@@ -7,7 +7,11 @@ import {
     GuildConfigurationSchemaValidator,
     type GuildConfigurationType
 } from "@schemas/GuildConfigurationSchema";
-import { SystemConfigurationSchemaValidator, type SystemConfigurationType } from "@schemas/SystemConfigurationSchema";
+import {
+    SystemConfigurationDefaultValue,
+    SystemConfigurationSchemaValidator,
+    type SystemConfigurationType
+} from "@schemas/SystemConfigurationSchema";
 import { systemPrefix } from "@main/utils/utils";
 import type { Awaitable, Snowflake } from "discord.js";
 import { readdir } from "fs/promises";
@@ -28,7 +32,7 @@ class ConfigurationManagerService extends Service {
     });
     private readonly syncGuilds = new Set<string>();
     private _timeout?: ReturnType<typeof setTimeout>;
-    public systemConfig: SystemConfigurationType = { system_admins: [] };
+    public systemConfig: SystemConfigurationType = structuredClone(SystemConfigurationDefaultValue);
 
     public async reloadAll(): Promise<void> {
         const guildConfigFiles = await readdir(ConfigurationManagerService.CONFIG_GUILD_DIR);

@@ -3,6 +3,8 @@ import Service from "./Service";
 import type { DefaultExport } from "@framework/types/Utils";
 import { Collection } from "discord.js";
 import { Logger } from "@framework/log/Logger";
+import { requireNonNull } from "@framework/utils/utils";
+import type { ConstructorOf } from "@framework/container/Container";
 
 class ServiceManager {
     public readonly application: Application;
@@ -48,6 +50,13 @@ class ServiceManager {
             await serviceInstance.boot?.();
             this.logger.info("Loaded service: ", service, " (" + ServiceClass.name + ")");
         }
+    }
+
+    public get<T extends Service>(service: ConstructorOf<T>): T;
+    public get<T extends Service>(name: string): T;
+
+    public get<T extends Service>(service: ConstructorOf<T> | string): T {
+        return requireNonNull(this.services.get(service), "Service could not be resolved") as T;
     }
 }
 

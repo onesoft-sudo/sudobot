@@ -1,4 +1,3 @@
-import type { ZodError } from "zod";
 import type { APIErrorCode } from "../APIErrorCode";
 
 export type SetGuildConfigurationResponse =
@@ -8,5 +7,5 @@ export type SetGuildConfigurationResponse =
     | {
           code: Omit<APIErrorCode, APIErrorCode.Success>;
           message: string;
-          errors?: Pick<ZodError, "message" | "issues">;
+          errors?: unknown;
       };

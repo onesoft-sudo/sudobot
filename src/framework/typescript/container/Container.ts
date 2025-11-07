@@ -8,7 +8,7 @@ import {
     type InjectionData
 } from "./Inject";
 
-type ConstructorOf<T> = new (...args: never[]) => T;
+export type ConstructorOf<T> = new (...args: never[]) => T;
 
 type ContainerObjectFactoryOptions<T> = {
     singleton?: boolean;

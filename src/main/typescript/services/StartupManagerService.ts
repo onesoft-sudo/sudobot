@@ -13,6 +13,7 @@ import { emoji } from "@framework/utils/emoji";
 import { setTimeout } from "timers/promises";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { noOperation } from "@framework/utils/utils";
+import ConfigurationManagerService from "./ConfigurationManagerService";
 
 export const SERVICE_STARTUP_MANAGER = "startupManagerService" as const;
 
@@ -108,7 +109,7 @@ class StartupManagerService extends Service {
             rm(restartJsonFile).catch(this.application.logger.error);
         }
 
-        const { presence } = this.application.getService(ConfigurationManager).systemConfig;
+        const { presence } = this.application.service(ConfigurationManagerService).systemConfig;
 
         this.application.client.user?.setPresence({
             activities: [
@@ -146,7 +147,7 @@ class StartupManagerService extends Service {
                     this.application.logger.info(`Broadcasted Message: ${message}`);
                 }
 
-                process.exit(this.application.service("configManager").systemConfig.restart_exit_code);
+                process.exit(this.application.service(ConfigurationManagerService).systemConfig.restart_exit_code);
             })
             .catch(this.application.logger.error);
 

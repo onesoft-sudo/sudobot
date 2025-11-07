@@ -1,29 +1,31 @@
-import type {
-    ChatInputCommandInteraction,
-    ContextMenuCommandInteraction,
-    InteractionEditReplyOptions,
-    Message
-} from "discord.js";
+import type { Message, MessageCreateOptions } from "discord.js";
 import CommandContextType from "./CommandContextType";
 import Context, { type ContextReplyOptions } from "./Context";
-import { requireNonNull } from "@framework/utils/utils";
+import type Application from "@framework/app/Application";
 
 class LegacyContext extends Context<CommandContextType.Legacy> {
     public override readonly type = CommandContextType.Legacy;
-    public readonly commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction;
+    public readonly commandMessage: Message<boolean>;
+    public readonly commandName: string;
+    public readonly argv: string[];
+    public readonly args: string[];
 
-    public constructor(commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction) {
-        super();
+    public constructor(
+        application: Application,
+        commandMessage: Message<boolean>,
+        commandName: string,
+        argv: string[],
+        args: string[]
+    ) {
+        super(application);
         this.commandMessage = commandMessage;
+        this.commandName = commandName;
+        this.argv = argv;
+        this.args = args;
     }
 
-    public override async reply(options: ContextReplyOptions): Promise<Message<boolean>> {
-        if (this.commandMessage.deferred) {
-            return this.commandMessage.editReply(options as InteractionEditReplyOptions);
-        }
-
-        const response = await this.commandMessage.reply({ withResponse: true });
-        return requireNonNull(response.resource?.message);
+    public override reply(options: ContextReplyOptions): Promise<Message<boolean>> {
+        return this.commandMessage.reply(options as MessageCreateOptions);
     }
 }
 

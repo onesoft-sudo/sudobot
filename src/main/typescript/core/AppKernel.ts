@@ -1,11 +1,14 @@
 import Application from "@framework/app/Application";
 import ClassLoader from "@framework/class/ClassLoader";
+import type Command from "@framework/commands/Command";
 import Kernel from "@framework/core/Kernel";
 import type EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
 import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
 import { getEnvData } from "@main/env/env";
+import type CommandManagerService from "@main/services/CommandManagerService";
+import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
 
@@ -102,10 +105,35 @@ class AppKernel extends Kernel {
         });
     }
 
+    private async loadCommands(application: Application): Promise<void> {
+        await application.classLoader.loadClassesRecursive<DefaultExport<new (application: Application) => Command>>(
+            this.commandsDirectory,
+            {
+                preLoad: filepath => {
+                    application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
+                },
+                postLoad: async (filepath, { default: CommandClass }) => {
+                    const command = application.container.get(CommandClass, {
+                        constructorArgs: [application]
+                    });
+                    await command.onAppBoot?.();
+                    const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
+                        | CommandManagerService
+                        | undefined;
+                    commandManagerService?.register(command);
+                    application.logger.info(
+                        `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`
+                    );
+                }
+            }
+        );
+    }
+
     public async boot(application: Application): Promise<void> {
         this.registerFactories(application);
         await this.loadServices(application);
         await this.loadEventListeners(application);
+        await this.loadCommands(application);
     }
 
     public async run(application: Application): Promise<void> {

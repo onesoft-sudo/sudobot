@@ -1,7 +1,8 @@
 import ClassLoader from "@framework/class/ClassLoader";
-import Container from "@framework/container/Container";
+import Container, { type ConstructorOf } from "@framework/container/Container";
 import type Kernel from "@framework/core/Kernel";
 import { Logger } from "@framework/log/Logger";
+import type Service from "@framework/services/Service";
 import ServiceManager from "@framework/services/ServiceManager";
 import type { Client } from "discord.js";
 
@@ -53,6 +54,13 @@ class Application {
     }
 
     public static setupGlobals() {}
+
+    public service<T extends Service>(service: ConstructorOf<T>): T;
+    public service<T extends Service>(name: string): T;
+
+    public service<T extends Service>(service: ConstructorOf<T> | string): T {
+        return this.serviceManager.get<T>(service as ConstructorOf<T>);
+    }
 }
 
 export default Application;

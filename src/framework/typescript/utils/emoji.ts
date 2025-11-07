@@ -19,19 +19,17 @@
 
 import type Application from "@framework/app/Application";
 import { getEnvData } from "@main/env/env";
+import type ConfigurationManagerService from "@main/services/ConfigurationManagerService";
 import type { ApplicationEmoji, GuildEmoji } from "discord.js";
 
 export function emoji(application: Application, name: string) {
     return findEmoji(application, name) || "";
 }
 
-export function findEmoji(
-    application: Application,
-    name: string
-): GuildEmoji | ApplicationEmoji | undefined {
+export function findEmoji(application: Application, name: string): GuildEmoji | ApplicationEmoji | undefined {
     const strategy =
-        getEnvData().EMOJI_RESOLVE_STRATEGY ??
-        application.service("configManager").systemConfig.emoji_resolve_strategy;
+        application.service<ConfigurationManagerService>("configurationManagerService").systemConfig
+            .emoji_resolve_strategy;
 
     ifGuild: if (strategy !== "application") {
         const homeGuild = application.client.guilds.cache.get(getEnvData().HOME_GUILD_ID);
@@ -40,9 +38,7 @@ export function findEmoji(
             break ifGuild;
         }
 
-        const emoji = homeGuild.emojis.cache.find(
-            emoji => emoji.name === name || emoji.identifier === name
-        );
+        const emoji = homeGuild.emojis.cache.find(emoji => emoji.name === name || emoji.identifier === name);
 
         if (emoji) {
             return emoji;
