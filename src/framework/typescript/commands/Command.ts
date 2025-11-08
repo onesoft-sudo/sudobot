@@ -7,6 +7,8 @@ import type { PermissionResolvable, RawPermissionResolvable } from "@framework/p
 import Permission from "@framework/permissions/Permission";
 import type Application from "@framework/app/Application";
 import PermissionDeniedError from "@framework/permissions/PermissionDeniedError";
+import type { GuardResolvable } from "@framework/guards/GuardResolvable";
+import Guard from "@framework/guards/Guard";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -84,6 +86,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     private cachedPermissionsAreAvailable = false;
 
     /**
+     * Protector guards for this command.
+     *
+     * @type {Iterable<GuardResolvable>}
+     */
+    public readonly guards: Iterable<GuardResolvable> = [];
+
+    /**
      * The application instance.
      */
     protected readonly application: Application;
@@ -118,10 +127,20 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         const permissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
         const systemPermissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
         const permanentPermissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
+        const permissionArray =
+            typeof this.permissions === "object" && Symbol.iterator in this.permissions
+                ? this.permissions
+                : [this.permissions];
+        const systemPermissionArray =
+            typeof this.systemPermissions === "object" && Symbol.iterator in this.systemPermissions
+                ? this.systemPermissions
+                : [this.systemPermissions];
+        const permanentPermissionArray =
+            typeof this.permanentPermissions === "object" && Symbol.iterator in this.permanentPermissions
+                ? this.permanentPermissions
+                : [this.permanentPermissions];
 
-        for (const permission of typeof this.permissions === "object" && Symbol.iterator in this.permissions
-            ? this.permissions
-            : [this.permissions]) {
+        for (const permission of permissionArray) {
             if (permission instanceof Permission) {
                 permissions[1].add(permission);
                 continue;
@@ -135,9 +154,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             permissions[0].add(permission);
         }
 
-        for (const permission of typeof this.systemPermissions === "object" && Symbol.iterator in this.systemPermissions
-            ? this.systemPermissions
-            : [this.systemPermissions]) {
+        for (const permission of systemPermissionArray) {
             if (permission instanceof Permission) {
                 systemPermissions[1].add(permission);
                 continue;
@@ -151,10 +168,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             systemPermissions[0].add(permission);
         }
 
-        for (const permission of typeof this.permanentPermissions === "object" &&
-        Symbol.iterator in this.permanentPermissions
-            ? this.permanentPermissions
-            : [this.permanentPermissions]) {
+        for (const permission of permanentPermissionArray) {
             if (permission instanceof Permission) {
                 permanentPermissions[1].add(permission);
                 continue;
@@ -236,12 +250,21 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
     }
 
+    private async checkGuards(context: Context): Promise<void> {
+        const failedGuard = await Guard.runGuards(this, context, this.guards);
+
+        if (failedGuard) {
+            throw new PermissionDeniedError([], "You aren't permitted to use this command.");
+        }
+    }
+
     /**
      * Starts execution of this command.
      */
     public async run(context: Context): Promise<void> {
         try {
             await this.checkPermissions(context);
+            await this.checkGuards(context);
         } catch (error) {
             if (error instanceof PermissionDeniedError) {
                 await context.error(error.message);

@@ -20,5 +20,9 @@
 import type Application from "../app/Application";
 
 export abstract class HasApplication {
-    public constructor(protected readonly application: Application) {}
+    protected readonly application: Application;
+
+    public constructor(application: Application) {
+        this.application = application;
+    }
 }
