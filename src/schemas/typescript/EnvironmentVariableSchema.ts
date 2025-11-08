@@ -3,8 +3,9 @@ import { Compile } from "typebox/compile";
 import { SnowflakeSchema } from "./SnowflakeSchema";
 
 export const EnvironmentVariableSchema = Type.Object({
-    BOT_TOKEN: Type.String(),
-    HOME_GUILD_ID: SnowflakeSchema
+    SUDOBOT_TOKEN: Type.String(),
+    SUDOBOT_HOME_GUILD_ID: SnowflakeSchema,
+    SUDOBOT_SHARD_COUNT: Type.Optional(Type.Integer({ minimum: 1 }))
 });
 
 export const EnvironmentVariableSchemaValidator = Compile(EnvironmentVariableSchema);

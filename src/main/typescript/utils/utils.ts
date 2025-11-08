@@ -162,9 +162,9 @@ export async function request<D = unknown>(options: AxiosRequestConfig<D>) {
 }
 
 export function getHomeGuild(client: Client) {
-    if (!process.env.HOME_GUILD_ID) {
+    if (!process.env.SUDOBOT_HOME_GUILD_ID) {
         return null;
     }
 
-    return fetchGuild(client, process.env.HOME_GUILD_ID);
+    return fetchGuild(client, process.env.SUDOBOT_HOME_GUILD_ID);
 }

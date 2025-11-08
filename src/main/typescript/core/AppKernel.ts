@@ -160,7 +160,7 @@ class AppKernel extends Kernel {
 
     public async run(_application: Application): Promise<void> {
         await Promise.resolve();
-        await this.client.login(getEnvData().BOT_TOKEN);
+        await this.client.login(getEnvData().SUDOBOT_TOKEN);
     }
 }
 

@@ -32,7 +32,7 @@ export function findEmoji(application: Application, name: string): GuildEmoji | 
             .emoji_resolve_strategy;
 
     ifGuild: if (strategy !== "application") {
-        const homeGuild = application.client.guilds.cache.get(getEnvData().HOME_GUILD_ID);
+        const homeGuild = application.client.guilds.cache.get(getEnvData().SUDOBOT_HOME_GUILD_ID);
 
         if (!homeGuild) {
             break ifGuild;
