@@ -5,6 +5,8 @@ on:
     paths:
       - "src/schemas/**"
       - ".github/workflows/publish-schemas.yml"
+    branches:
+      - main
 
 permissions:
   id-token: write
