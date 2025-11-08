@@ -10,6 +10,8 @@ export type ApplicationOptions = {
     rootDirectoryPath: string;
     projectRootDirectoryPath: string;
     version: string;
+    shards?: number[];
+    shardCount?: number;
 };
 
 class Application {
@@ -22,6 +24,9 @@ class Application {
     public readonly classLoader: ClassLoader;
     public readonly serviceManager: ServiceManager;
 
+    public readonly shards: number[] = [];
+    public readonly shardCount: number = 1;
+
     private static _self: Application;
 
     public get client(): Client {
@@ -32,6 +37,8 @@ class Application {
         this.rootDirectoryPath = options.rootDirectoryPath;
         this.projectRootDirectoryPath = options.projectRootDirectoryPath;
         this.version = options.version;
+        this.shardCount = options.shardCount ?? 1;
+        this.shards = options.shards ? [...options.shards] : [];
         this.container = new Container();
         this.classLoader = new ClassLoader();
         this.serviceManager = new ServiceManager(this);

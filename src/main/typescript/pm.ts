@@ -15,13 +15,12 @@ import { readFile } from "fs/promises";
 import { MlKem768 } from "mlkem";
 import path from "path";
 import { createInterface } from "readline/promises";
+import chalk from "chalk";
+import figlet from "figlet";
+import { version } from "@root/package.json";
 
-const logger = new Logger("pm", true);
-const encryptedEnvFilePath = path.join(
-    __dirname,
-    __filename.endsWith(".js") ? ".." : "",
-    "../../../.env.encrypted"
-);
+const logger = new Logger("PM", true);
+const encryptedEnvFilePath = path.join(__dirname, __filename.endsWith(".js") ? ".." : "", "../../../.env.encrypted");
 
 async function fetchCredentials(url: string, key: string) {
     if (!url.startsWith("https://") && !url.startsWith("http://localhost:")) {
@@ -50,21 +49,14 @@ async function fetchCredentials(url: string, key: string) {
             }
         );
 
-        if (
-            response.data?.privateKey &&
-            typeof response.data?.privateKey === "string"
-        ) {
+        if (response.data?.privateKey && typeof response.data?.privateKey === "string") {
             logger.success(
-                "Successfully authenticated with the credentials server (Method: " +
-                    (is2FACode ? "2FA" : "Key") +
-                    ")"
+                "Successfully authenticated with the credentials server (Method: " + (is2FACode ? "2FA" : "Key") + ")"
             );
 
             /* The response contains all data in hex format.
                    Therefore first decode it to a buffer. */
-            const privateKey = new Uint8Array(
-                Buffer.from(response.data.privateKey, "hex")
-            );
+            const privateKey = new Uint8Array(Buffer.from(response.data.privateKey, "hex"));
 
             /* The encrypted data is in the following format:
                    - First 4 bytes: The size of the IV (ivSize)
@@ -74,31 +66,17 @@ async function fetchCredentials(url: string, key: string) {
                    - Next (authTagSize) bytes: The auth tag
                    - Next (cipherTextSize) bytes: The encrypted data
                    - Remaining bytes: Encrypted data */
-            const encryptedData = Buffer.from(
-                await readFile(encryptedEnvFilePath, "binary"),
-                "binary"
-            );
+            const encryptedData = Buffer.from(await readFile(encryptedEnvFilePath, "binary"), "binary");
 
-            if (
-                encryptedData.length < 16 ||
-                encryptedData.readUInt32BE(0) !== 0x7c83
-            ) {
+            if (encryptedData.length < 16 || encryptedData.readUInt32BE(0) !== 0x7c83) {
                 throw new Error("Invalid encrypted data received");
             }
 
             const ivSize = encryptedData.readUInt32BE(4);
             const authTagSize = encryptedData.readUInt32BE(8);
             const cipherTextSize = encryptedData.readUInt32BE(12);
-            const iv = Uint8Array.prototype.slice.call(
-                encryptedData,
-                16,
-                16 + ivSize
-            );
-            const authTag = Uint8Array.prototype.slice.call(
-                encryptedData,
-                16 + ivSize,
-                16 + ivSize + authTagSize
-            );
+            const iv = Uint8Array.prototype.slice.call(encryptedData, 16, 16 + ivSize);
+            const authTag = Uint8Array.prototype.slice.call(encryptedData, 16 + ivSize, 16 + ivSize + authTagSize);
             const cipherText = Uint8Array.prototype.slice.call(
                 encryptedData,
                 16 + ivSize + authTagSize,
@@ -110,19 +88,10 @@ async function fetchCredentials(url: string, key: string) {
             );
 
             const mlkem = new MlKem768();
-            const decryptedSharedSecret = await mlkem.decap(
-                cipherText,
-                privateKey
-            );
-            const decipher = crypto.createDecipheriv(
-                "aes-256-gcm",
-                decryptedSharedSecret,
-                iv
-            );
+            const decryptedSharedSecret = await mlkem.decap(cipherText, privateKey);
+            const decipher = crypto.createDecipheriv("aes-256-gcm", decryptedSharedSecret, iv);
             decipher.setAuthTag(authTag);
-            const decryptedTextData =
-                decipher.update(encryptedEnv, undefined, "utf8") +
-                decipher.final("utf8");
+            const decryptedTextData = decipher.update(encryptedEnv, undefined, "utf8") + decipher.final("utf8");
 
             logger.success("Successfully decrypted the environment data");
 
@@ -141,8 +110,7 @@ async function fetchCredentials(url: string, key: string) {
                 return data;
             } catch (error) {
                 logger.error(
-                    "Failed to parse decrypted data: " +
-                        (error instanceof Error ? error.message : `${error}`)
+                    "Failed to parse decrypted data: " + (error instanceof Error ? error.message : `${error}`)
                 );
                 return null;
             }
@@ -156,19 +124,14 @@ async function fetchCredentials(url: string, key: string) {
 }
 
 async function promptForCode() {
-    const restartJsonFile = path.join(
-        systemPrefix("tmp", true),
-        "restart.json"
-    );
+    const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
     let restartKey = null;
 
     if (existsSync(restartJsonFile)) {
         logger.info("Found restart.json file: ", restartJsonFile);
 
         try {
-            const { key } = JSON.parse(
-                await readFile(restartJsonFile, { encoding: "utf-8" })
-            );
+            const { key } = JSON.parse(await readFile(restartJsonFile, { encoding: "utf-8" }));
             restartKey = key;
         } catch (error) {
             logger.error(error);
@@ -194,15 +157,17 @@ async function promptForCode() {
     return key;
 }
 
-function createChild(data: DotenvParseOutput | null) {
+function createChild(data: DotenvParseOutput | null, signal?: AbortSignal, argv: string[] = []) {
     return new Promise<void>(resolve => {
         const child = fork(
-            path.resolve(
-                __dirname,
-                "main" + (__filename.endsWith(".ts") ? ".ts" : ".js")
-            ),
+            path.resolve(__dirname, "main" + (__filename.endsWith(".ts") ? ".ts" : ".js")),
+            [...argv, ...process.argv.slice(2)],
             {
-                stdio: "inherit"
+                stdio: "inherit",
+                env: {
+                    ...process.env,
+                    SUDOBOT_WRAPPER: "1"
+                }
             }
         );
 
@@ -236,25 +201,67 @@ function createChild(data: DotenvParseOutput | null) {
                     : null;
 
             if (messageData?.type === "SECRETS_ACK") {
-                logger.info("Main process acknowledged secret data");
+                logger.info(`${child.pid}: Child process acknowledged secret data`);
                 return;
             }
 
             if (messageData?.type === "READY") {
-                logger.info("Main process is ready");
+                logger.info(`${child.pid}: Child process is ready`);
 
                 child.send({
                     type: "SECRETS",
                     data
                 });
 
-                logger.info("Sent secret data to main process");
+                logger.info(`${child.pid}: Sent secret data to child process`);
                 return;
             }
 
-            logger.warn("Invalid IPC message received");
+            logger.warn(`${child.pid}: Invalid IPC message received`);
+        });
+
+        signal?.addEventListener("abort", () => {
+            if (!child.kill("SIGTERM")) {
+                child.kill("SIGKILL");
+            }
+
+            child.removeAllListeners("close");
+            resolve();
         });
     });
+}
+
+async function createShard(
+    data: DotenvParseOutput | null,
+    shardId: number,
+    shardCount: number,
+    signal?: AbortSignal,
+    argv: string[] = []
+) {
+    let restarts = 0;
+    let lastRestart: number = 0;
+
+    logger.info(`Starting shard ${shardId}`);
+
+    for (;;) {
+        await createChild(data, signal, [
+            ...argv,
+            "--shard",
+            shardId.toString(),
+            "--shardcount",
+            shardCount.toString()
+        ]);
+
+        if (Date.now() - lastRestart <= 30000 && restarts >= 10) {
+            logger.error(`Shard ${shardId}: 10 restarts in 30 seconds -- aborting now`);
+            return false;
+        }
+
+        logger.info(`Shard ${shardId} exited, starting again in 5 seconds`);
+        await new Promise<void>(resolve => setTimeout(resolve, 5000));
+        lastRestart = Date.now();
+        restarts++;
+    }
 }
 
 async function main() {
@@ -269,9 +276,15 @@ async function main() {
             process.exit(-1);
         }
     } else if (existsSync(encryptedEnvFilePath)) {
-        logger.warn(
-            "Encrypted environment file found, but no 2FA URL provided. Ignoring..."
-        );
+        logger.warn("Encrypted environment file found, but no 2FA URL provided. Ignoring...");
+    }
+
+    if (process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT) {
+        console.info();
+        console.info(chalk.blueBright((await figlet.text("SudoBot")).replace(/\s+$/, "")));
+        console.info();
+        console.info(`      Version ${chalk.green(version)} -- booting up`);
+        console.info();
     }
 
     logger.info("Starting main process");
@@ -280,7 +293,28 @@ async function main() {
     let lastRestart: number = 0;
 
     for (;;) {
-        await createChild(result);
+        if (process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT) {
+            const promises = [];
+            const count = +process.env.SUDOBOT_SHARD_COUNT;
+            const abortController = new AbortController();
+
+            for (let i = 0; i < count; i++) {
+                const promise = createShard(result, i, count, abortController.signal);
+                promises.push(
+                    promise.then(result => {
+                        if (!result) {
+                            abortController.abort();
+                            logger.error("One or more shard(s) errored");
+                            setTimeout(() => process.exit(-1), 5000);
+                        }
+                    })
+                );
+            }
+
+            await Promise.all(promises);
+        } else {
+            await createChild(result);
+        }
 
         if (Date.now() - lastRestart <= 30000 && restarts >= 10) {
             logger.error("10 restarts in 30 seconds -- aborting now");

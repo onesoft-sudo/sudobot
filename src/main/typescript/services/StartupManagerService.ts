@@ -31,7 +31,10 @@ class StartupManagerService extends Service {
     }
 
     public override async boot(): Promise<void> {
-        await this.printBanner();
+        if (this.application.shardCount === 1) {
+            await this.printBanner();
+        }
+
         axios.defaults.headers.common["Accept-Encoding"] = "gzip";
     }
 

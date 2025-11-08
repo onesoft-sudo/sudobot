@@ -8,7 +8,6 @@ export type ClassLoadOptions<T, R> = {
     loader?: (exported: T) => R;
     preLoad?: (filepath: string) => Awaitable<void>;
     postLoad?: (filepath: string, exported: R) => Awaitable<void>;
-    attrs?: ImportAttributes;
 };
 
 class ClassLoader {
@@ -20,7 +19,7 @@ class ClassLoader {
         }
 
         await options?.preLoad?.(file);
-        const module = await import(file, { with: options?.attrs });
+        const module = await import(file);
         const processedModule = (options?.loader ? options.loader(module) : module) as R;
         await options?.postLoad?.(file, processedModule);
         return processedModule;
@@ -50,7 +49,7 @@ class ClassLoader {
                 continue;
             }
 
-            const module = await import(fullpath, { with: options?.attrs });
+            const module = await import(fullpath);
             const processedModule = options?.loader ? options.loader(module) : module;
             modules.push(processedModule);
             await options?.postLoad?.(fullpath, processedModule);

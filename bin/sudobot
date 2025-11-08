@@ -17,22 +17,48 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+export SUDOBOT_WRAPPER=1
+
 if [ -z "$SUDOBOT_HOME" ]; then
-  SUDOBOT_HOME=/usr/share/sudobot
+    SUDOBOT_HOME=/usr/share/sudobot
 fi
 
-cd "$SUDOBOT_HOME" || exit 1
-
-if ! command -v node >/dev/null 2>&1; then
-  echo "$0: error: Node.js is not installed. Please install Node.js to run SudoBot." >&2
-  exit 1
+if [ -d "$SUDOBOT_HOME" ]; then
+    cd "$SUDOBOT_HOME" || exit 1
+else
+    nohome=1
 fi
 
-current_user=$(id -u -n)
+if [ "$nohome" != "1" ]; then
+    if ! command -v node >/dev/null 2>&1; then
+        echo "$0: error: Node.js is not installed. Please install Node.js to run SudoBot." >&2
+        exit 1
+    fi
 
-if [ "$current_user" != "sudobot" ]; then
-  echo "$0: warning: You are not running this script as the 'sudobot' user. This may cause permission issues." >&2
-  echo "$0: It is recommended to run this script as the 'sudobot' user." >&2
+    interpreter=node
+    current_user=$(id -u -n)
+
+    if [ "$current_user" != "sudobot" ]; then
+        echo "$0: warning: You are not running this script as the 'sudobot' user. This may cause permission issues." >&2
+        echo "$0: It is recommended to run this script as the 'sudobot' user." >&2
+    fi
+else
+    if command -v bun >/dev/null 2>&1; then
+        interpreter=bun
+    elif command -v node >/dev/null 2>&1; then
+        interpreter=node
+    else
+        echo "$0: error: Neither Bun nor Node.js is installed!" >&2
+        exit 1
+    fi
 fi
 
-exec node --env-file-if-exists=/etc/sudobot/env -- build/out/main/typescript/main.js "$@"
+if [ "$interpreter" = "bun" ]; then
+    if [ -f /etc/sudobot/env ]; then
+        arg="--env-file=/etc/sudobot/env"
+    fi
+
+    exec bun run $arg src/main/typescript/main.ts "$@"
+else
+    exec node --env-file-if-exists=/etc/sudobot/env -- build/out/main/typescript/main.js "$@"
+fi

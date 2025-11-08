@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Application from "@framework/app/Application";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import chalk from "chalk";
 
@@ -38,6 +39,16 @@ export class Logger {
         dateStyle: "long",
         timeStyle: "long"
     });
+
+    private _shardId?: string;
+
+    private get shardId() {
+        if (!this._shardId) {
+            this._shardId = Application.current()?.shards.join("_") ?? "";
+        }
+
+        return this._shardId;
+    }
 
     public constructor(
         private readonly name: string,
@@ -71,13 +82,14 @@ export class Logger {
                   : level === LogLevel.Warn
                     ? "warn"
                     : "error";
+
         const beginning = `${
             this.logTime
                 ? this.formattedTime
                     ? `${chalk.gray(this.formatter.format(new Date()))} `
                     : `${(methodName === "error" || methodName === "warn" ? chalk.red : chalk.green)(`[${process.uptime().toFixed(7).toString().padStart(13, " ")}]`)} `
                 : ""
-        }${this.colorize(`${levelName}:`.padEnd(6), level)} ${chalk.yellowBright(this.name)}:`;
+        }${this.shardId ? chalk.blue(`shard${this.shardId}: `.padEnd(6)) : ""}${this.colorize(`${levelName}:`.padEnd(6), level)} ${chalk.yellowBright(this.name)}:`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {

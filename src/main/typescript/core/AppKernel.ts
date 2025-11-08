@@ -9,11 +9,15 @@ import type { DefaultExport } from "@framework/types/Utils";
 import { getEnvData } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, ClientOptions, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
 
+export type AppKernelOptions = {
+    shards?: number[];
+    shardCount?: number;
+};
+
 class AppKernel extends Kernel {
-    public override readonly client = this.createClient();
     public readonly logger = Logger.getLogger(AppKernel);
 
     public readonly aliases: Readonly<Record<string, string>> = {
@@ -29,8 +33,19 @@ class AppKernel extends Kernel {
     public readonly eventListenersDirectory: string = path.join(__dirname, "../events");
     public readonly commandsDirectory: string = path.join(__dirname, "../commands");
 
+    public readonly shards?: number[];
+    public readonly shardCount?: number;
+    public override readonly client: Client<boolean>;
+
+    public constructor(options?: AppKernelOptions) {
+        super();
+        this.shards = options?.shards;
+        this.shardCount = options?.shardCount;
+        this.client = this.createClient();
+    }
+
     private createClient(): Client {
-        return new Client({
+        const options: ClientOptions = {
             intents: [
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.GuildMembers,
@@ -38,7 +53,14 @@ class AppKernel extends Kernel {
                 GatewayIntentBits.MessageContent
             ],
             partials: [Partials.Channel]
-        });
+        };
+
+        if (this.shards && this.shardCount) {
+            options.shards = this.shards;
+            options.shardCount = this.shardCount;
+        }
+
+        return new Client(options);
     }
 
     private abort() {
@@ -136,8 +158,7 @@ class AppKernel extends Kernel {
         await this.loadCommands(application);
     }
 
-    public async run(application: Application): Promise<void> {
-        application.logger.warn("Login reached");
+    public async run(_application: Application): Promise<void> {
         await Promise.resolve();
         await this.client.login(getEnvData().BOT_TOKEN);
     }

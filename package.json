@@ -1,7 +1,7 @@
 {
     "name": "@onesoftnet/sudobot",
     "version": "11.24.3",
-    "type": "module",
+    "type": "commonjs",
     "description": "A Discord bot for moderation purposes.",
     "author": {
         "name": "Ar Rakin",
