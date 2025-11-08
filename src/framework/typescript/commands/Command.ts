@@ -188,6 +188,10 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             return cache[0];
         }
 
+        if (member instanceof User && (Array.isArray(cache[0]) ? cache[0].length > 0 : cache[0])) {
+            return cache[0];
+        }
+
         for (const permission of cache[1]) {
             if (
                 (member instanceof GuildMember && !(await permission.hasMember(member))) ||
@@ -210,8 +214,25 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             this.cachedPermissions
         );
 
-        if (missingPermissions) {
-            throw new PermissionDeniedError(missingPermissions);
+        const missingPermanentPermissions = await this.cachedPermissionTest(
+            context.member || context.user,
+            this.cachedPermanentPermissions
+        );
+
+        if (missingPermissions || missingPermanentPermissions) {
+            throw new PermissionDeniedError((missingPermissions || missingPermanentPermissions)!);
+        }
+
+        const systemPermissions = await this.cachedPermissionTest(
+            context.member || context.user,
+            this.cachedSystemPermissions
+        );
+
+        if (systemPermissions) {
+            throw new PermissionDeniedError(
+                systemPermissions,
+                "The system is missing permissions to perform this action."
+            );
         }
     }
 

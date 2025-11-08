@@ -17,10 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Client } from "discord.js";
 import Application from "../app/Application";
 
 export const container = () => Application.current().container;
 export const application = () => Application.current();
-export const client = () => Application.current().client;
+export const client = (): Client<boolean> => Application.current().client;
 
 export { application as getApplication, client as getClient, container as getContainer };
