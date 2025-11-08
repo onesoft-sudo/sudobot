@@ -9,7 +9,8 @@ import type { DefaultExport } from "@framework/types/Utils";
 import { getEnvData } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
-import { Client, ClientOptions, GatewayIntentBits, Partials } from "discord.js";
+import type { ClientOptions } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
 
 export type AppKernelOptions = {

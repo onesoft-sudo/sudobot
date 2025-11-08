@@ -1,4 +1,5 @@
-import { APIInteractionGuildMember, type Awaitable, GuildMember, User } from "discord.js";
+import type { APIInteractionGuildMember } from "discord.js";
+import { type Awaitable, GuildMember, User } from "discord.js";
 import CommandContextType from "./CommandContextType";
 import type Context from "./Context";
 import { CommandMode } from "./CommandMode";

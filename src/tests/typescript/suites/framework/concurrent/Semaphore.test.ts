@@ -1,7 +1,7 @@
 import Condition from "@framework/concurrent/Condition";
 import Semaphore from "@framework/concurrent/Semaphore";
 import { setTimeout } from "timers/promises";
-import { describe, expect, it, Mock, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("Semaphore", () => {
     describe("basic usage", () => {

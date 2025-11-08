@@ -18,7 +18,6 @@
  */
 
 import Application from "@framework/app/Application";
-import { systemPrefix } from "@main/utils/utils";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import { createWriteStream } from "fs";
