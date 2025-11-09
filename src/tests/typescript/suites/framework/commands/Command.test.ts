@@ -4,8 +4,8 @@ import { vi } from "vitest";
 import Command from "@framework/commands/Command";
 import Application from "@framework/app/Application";
 import LegacyContext from "@framework/commands/LegacyContext";
-import { createClient, createMessage } from "@tests/mocks/discord";
-import { Client, PermissionFlagsBits } from "discord.js";
+import { createClient, createMember, createMessage } from "@tests/mocks/discord";
+import { Client, PermissionFlagsBits, PermissionsBitField } from "discord.js";
 
 @TestSuite
 class CommandTest {
@@ -39,14 +39,52 @@ class CommandTest {
             public execute = vi.fn();
         })(this.application);
 
-        const context = new LegacyContext(this.application, createMessage(this.client), "name", [], []);
-        const error = vi.fn();
-        context.error = error;
-        await command.run(context);
+        const message1 = createMessage(this.client);
+        const message2 = createMessage(this.client);
+        const message3 = createMessage(this.client);
+        const member1 = createMember(this.client);
+        const member2 = createMember(this.client);
+
+        Object.defineProperty(member1, "permissions", {
+            value: new PermissionsBitField(["SendMessages", "AddReactions"])
+        });
+
+        Object.defineProperty(member2, "permissions", {
+            value: new PermissionsBitField(["BanMembers", "AddReactions"])
+        });
+
+        Object.defineProperty(message2, "member", {
+            value: member1
+        });
+
+        Object.defineProperty(message3, "member", {
+            value: member2
+        });
+
+        const context1 = new LegacyContext(this.application, message1, "name", [], []);
+        const context2 = new LegacyContext(this.application, message2, "name", [], []);
+        const context3 = new LegacyContext(this.application, message3, "name", [], []);
+
+        const error1 = vi.fn();
+        const error2 = vi.fn();
+        const error3 = vi.fn();
+
+        context1.error = error1;
+        context2.error = error2;
+        context3.error = error3;
+
+        await command.run(context1);
+        await command.run(context2);
 
         expect(command.execute).not.toHaveBeenCalled();
-        expect(error).toHaveBeenCalledOnce();
-        expect(error.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
+        expect(error1).toHaveBeenCalledOnce();
+        expect(error2).toHaveBeenCalledOnce();
+        expect(error1.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
+        expect(error2.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
+
+        await command.run(context3);
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context3, [], {});
+        expect(error3).not.toHaveBeenCalled();
     }
 }
 
