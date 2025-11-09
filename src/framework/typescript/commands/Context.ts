@@ -14,9 +14,9 @@ import type LegacyContext from "./LegacyContext";
 
 export type ContextReplyOptions = InteractionReplyOptions | InteractionEditReplyOptions | MessageCreateOptions | string;
 
-abstract class Context<T extends CommandContextType = CommandContextType> {
+abstract class Context<T extends CommandContextType = CommandContextType, G extends boolean = boolean> {
     public abstract readonly type: T;
-    public abstract commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction | Message<boolean>;
+    public abstract commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction | Message<G>;
     public abstract commandName: string;
     public readonly application: Application;
 
@@ -40,6 +40,10 @@ abstract class Context<T extends CommandContextType = CommandContextType> {
 
     public get user() {
         return this.commandMessage instanceof Message ? this.commandMessage.author : this.commandMessage.user;
+    }
+
+    public get guild() {
+        return this.commandMessage.guild;
     }
 
     public error(options: ContextReplyOptions): Promise<Message<boolean>> {
@@ -68,6 +72,10 @@ abstract class Context<T extends CommandContextType = CommandContextType> {
                   };
 
         return this.reply(newOptions);
+    }
+
+    public inGuild(): this is Context<T, true> {
+        return this.commandMessage.inGuild();
     }
 }
 

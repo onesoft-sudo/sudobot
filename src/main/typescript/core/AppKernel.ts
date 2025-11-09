@@ -51,7 +51,8 @@ class AppKernel extends Kernel {
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildMessages,
-                GatewayIntentBits.MessageContent
+                GatewayIntentBits.MessageContent,
+                GatewayIntentBits.DirectMessages
             ],
             partials: [Partials.Channel]
         };

@@ -2,10 +2,10 @@ import Command from "@framework/commands/Command";
 import { Inject } from "@framework/container/Inject";
 import Service from "@framework/services/Service";
 import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
-import ConfigurationManagerService from "./ConfigurationManagerService";
+import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 import CommandContextType from "@framework/commands/CommandContextType";
 import LegacyContext from "@framework/commands/LegacyContext";
-import { CommandMode } from "@framework/commands/CommandMode";
+
 import InteractionContext from "@framework/commands/InteractionContext";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
@@ -34,7 +34,10 @@ class CommandManagerService extends Service {
     }
 
     private async runFromMessage(message: Message): Promise<boolean> {
-        const config = await this.configurationManagerService.get(message.guildId || message.author.id);
+        const config = await this.configurationManagerService.get(
+            message.inGuild() ? ConfigurationType.Guild : ConfigurationType.DirectMessage,
+            message.guildId || message.author.id
+        );
         const prefix = config.commands?.prefix || "-";
 
         if (!message.content?.startsWith(prefix)) {
@@ -45,11 +48,7 @@ class CommandManagerService extends Service {
         const [commandName, ...args] = argv;
         const command = this.commands.get(commandName);
 
-        if (
-            !command ||
-            !command.contexts.includes(CommandContextType.Legacy) ||
-            !command.modes.includes(message.inGuild() ? CommandMode.Guild : CommandMode.Direct)
-        ) {
+        if (!command || !command.contexts.includes(CommandContextType.Legacy)) {
             return false;
         }
 
@@ -62,11 +61,7 @@ class CommandManagerService extends Service {
     ): Promise<boolean> {
         const command = this.commands.get(interaction.commandName);
 
-        if (
-            !command ||
-            !command.contexts.includes(CommandContextType.Legacy) ||
-            !command.modes.includes(interaction.inGuild() ? CommandMode.Guild : CommandMode.Direct)
-        ) {
+        if (!command || !command.contexts.includes(CommandContextType.Legacy)) {
             return false;
         }
 

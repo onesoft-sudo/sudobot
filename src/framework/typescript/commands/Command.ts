@@ -9,6 +9,7 @@ import type Application from "@framework/app/Application";
 import PermissionDeniedError from "@framework/permissions/PermissionDeniedError";
 import type { GuardResolvable } from "@framework/guards/GuardResolvable";
 import Guard from "@framework/guards/Guard";
+import CommandAbortedError from "./CommandAbortedError";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -258,15 +259,27 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
     }
 
+    private checkPreconditions(context: Context): Awaitable<void> {
+        const requiredMode = context.inGuild() ? CommandMode.Guild : CommandMode.Direct;
+
+        if (!this.modes.includes(requiredMode)) {
+            throw new CommandAbortedError(
+                this,
+                `This command does not support **${requiredMode === CommandMode.Guild ? "server" : "direct message"}** mode.`
+            );
+        }
+    }
+
     /**
      * Starts execution of this command.
      */
     public async run(context: Context): Promise<void> {
         try {
+            await this.checkPreconditions(context);
             await this.checkPermissions(context);
             await this.checkGuards(context);
         } catch (error) {
-            if (error instanceof PermissionDeniedError) {
+            if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
                 await context.error(error.message);
                 return;
             } else {

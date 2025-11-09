@@ -19,36 +19,41 @@ import { LRUCache } from "lru-cache";
 
 export const SERVICE_CONFIGURATION_MANAGER = "configurationManagerService";
 
+export enum ConfigurationType {
+    DirectMessage = "d",
+    Guild = "g"
+}
+
 class ConfigurationManagerService extends Service {
     public override readonly name: string = SERVICE_CONFIGURATION_MANAGER;
 
-    public static readonly CONFIG_GUILD_DIR = systemPrefix("config/guilds", true);
+    public static readonly CONFIG_BY_ID_DIR = systemPrefix("config/by-id", true);
     public static readonly CONFIG_SYSTEM_FILE = systemPrefix("config/system.json");
 
     private readonly logger = Logger.getLogger(ConfigurationManagerService);
-    private readonly cache = new LRUCache<Snowflake, GuildConfigurationType>({
+    private readonly cache = new LRUCache<`${ConfigurationType}::${Snowflake}`, GuildConfigurationType>({
         max: 5000,
         ttl: 1000 * 60 * 60
     });
-    private readonly syncGuilds = new Set<string>();
+    private readonly syncFiles = new Set<`${ConfigurationType}::${Snowflake}` | "system">();
     private _timeout?: ReturnType<typeof setTimeout>;
     public systemConfig: SystemConfigurationType = structuredClone(SystemConfigurationDefaultValue);
 
     public async reloadAll(): Promise<void> {
-        const guildConfigFiles = await readdir(ConfigurationManagerService.CONFIG_GUILD_DIR);
+        const guildConfigFiles = await readdir(ConfigurationManagerService.CONFIG_BY_ID_DIR);
 
         for (const guildConfigFile of guildConfigFiles) {
             if (!guildConfigFile.endsWith(".json")) {
                 continue;
             }
 
-            const guildId = guildConfigFile.replace(/\.json$/, "");
+            const [type, id] = guildConfigFile.replace(/\.json$/, "").split("_");
 
-            if (!isSnowflake(guildId)) {
+            if ((type !== "d" && type !== "g") || !isSnowflake(id)) {
                 continue;
             }
 
-            await this.reload(guildId);
+            await this.reload(type as ConfigurationType, id);
         }
     }
 
@@ -67,37 +72,37 @@ class ConfigurationManagerService extends Service {
         }
     }
 
-    public async reload(guildId?: string): Promise<GuildConfigurationType | undefined> {
-        if (!guildId) {
+    public async reload(type?: ConfigurationType, id?: string): Promise<GuildConfigurationType | undefined> {
+        if (!type || !id) {
             await this.reloadAll();
             return;
         }
 
-        this.logger.info("Reloading configuration for guild: ", guildId);
+        this.logger.info("Reloading configuration for: ", type, id);
 
         const configJSON = await FileSystem.readFileContents(
-            `${ConfigurationManagerService.CONFIG_GUILD_DIR}/${guildId}.json`,
+            `${ConfigurationManagerService.CONFIG_BY_ID_DIR}/${type}_${id}.json`,
             { json: true }
         );
 
         try {
             const config = GuildConfigurationSchemaValidator.Parse(configJSON);
-            this.cache.set(guildId, config);
+            this.cache.set(`${type}::${id}`, config);
             return config;
         } catch (error) {
-            this.logger.error("Validation error for guild: ", guildId, error);
+            this.logger.error("Validation error for: ", type, id, error);
         }
     }
 
-    public async get(guildId: Snowflake): Promise<Readonly<GuildConfigurationType>> {
-        const cachedConfig = this.cache.get(guildId);
+    public async get(type: ConfigurationType, id: Snowflake): Promise<Readonly<GuildConfigurationType>> {
+        const cachedConfig = this.cache.get(`${type}::${id}`);
 
         if (cachedConfig !== undefined) {
             return cachedConfig;
         }
 
         try {
-            const config = await this.reload(guildId);
+            const config = await this.reload(type, id);
 
             if (!config) {
                 return GuildConfigurationDefaultValue;
@@ -106,21 +111,23 @@ class ConfigurationManagerService extends Service {
             return config;
         } catch (error) {
             this.logger.debug(error);
+            this.cache.set(`${type}::${id}`, GuildConfigurationDefaultValue);
         }
 
         return GuildConfigurationDefaultValue;
     }
 
     public async set(
-        guildId: Snowflake,
+        type: ConfigurationType,
+        id: Snowflake,
         setter: (config: GuildConfigurationType) => Awaitable<void | GuildConfigurationType>
     ): Promise<void> {
-        let cachedConfig = this.cache.get(guildId);
+        let cachedConfig = this.cache.get(`${type}::${id}`);
         let set = false;
 
         if (cachedConfig === undefined) {
             try {
-                const config = await this.reload(guildId);
+                const config = await this.reload(type, id);
 
                 if (config) {
                     cachedConfig = config;
@@ -138,15 +145,15 @@ class ConfigurationManagerService extends Service {
         const newConfig = await setter(cachedConfig);
 
         if (set || newConfig !== cachedConfig) {
-            this.cache.set(guildId, newConfig ?? cachedConfig);
+            this.cache.set(`${type}::${id}`, newConfig ?? cachedConfig);
         }
 
-        this.queueSync(guildId);
+        this.queueSync(`${type}::${id}`);
     }
 
-    public queueSync(...guildIds: string[]) {
+    public queueSync(...guildIds: `${ConfigurationType}::${Snowflake}`[]) {
         for (const guildId of guildIds) {
-            this.syncGuilds.add(guildId);
+            this.syncFiles.add(guildId);
         }
 
         if (!this._timeout) {
@@ -159,12 +166,12 @@ class ConfigurationManagerService extends Service {
     }
 
     public async sync() {
-        const guilds = [...this.syncGuilds.values()];
-        this.syncGuilds.clear();
+        const fileNames = [...this.syncFiles.values()];
+        this.syncFiles.clear();
 
-        for (const guildId of guilds) {
-            if (guildId === "system") {
-                this.logger.info("Writing guild configuration to disk");
+        for (const fileName of fileNames) {
+            if (fileName === "system") {
+                this.logger.info("Writing system configuration to disk");
 
                 await FileSystem.writeFileContents(
                     ConfigurationManagerService.CONFIG_SYSTEM_FILE,
@@ -174,17 +181,17 @@ class ConfigurationManagerService extends Service {
                 continue;
             }
 
-            const config = this.cache.get(guildId);
+            const config = this.cache.get(fileName);
 
             if (!config) {
-                this.logger.warn("Configuration changes lost for guild: ", guildId);
+                this.logger.warn("Configuration changes lost for: ", fileName);
                 continue;
             }
 
-            this.logger.info("Writing configuration to disk for guild: ", guildId);
+            this.logger.info("Writing configuration to disk for: ", fileName);
 
             await FileSystem.writeFileContents(
-                `${ConfigurationManagerService.CONFIG_GUILD_DIR}/${guildId}.json`,
+                `${ConfigurationManagerService.CONFIG_BY_ID_DIR}/${fileName}.json`,
                 JSON.stringify(config, null, 4)
             );
         }
