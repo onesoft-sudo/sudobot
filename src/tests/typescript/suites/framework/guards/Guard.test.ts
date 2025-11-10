@@ -35,8 +35,8 @@ class GuardTest {
             public override execute = vi.fn();
         })(this.application);
 
-        const context = new LegacyContext(this.application, createMessage(this.client), "name", [], []);
-        const error = vi.fn();
+        const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
+        const error = vi.fn().mockImplementation(async () => {});
         context.error = error;
         await command.run(context);
 
@@ -51,7 +51,7 @@ class GuardTest {
 
         await command.run(context);
 
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, [], {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, {}, {});
         expect(error).not.toBeCalled();
         expect(check).toHaveBeenCalledExactlyOnceWith(command, context);
     }

@@ -25,7 +25,14 @@ class ArgumentParserTest {
         const argumentParser = new ArgumentParser(this.application);
         const args = ["hi", "500", "hello-again", "9000.35"];
         const argv = ["test", ...args];
-        const context = new LegacyContext(this.application, createMessage(this.client), argv[0], argv, args);
+        const context = new LegacyContext(
+            this.application,
+            createMessage(this.client),
+            argv[0],
+            argv.join(" "),
+            argv,
+            args
+        );
         const result = await argumentParser.parse(context, {
             overloads: [
                 {
@@ -51,7 +58,7 @@ class ArgumentParserTest {
             ]
         });
 
-        expect(result.error).toBeUndefined();
+        expect(result.errors).toBeUndefined();
         expect(result.args).toEqual({ str: args[0], val1: +args[1], msg: args[2], val2: +args[3] });
     }
 }
