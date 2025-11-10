@@ -98,6 +98,6 @@
         "typescript": "5.9.3",
         "typescript-eslint": "^8.46.3",
         "unplugin-swc": "^1.5.8",
-        "vitest": "^4.0.8"
+        "vitest": "4.0.8"
     }
 }

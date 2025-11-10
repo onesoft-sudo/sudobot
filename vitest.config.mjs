@@ -13,6 +13,7 @@ export default defineConfig({
         exclude: ["**/node_modules/**", "**/build/**", "**/extensions/**"],
         setupFiles: ["./src/tests/typescript/setup.ts"],
         typecheck: {
+            enabled: true,
             tsconfig: "./src/tests/tsconfig.json"
         }
     },
