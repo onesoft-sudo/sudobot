@@ -5,6 +5,7 @@ import type Application from "@framework/app/Application";
 import { requireNonNull } from "@framework/utils/utils";
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import { ArgumentErrorType, InvalidArgumentError } from "./InvalidArgumentError";
+import type Context from "@framework/commands/Context";
 
 export type ArgumentCreateOptions =
     | {
@@ -19,6 +20,7 @@ export type ArgumentCreateOptions =
           context: InteractionContext;
           definition: ArgumentDefinition;
           name: string;
+          index: number;
           application: Application;
           typeIndex: number;
       };
@@ -31,15 +33,28 @@ abstract class Argument<T> {
     protected readonly definition: ArgumentDefinition;
     protected readonly rules?: ArgumentRules;
     protected readonly interactionName: string;
+    protected readonly context: Context;
+    protected readonly position: number;
 
-    public constructor(application: Application, definition: ArgumentDefinition, typeIndex: number, rawValue: string) {
+    public readonly abortAfterParsing: boolean = false;
+
+    public constructor(
+        application: Application,
+        context: Context,
+        definition: ArgumentDefinition,
+        typeIndex: number,
+        position: number,
+        rawValue: string
+    ) {
         this.application = application;
+        this.context = context;
         this.definition = definition;
         this.name = definition.name;
         this.interactionName = definition.interactionName ?? definition.name;
         this.rules = Array.isArray(definition.rules)
             ? (definition.rules?.[typeIndex] ?? definition.rules[0])
             : definition.rules;
+        this.position = position;
         this.rawValue = rawValue || "";
     }
 
@@ -48,7 +63,7 @@ abstract class Argument<T> {
     }
 
     public toString() {
-        return this.rawValue?.toString() || "";
+        return this.rawValue.toString();
     }
 
     protected preValidate(): Awaitable<boolean> {
@@ -97,10 +112,19 @@ abstract class Argument<T> {
     ): Promise<InstanceType<T>> {
         const instance = new (this as unknown as new (
             application: Application,
-            name: ArgumentDefinition,
+            context: Context,
+            definition: ArgumentDefinition,
             typeIndex: number,
+            position: number,
             rawValue: unknown
-        ) => InstanceType<T>)(options.application, options.definition, options.typeIndex, rawValue);
+        ) => InstanceType<T>)(
+            options.application,
+            options.context,
+            options.definition,
+            options.typeIndex,
+            options.index,
+            rawValue
+        );
 
         if (!(await instance.preValidate())) {
             throw new InvalidArgumentError(`Argument '${options.definition.name}': Invalid argument`, {

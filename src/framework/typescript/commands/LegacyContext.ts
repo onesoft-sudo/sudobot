@@ -7,6 +7,7 @@ class LegacyContext extends Context<CommandContextType.Legacy> {
     public override readonly type = CommandContextType.Legacy;
     public readonly commandMessage: Message<boolean>;
     public readonly commandName: string;
+    public readonly commandContent: string;
     public readonly argv: string[];
     public readonly args: string[];
 
@@ -14,12 +15,14 @@ class LegacyContext extends Context<CommandContextType.Legacy> {
         application: Application,
         commandMessage: Message<boolean>,
         commandName: string,
+        commandContent: string,
         argv: string[],
         args: string[]
     ) {
         super(application);
         this.commandMessage = commandMessage;
         this.commandName = commandName;
+        this.commandContent = commandContent;
         this.argv = argv;
         this.args = args;
     }

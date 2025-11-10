@@ -14,6 +14,9 @@ importers:
       chalk:
         specifier: 5.6.2
         version: 5.6.2
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       discord.js:
         specifier: 14.24.2
         version: 14.24.2
@@ -63,6 +66,9 @@ importers:
       '@onesoftnet/blazebuild':
         specifier: latest
         version: 2.1.0
+      '@onesoftnet/override':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@onesoftnet/pm2-config':
         specifier: ^0.0.7
         version: 0.0.7
@@ -492,6 +498,9 @@ packages:
   '@onesoftnet/blazebuild@2.1.0':
     resolution: {integrity: sha512-hbq/Dib5+BBtSbu5oL/MY30dEASPT/mJL6aSL5KFeCA5SnPjshVMg7HHcZnEhYwQNZTCI6zhfQ5b3vUkX/xdZg==}
     hasBin: true
+
+  '@onesoftnet/override@1.0.3':
+    resolution: {integrity: sha512-2ULLE5pNgidwj0M1AbfW95RyZCVAj2uUHX6u3BOY81j3O1nIVMhY9OjkyL/Jazy6MA99AKmsHiroQgUIajfXtA==}
 
   '@onesoftnet/pm2-config@0.0.7':
     resolution: {integrity: sha512-u8hfK7QR9pPRTi2maOj1NfSrzlTHvUjgsiH2IXySAXIsdIUx1D4hg05krKyD9nacruCpLCi71LDM5ruzpkBdag==}
@@ -1061,6 +1070,9 @@ packages:
   dargs@8.1.0:
     resolution: {integrity: sha512-wAV9QHOsNbwnWdNW2FYvE1P56wtgSbM+3SZcdGiWQILwVjACCXDCI3Ai8QlCjMDB8YK5zySiXZYBiwGmNY3lnw==}
     engines: {node: '>=12'}
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -2559,6 +2571,8 @@ snapshots:
       glob: 11.0.3
       reflect-metadata: 0.2.2
 
+  '@onesoftnet/override@1.0.3': {}
+
   '@onesoftnet/pm2-config@0.0.7': {}
 
   '@rollup/pluginutils@5.3.0(rollup@4.53.1)':
@@ -3108,6 +3122,8 @@ snapshots:
   csstype@3.1.3: {}
 
   dargs@8.1.0: {}
+
+  date-fns@4.1.0: {}
 
   debug@4.4.3:
     dependencies:

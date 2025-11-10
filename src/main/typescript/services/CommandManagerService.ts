@@ -44,7 +44,8 @@ class CommandManagerService extends Service {
             return false;
         }
 
-        const argv = message.content.slice(prefix.length).split(/\s+/);
+        const commandContent = message.content.slice(prefix.length);
+        const argv = commandContent.split(/\s+/);
         const [commandName, ...args] = argv;
         const command = this.commands.get(commandName);
 
@@ -52,7 +53,7 @@ class CommandManagerService extends Service {
             return false;
         }
 
-        await command.run(new LegacyContext(this.application, message, commandName, argv, args));
+        await command.run(new LegacyContext(this.application, message, commandName, commandContent, argv, args));
         return true;
     }
 

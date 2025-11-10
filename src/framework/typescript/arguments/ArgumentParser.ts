@@ -32,9 +32,36 @@ class ArgumentParser {
         overloadIndex?: number;
         errors?: string[];
     }> {
-        await Promise.resolve();
+        const { overloads } = schema;
+        const parserContext: ParserContext = {
+            args: [],
+            context,
+            schema,
+            index: 0,
+            isInteractive: true
+        };
+        const errors = [];
+        const overload = overloads[schema.defaultIndex ?? 0];
+
+        tryBlock: try {
+            const result = await this.parseOverload(parserContext, overload);
+
+            if (result.error) {
+                errors.push(result.error);
+                break tryBlock;
+            }
+
+            return { args: result.args, overloadIndex: schema.defaultIndex ?? 0 };
+        } catch (error) {
+            if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
+                errors.push(error.message);
+            } else {
+                throw error;
+            }
+        }
+
         return {
-            args: {}
+            errors
         };
     }
 
@@ -47,17 +74,18 @@ class ArgumentParser {
         errors?: string[];
     }> {
         const { overloads } = schema;
-        const parserContext: ParserContext = {
-            args: context.args,
-            context,
-            schema,
-            index: 0,
-            isInteractive: false
-        };
         const errors = [];
 
         for (let i = 0; i < overloads.length; i++) {
+            const parserContext: ParserContext = {
+                args: context.args,
+                context,
+                schema,
+                index: 0,
+                isInteractive: false
+            };
             const overload = overloads[i];
+
             try {
                 const result = await this.parseOverload(parserContext, overload);
 
@@ -102,6 +130,10 @@ class ArgumentParser {
 
             args[definition.name] = result.value;
             parserContext.index++;
+
+            if (result.break) {
+                break;
+            }
         }
 
         return {
@@ -112,7 +144,7 @@ class ArgumentParser {
     protected async parseDefinition(
         parserContext: ParserContext,
         definition: ArgumentDefinition
-    ): Promise<ParseStepResult<{ value?: unknown }>> {
+    ): Promise<ParseStepResult<{ value?: unknown; break?: boolean }>> {
         const rawValue = parserContext.context.isInteractive()
             ? parserContext.context.commandMessage.options.get(definition.interactionName ?? definition.name)
             : parserContext.args[parserContext.index];
@@ -127,7 +159,11 @@ class ArgumentParser {
             };
         }
 
-        const types = Array.isArray(definition.type) ? definition.type : [definition.type];
+        const types = Array.isArray(definition.type)
+            ? parserContext.isInteractive
+                ? [definition.type[definition.defaultIndex ?? 0]]
+                : definition.type
+            : [definition.type];
         let lastError: ArgumentParseError | undefined;
 
         for (let i = 0; i < types.length; i++) {
@@ -140,6 +176,7 @@ class ArgumentParser {
                           context: parserContext.context as InteractionContext,
                           definition,
                           name: definition.interactionName ?? definition.name,
+                          index: parserContext.index,
                           typeIndex: i
                       })
                     : await type.createFromLegacy({
@@ -152,7 +189,7 @@ class ArgumentParser {
                       });
 
                 const value = argument.getValue();
-                return { value };
+                return { value, break: argument.abortAfterParsing };
             } catch (error) {
                 if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
                     lastError = error;

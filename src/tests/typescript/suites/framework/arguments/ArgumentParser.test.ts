@@ -7,7 +7,6 @@ import Application from "@framework/app/Application";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { createClient, createMessage } from "@tests/mocks/discord";
 import { Client } from "discord.js";
-import { ArgumentErrorType } from "@framework/arguments/InvalidArgumentError";
 import NumberArgument from "@framework/arguments/NumberArgument";
 
 @TestSuite
