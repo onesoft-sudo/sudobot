@@ -1,5 +1,5 @@
 import type { APIInteractionGuildMember } from "discord.js";
-import { type Awaitable, GuildMember, User } from "discord.js";
+import { type Awaitable, codeBlock, GuildMember, inlineCode, User } from "discord.js";
 import CommandContextType from "./CommandContextType";
 import type Context from "./Context";
 import { CommandMode } from "./CommandMode";
@@ -10,6 +10,11 @@ import PermissionDeniedError from "@framework/permissions/PermissionDeniedError"
 import type { GuardResolvable } from "@framework/guards/GuardResolvable";
 import Guard from "@framework/guards/Guard";
 import CommandAbortedError from "./CommandAbortedError";
+import ArgumentParser from "@framework/arguments/ArgumentParser";
+import { Memoize } from "@framework/decorators/Memoize";
+import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
+import LegacyContext from "./LegacyContext";
+import InteractionContext from "./InteractionContext";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -94,12 +99,35 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     public readonly guards: Iterable<GuardResolvable> = [];
 
     /**
+     * Argument schema for this command.
+     *
+     * @type {ArgumentSchema}
+     */
+    public readonly argumentSchema?: ArgumentSchema;
+
+    /**
      * The application instance.
      */
     protected readonly application: Application;
 
+    /**
+     * The argument parser instance.
+     */
+    protected readonly argumentParser: ArgumentParser;
+
     public constructor(application: Application) {
         this.application = application;
+        this.argumentParser = this.createArgumentParser();
+    }
+
+    /**
+     * Creates an argument parser instance.
+     *
+     * @returns Memoized argument parser instance.
+     */
+    @Memoize
+    protected createArgumentParser() {
+        return new ArgumentParser(this.application);
     }
 
     /**
@@ -111,7 +139,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      */
     protected abstract execute(
         context: Context,
-        args: readonly unknown[],
+        args: Readonly<Record<string, unknown>>,
         options: Readonly<Record<string, string>>
     ): Awaitable<void>;
 
@@ -280,14 +308,34 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             await this.checkGuards(context);
         } catch (error) {
             if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
-                await context.error(error.message);
+                context.error(error.message).catch(this.application.logger.error);
                 return;
             } else {
                 throw error;
             }
         }
 
-        await this.execute(context, [], {});
+        const result = this.argumentSchema
+            ? await this.argumentParser.parse(context as LegacyContext | InteractionContext, this.argumentSchema)
+            : undefined;
+
+        if (result?.errors?.length) {
+            if (result.errors.length === 1 || !this.argumentSchema) {
+                context.error(result?.errors[0]).catch(this.application.logger.error);
+            } else {
+                let str = "No overloads of this command could be used with the given arguments:\n";
+
+                for (let i = 0; i < result.errors.length; i++) {
+                    str += `\n${i + 1}. ${inlineCode(this.argumentParser.overloadSignatureToString(this.argumentSchema.overloads[i]))} gave the following error:\n  ${result.errors[i]}`;
+                }
+
+                context.error(str).catch(this.application.logger.error);
+            }
+
+            return;
+        }
+
+        await this.execute(context, result?.args || {}, {});
     }
 }
 

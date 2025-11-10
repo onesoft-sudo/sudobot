@@ -1,17 +1,11 @@
 import type { AnyFunction } from "@framework/types/Utils";
 
-export function Memoize<T extends object>(
-    target: T,
-    propertyKey: {
-        [K in keyof T]: T[K] extends AnyFunction ? K : never;
-    }[keyof T],
-    context?: TypedPropertyDescriptor<AnyFunction>
-) {
+export function Memoize<T extends object>(target: T, propertyKey: PropertyKey, context?: PropertyDescriptor) {
     if (!context) {
         return;
     }
 
-    const current = target[propertyKey] as AnyFunction;
+    const current = target[propertyKey as keyof T] as AnyFunction;
     let memoizedValue: unknown;
     let memoized = false;
 
