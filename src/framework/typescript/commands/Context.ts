@@ -46,6 +46,10 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
         return this.commandMessage.guild;
     }
 
+    public emoji(name: string) {
+        return emoji(this.application, name);
+    }
+
     public error(options: ContextReplyOptions): Promise<Message<boolean>> {
         const newOptions =
             typeof options === "string"

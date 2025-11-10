@@ -17,8 +17,12 @@ class CommandManagerService extends Service {
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
 
-    public register(command: Command) {
+    public register(command: Command, group?: string) {
         this.commands.set(command.name, command);
+
+        if (group && !command.group) {
+            Object.defineProperty(command, "group", { value: group });
+        }
 
         for (const alias of command.aliases) {
             this.commands.set(alias, command);

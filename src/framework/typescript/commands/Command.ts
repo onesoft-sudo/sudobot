@@ -28,7 +28,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      * The group which this command belongs to.
      * This is automatically initialized by the command manager.
      */
-    public readonly group: string = "Ungrouped";
+    public readonly group: string = "";
 
     /**
      * Alias names of this command.

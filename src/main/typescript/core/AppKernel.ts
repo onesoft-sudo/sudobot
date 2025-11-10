@@ -144,7 +144,8 @@ class AppKernel extends Kernel {
                     const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
                         | CommandManagerService
                         | undefined;
-                    commandManagerService?.register(command);
+                    const category = path.basename(path.dirname(filepath)).toLowerCase();
+                    commandManagerService?.register(command, category);
                     application.logger.info(
                         `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`
                     );
