@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: "postgres:16-alpine"
+    image: "postgres:18-alpine"
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -22,12 +22,11 @@ services:
       - ./.env.docker:/app/.env
     depends_on:
       - postgres
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
 
 volumes:
   pgdata:

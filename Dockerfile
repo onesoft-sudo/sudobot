@@ -1,4 +1,4 @@
-FROM node:25-bookworm
+FROM node:25-bookworm AS builder
 
 WORKDIR /app
 
@@ -27,14 +27,16 @@ FROM node:25-alpine
 
 WORKDIR /app
 
-COPY --from=0 /app/node_modules ./node_modules
-COPY --from=0 /app/build ./build
-COPY --from=0 /app/package.json ./package.json
-COPY --from=0 /app/tsconfig.json ./tsconfig.json
-COPY --from=0 /app/bin ./bin
+RUN apk add --no-cache curl
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/bin ./bin
 COPY drizzle ./drizzle
 COPY docker ./docker
 COPY ecosystem.config.js ./ecosystem.config.js
 
 EXPOSE 4000
-CMD ["npm", "run", "start:docker"]
+ENTRYPOINT ["npm", "run", "start:docker", "--"]
