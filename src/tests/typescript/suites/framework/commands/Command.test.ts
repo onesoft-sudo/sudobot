@@ -25,10 +25,10 @@ class CommandTest {
             public execute = vi.fn();
         })(this.application);
 
-        const context = new LegacyContext(this.application, createMessage(this.client), "name", [], []);
+        const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
         await command.run(context);
 
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, [], {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, {}, {});
     }
 
     @TestCase
@@ -61,13 +61,13 @@ class CommandTest {
             value: member2
         });
 
-        const context1 = new LegacyContext(this.application, message1, "name", [], []);
-        const context2 = new LegacyContext(this.application, message2, "name", [], []);
-        const context3 = new LegacyContext(this.application, message3, "name", [], []);
+        const context1 = new LegacyContext(this.application, message1, "name", "name", [], []);
+        const context2 = new LegacyContext(this.application, message2, "name", "name", [], []);
+        const context3 = new LegacyContext(this.application, message3, "name", "name", [], []);
 
-        const error1 = vi.fn();
-        const error2 = vi.fn();
-        const error3 = vi.fn();
+        const error1 = vi.fn().mockImplementation(async () => {});
+        const error2 = vi.fn().mockImplementation(async () => {});
+        const error3 = vi.fn().mockImplementation(async () => {});
 
         context1.error = error1;
         context2.error = error2;
@@ -83,7 +83,7 @@ class CommandTest {
         expect(error2.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
 
         await command.run(context3);
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context3, [], {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context3, {}, {});
         expect(error3).not.toHaveBeenCalled();
     }
 }
