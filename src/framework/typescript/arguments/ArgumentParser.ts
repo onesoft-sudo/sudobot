@@ -71,10 +71,12 @@ class ArgumentParser {
             }
 
             return { args: result.args, overloadIndex: schema.defaultIndex ?? 0 };
-        } catch (error) {
+        }
+        catch (error) {
             if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
                 errors.push(error.message);
-            } else {
+            }
+            else {
                 throw error;
             }
         }
@@ -114,7 +116,8 @@ class ArgumentParser {
                 }
 
                 return { args: result.args, overloadIndex: i };
-            } catch (error) {
+            }
+            catch (error) {
                 if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
                     errors.push(error.message);
                     continue;
@@ -245,7 +248,8 @@ class ArgumentParser {
                 for (const type of def.type) {
                     typeString += `${typeString === "" ? "" : " | "}${type.name}`;
                 }
-            } else {
+            }
+            else {
                 typeString = def.type.name;
             }
 

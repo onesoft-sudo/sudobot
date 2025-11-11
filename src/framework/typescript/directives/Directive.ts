@@ -30,11 +30,7 @@ export type ParserState = {
 abstract class Directive<T = unknown> {
     public abstract readonly name: string;
 
-    public abstract apply(
-        parser: DirectiveParser,
-        parserState: ParserState,
-        arg: T
-    ): Awaitable<void>;
+    public abstract apply(parser: DirectiveParser, parserState: ParserState, arg: T): Awaitable<void>;
 }
 
 export default Directive;

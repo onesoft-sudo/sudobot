@@ -26,12 +26,18 @@ import CommandContextType from "@framework/commands/CommandContextType";
 import LegacyContext from "@framework/commands/LegacyContext";
 
 import InteractionContext from "@framework/commands/InteractionContext";
+import { getEnvData } from "@main/env/env";
+import { Logger } from "@framework/log/Logger";
+import type { HasEventListeners } from "@framework/types/HasEventListeners";
+import { isDevelopmentMode } from "@framework/utils/utils";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 
-class CommandManagerService extends Service {
+class CommandManagerService extends Service implements HasEventListeners {
     public override readonly name: string = SERVICE_COMMAND_MANAGER;
     public readonly commands = new Collection<string, Command>();
+
+    private readonly logger = Logger.getLogger(CommandManagerService);
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
@@ -92,6 +98,63 @@ class CommandManagerService extends Service {
         await command.run(new InteractionContext(this.application, interaction));
         return true;
     }
+
+    public async sync({ homeGuild }: SyncOptions): Promise<number> {
+        const commands = [];
+
+        for (const [key, command] of this.commands) {
+            if (key !== command.name) {
+                continue;
+            }
+
+            const built = command.build();
+            commands.push(...(Array.isArray(built) ? built : [built]).map(c => c.toJSON()));
+        }
+
+        if (homeGuild) {
+            const guild = this.application.client.guilds.cache.get(getEnvData().SUDOBOT_HOME_GUILD_ID);
+
+            if (!guild) {
+                this.logger.debug("Home guild not found, skipping");
+                return 0;
+            }
+
+            const { size } = await guild.commands.set(commands);
+            this.logger.info(`Successfully updated ${size} application guild commands`);
+            return size;
+        }
+        else {
+            const application = this.application.client.application;
+
+            if (!application) {
+                this.logger.debug("Application not found, skipping");
+                return 0;
+            }
+
+            const { size } = await application.commands.set(commands);
+            this.logger.info(`Successfully updated ${size} application commands`);
+            return size;
+        }
+    }
+
+    public async onClientReady(): Promise<void> {
+        const updateMode = globalThis.optionValues.update;
+        const isDevMode = isDevelopmentMode();
+
+        if (isDevMode || updateMode) {
+            try {
+                await this.sync({
+                    homeGuild: updateMode ? updateMode === "local" : isDevMode
+                });
+            } catch (error) {
+                this.logger.error(error);
+            }
+        }
+    }
 }
+
+export type SyncOptions = {
+    homeGuild?: boolean;
+};
 
 export default CommandManagerService;

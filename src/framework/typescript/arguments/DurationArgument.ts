@@ -33,7 +33,8 @@ class DurationArgument extends Argument<Duration> {
     public override resolveFromRawValue(): Duration {
         try {
             return Duration.fromDurationStringExpression(this.rawValue);
-        } catch (error) {
+        }
+        catch (error) {
             if (error instanceof DurationParseError) {
                 return this.error(error.message, ArgumentErrorType.InvalidType);
             }
@@ -70,6 +71,7 @@ class DurationArgument extends Argument<Duration> {
         if (value === null) {
             return this.error(`${this.interactionName} is required!`, ArgumentErrorType.Required);
         }
+
         try {
             return Duration.fromDurationStringExpression(value);
         } catch (error) {

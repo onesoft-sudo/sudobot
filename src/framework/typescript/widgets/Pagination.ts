@@ -91,15 +91,19 @@ class Pagination<T> {
             if (this._state.page > 1) {
                 this._state.page--;
             }
-        } else if (action === "next") {
+        }
+        else if (action === "next") {
             if (this._state.page < (await this.getCount())) {
                 this._state.page++;
             }
-        } else if (action === "first") {
+        }
+        else if (action === "first") {
             this._state.page = 1;
-        } else if (action === "last") {
+        }
+        else if (action === "last") {
             this._state.page = await this.calculateMaxPages();
-        } else {
+        }
+        else {
             return;
         }
 
@@ -124,7 +128,8 @@ class Pagination<T> {
 
         if (interaction.deferred) {
             await interaction.message.edit(messageOptions as MessagePayload);
-        } else {
+        }
+        else {
             await interaction.update(messageOptions as InteractionUpdateOptions);
         }
     }

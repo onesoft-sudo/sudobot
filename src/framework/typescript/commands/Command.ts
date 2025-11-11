@@ -17,8 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { APIInteractionGuildMember } from "discord.js";
-import { type Awaitable, GuildMember, inlineCode, User } from "discord.js";
+import {
+    APIInteractionGuildMember,
+    ContextMenuCommandBuilder,
+    InteractionContextType,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    SlashCommandOptionsOnlyBuilder,
+    SlashCommandSubcommandsOnlyBuilder
+} from "discord.js";
+import { ApplicationCommandType, type Awaitable, GuildMember, inlineCode, User } from "discord.js";
 import CommandContextType from "./CommandContextType";
 import type Context from "./Context";
 import { CommandMode } from "./CommandMode";
@@ -34,6 +42,7 @@ import { Memoize } from "@framework/decorators/Memoize";
 import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
 import LegacyContext from "./LegacyContext";
 import InteractionContext from "./InteractionContext";
+import { ArrayOrSingle } from "@framework/types/Utils";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -42,6 +51,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      * @type {string}
      */
     public abstract readonly name: string;
+
+    /**
+     * Description of this command.
+     *
+     * @type {string}
+     */
+    public abstract readonly description: string;
 
     /**
      * The group which this command belongs to.
@@ -60,6 +76,12 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      * @type {C[]}
      */
     public readonly contexts: C[] = [CommandContextType.Legacy, CommandContextType.Interactive] as C[];
+
+    /**
+     * List of supported interaction types, where this command can run.
+     */
+    public readonly interactionTypes: Array<Exclude<ApplicationCommandType, ApplicationCommandType.PrimaryEntryPoint>> =
+        [ApplicationCommandType.ChatInput];
 
     /**
      * List of supported modes, in which this command can run.
@@ -318,6 +340,100 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     }
 
     /**
+     * Prepare common details for slash command registration.
+     *
+     * @returns The computed details.
+     */
+    @Memoize
+    protected prepareDetails() {
+        if (!this.cachedPermissionsAreAvailable) {
+            this.cachePermissions();
+        }
+
+        const contexts = [];
+
+        if (this.modes.includes(CommandMode.Direct)) {
+            contexts.push(InteractionContextType.BotDM, InteractionContextType.PrivateChannel);
+        }
+
+        if (this.modes.includes(CommandMode.Guild)) {
+            contexts.push(InteractionContextType.Guild);
+        }
+
+        const permissions = new PermissionsBitField(this.cachedPermissions[0]).add(this.cachedPermanentPermissions[0]);
+
+        return { contexts, permissions };
+    }
+
+    /**
+     * Builds a slash command.
+     *
+     * @returns {SlashCommandBuilder} Builder for this command.
+     */
+    protected buildChatInput(): SlashCommandBuilder {
+        const { contexts, permissions } = this.prepareDetails();
+
+        return new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .setContexts(...contexts)
+            .setDefaultMemberPermissions(permissions.bitfield);
+    }
+
+    /**
+     * Builds a message context menu command.
+     *
+     * @returns {ContextMenuCommandBuilder} Builder for this command.
+     */
+    protected buildMessageContextMenu(): ContextMenuCommandBuilder {
+        const { contexts, permissions } = this.prepareDetails();
+
+        return new ContextMenuCommandBuilder()
+            .setName(this.name)
+            .setType(ApplicationCommandType.Message)
+            .setContexts(...contexts)
+            .setDefaultMemberPermissions(permissions.bitfield);
+    }
+
+    /**
+     * Builds a user context menu command.
+     *
+     * @returns {ContextMenuCommandBuilder} Builder for this command.
+     */
+    protected buildUserContextMenu(): ContextMenuCommandBuilder {
+        const { contexts, permissions } = this.prepareDetails();
+
+        return new ContextMenuCommandBuilder()
+            .setName(this.name)
+            .setType(ApplicationCommandType.User)
+            .setContexts(...contexts)
+            .setDefaultMemberPermissions(permissions.bitfield);
+    }
+
+    /**
+     * Build application command instances.
+     *
+     * @return One or more application command instances that will be registered.
+     */
+    public build(): ArrayOrSingle<CommandBuilder> {
+        const builders = [];
+
+        if (this.interactionTypes.includes(ApplicationCommandType.ChatInput)) {
+            builders.push(this.buildChatInput());
+        }
+
+        if (this.interactionTypes.includes(ApplicationCommandType.Message)) {
+            builders.push(this.buildMessageContextMenu());
+        }
+
+        if (this.interactionTypes.includes(ApplicationCommandType.User)) {
+            builders.push(this.buildUserContextMenu());
+        }
+
+        return builders;
+    }
+
+    /**
      * Starts execution of this command.
      */
     public async run(context: Context): Promise<void> {
@@ -329,7 +445,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
                 context.error(error.message).catch(this.application.logger.error);
                 return;
-            } else {
+            }
+            else {
                 throw error;
             }
         }
@@ -341,7 +458,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         if (result?.errors?.length) {
             if (result.errors.length === 1 || !this.argumentSchema) {
                 context.error(result?.errors[0]).catch(this.application.logger.error);
-            } else {
+            }
+            else {
                 let str = "No overloads of this command could be used with the given arguments:\n";
 
                 for (let i = 0; i < result.errors.length; i++) {
@@ -357,5 +475,12 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         await this.execute(context, result?.args || {}, {});
     }
 }
+
+export type CommandBuilder = (
+    | SlashCommandBuilder
+    | ContextMenuCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder
+) & { toJSON: () => unknown };
 
 export default Command;

@@ -127,16 +127,19 @@ async function fetchCredentials(url: string, key: string) {
                 }
 
                 return data;
-            } catch (error) {
+            }
+            catch (error) {
                 logger.error(
                     "Failed to parse decrypted data: " + (error instanceof Error ? error.message : `${error}`)
                 );
                 return null;
             }
-        } else {
+        }
+        else {
             throw new Error("Invalid response received");
         }
-    } catch (error) {
+    }
+    catch (error) {
         logger.error(`${error instanceof Error ? error.message : `${error}`}`);
         return null;
     }
@@ -167,9 +170,11 @@ async function promptForCode() {
         );
         key = await readline.question("Enter the one-time 2FA code: ");
         readline.close();
-    } else if (restartKey) {
+    }
+    else if (restartKey) {
         logger.info("Accepted 2FA code during last restart command");
-    } else {
+    }
+    else {
         logger.info("Accepted 2FA code from command-line arguments");
     }
 
@@ -294,7 +299,8 @@ async function main() {
             logger.fatal("Kernel boot aborted");
             process.exit(-1);
         }
-    } else if (existsSync(encryptedEnvFilePath)) {
+    }
+    else if (existsSync(encryptedEnvFilePath)) {
         logger.warn("Encrypted environment file found, but no 2FA URL provided. Ignoring...");
     }
 
@@ -331,7 +337,8 @@ async function main() {
             }
 
             await Promise.all(promises);
-        } else {
+        }
+        else {
             await createChild(result);
         }
 

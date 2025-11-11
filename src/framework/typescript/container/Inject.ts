@@ -65,7 +65,8 @@ function Inject(id?: string) {
             if (!key) {
                 injectProperties.add("constructor");
             }
-        } else if (key) {
+        }
+        else if (key) {
             const propertyType = Reflect.getMetadata("design:type", target, safeKey);
 
             if (!propertyType && !id) {
@@ -79,7 +80,8 @@ function Inject(id?: string) {
                 safeKey
             );
             injectProperties.add(key);
-        } else {
+        }
+        else {
             throw new TypeError("Inject() used in an invalid context");
         }
 

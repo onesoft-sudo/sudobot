@@ -196,10 +196,12 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
             if (unit === "") {
                 if (implicitUnit) {
                     unit = "s";
-                } else {
+                }
+                else {
                     throw new DurationParseError(`Expected unit at position ${i} in expression`);
                 }
-            } else {
+            }
+            else {
                 i--;
             }
 
@@ -207,7 +209,8 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
 
             if (retMs) {
                 ms += Duration.evalUnit(unit, value);
-            } else {
+            }
+            else {
                 const key = this._keys[unit as keyof typeof this._keys];
                 payload[key] = value;
             }

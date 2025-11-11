@@ -17,8 +17,4 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export function Override(
-    _target: object,
-    _propertyKey: string | symbol,
-    _descriptor: PropertyDescriptor
-): void {}
+export function Override(_target: object, _propertyKey: string | symbol, _descriptor: PropertyDescriptor): void {}

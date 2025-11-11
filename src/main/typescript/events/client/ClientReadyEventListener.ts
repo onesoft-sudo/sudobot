@@ -21,6 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
+import CommandManagerService from "@main/services/CommandManagerService";
 import type { Client } from "discord.js";
 
 class ClientReadyEventListener extends EventListener<Events.ClientReady> {
@@ -29,8 +30,12 @@ class ClientReadyEventListener extends EventListener<Events.ClientReady> {
     @Inject()
     private readonly logger!: Logger;
 
+    @Inject()
+    private readonly commandManagerService!: CommandManagerService;
+
     public override onEvent(client: Client<true>) {
         this.logger.info(`Logged in successfully as: ${client.user.username} (${client.user.id})`);
+        this.commandManagerService.onClientReady().catch(this.logger.error);
     }
 }
 

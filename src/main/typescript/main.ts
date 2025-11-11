@@ -83,13 +83,15 @@ function usage() {
     console.info(`  ${argv0} [OPTION]...`);
     console.info();
     console.info("Options:");
-    console.info("  -h, --help              Show this help and exit.");
-    console.info("  -v, --version           Show version information.");
-    console.info("  -s, --shard=ID          Set shard ID for this process.");
-    console.info("                          Can be passed multiple times with");
-    console.info("                          different values.");
-    console.info("  -S, --shardcount=COUNT  Set total shard count. Required to be used");
-    console.info("                          When the --shard option is used.");
+    console.info("  -h, --help                Show this help and exit.");
+    console.info("  -v, --version             Show version information.");
+    console.info("  -s, --shard=ID            Set shard ID for this process.");
+    console.info("                            Can be passed multiple times with");
+    console.info("                            different values.");
+    console.info("  -S, --shardcount=<COUNT>  Set total shard count. Required to be used");
+    console.info("                            When the --shard option is used.");
+    console.info("  -U, --update=[MODE]       Update application commands. MODE can be");
+    console.info("                            either 'local' or 'global'.");
 }
 
 function showVersion() {
@@ -115,6 +117,10 @@ const { values } = parseArgs({
         },
         shardcount: {
             short: "S",
+            type: "string"
+        },
+        update: {
+            short: "U",
             type: "string"
         },
         help: {
@@ -171,6 +177,11 @@ async function main() {
 
     if ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount)) {
         console.error(`${argv0}: Please use both --shard (-s) and --shardcount (-S) together`);
+        process.exit(1);
+    }
+
+    if (values.update && values.update !== "local" && values.update !== "global") {
+        console.error(`${argv0}: Option --update (-U) only accepts either 'local' or 'global' as argument`);
         process.exit(1);
     }
 

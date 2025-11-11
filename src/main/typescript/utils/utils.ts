@@ -109,9 +109,11 @@ export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
     for (const permission of permissions) {
         if (typeof permission === "bigint") {
             strings.push(...getPermissionNames(permission));
-        } else if (typeof permission === "string") {
+        }
+        else if (typeof permission === "string") {
             strings.push(permission);
-        } else throw new Error("Unknown permission type");
+        }
+        else throw new Error("Unknown permission type");
     }
 
     return strings;

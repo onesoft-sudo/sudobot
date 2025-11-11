@@ -18,15 +18,7 @@
  */
 
 import type { Stats } from "fs";
-import {
-    close,
-    closeSync,
-    constants,
-    createReadStream,
-    existsSync,
-    lstatSync,
-    realpathSync
-} from "fs";
+import { close, closeSync, constants, createReadStream, existsSync, lstatSync, realpathSync } from "fs";
 import type { CreateReadStreamOptions, FileHandle } from "fs/promises";
 import { lstat, open, realpath, rm } from "fs/promises";
 import { basename, resolve } from "path";
@@ -158,10 +150,7 @@ export class File implements Disposable, AsyncDisposable {
         });
     }
 
-    private attribute<K extends keyof Cache>(
-        name: K,
-        compute: () => NonNullable<Cache[K]>
-    ): NonNullable<Cache[K]> {
+    private attribute<K extends keyof Cache>(name: K, compute: () => NonNullable<Cache[K]>): NonNullable<Cache[K]> {
         if (!(name in this.cache) || this.cache[name] === undefined) {
             this.cache[name] = compute();
         }

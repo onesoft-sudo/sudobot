@@ -79,9 +79,7 @@ const access = (
                 ] as unknown as Array<unknown>;
 
                 if (!Array.isArray(array)) {
-                    throw new Error(
-                        `Cannot access index ${access} of non-array value (${prevAccessor ?? "root"})`
-                    );
+                    throw new Error(`Cannot access index ${access} of non-array value (${prevAccessor ?? "root"})`);
                 }
 
                 const index = parseInt(access.match(/\d+/)![0]);
@@ -103,7 +101,8 @@ const access = (
 
                     array[index] = setter(current);
                 }
-            } else {
+            }
+            else {
                 if (Array.isArray(current)) {
                     return options?.returnExists ? false : undefined;
                 }
@@ -121,22 +120,17 @@ const access = (
                 }
 
                 setObject: if (setter && last) {
-                    if (
-                        !options.modify &&
-                        access in current &&
-                        !options.create &&
-                        !(access in current)
-                    ) {
+                    if (!options.modify && access in current && !options.create && !(access in current)) {
                         break setObject;
                     }
 
-                    (current as Record<PropertyKey, unknown>)[access as PropertyKey] =
-                        setter(current);
+                    (current as Record<PropertyKey, unknown>)[access as PropertyKey] = setter(current);
                 }
 
                 current = value;
             }
-        } else {
+        }
+        else {
             if (last) {
                 return options.returnExists ? false : undefined;
             }
@@ -168,12 +162,8 @@ export const has = (
         returnExists: false
     }
 ) => access(object, accessor, undefined, { ...options, returnExists: true });
-export const set = (
-    object: object | unknown[],
-    accessor: string,
-    value: unknown,
-    options?: AccessOptions
-) => access(object, accessor, () => value, options);
+export const set = (object: object | unknown[], accessor: string, value: unknown, options?: AccessOptions) =>
+    access(object, accessor, () => value, options);
 
 export const toDotted = (object: Record<string, unknown>, arrayAccess = false) => {
     const result: Record<string, unknown> = {};
@@ -182,7 +172,8 @@ export const toDotted = (object: Record<string, unknown>, arrayAccess = false) =
         for (const key in current) {
             if (current[key] instanceof Object && (arrayAccess || !Array.isArray(current[key]))) {
                 recurse(current[key] as Record<string, unknown>, path.concat(key));
-            } else {
+            }
+            else {
                 result[path.concat(key).join(".")] = current[key];
             }
         }
@@ -193,11 +184,8 @@ export const toDotted = (object: Record<string, unknown>, arrayAccess = false) =
 };
 
 export const pickCastArray = <T = never>(target: object, key: string): T[] => {
-    return key in target
-        ? [target[key as keyof typeof target]]
-        : target[`${key}s` as keyof typeof target];
+    return key in target ? [target[key as keyof typeof target]] : target[`${key}s` as keyof typeof target];
 };
-
 
 export const unset = (object: object | unknown[], accessor: string) => {
     assert(accessor, "Accessor must be provided");
@@ -210,7 +198,8 @@ export const unset = (object: object | unknown[], accessor: string) => {
         if (current instanceof Object) {
             if (!/\[\d+\]$/.test(access)) {
                 current = current[access as keyof typeof current];
-            } else {
+            }
+            else {
                 const array = current[
                     access.slice(0, access.indexOf("[")) as keyof typeof current
                 ] as unknown as Array<unknown>;
@@ -227,7 +216,8 @@ export const unset = (object: object | unknown[], accessor: string) => {
 
                 current = array[index];
             }
-        } else {
+        }
+        else {
             throw new Error(`Cannot access property ${access} of non-object value`);
         }
     }
@@ -235,7 +225,8 @@ export const unset = (object: object | unknown[], accessor: string) => {
     if (current instanceof Object) {
         if (!/\[\d+\]$/.test(lastAccessor)) {
             delete current[lastAccessor as keyof typeof current];
-        } else {
+        }
+        else {
             const array = current[
                 lastAccessor.slice(0, lastAccessor.indexOf("[")) as keyof typeof current
             ] as unknown as Array<unknown>;
@@ -252,7 +243,8 @@ export const unset = (object: object | unknown[], accessor: string) => {
 
             array.splice(index, 1);
         }
-    } else {
+    }
+    else {
         throw new Error(`Cannot access property ${lastAccessor} of non-object value`);
     }
 };

@@ -38,7 +38,8 @@ class RedisMessageBus extends MessageBus {
                 }
 
                 this.emitter.emit(channelName, { data } satisfies MessageDetails);
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(error);
                 this.emit("error", error);
             }

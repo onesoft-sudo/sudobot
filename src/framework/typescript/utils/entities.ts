@@ -29,7 +29,8 @@ export async function fetchChannel(guildOrId: Guild | Snowflake, channelId: Snow
 
     try {
         return guild.channels.cache.get(channelId) ?? (await guild.channels.fetch(channelId));
-    } catch {
+    }
+    catch {
         return null;
     }
 }
@@ -37,7 +38,8 @@ export async function fetchChannel(guildOrId: Guild | Snowflake, channelId: Snow
 export async function fetchRole(guild: Guild, roleId: Snowflake) {
     try {
         return guild.roles.cache.get(roleId) ?? (await guild.roles.fetch(roleId));
-    } catch {
+    }
+    catch {
         return null;
     }
 }
@@ -45,7 +47,8 @@ export async function fetchRole(guild: Guild, roleId: Snowflake) {
 export async function fetchMember(guild: Guild, memberId: Snowflake) {
     try {
         return guild.members.cache.get(memberId) ?? (await guild.members.fetch(memberId));
-    } catch {
+    }
+    catch {
         return null;
     }
 }
@@ -53,7 +56,8 @@ export async function fetchMember(guild: Guild, memberId: Snowflake) {
 export async function fetchUser(client: Client, userId: Snowflake) {
     try {
         return client.users.cache.get(userId) ?? (await client.users.fetch(userId));
-    } catch {
+    }
+    catch {
         return null;
     }
 }
@@ -61,7 +65,8 @@ export async function fetchUser(client: Client, userId: Snowflake) {
 export async function fetchMessage(channel: TextBasedChannel, messageId: Snowflake) {
     try {
         return channel.messages.cache.get(messageId) ?? (await channel.messages.fetch(messageId));
-    } catch {
+    }
+    catch {
         return null;
     }
 }

@@ -34,3 +34,5 @@ export type If<T extends boolean, A, B> = T extends true ? A : B;
 
 export type ArrayOrElement<T> = T | T[];
 export type AnyFunction = (...args: never[]) => unknown;
+
+export type ArrayOrSingle<T> = Array<T> | T;

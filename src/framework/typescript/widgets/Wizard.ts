@@ -48,9 +48,7 @@ abstract class Wizard {
     }
 
     protected button(customId: string): WizardButtonBuilder {
-        return new WizardButtonBuilder()
-            .setCustomId(`w::${this.id}::${customId}`)
-            .setStyle(ButtonStyle.Secondary);
+        return new WizardButtonBuilder().setCustomId(`w::${this.id}::${customId}`).setStyle(ButtonStyle.Secondary);
     }
 
     protected row<T extends AnyComponentBuilder>(components: T[]) {
@@ -80,7 +78,8 @@ abstract class Wizard {
             this.message = await this.context.reply(options);
             this.manager.register(this.id, this);
             this.timeout = setTimeout(() => this.dispose(), this.inactivityTimeout);
-        } else {
+        }
+        else {
             await this.message.edit(options as MessageEditOptions);
         }
     }
@@ -120,10 +119,7 @@ abstract class Wizard {
             const result = await (
                 this as unknown as Record<
                     string,
-                    (
-                        interaction: ButtonInteraction,
-                        customId: string
-                    ) => Awaitable<ContextReplyOptions>
+                    (interaction: ButtonInteraction, customId: string) => Awaitable<ContextReplyOptions>
                 >
             )[handler].call(this, interaction, customId);
 

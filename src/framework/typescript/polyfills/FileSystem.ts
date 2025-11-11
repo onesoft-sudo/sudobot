@@ -37,7 +37,8 @@ export default class FileSystem {
         if (process.versions.bun) {
             const file = Bun.file(path);
             contents = await (json ? file.json() : file.text());
-        } else {
+        }
+        else {
             contents = await readFile(path, { encoding: "utf-8" });
 
             if (json) {
@@ -51,7 +52,8 @@ export default class FileSystem {
     public static async exists(filePath: string) {
         if (process.versions.bun) {
             return Bun.file(filePath).exists();
-        } else {
+        }
+        else {
             return existsSync(filePath);
         }
     }
@@ -64,7 +66,8 @@ export default class FileSystem {
         if (process.versions.bun) {
             // eslint-disable-next-line @typescript-eslint/no-base-to-string
             await Bun.write(path, json ? JSON.stringify(contents) : contents.toString());
-        } else {
+        }
+        else {
             // eslint-disable-next-line @typescript-eslint/no-base-to-string
             await writeFile(path, json ? JSON.stringify(contents) : contents.toString(), {
                 encoding: "utf-8"

@@ -27,7 +27,8 @@ export async function prefixedPath(path: string, options?: PrefixedPathOptions):
 
     if (options?.createDirIfNotExists && !existsSync(path)) {
         await mkdir(path, { recursive: true });
-    } else if (options?.createParentDirIfNotExists) {
+    }
+    else if (options?.createParentDirIfNotExists) {
         const parentDir = dirname(path);
 
         if (!existsSync(parentDir)) {

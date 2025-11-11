@@ -23,7 +23,8 @@ import type { Client, Guild, Snowflake, TextBasedChannel } from "discord.js";
 export async function safeMemberFetch(guild: Guild, id: Snowflake) {
     try {
         return guild.members.cache.get(id) ?? (await guild.members.fetch(id));
-    } catch (e) {
+    }
+    catch (e) {
         Application.current().logger.error(e);
         return null;
     }
@@ -32,7 +33,8 @@ export async function safeMemberFetch(guild: Guild, id: Snowflake) {
 export async function safeUserFetch(client: Client, id: Snowflake) {
     try {
         return client.users.cache.get(id) ?? (await client.users.fetch(id));
-    } catch (e) {
+    }
+    catch (e) {
         Application.current().logger.error(e);
         return null;
     }
@@ -41,7 +43,8 @@ export async function safeUserFetch(client: Client, id: Snowflake) {
 export async function safeChannelFetch(guild: Guild, id: Snowflake) {
     try {
         return guild.channels.cache.get(id) ?? (await guild.channels.fetch(id));
-    } catch (e) {
+    }
+    catch (e) {
         Application.current().logger.error(e);
         return null;
     }
@@ -50,7 +53,8 @@ export async function safeChannelFetch(guild: Guild, id: Snowflake) {
 export async function safeRoleFetch(guild: Guild, id: Snowflake) {
     try {
         return guild.roles.cache.get(id) ?? (await guild.roles.fetch(id));
-    } catch (e) {
+    }
+    catch (e) {
         Application.current().logger.error(e);
         return null;
     }

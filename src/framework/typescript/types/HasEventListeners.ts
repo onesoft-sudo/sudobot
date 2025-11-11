@@ -21,7 +21,7 @@ import type { ClientEvents } from "discord.js";
 
 export interface HasEventListeners {
     onRaw?(data: unknown): unknown;
-    onReady?(...args: ClientEvents["clientReady"]): unknown;
+    onClientReady?(...args: ClientEvents["clientReady"]): unknown;
 
     onMessageCreate?(...args: ClientEvents["messageCreate"]): unknown;
     onMessageUpdate?(...args: ClientEvents["messageUpdate"]): unknown;

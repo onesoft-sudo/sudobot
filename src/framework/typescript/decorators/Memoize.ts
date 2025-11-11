@@ -19,6 +19,8 @@
 
 import type { AnyFunction } from "@framework/types/Utils";
 
+const memoizedStateSymbol = Symbol("MemoizedState");
+
 export function Memoize<T extends object>(target: T, propertyKey: PropertyKey, context?: PropertyDescriptor) {
     if (!context) {
         return;
@@ -36,4 +38,15 @@ export function Memoize<T extends object>(target: T, propertyKey: PropertyKey, c
         memoized = true;
         return memoizedValue;
     };
+
+    Object.defineProperty(context.value, memoizedStateSymbol, {
+        value: {
+            reset: () => {
+                memoized = false;
+            }
+        }
+    });
 }
+
+export const resetMemoizedFunction = (fn: AnyFunction) =>
+    memoizedStateSymbol in fn ? (fn[memoizedStateSymbol] as { reset: () => void }).reset() : void 0;

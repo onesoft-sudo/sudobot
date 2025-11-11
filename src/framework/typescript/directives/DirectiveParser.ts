@@ -72,7 +72,8 @@ class DirectiveParser {
                 arg = json;
                 length = computedLength;
                 state.currentArgument = str;
-            } catch (error) {
+            }
+            catch (error) {
                 if (!silent) {
                     throw error;
                 }
@@ -96,13 +97,17 @@ class DirectiveParser {
         while (depth > 0) {
             if (input[end] === "{") {
                 depth++;
-            } else if (input[end] === "}") {
+            }
+            else if (input[end] === "}") {
                 depth--;
-            } else if (input[end] === undefined) {
+            }
+            else if (input[end] === undefined) {
                 throw new DirectiveParseError("Unexpected end of input");
-            } else if (input[end] === '"') {
+            }
+            else if (input[end] === '"') {
                 end = input.indexOf('"', end + 1);
-            } else if (input[end] === "'") {
+            }
+            else if (input[end] === "'") {
                 end = input.indexOf("'", end + 1);
             }
 

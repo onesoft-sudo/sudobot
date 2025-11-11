@@ -20,11 +20,7 @@
 import type { Awaitable, Snowflake } from "discord.js";
 
 interface CommandRateLimiterContract {
-    isRateLimitedWithHit(
-        commandName: string,
-        guildId: Snowflake,
-        userId: Snowflake
-    ): Awaitable<boolean>;
+    isRateLimitedWithHit(commandName: string, guildId: Snowflake, userId: Snowflake): Awaitable<boolean>;
 }
 
 export default CommandRateLimiterContract;

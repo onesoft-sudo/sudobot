@@ -39,16 +39,10 @@ class Semaphore {
     public constructor(maxPermits?: number);
 
     public constructor(optionsOrPermits: SemaphoreOptions | number = 1) {
-        this.maxPermits =
-            typeof optionsOrPermits === "number"
-                ? optionsOrPermits
-                : optionsOrPermits.maxPermits ?? 1;
+        this.maxPermits = typeof optionsOrPermits === "number" ? optionsOrPermits : (optionsOrPermits.maxPermits ?? 1);
         this.ignoreExtraneousReleases =
-            typeof optionsOrPermits === "number"
-                ? false
-                : optionsOrPermits.ignoreExtraneousReleases ?? false;
-        this.condition =
-            typeof optionsOrPermits === "number" ? undefined : optionsOrPermits.condition;
+            typeof optionsOrPermits === "number" ? false : (optionsOrPermits.ignoreExtraneousReleases ?? false);
+        this.condition = typeof optionsOrPermits === "number" ? undefined : optionsOrPermits.condition;
     }
 
     public get availablePermits() {

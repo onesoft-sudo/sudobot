@@ -35,6 +35,7 @@ import metadata from "@root/package.json";
 
 class AboutCommand extends Command {
     public override readonly name: string = "about";
+    public override readonly description: string = "Show information about the bot.";
     public override readonly aliases: string[] = ["botinfo"];
 
     public override async execute(context: Context): Promise<void> {
@@ -71,7 +72,8 @@ class AboutCommand extends Command {
             const topSection = new SectionBuilder().addTextDisplayComponents(topHeader);
             topSection.setThumbnailAccessory(new ThumbnailBuilder().setURL(avatar));
             container.addSectionComponents(topSection);
-        } else {
+        }
+        else {
             container.addTextDisplayComponents(topHeader);
         }
 

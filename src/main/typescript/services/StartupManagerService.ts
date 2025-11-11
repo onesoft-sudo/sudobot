@@ -111,7 +111,8 @@ class StartupManagerService extends Service {
                             }
                         ]
                     });
-                } else {
+                }
+                else {
                     await message.edit({
                         embeds: [
                             {
@@ -203,7 +204,8 @@ class StartupManagerService extends Service {
                     timestamp: i === chunks.length - 1 ? new Date().toISOString() : undefined
                 });
             }
-        } else {
+        }
+        else {
             embeds[0].timestamp = new Date().toISOString();
         }
 
