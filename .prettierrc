@@ -1,11 +1,11 @@
 {
-    "editorconfig": true,
     "printWidth": 120,
     "trailingComma": "none",
     "jsxBracketSameLine": false,
     "arrowParens": "avoid",
     "singleQuote": false,
     "jsxSingleQuote": false,
+    "useTabs": false,
     "overrides": [
         {
             "files": ["*.yml", "*.yaml"],

@@ -1,11 +1,16 @@
-// @ts-check
-
 import eslint from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
+import stylistic from "@stylistic/eslint-plugin";
+import LocalPlugin from "./src/eslint/typescript/LocalPlugin";
 
-export default tseslint.config(
+export default defineConfig([
     {
-        extends: [eslint.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
+        extends: [
+            eslint.configs.recommended,
+            ...tseslint.configs.recommended,
+            ...tseslint.configs.recommendedTypeChecked,
+        ],
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
@@ -16,11 +21,13 @@ export default tseslint.config(
                 sourceType: "module"
             }
         },
+        plugins: {
+            '@stylistic': stylistic,
+            '@local': LocalPlugin
+        },
         rules: {
             indent: "off",
             semi: ["warn", "always"],
-            "no-var": "off",
-            "linebreak-style": ["error", "unix"],
             quotes: [
                 "warn",
                 "double",
@@ -28,28 +35,33 @@ export default tseslint.config(
                     avoidEscape: true
                 }
             ],
-            "@typescript-eslint/no-var-requires": "off",
-            "@typescript-eslint/consistent-type-imports": [
+            "no-var": "off",
+            "linebreak-style": ["error", "unix"],
+            "padding-line-between-statements": [
                 "error",
-                { disallowTypeAnnotations: false }
+                {
+                    blankLine: "always",
+                    prev: "block-like",
+                    next: "*"
+                }
             ],
+            "@typescript-eslint/no-var-requires": "off",
+            "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }],
             "@typescript-eslint/no-misused-promises": [
                 "warn",
                 {
                     checksVoidReturn: false
                 }
             ],
-            "@typescript-eslint/explicit-member-accessibility": [
-                "error",
-                { accessibility: "explicit" }
-            ],
+            "@typescript-eslint/explicit-member-accessibility": ["error", { accessibility: "explicit" }],
             "@typescript-eslint/no-unused-vars": "off",
             "@typescript-eslint/no-unsafe-member-access": "off",
             "@typescript-eslint/no-unsafe-call": "off",
             "@typescript-eslint/no-unsafe-assignment": "off",
             "@typescript-eslint/no-unsafe-return": "off",
             "@typescript-eslint/no-unsafe-argument": "off",
-            "@typescript-eslint/restrict-template-expressions": "off"
+            "@typescript-eslint/restrict-template-expressions": "off",
+            "@local/break-before-control": "error"
         },
         files: ["src/**/*.ts"],
         ignores: [
@@ -77,4 +89,4 @@ export default tseslint.config(
         files: ["src/**/*.ts"],
         ignores: ["**/*.d.ts"]
     }
-);
+]);

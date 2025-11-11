@@ -14,6 +14,7 @@ describe("ArgumentTypes", () => {
         it("correctly infers argument types", () => {
             class TestCommand extends Command {
                 public override name = "test";
+                public override description = "test";
                 public override execute = vi.fn();
                 public override argumentSchema = {
                     overloads: [

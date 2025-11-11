@@ -41,6 +41,7 @@ class CommandTest {
     public async itCallsTheExecuteMethod({ expect }: TestContext) {
         const command = new (class extends Command {
             public override readonly name = "name";
+            public override readonly description = "name";
             public execute = vi.fn();
         })(this.application);
 
@@ -54,6 +55,7 @@ class CommandTest {
     public async itAbortsExecutionIfPermissionsAreMissing({ expect }: TestContext) {
         const command = new (class extends Command {
             public override readonly name = "name";
+            public override readonly description = "name";
             public override readonly permissions = [PermissionFlagsBits.BanMembers];
             public execute = vi.fn();
         })(this.application);

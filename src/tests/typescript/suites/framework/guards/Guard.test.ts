@@ -50,6 +50,7 @@ class GuardTest {
 
         const command = new (class extends Command {
             public override readonly name = "name";
+            public override readonly description = "name";
             public override readonly guards = [TestGuard];
             public override execute = vi.fn();
         })(this.application);
