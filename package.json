@@ -61,21 +61,23 @@
         "@root": "."
     },
     "dependencies": {
-        "axios": "^1.13.2",
+        "axios": "1.13.2",
         "chalk": "5.6.2",
-        "date-fns": "^4.1.0",
+        "date-fns": "4.1.0",
         "discord.js": "14.24.2",
         "dotenv": "17.2.3",
         "drizzle-orm": "0.44.7",
-        "figlet": "^1.9.3",
-        "json5": "^2.2.3",
-        "lru-cache": "^11.2.2",
-        "mlkem": "^2.5.0",
+        "figlet": "1.9.3",
+        "ioredis": "5.8.2",
+        "json5": "2.2.3",
+        "lru-cache": "11.2.2",
+        "mlkem": "2.5.0",
         "module-alias": "2.2.3",
-        "reflect-metadata": "^0.2.2",
-        "tslib": "^2.8.1",
-        "typebox": "^1.0.51",
-        "uuid": "^13.0.0"
+        "@msgpack/msgpack": "3.1.2",
+        "reflect-metadata": "0.2.2",
+        "tslib": "2.8.1",
+        "typebox": "1.0.51",
+        "uuid": "13.0.0"
     },
     "devDependencies": {
         "@commitlint/cli": "20.1.0",

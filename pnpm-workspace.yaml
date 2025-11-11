@@ -3,5 +3,6 @@ onlyBuiltDependencies:
   - '@swc/core'
   - bcrypt
   - esbuild
+  - msgpackr-extract
   - sharp
   - unrs-resolver
