@@ -4,7 +4,6 @@ import { Redis } from "ioredis";
 import { encode, decode } from "@msgpack/msgpack";
 import EventEmitter from "events";
 import { promiseWithResolvers } from "@framework/polyfills/Promise";
-import { v4 as uuid } from "uuid";
 
 class RedisMessageBus extends MessageBus {
     private readonly subscriber: Redis;
@@ -12,13 +11,14 @@ class RedisMessageBus extends MessageBus {
 
     private readonly emitter = new EventEmitter();
     private _nextRequestId: number = 0;
-    private readonly responseCallbacks = new Map<number, (data: unknown) => void>();
+    private readonly responseControls = new Map<number, { callback: (data: unknown) => void; timeout: Timer }>();
     private requestHandler?: (request: MessageBusRequest) => unknown;
-    private readonly busId = uuid();
+    private readonly busId: string;
 
-    public constructor(url: string) {
+    public constructor(url: string, busId = Date.now().toString()) {
         super();
 
+        this.busId = busId;
         this.subscriber = new Redis(url);
         this.publisher = new Redis(url);
 
@@ -27,17 +27,17 @@ class RedisMessageBus extends MessageBus {
                 const data = decode(message);
                 const channelName = channel.toString("utf-8");
 
-                if (channelName === "requests") {
+                if (channelName.startsWith("request_")) {
                     await this.handleRequest(data);
                     return;
                 }
 
-                if (channelName === "responses") {
+                if (channelName.startsWith("response_")) {
                     this.handleResponse(data);
                     return;
                 }
 
-                this.emitter.emit(channelName, { data });
+                this.emitter.emit(channelName, { data } satisfies MessageDetails);
             } catch (error) {
                 console.error(error);
                 this.emit("error", error);
@@ -46,7 +46,7 @@ class RedisMessageBus extends MessageBus {
     }
 
     public override async enableRequestResponse() {
-        await this.subscriber.subscribe("requests", "responses");
+        await this.subscriber.subscribe(`request_${this.busId}`, `response_${this.busId}`);
     }
 
     public override publish(channel: string, data: unknown): Promise<number> {
@@ -63,21 +63,23 @@ class RedisMessageBus extends MessageBus {
         }
     }
 
-    public override async request<T>(data: unknown): Promise<T> {
+    public override async request<T>(toBusId: string, data: unknown): Promise<T> {
         const id = this._nextRequestId++;
-
         const { promise, resolve, reject } = promiseWithResolvers<T>();
-        this.responseCallbacks.set(id, resolve as (data: unknown) => void);
 
-        setTimeout(() => {
-            this.responseCallbacks.delete(id);
-            reject(new Error("Request timed out"));
-        }, 30_000);
+        this.responseControls.set(id, {
+            callback: resolve as (data: unknown) => void,
+            timeout: setTimeout(() => {
+                if (this.responseControls.delete(id)) {
+                    reject(new Error("Request timed out"));
+                }
+            }, 30_000)
+        });
 
-        await this.publish("requests", {
+        await this.publish(`request_${toBusId}`, {
             requestId: id,
             payload: data,
-            busId: this.busId
+            fromBusId: this.busId
         });
 
         return promise;
@@ -94,13 +96,14 @@ class RedisMessageBus extends MessageBus {
             "requestId" in data &&
             typeof data.requestId === "number" &&
             "payload" in data &&
-            "busId" in data &&
-            data.busId !== this.busId
+            "fromBusId" in data &&
+            data.fromBusId !== this.busId
         ) {
-            const resolve = this.responseCallbacks.get(data.requestId);
+            const control = this.responseControls.get(data.requestId);
 
-            if (resolve) {
-                resolve(data.payload);
+            if (control) {
+                clearTimeout(control.timeout);
+                control.callback(data.payload);
             }
         }
     }
@@ -112,8 +115,8 @@ class RedisMessageBus extends MessageBus {
             "requestId" in data &&
             typeof data.requestId === "number" &&
             "payload" in data &&
-            "busId" in data &&
-            data.busId !== this.busId
+            "fromBusId" in data &&
+            data.fromBusId !== this.busId
         ) {
             if (!this.requestHandler) {
                 return;
@@ -121,13 +124,14 @@ class RedisMessageBus extends MessageBus {
 
             const responseData = await this.requestHandler?.({
                 id: data.requestId,
-                payload: data.payload
+                payload: data.payload,
+                fromBusId: this.busId
             });
 
-            await this.publish("responses", {
+            await this.publish(`response_${data.fromBusId}`, {
                 requestId: data.requestId,
                 payload: responseData,
-                busId: this.busId
+                fromBusId: this.busId
             });
         }
     }

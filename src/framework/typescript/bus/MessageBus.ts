@@ -12,13 +12,14 @@ export type MessageDetails<T = unknown> = {
 export type MessageBusRequest<T = unknown> = {
     id: number;
     payload: T;
+    fromBusId: string;
 };
 
 abstract class MessageBus extends EventEmitter<MessageBusEventMap> {
     public abstract subscribe(channel: string, callback: (message: MessageDetails) => Awaitable<void>): void;
     public abstract publish(channel: string, data: unknown): void;
     public abstract setRequestHandler(callback: (request: MessageBusRequest) => unknown): void;
-    public abstract request<T>(data: unknown): Promise<T>;
+    public abstract request<T>(toBusId: string, data: unknown): Promise<T>;
     public abstract enableRequestResponse(): Promise<void>;
 }
 
