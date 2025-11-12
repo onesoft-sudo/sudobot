@@ -18,7 +18,7 @@ COPY build.blaze.ts ./build.blaze.ts
 COPY settings.blaze.ts ./settings.blaze.ts
 COPY build_src ./build_src
 COPY eslint.config.ts ./eslint.config.ts
-COPY vitest.config.mjs ./vitest.config.mjs
+COPY vitest.config.ts ./vitest.config.ts
 COPY bin ./bin
 
 RUN ./blazew build
