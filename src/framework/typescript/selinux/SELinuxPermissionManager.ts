@@ -2,10 +2,10 @@ import AbstractPermissionManager, { type GetPermissionsResult } from "@framework
 import type { PermissionResolvable } from "@framework/permissions/PermissionResolvable";
 import { TODO } from "@framework/utils/devflow";
 import type { GuildMember, User, Awaitable, GuildBasedChannel, Role } from "discord.js";
-import PolicyManager from "./PolicyManager";
+import PolicyManagerAVC from "./PolicyManager";
 
 class SELinuxPermissionManager extends AbstractPermissionManager {
-    private readonly policyManager = new PolicyManager();
+    private readonly policyManager = new PolicyManagerAVC();
 
     public override hasPermissions(_user: GuildMember | User, _permissions: PermissionResolvable): Awaitable<boolean> {
         TODO();
