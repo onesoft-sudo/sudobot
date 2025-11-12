@@ -54,14 +54,21 @@ export default defineConfig([
                 }
             ],
             "@typescript-eslint/explicit-member-accessibility": ["error", { accessibility: "explicit" }],
-            "@typescript-eslint/no-unused-vars": "off",
             "@typescript-eslint/no-unsafe-member-access": "off",
             "@typescript-eslint/no-unsafe-call": "off",
             "@typescript-eslint/no-unsafe-assignment": "off",
             "@typescript-eslint/no-unsafe-return": "off",
             "@typescript-eslint/no-unsafe-argument": "off",
             "@typescript-eslint/restrict-template-expressions": "off",
-            "@local/break-before-control": "error"
+            "@typescript-eslint/no-unused-vars": [
+                "warn",
+                {
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    caughtErrorsIgnorePattern: "^_"
+                }
+            ],
+            "@local/break-before-control": "error",
         },
         files: ["src/**/*.ts"],
         ignores: [
@@ -74,19 +81,5 @@ export default defineConfig([
             "*.blaze.ts",
             "build"
         ]
-    },
-    {
-        rules: {
-            "@typescript-eslint/no-unused-vars": [
-                "warn",
-                {
-                    argsIgnorePattern: "^_",
-                    varsIgnorePattern: "^_",
-                    caughtErrorsIgnorePattern: "^_"
-                }
-            ]
-        },
-        files: ["src/**/*.ts"],
-        ignores: ["**/*.d.ts"]
     }
 ]);

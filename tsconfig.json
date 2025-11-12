@@ -36,7 +36,7 @@
             "*": ["./*"]
         }
     },
-    "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts"],
+    "include": ["src/**/*.ts"],
     "exclude": [
         "./backup",
         "./tmp",
