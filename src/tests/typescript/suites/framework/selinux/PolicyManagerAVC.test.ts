@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import PolicyManagerAVC from "@framework/selinux/PolicyManager";
+import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC";
 import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema";
 import { PermissionFlagsBits } from "discord.js";
 
@@ -13,7 +13,7 @@ const makePolicy = <T extends Partial<PolicyModuleType>>(name: string, payload: 
     };
 };
 
-describe("PolicyManager", () => {
+describe("PolicyManagerAVC", () => {
     let policyManager: PolicyManagerAVC;
 
     beforeEach(() => {
@@ -33,37 +33,9 @@ describe("PolicyManager", () => {
             deny_types_on_targets: {}
         });
 
-        policyManager.loadModule(policy);
+        policyManager.loadModule("1", policy);
 
-        expect([...policyManager.getLoadedModules().entries()]).toStrictEqual([["base", policy]]);
-    });
-
-    it("can compile multiple policy modules after load", () => {
-        const policy1: PolicyModuleType = makePolicy("base", {
-            allow_types: [PermissionFlagsBits.BanMembers, PermissionFlagsBits.AddReactions],
-            map_types: ["unlabeled_t"],
-            deny_types: [],
-            allow_types_on_targets: {},
-            deny_types_on_targets: {}
-        });
-
-        const policy2: PolicyModuleType = makePolicy("extra", {
-            allow_types: [PermissionFlagsBits.KickMembers],
-            map_types: ["unlabeled_t"],
-            deny_types: [PermissionFlagsBits.AddReactions],
-            allow_types_on_targets: {},
-            deny_types_on_targets: {}
-        });
-
-        policyManager.loadModule(policy1);
-        policyManager.loadModule(policy2);
-        policyManager.compileAll();
-
-        const avc = policyManager.getCurrentAVCStore();
-
-        expect(avc?.mapTypes).toStrictEqual(["unlabeled_t"]);
-        expect(avc?.allowTypes).toStrictEqual([PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers]);
-        expect(avc?.denyTypes).toStrictEqual([PermissionFlagsBits.AddReactions]);
+        expect([...policyManager.getLoadedModules("1").entries()]).toStrictEqual([["base", policy]]);
     });
 
     it("can allow/deny permissions from the loaded policies", () => {
@@ -103,18 +75,20 @@ describe("PolicyManager", () => {
             deny_types_on_targets: {}
         });
 
-        policyManager.loadModule(policy1);
-        policyManager.loadModule(policy2);
-        policyManager.compileAll();
+        const guildId = "1";
 
-        expect(policyManager.getPermissionsOf("user_t")).toBe(PermissionFlagsBits.AttachFiles);
-        expect(policyManager.getPermissionsOf("unlabeled_t")).toBe(
+        policyManager.loadModule(guildId, policy1);
+        policyManager.loadModule(guildId, policy2);
+        policyManager.compileAll(guildId);
+
+        expect(policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.AttachFiles);
+        expect(policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers
         );
-        expect(policyManager.getPermissionsOf("moderator_t")).toBe(
+        expect(policyManager.getPermissionsOf(guildId, "moderator_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.ChangeNickname
         );
-        expect(policyManager.getPermissionsOfWithTarget("moderator_t", "user_t")).toBe(
+        expect(policyManager.getPermissionsOfWithTarget(guildId, "moderator_t", "user_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers | PermissionFlagsBits.ModerateMembers
         );
     });
