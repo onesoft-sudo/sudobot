@@ -1,0 +1,17 @@
+import Node from "./Node";
+import type { Range } from "./PolicyModuleParserTypes";
+
+class RootNode extends Node {
+    public readonly children: Node[];
+
+    public constructor(children: Node[], range: Range) {
+        super(range)
+        this.children = children;
+    }
+
+    public override branches() {
+        return this.children;
+    }
+}
+
+export default RootNode;

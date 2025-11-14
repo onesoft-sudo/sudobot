@@ -1,0 +1,17 @@
+export enum PolicyModuleTokenType {
+    EndOfFile = "EOF",
+    String = "string",
+    Integer = "integer",
+    Identifier = "identifier",
+    Allow = "allow",
+    Deny = "deny",
+    Require = "require",
+    Module = "module",
+    Labels = "labels",
+    Label = "label",
+    Type = "type",
+    BraceOpen = "{",
+    BraceClose = "}",
+    Semicolon = ";",
+    Comma = ",",
+}
