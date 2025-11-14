@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, it, vi } from "vitest";
 import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC";
 import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema";
 import { PermissionFlagsBits } from "discord.js";
+import { createClient, createMember } from "@tests/mocks/discord";
 
 const makePolicy = <T extends Partial<PolicyModuleType>>(name: string, payload: T) => {
     return {
@@ -20,32 +21,28 @@ describe("PolicyManagerAVC", () => {
         policyManager = new PolicyManagerAVC();
     });
 
-    it("can load policies", () => {
+    it("can load policies", async ({ expect }) => {
         const policy: PolicyModuleType = makePolicy("base", {
-            allow_types: {
-                0: "0"
-            },
-            map_types: {
-                0: "unlabeled_t"
-            },
-            deny_types: {},
+            allow_types: ["0"],
+            map_types: ["unlabeled_t"],
+            deny_types: [],
             allow_types_on_targets: {},
             deny_types_on_targets: {}
         });
 
-        policyManager.loadModule("1", policy);
+        await policyManager.loadModule("1", policy);
 
-        expect([...policyManager.getLoadedModules("1").entries()]).toStrictEqual([["base", policy]]);
+        expect([...(await policyManager.getLoadedModules("1")).entries()]).toStrictEqual([["base", policy]]);
     });
 
-    it("can allow/deny permissions from the loaded policies", () => {
+    it("can allow/deny permissions from the loaded policies", async ({ expect }) => {
         const policy1: PolicyModuleType = makePolicy("base", {
+            map_types: ["unlabeled_t", "user_t", "moderator_t"],
             allow_types: [
                 PermissionFlagsBits.BanMembers,
                 PermissionFlagsBits.AttachFiles,
                 PermissionFlagsBits.BanMembers
             ],
-            map_types: ["unlabeled_t", "user_t", "moderator_t"],
             deny_types: [],
             allow_types_on_targets: {
                 2: {
@@ -77,19 +74,123 @@ describe("PolicyManagerAVC", () => {
 
         const guildId = "1";
 
-        policyManager.loadModule(guildId, policy1);
-        policyManager.loadModule(guildId, policy2);
-        policyManager.compileAll(guildId);
+        await policyManager.loadModule(guildId, policy1);
+        await policyManager.loadModule(guildId, policy2);
+        await policyManager.compileAll(guildId);
 
-        expect(policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.AttachFiles);
-        expect(policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(
+        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.AttachFiles);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers
         );
-        expect(policyManager.getPermissionsOf(guildId, "moderator_t")).toBe(
+        expect(await policyManager.getPermissionsOf(guildId, "moderator_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.ChangeNickname
         );
-        expect(policyManager.getPermissionsOfWithTarget(guildId, "moderator_t", "user_t")).toBe(
+        expect(await policyManager.getPermissionsOfWithTarget(guildId, "moderator_t", "user_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers | PermissionFlagsBits.ModerateMembers
         );
+    });
+
+    it("relabeles entities as requested", async ({ expect }) => {
+        const guildId = "1";
+        const contexts = ["unlabeled_t", "user_t", "test_t"];
+
+        const policy: PolicyModuleType = makePolicy("base", {
+            allow_types: [0n, PermissionFlagsBits.SendMessages],
+            map_types: contexts,
+            deny_types: [],
+            allow_types_on_targets: {},
+            deny_types_on_targets: {},
+            type_labeling: {
+                commonPatterns: [
+                    {
+                        context: 1,
+                        entity_attr: "id",
+                        pattern: ["^111", "u"],
+                        entity_type: "member"
+                    },
+                    {
+                        context: 2,
+                        entity_attr: "id",
+                        pattern: ["^222", "u"],
+                        entity_type: "member"
+                    }
+                ],
+                memberPatterns: []
+            }
+        });
+
+        await policyManager.loadModule(guildId, policy);
+        await policyManager.compileAll(guildId);
+
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
+        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.SendMessages);
+
+        const client = createClient();
+        const member1 = createMember(client, "111984877397764898567");
+        const member2 = createMember(client, "111452566238769264744");
+        const member3 = createMember(client, "141114987322228476464");
+        const member4 = createMember(client, "222485767296476474677");
+
+        const count = await policyManager.relabelEntities(guildId, [member1, member2, member3, member4]);
+
+        expect(count).toBe(3);
+        expect(await policyManager.getContextOf(guildId, member1)).toBe(contexts.indexOf("user_t"));
+        expect(await policyManager.getContextOf(guildId, member2)).toBe(contexts.indexOf("user_t"));
+        expect(await policyManager.getContextOf(guildId, member3)).toBe(contexts.indexOf("unlabeled_t"));
+        expect(await policyManager.getContextOf(guildId, member4)).toBe(contexts.indexOf("test_t"));
+    });
+
+    it("reads caches from disk only once on module load", async ({ expect }) => {
+        vi.mock("fs/promises", () => {
+            const readFileMock = vi.fn(() => {
+                throw new Error("File does not exist");
+            });
+
+            return {
+                readFile: readFileMock,
+                readFileMock
+            };
+        });
+
+        const guildId = "1";
+        const { readFileMock } = await import(<string>"fs/promises");
+        readFileMock.mockClear();
+
+        const policy: PolicyModuleType = makePolicy("base", {
+            allow_types: [PermissionFlagsBits.BanMembers],
+            map_types: ["unlabeled_t"],
+            deny_types: [],
+            allow_types_on_targets: {},
+            deny_types_on_targets: {}
+        });
+
+        await policyManager.loadModule(guildId, policy);
+        await policyManager.loadModule(guildId, policy);
+        await policyManager.compileAll(guildId);
+
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
+        expect(readFileMock).toHaveBeenCalledOnce();
+    });
+
+    it("does not read cache more than once when getting permissions with no modules", async ({ expect }) => {
+        vi.mock("fs/promises", () => {
+            const readFileMock = vi.fn(() => {
+                throw new Error("File does not exist");
+            });
+
+            return {
+                readFile: readFileMock,
+                readFileMock
+            };
+        });
+
+        const guildId = "1";
+        const { readFileMock } = await import(<string>"fs/promises");
+        readFileMock.mockClear();
+
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
+        expect(readFileMock).toHaveBeenCalledOnce();
     });
 });

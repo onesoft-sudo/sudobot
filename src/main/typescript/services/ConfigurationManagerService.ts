@@ -133,7 +133,7 @@ class ConfigurationManagerService extends Service {
         }
         catch (error) {
             this.logger.debug(error);
-            this.cache.set(`${type}::${id}`, GuildConfigurationDefaultValue);
+            this.cache.set(`${type}::${id}`, structuredClone(GuildConfigurationDefaultValue));
         }
 
         return GuildConfigurationDefaultValue;

@@ -75,6 +75,7 @@
         "lru-cache": "11.2.2",
         "mlkem": "2.5.0",
         "module-alias": "2.2.3",
+        "re2": "^1.22.3",
         "reflect-metadata": "0.2.2",
         "tslib": "2.8.1",
         "typebox": "1.0.51",
