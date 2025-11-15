@@ -271,8 +271,8 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
 
     pwd
-    ls "$topdir/node_modules/@onesoftnet/blazebuild"
-    ls "node_modules/@onesoftnet/blazebuild"
+    ls "$topdir/node_modules/@onesoftnet/blazebuild/"
+    ls "node_modules/@onesoftnet/blazebuild/"
 
     print_debug "installed project dependencies"
 fi
