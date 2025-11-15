@@ -3,6 +3,7 @@
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BlazeDir = Join-Path $ScriptDir ".blazebuild"
 $BlazeEntry = Join-Path $ScriptDir "node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
+$BlazeNodeModulesDir = Join-Path $ScriptDir "blazebuild/node_modules"
 
 $Arch = switch ((Get-CimInstance Win32_Processor).Architecture) {
     9 { "x64" }
@@ -234,26 +235,26 @@ $BUN_EXE = Install-Bun
 
 $env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
 
+$PackageManager = ""
+
+if (Get-Command pnpm -ErrorAction SilentlyContinue) {
+    $PackageManager = "pnpm"
+}
+elseif (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PackageManager = "bun"
+}
+elseif (Get-Command npm -ErrorAction SilentlyContinue) {
+    $PackageManager = "npm"
+}
+elseif (Get-Command yarn -ErrorAction SilentlyContinue) {
+    $PackageManager = "yarn"
+}
+else {
+    Write-Error "No package manager found. Please install pnpm, bun, npm, or yarn."
+    exit 1
+}
+
 if (-not (Test-Path $BlazeEntry)) {
-    $PackageManager = ""
-
-    if (Get-Command pnpm -ErrorAction SilentlyContinue) {
-        $PackageManager = "pnpm"
-    }
-    elseif (Get-Command bun -ErrorAction SilentlyContinue) {
-        $PackageManager = "bun"
-    }
-    elseif (Get-Command npm -ErrorAction SilentlyContinue) {
-        $PackageManager = "npm"
-    }
-    elseif (Get-Command yarn -ErrorAction SilentlyContinue) {
-        $PackageManager = "yarn"
-    }
-    else {
-        Write-Error "No package manager found. Please install pnpm, bun, npm, or yarn."
-        exit 1
-    }
-
     Write-Host "Installing project dependencies using $PackageManager..."
 
     & $PackageManager install
@@ -263,6 +264,10 @@ if (-not (Test-Path $BlazeEntry)) {
         exit 1
     }
 
+    Debug-Log "Project dependencies installed successfully."
+}
+
+if (-not (Test-Path $BlazeNodeModulesDir)) {
     Write-Host "Installing blazebuild dependencies using $PackageManager..."
 
     cd "blazebuild"
@@ -274,7 +279,7 @@ if (-not (Test-Path $BlazeEntry)) {
         exit 1
     }
 
-    Debug-Log "Project dependencies installed successfully."
+    Debug-Log "Blazebuild dependencies installed successfully."
 }
 
 $Process = Start-Process -FilePath $BUN_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
