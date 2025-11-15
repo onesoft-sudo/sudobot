@@ -8,8 +8,7 @@ import {
     x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { spawnSync, $ } from "bun";
-import { existsSync } from "node:fs";
+import { spawnSync } from "bun";
 
 @Task({
     description: "Runs the tests",
@@ -23,18 +22,6 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        try {
-            await $`which node`;
-            console.log(process.env.PATH);
-        }
-        catch (error) {
-            console.error(error);
-        }
-
-        const projectLocalNodePath = '.blazebuild/node/bin/node' + (process.platform === 'win32' ? '.exe' : '');
-        const nodePath = existsSync(projectLocalNodePath) ? projectLocalNodePath : process.argv[0];
-        console.log(nodePath);
-
         const { exitCode } = spawnSync(["node_modules/.bin/vitest", "--run"], {
             stdio: ['inherit', 'inherit', 'inherit'],
             env: process.env

@@ -2,6 +2,8 @@
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BlazeDir = Join-Path $ScriptDir ".blazebuild"
+$BlazeSrcDir = Join-Path $ScriptDir "blazebuild"
+$NodeModulesDir = Join-Path $ScriptDir "node_modules"
 $BlazeEntry = Join-Path $ScriptDir "node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
 $BlazeNodeModulesDir = Join-Path $ScriptDir "blazebuild/node_modules"
 
@@ -255,12 +257,22 @@ else {
 }
 
 if (-not (Test-Path $BlazeEntry)) {
-    Write-Host "Installing project dependencies using $PackageManager..."
+    Write-Host "Installing project dependencies..."
 
-    & $PackageManager install
+    $NodeModulesOSNDir = Join-Path $NodeModulesDir "@onesoftnet"
+    $NodeModulesBlazeDir = Join-Path $NodeModulesOSNDir "blazebuild"
+
+    New-Item -ItemType Directory -Path $NodeModulesOSNDir -Force
 
     if (!$?) {
-        Write-Error "Failed to install project dependencies using $PackageManager."
+        Write-Error "Failed to install project dependencies."
+        exit 1
+    }
+
+    New-Item -ItemType SymbolicLink -Path $NodeModulesBlazeDir -Target $BlazeSrcDir
+
+    if (!$?) {
+        Write-Error "Failed to install project dependencies."
         exit 1
     }
 
