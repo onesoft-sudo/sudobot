@@ -21,7 +21,7 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        await $`bun x vitest --run`;
+        await $`npx vitest --run`;
     }
 
     @TaskDependencyGenerator

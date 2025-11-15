@@ -5,7 +5,7 @@ class RootNode extends Node {
     public readonly children: Node[];
 
     public constructor(children: Node[], range: Range) {
-        super(range)
+        super(range);
         this.children = children;
     }
 
