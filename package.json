@@ -5,7 +5,7 @@
     "description": "A Discord bot for moderation purposes.",
     "author": {
         "name": "Ar Rakin",
-        "email": "rakinar2@onesoftnet.eu.org",
+        "email": "rakinar2@osndevs.org",
         "url": "https://virtual-designer.github.io"
     },
     "main": "build/out/main/main.js",
@@ -29,7 +29,7 @@
     },
     "bugs": {
         "url": "https://github.com/onesoft-sudo/sudobot/issues",
-        "email": "sudobot@onesoftnet.eu.org"
+        "email": "sudobot@osndevs.org"
     },
     "_meta": {
         "release_codename": "Elegant Eclairs",
@@ -42,7 +42,7 @@
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun src/main/typescript/bun.ts",
-        "prepare": "(husky || true) && node -e \"const { symlinkSync, rmSync, existsSync } = require('fs'); const path = require('path'); const link = path.join(process.cwd(), 'node_modules/@onesoftnet/blazebuild'); if (existsSync(link)) { rmSync(link, { recursive: true }); } symlinkSync(path.join(process.cwd(), 'blazebuild'), link, 'dir');\"",
+        "prepare": "node bin/prepare.cjs",
         "dev": "bun run src/main/typescript/bun.ts",
         "dev:node": "node src/main/typescript/main.ts",
         "start:blazew": "node build/out/main/typescript/main.js",
@@ -52,7 +52,7 @@
         "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out && cp -r src/main/resources build/out/main",
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
         "test": "vitest",
-        "start:docker": "sh ./docker/test-container.sh; if [ $? -ne 0 ]; then exit 1; fi; if [ ! -f /app/.migration_status ] || [ -z \"$(cat /app/.migration_status)\" ]; then node scripts/migrate.js; fi; npm start"
+        "start:docker": "sh ./docker/start-container.sh"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",
