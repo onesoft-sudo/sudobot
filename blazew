@@ -245,6 +245,7 @@ install_node
 install_bun
 
 export PATH="$PATH"
+print_info "PATH is now: $PATH"
 
 pm=""
 
@@ -267,10 +268,8 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     print_debug "installing project dependencies"
     print_info "installing project dependencies with '$pm install'"
 
-    if ! $pm install; then
-        print_error "failed to install project dependencies"
-        exit 1
-    fi
+    mkdir "$topdir/node_modules/@onesoftnet"
+    ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
 
     print_debug "installed project dependencies"
 fi
