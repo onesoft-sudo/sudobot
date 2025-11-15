@@ -124,7 +124,7 @@ install_node() {
     else
         print_error "node version $major ($version) or higher is required, but no installed version found"
     fi
-    
+
     print_info "installing node version $version"
 
     url="https://nodejs.org/dist/v$version/node-v$version-$os-$arch.tar.gz"
@@ -134,7 +134,7 @@ install_node() {
         print_error "failed to download node version $version"
         return 1
     fi
-    
+
     print_debug "downloaded node version $version to $dest"
     print_debug "extracting node version $version"
 
@@ -234,7 +234,7 @@ install_bun() {
     print_debug "installed bun version $version to $bun_dir"
     print_debug "found bun interpreter: $bun_dir/bin/bun"
     PATH="$bun_dir/bin:$PATH"
-    
+
     bun_interpreter="$bun_dir/bin/bun"
     version="$("$bun_interpreter" --version)"
 
@@ -269,6 +269,15 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
         print_error "failed to install project dependencies"
         exit 1
     fi
+
+    cd "$topdir/blazebuild"
+
+    if ! $pm install; then
+        print_error "failed to install blazebuild dependencies"
+        exit 1
+    fi
+
+    cd "$topdir"
 
     print_debug "installed project dependencies"
 fi

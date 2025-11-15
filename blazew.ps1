@@ -22,7 +22,7 @@ function Debug-Log {
     param (
         [string]$Message
     )
-    
+
     if ($env:DEBUG -eq "1") {
         Write-Host "$Message"
     }
@@ -32,7 +32,7 @@ function Get-BlazeProperty {
     param (
         [string]$PropertyName
     )
-    
+
     $PropertyFile = Join-Path $ScriptDir "blaze/wrapper/blaze_wrapper.properties"
 
     if (-not (Test-Path $PropertyFile)) {
@@ -260,6 +260,17 @@ if (-not (Test-Path $BlazeEntry)) {
 
     if (!$?) {
         Write-Error "Failed to install project dependencies using $PackageManager."
+        exit 1
+    }
+
+    Write-Host "Installing blazebuild dependencies using $PackageManager..."
+
+    cd "blazebuild"
+    & $PackageManager install
+    cd ".."
+
+    if (!$?) {
+        Write-Error "Failed to install blazebuild dependencies using $PackageManager."
         exit 1
     }
 
