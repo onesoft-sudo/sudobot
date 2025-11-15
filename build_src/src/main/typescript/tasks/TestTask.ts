@@ -35,9 +35,14 @@ class TestTask extends AbstractTask {
         const nodePath = existsSync(projectLocalNodePath) ? projectLocalNodePath : process.argv[0];
         console.log(nodePath);
 
-        spawnSync([nodePath, "node_modules/.bin/vitest", "--run"], {
-            stdio: ['inherit', 'inherit', 'inherit']
+        const {exitCode} = spawnSync(["node_modules/.bin/vitest", "--run"], {
+            stdio: ['inherit', 'inherit', 'inherit'],
+            env: process.env
         });
+
+        if (exitCode) {
+            throw new Error(`vitest exited with code ${exitCode}`);
+        }
     }
 
     @TaskDependencyGenerator
