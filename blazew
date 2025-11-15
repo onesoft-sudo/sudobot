@@ -176,12 +176,12 @@ install_bun() {
         installed_version="$(bun --version)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
-        print_debug "found bun version: $installed_version"
+        print_info "found bun version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
        [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-        print_debug "bun version $major.$minor ($version) or higher is already installed"
+        print_info "bun version $major.$minor ($version) or higher is already installed"
         return 0
     fi
 
@@ -191,17 +191,17 @@ install_bun() {
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
         node_interpreter="$bun_dir/bin/bun"
         PATH="$bun_dir/bin:$PATH"
-        print_debug "found project local bun version: $installed_version"
+        print_info "found project local bun version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ]; then
         if [ "$installed_version_major" -gt "$major" ]; then
-            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            print_info "bun version $major.$minor ($version) or higher is already installed"
             return 0
         fi
 
         if [ "$installed_version_major" -eq "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            print_info "bun version $major.$minor ($version) or higher is already installed"
             return 0
         fi
     fi
@@ -243,6 +243,8 @@ install_bun() {
 
 install_node
 install_bun
+
+export PATH="$PATH"
 
 pm=""
 
