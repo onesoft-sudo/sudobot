@@ -244,25 +244,25 @@ install_bun() {
 install_node
 install_bun
 
+pm=""
+
+if command -v pnpm >/dev/null; then
+    pm="pnpm"
+elif command -v bun >/dev/null; then
+    pm="bun"
+elif command -v yarn >/dev/null; then
+    pm="yarn"
+elif command -v npm >/dev/null; then
+    pm="npm"
+else
+    print_error "no package manager found (pnpm, bun, yarn, npm)"
+    exit 1
+fi
+
+print_debug "using package manager: $pm"
+
 if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     print_debug "installing project dependencies"
-
-    pm=""
-
-    if command -v pnpm >/dev/null; then
-        pm="pnpm"
-    elif command -v bun >/dev/null; then
-        pm="bun"
-    elif command -v yarn >/dev/null; then
-        pm="yarn"
-    elif command -v npm >/dev/null; then
-        pm="npm"
-    else
-        print_error "no package manager found (pnpm, bun, yarn, npm)"
-        exit 1
-    fi
-
-    print_debug "using package manager: $pm"
     print_info "installing project dependencies with '$pm install'"
 
     if ! $pm install; then
@@ -270,6 +270,14 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
         exit 1
     fi
 
+    print_debug "installed project dependencies"
+fi
+
+if [ ! -d "$topdir/blazebuild/node_modules" ]; then
+    print_debug "installing blazebuild dependencies"
+    print_info "installing blazebuild dependencies with '$pm install'"
+
+    dir=`pwd`
     cd "$topdir/blazebuild"
 
     if ! $pm install; then
@@ -277,9 +285,8 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
         exit 1
     fi
 
-    cd "$topdir"
-
-    print_debug "installed project dependencies"
+    cd "$dir"
+    print_debug "installed blazebuild dependencies"
 fi
 
 BLAZEW_INTERNAL_ARGV0="$0" exec "$bun_interpreter" "$entry" -- "$@"
