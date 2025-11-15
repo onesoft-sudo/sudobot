@@ -95,7 +95,7 @@
         "@types/node": "^24.10.0",
         "@typescript-eslint/utils": "^8.46.4",
         "@typescript/native-preview": "7.0.0-dev.20251108.1",
-        "@vitest/coverage-v8": "^4.0.8",
+        "@vitest/coverage-v8": "4.0.9",
         "discord-api-types": "^0.38.33",
         "eslint": "^9.39.1",
         "husky": "^9.1.7",
@@ -106,6 +106,6 @@
         "typescript": "5.9.3",
         "typescript-eslint": "^8.46.3",
         "unplugin-swc": "^1.5.8",
-        "vitest": "4.0.8"
+        "vitest": "4.0.9"
     }
 }
