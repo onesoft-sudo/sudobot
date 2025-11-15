@@ -1,6 +1,7 @@
 #!/bin/sh
 
 topdir="$(dirname "$0")"
+topdir="$(readlink -f "$topdir")"
 
 entry="$topdir/node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
 blazedir="$topdir/.blazebuild"
@@ -269,6 +270,8 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
 
     mkdir -p "$topdir/node_modules/@onesoftnet"
     ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
+
+    ls
 
     pwd
     ls "$topdir/node_modules/@onesoftnet/blazebuild/"
