@@ -7,7 +7,7 @@ import {
     files,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { $ } from "bun";
+import { execSync } from "child_process";
 
 @Task({
     description: "Runs the tests",
@@ -21,7 +21,9 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        await $`npx vitest --run`;
+        execSync("node_modules/.bin/vitest --run", {
+            stdio: "inherit"
+        });
     }
 
     @TaskDependencyGenerator
