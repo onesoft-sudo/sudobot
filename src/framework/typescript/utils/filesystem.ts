@@ -23,7 +23,7 @@ import { mkdir } from "fs/promises";
 import { dirname, join } from "path";
 
 export async function prefixedPath(path: string, options?: PrefixedPathOptions): Promise<string> {
-    path = join(process.env.SUDO_PREFIX ?? Application.current().projectRootDirectoryPath, path);
+    path = join(process.env.SUDOBOT_PREFIX ?? Application.current().projectRootDirectoryPath, path);
 
     if (options?.createDirIfNotExists && !existsSync(path)) {
         await mkdir(path, { recursive: true });

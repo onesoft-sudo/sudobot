@@ -15,6 +15,9 @@ export default defineConfig({
         typecheck: {
             enabled: true,
             tsconfig: "./src/tests/tsconfig.json"
+        },
+        env: {
+            SUDOBOT_PREFIX: process.platform === 'win32' ? undefined : "/tmp"
         }
     },
     plugins: [swc.vite()],
