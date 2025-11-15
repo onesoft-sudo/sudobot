@@ -5,9 +5,11 @@ import {
     TaskDependencyGenerator,
     TaskInputGenerator,
     files,
+    x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { execSync } from "child_process";
+import { spawnSync } from "bun";
+import { existsSync } from "node:fs";
 
 @Task({
     description: "Runs the tests",
@@ -21,8 +23,13 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        execSync("node_modules/.bin/vitest --run", {
-            stdio: "inherit"
+        await x("which node");
+        const projectLocalNodePath = '.blazebuild/node/bin/node' + (process.platform === 'win32' ? '.exe' : '');
+        const nodePath = existsSync(projectLocalNodePath) ? projectLocalNodePath : process.argv[0];
+        console.log(nodePath);
+
+        spawnSync([nodePath, "node_modules/.bin/vitest", "--run"], {
+            stdio: ['inherit', 'inherit', 'inherit']
         });
     }
 
