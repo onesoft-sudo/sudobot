@@ -63,18 +63,5 @@ jobs:
         with:
             version: 10
 
-      - name: Remove existing Node.js installations
-        run: |
-            set +e
-
-            while true; do
-                nodepath=`which node`
-                code=$?
-
-                test -z "$nodepath" && exit 0
-                test $code -ne 0 && exit 0
-                test -n "$nodepath" && sudo rm -vf "$nodepath"
-            done
-
       - name: Build with BlazeBuild
         run: ./blazew build

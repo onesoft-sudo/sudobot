@@ -98,11 +98,11 @@ install_node() {
     if command -v node >/dev/null; then
         installed_version="$(node --version | cut -d'v' -f2)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
-        print_info "found node version: $installed_version"
+        print_debug "found node version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
-        print_info "node version $major ($version) or higher is already installed"
+        print_debug "node version $major ($version) or higher is already installed"
         return 0
     fi
 
@@ -111,18 +111,18 @@ install_node() {
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         node_interpreter="$nodejs_dir/bin/node"
         PATH="$nodejs_dir/bin:$PATH"
-        print_info "found project local node version: $installed_version"
+        print_debug "found project local node version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
-        print_info "node version $major ($version) or higher is already installed"
+        print_debug "node version $major ($version) or higher is already installed"
         return 0
     fi
 
     if [ -n "$installed_version" ]; then
-        print_info "node version $major ($version) or higher is required, but found $installed_version"
+        print_debug "node version $major ($version) or higher is required, but found $installed_version"
     else
-        print_info "node version $major ($version) or higher is required, but no installed version found"
+        print_debug "node version $major ($version) or higher is required, but no installed version found"
     fi
 
     print_info "installing node version $version"
@@ -176,12 +176,12 @@ install_bun() {
         installed_version="$(bun --version)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
-        print_info "found bun version: $installed_version"
+        print_debug "found bun version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
        [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-        print_info "bun version $major.$minor ($version) or higher is already installed"
+        print_debug "bun version $major.$minor ($version) or higher is already installed"
         return 0
     fi
 
@@ -191,17 +191,17 @@ install_bun() {
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
         node_interpreter="$bun_dir/bin/bun"
         PATH="$bun_dir/bin:$PATH"
-        print_info "found project local bun version: $installed_version"
+        print_debug "found project local bun version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ]; then
         if [ "$installed_version_major" -gt "$major" ]; then
-            print_info "bun version $major.$minor ($version) or higher is already installed"
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
             return 0
         fi
 
         if [ "$installed_version_major" -eq "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-            print_info "bun version $major.$minor ($version) or higher is already installed"
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
             return 0
         fi
     fi
@@ -266,7 +266,6 @@ print_debug "using package manager: $pm"
 
 if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     print_debug "installing project dependencies"
-    print_info "installing project dependencies with '$pm install'"
 
     mkdir -p "$topdir/node_modules/@onesoftnet"
     ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
