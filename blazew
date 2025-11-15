@@ -98,11 +98,11 @@ install_node() {
     if command -v node >/dev/null; then
         installed_version="$(node --version | cut -d'v' -f2)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
-        print_debug "found node version: $installed_version"
+        print_info "found node version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
-        print_debug "node version $major ($version) or higher is already installed"
+        print_info "node version $major ($version) or higher is already installed"
         return 0
     fi
 
@@ -111,18 +111,18 @@ install_node() {
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         node_interpreter="$nodejs_dir/bin/node"
         PATH="$nodejs_dir/bin:$PATH"
-        print_debug "found project local node version: $installed_version"
+        print_info "found project local node version: $installed_version"
     fi
 
     if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
-        print_debug "node version $major ($version) or higher is already installed"
+        print_info "node version $major ($version) or higher is already installed"
         return 0
     fi
 
     if [ -n "$installed_version" ]; then
-        print_error "node version $major ($version) or higher is required, but found $installed_version"
+        print_info "node version $major ($version) or higher is required, but found $installed_version"
     else
-        print_error "node version $major ($version) or higher is required, but no installed version found"
+        print_info "node version $major ($version) or higher is required, but no installed version found"
     fi
 
     print_info "installing node version $version"
