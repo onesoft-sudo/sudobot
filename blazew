@@ -268,7 +268,7 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     print_debug "installing project dependencies"
     print_info "installing project dependencies with '$pm install'"
 
-    mkdir "$topdir/node_modules/@onesoftnet"
+    mkdir -p "$topdir/node_modules/@onesoftnet"
     ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
 
     print_debug "installed project dependencies"
