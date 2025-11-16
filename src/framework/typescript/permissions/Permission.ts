@@ -20,10 +20,13 @@
 import type Application from "@framework/app/Application";
 import type { ConstructorOf } from "@framework/container/Container";
 import Singleton from "@framework/objects/Singleton";
-import type { Awaitable, GuildMember, User } from "discord.js";
+import type { Awaitable, GuildMember} from "discord.js";
+import { User } from "discord.js";
+import type { SystemPermissionResolvable } from "./PermissionResolvable";
 
 abstract class Permission extends Singleton {
     public abstract readonly name: string;
+    public static readonly bit: bigint = 1n;
 
     public constructor(protected readonly application: Application) {
         super();
@@ -37,11 +40,27 @@ abstract class Permission extends Singleton {
         return this.instance as InstanceType<T>;
     }
 
+    public static is<T extends typeof Permission>(this: T, bitfield: bigint): boolean {
+        return !!(bitfield & this.bit);
+    }
+
+    public static resolve<T extends typeof Permission>(
+        this: T,
+        application: Application,
+        resolvable: SystemPermissionResolvable
+    ): Permission {
+        return typeof resolvable === "function" ? resolvable.getInstance(application) : resolvable;
+    }
+
     public hasMember(member: GuildMember): Awaitable<boolean> {
         return this.hasUser(member.user);
     }
 
     public abstract hasUser(user: User): Awaitable<boolean>;
+
+    public has(user: User | GuildMember) {
+        return user instanceof User ? this.hasUser(user) : this.hasMember(user);
+    }
 }
 
 export default Permission;

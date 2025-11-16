@@ -24,6 +24,7 @@ import type { User } from "discord.js";
 
 class SystemAdminPermission extends Permission {
     public override readonly name: string = "system.admin";
+    public static override readonly bit: bigint = 1n << 64n;
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;

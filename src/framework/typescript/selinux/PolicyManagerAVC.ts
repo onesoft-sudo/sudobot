@@ -44,7 +44,7 @@ class PolicyManagerAVC {
     }
 
     protected readonly cache = new LRUCache<Snowflake, CacheEntry>({
-        max: 5000,
+        max: 2500,
         ttl: 1000 * 60 * 30
     });
 
