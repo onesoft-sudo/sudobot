@@ -18,6 +18,13 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         permissions: RawPermissionResolvable = 0n,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<boolean> {
+        const resolvedPermissions =
+            typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
+
+        if (resolvedPermissions === 0n) {
+            return true;
+        }
+
         let discordPermissions =
             user instanceof GuildMember ? this.permissionsCache.get(`u_${user.guild.id}_${user.id}`) : 0n;
 
@@ -29,9 +36,6 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
                 discordPermissions = await this.computeDiscordPermissions(user);
             }
         }
-
-        const resolvedPermissions =
-            typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
 
         if (!(discordPermissions & resolvedPermissions)) {
             return false;
@@ -178,9 +182,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return false;
         }
 
-        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetChannel);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
+
+        if (resolvedPermissions === 0n) {
+            return true;
+        }
+
+        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetChannel);
         return !!(discordPermissions & resolvedPermissions);
     }
 
@@ -193,9 +202,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return false;
         }
 
-        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetRole);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
+
+        if (resolvedPermissions === 0n) {
+            return true;
+        }
+
+        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetRole);
         return !!(discordPermissions & resolvedPermissions);
     }
 
@@ -208,9 +222,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return false;
         }
 
-        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetMember);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
+
+        if (resolvedPermissions === 0n) {
+            return true;
+        }
+
+        const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetMember);
         return !!(discordPermissions & resolvedPermissions);
     }
 }

@@ -28,6 +28,7 @@ abstract class AbstractPermissionManager {
         user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<GetPermissionsResult>;
+
     public async getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>

@@ -30,9 +30,9 @@ export function Memoize<T extends object>(target: T, propertyKey: PropertyKey, c
     let memoizedValue: unknown;
     let memoized = false;
 
-    context.value = (...args: never[]) => {
+    context.value = function (this: unknown, ...args: never[]) {
         if (!memoized) {
-            memoizedValue = current.call(target, ...args);
+            memoizedValue = current.call(this, ...args);
         }
 
         memoized = true;
