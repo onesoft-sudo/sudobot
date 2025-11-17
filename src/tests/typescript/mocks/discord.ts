@@ -25,14 +25,16 @@ export const randomSnowflake = () =>
     `${Math.round(Math.random() * 50000000000)}${Math.round(Math.random() * 50000000)}`;
 
 export const createMessage = (client: Client) =>
-    new (Message as new (client: Client, data: APIMessage) => Message)(client, {
+    Object.assign(new (Message as new (client: Client, data: APIMessage) => Message)(client, {
         id: randomSnowflake(),
         author: {
             id: randomSnowflake(),
             username: "random"
         },
         channel_id: randomSnowflake()
-    } as APIMessage);
+    } as APIMessage), {
+        inGuild: () => true
+    });
 
 export const createMember = (client: Client, id: string = randomSnowflake()) =>
     new (GuildMember as new (client: Client, data: APIGuildMember) => GuildMember)(client, {

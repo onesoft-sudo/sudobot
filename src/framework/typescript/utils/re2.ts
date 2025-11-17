@@ -44,7 +44,7 @@ export const getRE2JSFlag = (flag: string) => {
 
 export const regexTest = (regex: RegExp | RE2JS, testSubject: string) => {
     if (regex instanceof RE2JS) {
-        return regex.matches(testSubject);
+        return regex.matcher(testSubject).find();
     }
 
     return regex.test(testSubject);

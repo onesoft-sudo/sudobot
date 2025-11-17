@@ -22,9 +22,11 @@ import Command from "@framework/commands/Command";
 import LegacyContext from "@framework/commands/LegacyContext";
 import Guard from "@framework/guards/Guard";
 import { GuardStatusCode } from "@framework/guards/GuardStatusCode";
+import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import { BeforeEach, TestCase } from "@tests/core/Test";
 import { TestSuite } from "@tests/core/TestSuite";
 import { createClient, createMessage } from "@tests/mocks/discord";
+import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService";
 import { Client } from "discord.js";
 import { TestContext, vi } from "vitest";
 
@@ -32,11 +34,13 @@ import { TestContext, vi } from "vitest";
 class GuardTest {
     private application!: Application;
     private client!: Client;
+    private permissionManagerService!: PermissionManagerServiceInterface;
 
     @BeforeEach
     public initialize() {
         this.application = new Application({ projectRootDirectoryPath: "", rootDirectoryPath: "", version: "1" });
         this.client = createClient();
+        this.permissionManagerService = new PermissionManagerService(this.application);
     }
 
     @TestCase
@@ -53,7 +57,7 @@ class GuardTest {
             public override readonly description = "name";
             public override readonly guards = [TestGuard];
             public override execute = vi.fn();
-        })(this.application);
+        })(this.application, this.permissionManagerService);
 
         const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
         const error = vi.fn().mockImplementation(async () => {});

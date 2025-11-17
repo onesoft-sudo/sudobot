@@ -116,17 +116,17 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
      * Cached permissions.
      */
-    private cachedPermissions: [RawPermissionResolvable, Permission[]] = [[], []];
+    private cachedPermissions: [bigint, Permission[]] = [0n, []];
 
     /**
      * Cached system permissions.
      */
-    private cachedSystemPermissions: [RawPermissionResolvable, Permission[]] = [[], []];
+    private cachedSystemPermissions: [bigint, Permission[]] = [0n, []];
 
     /**
      * Cached permanent permissions.
      */
-    private cachedPermanentPermissions: [RawPermissionResolvable, Permission[]] = [[], []];
+    private cachedPermanentPermissions: [bigint, Permission[]] = [0n, []];
 
     /**
      * Whether the permissions have been cached.
@@ -259,13 +259,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             permanentPermissions[0].add(permission);
         }
 
-        this.cachedPermissions = [Array.from(permissions[0]) as RawPermissionResolvable, Array.from(permissions[1])];
+        this.cachedPermissions = [PermissionsBitField.resolve(Array.from(permissions[0])), Array.from(permissions[1])];
         this.cachedSystemPermissions = [
-            Array.from(systemPermissions[0]) as RawPermissionResolvable,
+            PermissionsBitField.resolve(Array.from(systemPermissions[0])),
             Array.from(systemPermissions[1])
         ];
         this.cachedPermanentPermissions = [
-            Array.from(permanentPermissions[0]) as RawPermissionResolvable,
+            PermissionsBitField.resolve(Array.from(permanentPermissions[0])),
             Array.from(permanentPermissions[1])
         ];
         this.cachedPermissionsAreAvailable = true;
@@ -276,7 +276,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         member: GuildMember | APIInteractionGuildMember | User,
         cache: [RawPermissionResolvable, Permission[]]
     ) {
-        const needsPermisions = Array.isArray(cache[0]) ? cache[0].length > 0 : cache[0];
+        const needsPermisions = Array.isArray(cache[0]) ? cache[0].length > 0 : !!cache[0];
 
         if ((member instanceof User || !context.inGuild()) && needsPermisions) {
             return cache[0];
@@ -326,7 +326,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
 
         let systemPermissions: PermissionResolvable | null = context.me?.permissions.has(
-            this.cachedSystemPermissions[0]
+            this.cachedSystemPermissions[0], true
         )
             ? null
             : this.cachedSystemPermissions[0];

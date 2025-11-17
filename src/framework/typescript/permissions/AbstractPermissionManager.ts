@@ -37,11 +37,44 @@ abstract class AbstractPermissionManager {
         this.application = application;
     }
 
-    public abstract hasPermissions(
+    public hasPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
         permissions?: RawPermissionResolvable,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<boolean>;
+
+    public async hasPermissions(
+        user: GuildMember | APIInteractionGuildMember | User,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ): Promise<boolean> {
+        if (user instanceof User && (Array.isArray(permissions) ? permissions.length > 0 : !!permissions)) {
+            return false;
+        }
+
+        const computedPermissions =
+            user instanceof User
+                ? null
+                : typeof user.permissions === "string"
+                  ? new PermissionsBitField(user.permissions as PermissionResolvable)
+                  : user.permissions;
+
+        if (permissions && !computedPermissions?.has(permissions, true)) {
+            return false;
+        }
+
+        if (systemPermissions) {
+            for (const permission of systemPermissions) {
+                const instance = Permission.resolve(this.application, permission);
+
+                if (!(await instance.has(user))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
     public getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,

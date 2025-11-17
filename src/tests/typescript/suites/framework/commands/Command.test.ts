@@ -17,24 +17,32 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Application from "@framework/app/Application";
+import Command from "@framework/commands/Command";
+import LegacyContext from "@framework/commands/LegacyContext";
+import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import { BeforeEach, TestCase } from "@tests/core/Test";
 import { TestContext, TestSuite } from "@tests/core/TestSuite";
-import { vi } from "vitest";
-import Command from "@framework/commands/Command";
-import Application from "@framework/app/Application";
-import LegacyContext from "@framework/commands/LegacyContext";
 import { createClient, createMember, createMessage } from "@tests/mocks/discord";
-import { Client, PermissionFlagsBits, PermissionsBitField } from "discord.js";
+import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService";
+import {
+    Client,
+    PermissionFlagsBits,
+    PermissionsBitField
+} from "discord.js";
+import { vi } from "vitest";
 
 @TestSuite
 class CommandTest {
     private application!: Application;
     private client!: Client;
+    private permissionManagerService!: PermissionManagerServiceInterface;
 
     @BeforeEach
     public initialize() {
         this.application = new Application({ projectRootDirectoryPath: "", rootDirectoryPath: "", version: "1" });
         this.client = createClient();
+        this.permissionManagerService = new PermissionManagerService(this.application);
     }
 
     @TestCase
@@ -43,7 +51,7 @@ class CommandTest {
             public override readonly name = "name";
             public override readonly description = "name";
             public execute = vi.fn();
-        })(this.application);
+        })(this.application, this.permissionManagerService);
 
         const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
         await command.run(context);
@@ -58,7 +66,7 @@ class CommandTest {
             public override readonly description = "name";
             public override readonly permissions = [PermissionFlagsBits.BanMembers];
             public execute = vi.fn();
-        })(this.application);
+        })(this.application, this.permissionManagerService);
 
         const message1 = createMessage(this.client);
         const message2 = createMessage(this.client);
