@@ -28,6 +28,8 @@ import type { DefaultExport } from "@framework/types/Utils";
 import { getEnvData } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
+import type PermissionManagerService from "@main/services/PermissionManagerService";
+import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService";
 import type { ClientOptions } from "discord.js";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
@@ -47,7 +49,8 @@ class AppKernel extends Kernel {
     public readonly services: readonly string[] = [
         "@services/StartupManagerService",
         "@services/ConfigurationManagerService",
-        "@services/CommandManagerService"
+        "@services/PermissionManagerService",
+        "@services/CommandManagerService",
     ];
 
     public readonly eventListenersDirectory: string = path.join(__dirname, "../events");
@@ -156,14 +159,19 @@ class AppKernel extends Kernel {
                     application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
                 },
                 postLoad: async (filepath, { default: CommandClass }) => {
-                    const command = application.container.get(CommandClass, {
-                        constructorArgs: [application]
-                    });
-                    await command.onAppBoot?.();
                     const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
                         | CommandManagerService
                         | undefined;
+                    const permissionManagerService = application.serviceManager.services.get(SERVICE_PERMISSION_MANAGER) as
+                        | PermissionManagerService
+                        | undefined;
+                    const command = application.container.get(CommandClass, {
+                        constructorArgs: [application, permissionManagerService]
+                    });
+
+                    await command.onAppBoot?.();
                     const category = path.basename(path.dirname(filepath)).toLowerCase();
+
                     commandManagerService?.register(command, category);
                     application.logger.info(
                         `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`

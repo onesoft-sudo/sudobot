@@ -25,6 +25,11 @@ export const GuildConfigurationSchema = Type.Object({
         Type.Object({
             prefix: Type.String({ default: "-", pattern: /^[^\s]+$/, minLength: 1 })
         })
+    ),
+    permissions: Type.Optional(
+        Type.Object({
+            mode: Type.Enum(["discord", "selinux"])
+        })
     )
 });
 

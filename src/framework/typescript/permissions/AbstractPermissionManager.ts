@@ -1,5 +1,6 @@
-import type { Awaitable, GuildBasedChannel, Role, User } from "discord.js";
-import { GuildMember } from "discord.js";
+import type { APIInteractionGuildMember, Awaitable, GuildBasedChannel, PermissionResolvable, Role } from "discord.js";
+import { PermissionsBitField, User } from "discord.js";
+import type { GuildMember } from "discord.js";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable";
 import Permission from "./Permission";
 import type Application from "@framework/app/Application";
@@ -17,20 +18,29 @@ abstract class AbstractPermissionManager {
         this.application = application;
     }
 
-    public abstract hasPermissions(user: GuildMember | User, permissions?: RawPermissionResolvable, systemPermissions?: Iterable<SystemPermissionResolvable>): Awaitable<boolean>;
+    public abstract hasPermissions(
+        user: GuildMember | APIInteractionGuildMember | User,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ): Awaitable<boolean>;
 
     public getPermissions(
-        user: GuildMember | User,
+        user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<GetPermissionsResult>;
     public async getPermissions(
-        user: GuildMember | User,
+        user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<GetPermissionsResult> {
         if (!systemPermissions) {
             return {
                 customPermissions: [],
-                discordPermissions: user instanceof GuildMember ? user.permissions.bitfield : 0n,
+                discordPermissions:
+                    user instanceof User
+                        ? 0n
+                        : typeof user.permissions === "string"
+                          ? new PermissionsBitField(user.permissions as PermissionResolvable).bitfield
+                          : user.permissions.bitfield,
                 grantAll: false
             };
         }
@@ -49,12 +59,20 @@ abstract class AbstractPermissionManager {
 
         return {
             customPermissions,
-            discordPermissions: user instanceof GuildMember ? user.permissions.bitfield : 0n,
+            discordPermissions:
+                user instanceof User
+                    ? 0n
+                    : typeof user.permissions === "string"
+                      ? new PermissionsBitField(user.permissions as PermissionResolvable).bitfield
+                      : user.permissions.bitfield,
             grantAll: false
         };
     }
 
-    protected async customPermissionCheck(systemPermissions: Iterable<SystemPermissionResolvable>, user: GuildMember | User) {
+    protected async customPermissionCheck(
+        systemPermissions: Iterable<SystemPermissionResolvable>,
+        user: GuildMember | APIInteractionGuildMember | User
+    ) {
         const customPermissions = [];
 
         for (const permission of systemPermissions) {
@@ -71,28 +89,31 @@ abstract class AbstractPermissionManager {
     }
 
     public abstract getPermissionsOnChannel(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetChannel: GuildBasedChannel
     ): Awaitable<GetPermissionsResult>;
-    public abstract getPermissionsOnRole(member: GuildMember, targetRole: Role): Awaitable<GetPermissionsResult>;
+    public abstract getPermissionsOnRole(
+        member: GuildMember | APIInteractionGuildMember,
+        targetRole: Role
+    ): Awaitable<GetPermissionsResult>;
     public abstract getPermissionsOnMember(
-        member: GuildMember,
-        targetMember: GuildMember
+        member: GuildMember | APIInteractionGuildMember,
+        targetMember: GuildMember | APIInteractionGuildMember
     ): Awaitable<GetPermissionsResult>;
 
     public abstract hasPermissionsOnChannel(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetChannel: GuildBasedChannel,
         permissions: RawPermissionResolvable
     ): Awaitable<boolean>;
     public abstract hasPermissionsOnRole(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetRole: Role,
         permissions: RawPermissionResolvable
     ): Awaitable<boolean>;
     public abstract hasPermissionsOnMember(
-        member: GuildMember,
-        targetMember: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
+        targetMember: GuildMember | APIInteractionGuildMember,
         permissions: RawPermissionResolvable
     ): Awaitable<boolean>;
 }

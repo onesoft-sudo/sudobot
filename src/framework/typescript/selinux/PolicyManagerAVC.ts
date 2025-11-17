@@ -10,7 +10,7 @@ import { CacheValidator, type AVCType } from "./AVCSchema";
 import { LRUCache } from "lru-cache";
 import { systemPrefix } from "@main/utils/utils";
 import path from "path";
-import re2 from "re2";
+import { createRegex, regexTest } from "@framework/utils/re2";
 
 type CacheEntry = {
     avc: AVCType;
@@ -158,7 +158,8 @@ class PolicyManagerAVC {
                 modules,
                 avc
             };
-        } catch (error) {
+        }
+        catch (error) {
             throw new PolicyModuleError("Invalid AVC cache file: " + filepath, { cause: error });
         }
     }
@@ -320,7 +321,7 @@ class PolicyManagerAVC {
 
         for (const entity of entities) {
             const type = entity instanceof GuildMember ? "members" : entity instanceof Role ? "roles" : "channels";
-            const typePrefix =this.getTypePrefixOf(entity);
+            const typePrefix = this.getTypePrefixOf(entity);
             const patterns = cache.avc.typeLabelPatterns[type];
 
             for (const { entity_attr, pattern, context } of patterns) {
@@ -383,9 +384,9 @@ class PolicyManagerAVC {
                     continue;
                 }
 
-                const regex = re2(pattern[0], pattern[1]);
+                const regex = createRegex(pattern[0], pattern[1]);
 
-                if (!regex.test(value)) {
+                if (!regexTest(regex, value)) {
                     continue;
                 }
 

@@ -1,15 +1,7 @@
 import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
-import type {
-    RawPermissionResolvable,
-    SystemPermissionResolvable
-} from "@framework/permissions/PermissionResolvable";
-import {
-    type GuildMember,
-    User,
-    type GuildBasedChannel,
-    type Role,
-    PermissionsBitField
-} from "discord.js";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
+import type { APIInteractionGuildMember } from "discord.js";
+import { User, type GuildBasedChannel, type Role, GuildMember, PermissionsBitField } from "discord.js";
 import PolicyManagerAVC from "./PolicyManagerAVC";
 import { LRUCache } from "lru-cache";
 import Permission from "@framework/permissions/Permission";
@@ -22,11 +14,12 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     });
 
     public override async hasPermissions(
-        user: GuildMember | User,
+        user: GuildMember | APIInteractionGuildMember | User,
         permissions: RawPermissionResolvable = 0n,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<boolean> {
-        let discordPermissions = user instanceof User ? 0n : this.permissionsCache.get(`u_${user.guild.id}_${user.id}`);
+        let discordPermissions =
+            user instanceof GuildMember ? this.permissionsCache.get(`u_${user.guild.id}_${user.id}`) : 0n;
 
         if (discordPermissions === undefined) {
             if (user instanceof User) {
@@ -58,11 +51,12 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissions(
-        user: GuildMember | User,
+        user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<GetPermissionsResult> {
         const result = await super.getPermissions(user, systemPermissions);
-        let discordPermissions = user instanceof User ? 0n : this.permissionsCache.get(`u_${user.guild.id}_${user.id}`);
+        let discordPermissions =
+            user instanceof GuildMember ? this.permissionsCache.get(`u_${user.guild.id}_${user.id}`) : 0n;
 
         if (discordPermissions === undefined) {
             if (user instanceof User) {
@@ -77,7 +71,11 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         return result;
     }
 
-    private async computeDiscordPermissions(member: GuildMember) {
+    private async computeDiscordPermissions(member: GuildMember | APIInteractionGuildMember) {
+        if (!("guild" in member)) {
+            return 0n;
+        }
+
         const typeId = await this.policyManager.getContextOf(member.guild.id, member);
         const discordPermissions = await this.policyManager.getPermissionsOf(member.guild.id, typeId);
         this.permissionsCache.set(`u_${member.guild.id}_${member.id}`, discordPermissions);
@@ -109,9 +107,17 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissionsOnChannel(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetChannel: GuildBasedChannel
     ): Promise<GetPermissionsResult> {
+        if (!("guild" in member)) {
+            return {
+                customPermissions: [],
+                discordPermissions: 0n,
+                grantAll: false
+            };
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetChannel);
 
         return {
@@ -121,7 +127,18 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         };
     }
 
-    public override async getPermissionsOnRole(member: GuildMember, targetRole: Role): Promise<GetPermissionsResult> {
+    public override async getPermissionsOnRole(
+        member: GuildMember | APIInteractionGuildMember,
+        targetRole: Role
+    ): Promise<GetPermissionsResult> {
+        if (!("guild" in member)) {
+            return {
+                customPermissions: [],
+                discordPermissions: 0n,
+                grantAll: false
+            };
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetRole);
 
         return {
@@ -132,9 +149,17 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissionsOnMember(
-        member: GuildMember,
-        targetMember: GuildMember
+        member: GuildMember | APIInteractionGuildMember,
+        targetMember: GuildMember | APIInteractionGuildMember
     ): Promise<GetPermissionsResult> {
+        if (!("guild" in member) || !("guild" in targetMember)) {
+            return {
+                customPermissions: [],
+                discordPermissions: 0n,
+                grantAll: false
+            };
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetMember);
 
         return {
@@ -145,10 +170,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnChannel(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetChannel: GuildBasedChannel,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
+        if (!("guild" in member)) {
+            return false;
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetChannel);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
@@ -156,10 +185,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnRole(
-        member: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
         targetRole: Role,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
+        if (!("guild" in member)) {
+            return false;
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetRole);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
@@ -167,10 +200,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnMember(
-        member: GuildMember,
-        targetMember: GuildMember,
+        member: GuildMember | APIInteractionGuildMember,
+        targetMember: GuildMember | APIInteractionGuildMember,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
+        if (!("guild" in member) || !("guild" in targetMember)) {
+            return false;
+        }
+
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetMember);
         const resolvedPermissions =
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;

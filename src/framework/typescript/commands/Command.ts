@@ -43,6 +43,7 @@ import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
 import LegacyContext from "./LegacyContext";
 import InteractionContext from "./InteractionContext";
 import { ArrayOrSingle } from "@framework/types/Utils";
+import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -156,8 +157,14 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      */
     protected readonly argumentParser: ArgumentParser;
 
-    public constructor(application: Application) {
+    /**
+     * Permission manager service instance.
+     */
+    protected readonly permissionManagerService: PermissionManagerServiceInterface;
+
+    public constructor(application: Application, permissionManagerService: PermissionManagerServiceInterface) {
         this.application = application;
+        this.permissionManagerService = permissionManagerService;
         this.argumentParser = this.createArgumentParser();
     }
 
@@ -265,15 +272,24 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     }
 
     private async cachedPermissionTest(
+        context: Context,
         member: GuildMember | APIInteractionGuildMember | User,
         cache: [RawPermissionResolvable, Permission[]]
     ) {
-        if (member instanceof GuildMember && !member.permissions.has(cache[0], true)) {
+        const needsPermisions = Array.isArray(cache[0]) ? cache[0].length > 0 : cache[0];
+
+        if ((member instanceof User || !context.inGuild()) && needsPermisions) {
             return cache[0];
         }
 
-        if (member instanceof User && (Array.isArray(cache[0]) ? cache[0].length > 0 : cache[0])) {
-            return cache[0];
+        if (!(member instanceof User)) {
+            const permissionManager = await this.permissionManagerService.getPermissionManager(
+                context.guild?.id || "0"
+            );
+
+            if (member instanceof GuildMember && !(await permissionManager.hasPermissions(member, cache[0]))) {
+                return cache[0];
+            }
         }
 
         for (const permission of cache[1]) {
@@ -294,11 +310,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
 
         const missingPermissions = await this.cachedPermissionTest(
+            context,
             context.member || context.user,
             this.cachedPermissions
         );
 
         const missingPermanentPermissions = await this.cachedPermissionTest(
+            context,
             context.member || context.user,
             this.cachedPermanentPermissions
         );
@@ -307,10 +325,20 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             throw new PermissionDeniedError((missingPermissions || missingPermanentPermissions)!);
         }
 
-        const systemPermissions = await this.cachedPermissionTest(
-            context.member || context.user,
-            this.cachedSystemPermissions
-        );
+        let systemPermissions: PermissionResolvable | null = context.me?.permissions.has(
+            this.cachedSystemPermissions[0]
+        )
+            ? null
+            : this.cachedSystemPermissions[0];
+
+        if (!systemPermissions) {
+            for (const permission of this.cachedSystemPermissions[1]) {
+                if (!context.me || !(await permission.has(context.me))) {
+                    systemPermissions = permission;
+                    break;
+                }
+            }
+        }
 
         if (systemPermissions) {
             throw new PermissionDeniedError(

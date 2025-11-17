@@ -19,6 +19,8 @@
 
 import type Application from "@framework/app/Application";
 import { emoji } from "@framework/utils/emoji";
+import type {
+    GuildMember} from "discord.js";
 import {
     type ChatInputCommandInteraction,
     type ContextMenuCommandInteraction,
@@ -44,6 +46,10 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
     }
 
     public abstract reply(options: ContextReplyOptions): Promise<Message<boolean>>;
+
+    public get me(): GuildMember | null {
+        return this.commandMessage.guild?.members.me ?? null;
+    }
 
     public isLegacy(): this is LegacyContext {
         return this.type === CommandContextType.Legacy;

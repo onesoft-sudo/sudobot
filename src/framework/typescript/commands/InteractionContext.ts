@@ -20,6 +20,7 @@
 import type {
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
+    GuildMember,
     InteractionEditReplyOptions,
     InteractionReplyOptions,
     Message
