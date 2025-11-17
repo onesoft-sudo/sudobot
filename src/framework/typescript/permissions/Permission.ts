@@ -27,6 +27,7 @@ import type { SystemPermissionResolvable } from "./PermissionResolvable";
 abstract class Permission extends Singleton {
     public abstract readonly name: string;
     public static readonly bit: bigint = 1n;
+    public static readonly globalBypassPermissions = new Set<Permission>();
 
     public constructor(protected readonly application: Application) {
         super();

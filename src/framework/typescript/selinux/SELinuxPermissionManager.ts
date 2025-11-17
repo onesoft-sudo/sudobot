@@ -20,7 +20,14 @@
 import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
 import type { APIInteractionGuildMember } from "discord.js";
-import { User, type GuildBasedChannel, type Role, GuildMember, PermissionsBitField } from "discord.js";
+import {
+    User,
+    type GuildBasedChannel,
+    type Role,
+    GuildMember,
+    PermissionsBitField,
+    PermissionFlagsBits
+} from "discord.js";
 import PolicyManagerAVC from "./PolicyManagerAVC";
 import { LRUCache } from "lru-cache";
 import Permission from "@framework/permissions/Permission";
@@ -32,6 +39,16 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         ttl: 1000 * 60 * 10
     });
 
+    public async canBypass(user: GuildMember | APIInteractionGuildMember | User): Promise<boolean> {
+        for (const permission of Permission.globalBypassPermissions) {
+            if (!(await permission.has(user))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public override async hasPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
         permissions: RawPermissionResolvable = 0n,
@@ -41,6 +58,10 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             typeof permissions === "bigint" ? permissions : new PermissionsBitField(permissions).bitfield;
 
         if (resolvedPermissions === 0n) {
+            return true;
+        }
+
+        if (await this.canBypass(user)) {
             return true;
         }
 
@@ -77,6 +98,22 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         user: GuildMember | APIInteractionGuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<GetPermissionsResult> {
+        if (await this.canBypass(user)) {
+            const customPermissions = [...Permission.globalBypassPermissions];
+
+            if (systemPermissions) {
+                for (const permission of systemPermissions) {
+                    customPermissions.push(Permission.resolve(this.application, permission));
+                }
+            }
+
+            return {
+                discordPermissions: PermissionsBitField.All,
+                grantAll: true,
+                customPermissions
+            };
+        }
+
         const result = await super.getPermissions(user, systemPermissions);
         let discordPermissions =
             user instanceof GuildMember ? this.permissionsCache.get(`u_${user.guild.id}_${user.id}`) : 0n;
@@ -125,7 +162,6 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         );
 
         this.permissionsCache.set(key, discordPermissions);
-
         return discordPermissions;
     }
 
@@ -133,6 +169,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         member: GuildMember | APIInteractionGuildMember,
         targetChannel: GuildBasedChannel
     ): Promise<GetPermissionsResult> {
+        if (await this.canBypass(member)) {
+            return {
+                discordPermissions: PermissionsBitField.All,
+                grantAll: true,
+                customPermissions: [...Permission.globalBypassPermissions]
+            };
+        }
+
         if (!("guild" in member)) {
             return {
                 customPermissions: [],
@@ -154,6 +198,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         member: GuildMember | APIInteractionGuildMember,
         targetRole: Role
     ): Promise<GetPermissionsResult> {
+        if (await this.canBypass(member)) {
+            return {
+                discordPermissions: PermissionsBitField.All,
+                grantAll: true,
+                customPermissions: [...Permission.globalBypassPermissions]
+            };
+        }
+
         if (!("guild" in member)) {
             return {
                 customPermissions: [],
@@ -175,7 +227,18 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         member: GuildMember | APIInteractionGuildMember,
         targetMember: GuildMember | APIInteractionGuildMember
     ): Promise<GetPermissionsResult> {
-        if (!("guild" in member) || !("guild" in targetMember)) {
+        const memberCanBypass = await this.canBypass(member);
+        const targetCanBypass = await this.canBypass(targetMember);
+
+        if (memberCanBypass && !targetCanBypass) {
+            return {
+                discordPermissions: PermissionsBitField.All,
+                grantAll: true,
+                customPermissions: [...Permission.globalBypassPermissions]
+            };
+        }
+
+        if ((memberCanBypass && targetCanBypass) || !("guild" in member) || !("guild" in targetMember)) {
             return {
                 customPermissions: [],
                 discordPermissions: 0n,
@@ -197,6 +260,10 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         targetChannel: GuildBasedChannel,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
+        if (await this.canBypass(member)) {
+            return false;
+        }
+
         if (!("guild" in member)) {
             return false;
         }
@@ -217,6 +284,10 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         targetRole: Role,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
+        if (await this.canBypass(member)) {
+            return false;
+        }
+
         if (!("guild" in member)) {
             return false;
         }
@@ -237,7 +308,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         targetMember: GuildMember | APIInteractionGuildMember,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
-        if (!("guild" in member) || !("guild" in targetMember)) {
+        const memberCanBypass = await this.canBypass(member);
+        const targetCanBypass = await this.canBypass(targetMember);
+
+        if (memberCanBypass && !targetCanBypass) {
+            return false;
+        }
+
+        if ((memberCanBypass && targetCanBypass) || !("guild" in member) || !("guild" in targetMember)) {
             return false;
         }
 

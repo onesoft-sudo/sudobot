@@ -282,7 +282,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             return cache[0];
         }
 
-        if (!(member instanceof User)) {
+        if (!(member instanceof User) && needsPermisions) {
             const permissionManager = await this.permissionManagerService.getPermissionManager(
                 context.guild?.id || "0"
             );

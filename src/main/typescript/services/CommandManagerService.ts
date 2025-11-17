@@ -20,16 +20,17 @@
 import Command from "@framework/commands/Command";
 import { Inject } from "@framework/container/Inject";
 import Service from "@framework/services/Service";
-import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
+import { Awaitable, ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
 import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 import CommandContextType from "@framework/commands/CommandContextType";
 import LegacyContext from "@framework/commands/LegacyContext";
-
 import InteractionContext from "@framework/commands/InteractionContext";
 import { getEnvData } from "@main/env/env";
 import { Logger } from "@framework/log/Logger";
 import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { isDevelopmentMode } from "@framework/utils/utils";
+import Permission from "@framework/permissions/Permission";
+import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 
@@ -41,6 +42,10 @@ class CommandManagerService extends Service implements HasEventListeners {
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
+
+    public override boot(): Awaitable<void> {
+        Permission.globalBypassPermissions.add(SystemAdminPermission.getInstance(this.application));
+    }
 
     public register(command: Command, group?: string) {
         this.commands.set(command.name, command);
