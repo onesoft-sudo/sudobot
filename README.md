@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://www.sudobot.online" title="Official Website of SudoBot" target="_blank">
+<a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">
 <!--
 <img src="https://res.cloudinary.com/rakinar2/image/upload/v1720629036/nnanzhwwmpa2k3ebw0yg.png" height="114px" width="348px">
 -->
@@ -20,8 +20,8 @@
 
 <p align="center">
 A free and open source Discord bot for moderation purposes.<br />
-<a href="https://docs.sudobot.online" target="_blank">Documentation</a>&nbsp;&bull;
-<a href="https://docs.sudobot.online/features/screenshots/" target="_blank">Screenshots</a>
+<a href="https://docs.sudobot.org" target="_blank">Documentation</a>&nbsp;&bull;
+<a href="https://docs.sudobot.org/features/screenshots/" target="_blank">Screenshots</a>
 <br />
 <br />
 <a href="https://idx.google.com/import?url=https%3A%2F%2Fgithub.com%2Fonesoft-sudo%2Fsudobot" align="center">
@@ -54,7 +54,7 @@ If you like the bot, then please make sure to star this repository! And also if 
 
 ### Features
 
--   Strong auto moderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.online/automoderation/#what-can-the-bot-do) to see the full list)
+-   Strong auto moderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.org/automoderation/#what-can-the-bot-do) to see the full list)
 -   Useful moderation tools and utilities
 -   Secure
 -   Fun commands
@@ -67,7 +67,7 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 ### Setup for Custom Hosting
 
-Please look at [this page](https://docs.sudobot.online/getting-started) of the documentation.
+Please look at [this page](https://docs.sudobot.org/getting-started) of the documentation.
 
 ### Source Code & Downloads
 
@@ -113,15 +113,15 @@ SudoBot is licensed under the [GNU Affero General Public License v3.0](https://g
 
 - [The emojis](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 - [The SudoBot Logo](https://res.cloudinary.com/rakinar2/image/upload/v1720629036/ku8wq70utgbrbyhzdl9a.png) is licensed under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
-- [The documentation website of SudoBot](https://docs.sudobot.online) is dual-licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html) and the [GNU Free Documentation License v1.3](https://gnu.org/licenses/fdl-1.3.html).<br />Read the [README.md](./docs/README.md) file in the `docs` directory for more information.
+- [The documentation website of SudoBot](https://docs.sudobot.org) is dual-licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html) and the [GNU Free Documentation License v1.3](https://gnu.org/licenses/fdl-1.3.html).<br />Read the [README.md](./docs/README.md) file in the `docs` directory for more information.
 - [BlazeBuild](./blazebuild), the build tool that SudoBot uses, is licensed under the [GNU General Public License v3.0](https://gnu.org/licenses/gpl-3.0.html).
 
 ### Support
 
 -   **Email**: rakinar2@onesoftnet.eu.org
 -   **Mailing List**: sudobot@onesoftnet.eu.org
--   **Website**: https://www.sudobot.online
--   **Discord Servers**: [OneSoftNet Server](https://sudobot.online/discord)
+-   **Website**: https://www.sudobot.org
+-   **Discord Servers**: [OneSoftNet Server](https://sudobot.org/discord)
 
 ### Extra
 
