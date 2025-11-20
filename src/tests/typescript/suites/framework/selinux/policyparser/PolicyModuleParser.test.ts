@@ -24,6 +24,10 @@ import type { Range } from "@framework/selinux/policyparser/PolicyModuleParserTy
 import RootNode from "@framework/selinux/policyparser/RootNode";
 import AllowDenyStatementNode from "@framework/selinux/policyparser/AllowDenyStatementNode";
 import type Node from "@framework/selinux/policyparser/Node";
+import ModuleBlockStatementNode from "@framework/selinux/policyparser/ModuleBlockStatementNode";
+import BlockStatementNode from "@framework/selinux/policyparser/BlockStatementNode";
+import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ModuleBlockPropertyNode";
+import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/LiteralNode";
 
 const RANGE_TRUNCATED: Range = { start: [0, 1, 1], end: [0, 1, 1] };
 
@@ -135,20 +139,82 @@ describe("PolicyModuleParser", () => {
         });
 
         it("can parse multiple statements", () => {
-            expect(truncateLocation(parser.parse(`
+            expect(
+                truncateLocation(
+                    parser.parse(`
                 allow moderator_t user_t { BanMembers };
                 deny moderator_t user_t { AttachFiles };
                 allow chat_mod_t user_t { KickMembers, AttachFiles };
                 allow admin_t moderator_t { BanMembers, ManageRoles };
-            `))).toStrictEqual(
+            `)
+                )
+            ).toStrictEqual(
                 new RootNode(
                     [
                         new AllowDenyStatementNode("allow", "moderator_t", "user_t", ["BanMembers"], RANGE_TRUNCATED),
                         new AllowDenyStatementNode("deny", "moderator_t", "user_t", ["AttachFiles"], RANGE_TRUNCATED),
-                        new AllowDenyStatementNode("allow", "chat_mod_t", "user_t", ["KickMembers", "AttachFiles"], RANGE_TRUNCATED),
-                        new AllowDenyStatementNode("allow", "admin_t", "moderator_t", ["BanMembers", "ManageRoles"], RANGE_TRUNCATED),
+                        new AllowDenyStatementNode(
+                            "allow",
+                            "chat_mod_t",
+                            "user_t",
+                            ["KickMembers", "AttachFiles"],
+                            RANGE_TRUNCATED
+                        ),
+                        new AllowDenyStatementNode(
+                            "allow",
+                            "admin_t",
+                            "moderator_t",
+                            ["BanMembers", "ManageRoles"],
+                            RANGE_TRUNCATED
+                        )
                     ],
-                    RANGE_TRUNCATED,
+                    RANGE_TRUNCATED
+                )
+            );
+        });
+
+        it("can parse a module block", () => {
+            expect(
+                truncateLocation(
+                    parser.parse(`
+                module {
+                    name "base";
+                    author "Ar Rakin <rakinar2@sudobot.org>";
+                    version 1000;
+                }
+
+                allow moderator_t user_t { BanMembers };
+            `)
+                )
+            ).toStrictEqual(
+                new RootNode(
+                    [
+                        new ModuleBlockStatementNode(
+                            new BlockStatementNode(
+                                [
+                                    new ModuleBlockPropertyNode(
+                                        "name",
+                                        new LiteralNode(LiteralKind.String, "base", RANGE_TRUNCATED),
+                                        RANGE_TRUNCATED
+                                    ),
+                                    new ModuleBlockPropertyNode(
+                                        "author",
+                                        new LiteralNode(LiteralKind.String, "Ar Rakin <rakinar2@sudobot.org>", RANGE_TRUNCATED),
+                                        RANGE_TRUNCATED
+                                    ),
+                                    new ModuleBlockPropertyNode(
+                                        "version",
+                                        new LiteralNode(LiteralKind.Integer, "1000", RANGE_TRUNCATED),
+                                        RANGE_TRUNCATED
+                                    ),
+                                ],
+                                RANGE_TRUNCATED
+                            ),
+                            RANGE_TRUNCATED
+                        ),
+                        new AllowDenyStatementNode("allow", "moderator_t", "user_t", ["BanMembers"], RANGE_TRUNCATED)
+                    ],
+                    RANGE_TRUNCATED
                 )
             );
         });

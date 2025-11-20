@@ -18,6 +18,11 @@
  */
 
 import AllowDenyStatementNode from "./AllowDenyStatementNode";
+import BinaryExpressionNode from "./BinaryExpressionNode";
+import BlockStatementNode from "./BlockStatementNode";
+import LiteralNode, { LiteralKind } from "./LiteralNode";
+import ModuleBlockPropertyNode from "./ModuleBlockPropertyNode";
+import ModuleBlockStatementNode from "./ModuleBlockStatementNode";
 import type Node from "./Node";
 import PolicyModuleParserError from "./PolicyModuleParserError";
 import type { Token } from "./PolicyModuleParserTypes";
@@ -39,7 +44,9 @@ class PolicyModuleParser {
         module: PolicyModuleTokenType.Module,
         label: PolicyModuleTokenType.Label,
         labels: PolicyModuleTokenType.Labels,
-        type: PolicyModuleTokenType.Type
+        type: PolicyModuleTokenType.Type,
+        true: PolicyModuleTokenType.True,
+        false: PolicyModuleTokenType.False
     };
 
     private tokenIndex = 0;
@@ -90,14 +97,13 @@ class PolicyModuleParser {
         );
     }
 
-    private parseStatement(): Node {
+    private parseModuleBlockStatement(): Node {
         const token = this.peek();
         let statement: Node;
 
         switch (token.type) {
-            case PolicyModuleTokenType.Allow:
-            case PolicyModuleTokenType.Deny:
-                statement = this.parseAllowDenyStatement();
+            case PolicyModuleTokenType.Identifier:
+                statement = this.parseModuleBlockDeclaration();
                 break;
 
             default:
@@ -109,6 +115,240 @@ class PolicyModuleParser {
         }
 
         return statement;
+    }
+
+    private parseModuleBlockDeclaration(): Node {
+        const identifier = this.expect(PolicyModuleTokenType.Identifier);
+        const value = this.parseExpression();
+
+        if (!(value instanceof BinaryExpressionNode) && !(value instanceof LiteralNode)) {
+            throw new PolicyModuleParserError(
+                "Invalid module declaration: value must be a folable expression or literal",
+                value.range
+            );
+        }
+
+        const folded = this.foldExpression(value);
+
+        function expectValueType<K extends LiteralKind>(
+            folded: LiteralNode,
+            kind: K
+        ): asserts folded is LiteralNode & { kind: K } {
+            if (folded.kind !== kind) {
+                throw new PolicyModuleParserError(
+                    `Invalid module declaration: value of '${identifier.value}' must be of type ${LiteralKind[kind]}, but found ${LiteralKind[folded.kind]}`,
+                    value.range
+                );
+            }
+        }
+
+        switch (identifier.value) {
+            case "name":
+            case "author":
+                expectValueType(folded, LiteralKind.String);
+                return new ModuleBlockPropertyNode(identifier.value, folded, {
+                    start: identifier.loc.start,
+                    end: value.range.end
+                });
+
+            case "version":
+                expectValueType(folded, LiteralKind.Integer);
+                return new ModuleBlockPropertyNode(identifier.value, folded, {
+                    start: identifier.loc.start,
+                    end: value.range.end
+                });
+
+            default:
+                throw new PolicyModuleParserError(
+                    `Invalid module declaration: Invalid property '${identifier.value}'`,
+                    value.range
+                );
+        }
+    }
+
+    private foldExpression(expression: BinaryExpressionNode | LiteralNode): LiteralNode {
+        if (expression instanceof LiteralNode) {
+            return expression;
+        }
+
+        const left = this.foldExpression(expression.left as BinaryExpressionNode | LiteralNode);
+        const right = this.foldExpression(expression.right as BinaryExpressionNode | LiteralNode);
+
+        const expectNumber = () => {
+            if (left.kind !== LiteralKind.Integer || right.kind !== LiteralKind.Integer) {
+                throw new PolicyModuleParserError(
+                    "Invalid binary expression: both sides must be numeric",
+                    expression.range
+                );
+            }
+        };
+
+        switch (expression.operator) {
+            case "+":
+                expectNumber();
+                return new LiteralNode(LiteralKind.Integer, (+left.value + +right.value).toString(), expression.range);
+
+            case "-":
+                expectNumber();
+                return new LiteralNode(LiteralKind.Integer, (+left.value - +right.value).toString(), expression.range);
+
+            case "*":
+                expectNumber();
+                return new LiteralNode(LiteralKind.Integer, (+left.value * +right.value).toString(), expression.range);
+
+            case "/":
+                expectNumber();
+                return new LiteralNode(
+                    LiteralKind.Integer,
+                    Math.floor(+left.value / +right.value).toString(),
+                    expression.range
+                );
+
+            case "%":
+                expectNumber();
+                return new LiteralNode(LiteralKind.Integer, (+left.value % +right.value).toString(), expression.range);
+
+            default:
+                throw new PolicyModuleParserError(`Unsupported operator: ${expression.operator}`, expression.range);
+        }
+    }
+
+    private parseExpression(): Node {
+        return this.parseAdditiveExpression();
+    }
+
+    private parseAdditiveExpression(): Node {
+        let left: Node = this.parseMultiplicativeExpression();
+        const start = left;
+
+        while ([PolicyModuleTokenType.Plus, PolicyModuleTokenType.Minus].includes(this.tokens[this.tokenIndex].type)) {
+            const operatorToken = this.tokens[this.tokenIndex];
+            const operator =
+                operatorToken.type === PolicyModuleTokenType.Plus
+                    ? "+"
+                    : operatorToken.type === PolicyModuleTokenType.Minus
+                      ? "-"
+                      : "?";
+
+            if (operator === "?") {
+                throw new PolicyModuleParserError(`Unexpected token ${operatorToken.type}`, operatorToken.loc);
+            }
+
+            this.consume();
+            const right = this.parseMultiplicativeExpression();
+            left = new BinaryExpressionNode(left, right, operator, {
+                start: start.range.start,
+                end: right.range.end
+            });
+        }
+
+        return left;
+    }
+
+    private parseMultiplicativeExpression(): Node {
+        let left: Node = this.parseSimpleExpression();
+        const start = left;
+
+        while (
+            [PolicyModuleTokenType.Times, PolicyModuleTokenType.Slash, PolicyModuleTokenType.Modulus].includes(
+                this.tokens[this.tokenIndex].type
+            )
+        ) {
+            const operatorToken = this.tokens[this.tokenIndex];
+            const operator =
+                operatorToken.type === PolicyModuleTokenType.Times
+                    ? "*"
+                    : operatorToken.type === PolicyModuleTokenType.Slash
+                      ? "/"
+                      : operatorToken.type === PolicyModuleTokenType.Modulus
+                        ? "%"
+                        : "?";
+
+            if (operator === "?") {
+                throw new PolicyModuleParserError(`Unexpected token ${operatorToken.type}`, operatorToken.loc);
+            }
+
+            this.consume();
+            const right = this.parseSimpleExpression();
+            left = new BinaryExpressionNode(left, right, operator, {
+                start: start.range.start,
+                end: right.range.end
+            });
+        }
+
+        return left;
+    }
+
+    private parseSimpleExpression(): Node {
+        const start = this.consume();
+
+        switch (start.type) {
+            case PolicyModuleTokenType.Integer:
+                return new LiteralNode(LiteralKind.Integer, start.value, start.loc);
+
+            case PolicyModuleTokenType.String:
+                return new LiteralNode(LiteralKind.String, start.value, start.loc);
+
+            case PolicyModuleTokenType.True:
+            case PolicyModuleTokenType.False:
+                return new LiteralNode(LiteralKind.Boolean, start.value, start.loc);
+        }
+
+        throw new PolicyModuleParserError(`Unexpected token ${start.type}`, start.loc);
+    }
+
+    private parseStatement(): Node {
+        const token = this.peek();
+        let statement: Node;
+
+        switch (token.type) {
+            case PolicyModuleTokenType.Allow:
+            case PolicyModuleTokenType.Deny:
+                statement = this.parseAllowDenyStatement();
+                break;
+
+            case PolicyModuleTokenType.Module:
+                statement = this.parseModuleBlock();
+                break;
+
+            default:
+                throw new PolicyModuleParserError(`Unexpected token ${token.type}`, token.loc);
+        }
+
+        while (this.peek().type === PolicyModuleTokenType.Semicolon) {
+            this.consume();
+        }
+
+        return statement;
+    }
+
+    private parseBlock(callback: () => Node): BlockStatementNode {
+        const start = this.expect(PolicyModuleTokenType.BraceOpen);
+        const children: Node[] = [];
+
+        while (!this.isEOF() && this.peek().type !== PolicyModuleTokenType.BraceClose) {
+            const statement = callback();
+            children.push(statement);
+        }
+
+        const end = this.expect(PolicyModuleTokenType.BraceClose);
+
+        return new BlockStatementNode(children, {
+            start: start.loc.start,
+            end: end.loc.end
+        });
+    }
+
+    private parseModuleBlock(): Node {
+        const start = this.expect(PolicyModuleTokenType.Module);
+        const block = this.parseBlock(() => {
+            return this.parseModuleBlockStatement();
+        });
+
+        return new ModuleBlockStatementNode(block, {
+            start: start.loc.start,
+            end: block.range.end
+        });
     }
 
     private parseAllowDenyStatement(): Node {
@@ -221,25 +461,20 @@ class PolicyModuleParser {
                         continue;
                     }
 
-                    while (i < content.length && /\s+/.test(content[i])) {
-                        if (content[i].includes("\n") || content[i].includes("\r")) {
-                            line++;
-                            column = 1;
-                        }
-                        else {
-                            column++;
-                        }
-
-                        i++;
-                    }
-
                     if (i >= content.length) {
                         break;
                     }
 
+                    if (content[i].includes("\n") || content[i].includes("\r")) {
+                        line++;
+                        column = 1;
+                    }
+                    else {
+                        column++;
+                    }
+
                     string += content[i];
                     i++;
-                    column++;
                 }
 
                 if (content[i] !== quote) {

@@ -33,4 +33,11 @@ export enum PolicyModuleTokenType {
     BraceClose = "}",
     Semicolon = ";",
     Comma = ",",
+    Plus = "+",
+    Minus = "-",
+    Times = "*",
+    Slash = "/",
+    Modulus = "%",
+    True = "true",
+    False = "false",
 }
