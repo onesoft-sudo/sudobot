@@ -18,7 +18,7 @@
  */
 
 import Node from "./Node";
-import type { Range } from "./PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes";
 
 class AllowDenyStatementNode extends Node {
     public readonly type: "allow" | "deny";

@@ -17,20 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Node from "./Node";
-import type { Range } from "./PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes";
 
-class RootNode extends Node {
-    public readonly children: Node[];
+abstract class Node {
+    public readonly range: Range;
 
-    public constructor(children: Node[], range: Range) {
-        super(range);
-        this.children = children;
+    public constructor(range: Range) {
+        this.range = range;
     }
 
-    public override branches() {
-        return this.children;
-    }
+    public abstract branches(): Node[];
 }
 
-export default RootNode;
+export default Node;

@@ -17,17 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AllowDenyStatementNode from "./AllowDenyStatementNode";
-import BinaryExpressionNode from "./BinaryExpressionNode";
-import BlockStatementNode from "./BlockStatementNode";
-import LiteralNode, { LiteralKind } from "./LiteralNode";
-import ModuleBlockPropertyNode from "./ModuleBlockPropertyNode";
-import ModuleBlockStatementNode from "./ModuleBlockStatementNode";
-import type Node from "./Node";
+import AllowDenyStatementNode from "./ast/AllowDenyStatementNode";
+import BinaryExpressionNode from "./ast/BinaryExpressionNode";
+import BlockStatementNode from "./ast/BlockStatementNode";
+import LiteralNode, { LiteralKind } from "./ast/LiteralNode";
+import ModuleBlockPropertyNode from "./ast/ModuleBlockPropertyNode";
+import ModuleBlockStatementNode from "./ast/ModuleBlockStatementNode";
+import type Node from "./ast/Node";
 import PolicyModuleParserError from "./PolicyModuleParserError";
 import type { Token } from "./PolicyModuleParserTypes";
 import { PolicyModuleTokenType } from "./PolicyModuleTokenType";
-import RootNode from "./RootNode";
+import RootNode from "./ast/RootNode";
 
 class PolicyModuleParser {
     private static SIMPLE_TOKENS = {

@@ -1,5 +1,5 @@
 import Node from "./Node";
-import type { Range } from "./PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes";
 
 class BlockStatementNode extends Node {
     public readonly children: Node[];

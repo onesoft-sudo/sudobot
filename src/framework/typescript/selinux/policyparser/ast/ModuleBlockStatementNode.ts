@@ -1,6 +1,6 @@
 import type BlockStatementNode from "./BlockStatementNode";
 import Node from "./Node";
-import type { Range } from "./PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes";
 
 class ModuleBlockStatementNode extends Node {
     public readonly block: BlockStatementNode;

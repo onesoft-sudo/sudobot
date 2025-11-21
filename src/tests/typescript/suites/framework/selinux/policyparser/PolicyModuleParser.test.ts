@@ -21,13 +21,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 import PolicyModuleParser from "@framework/selinux/policyparser/PolicyModuleParser";
 import { PolicyModuleTokenType } from "@framework/selinux/policyparser/PolicyModuleTokenType";
 import type { Range } from "@framework/selinux/policyparser/PolicyModuleParserTypes";
-import RootNode from "@framework/selinux/policyparser/RootNode";
-import AllowDenyStatementNode from "@framework/selinux/policyparser/AllowDenyStatementNode";
-import type Node from "@framework/selinux/policyparser/Node";
-import ModuleBlockStatementNode from "@framework/selinux/policyparser/ModuleBlockStatementNode";
-import BlockStatementNode from "@framework/selinux/policyparser/BlockStatementNode";
-import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ModuleBlockPropertyNode";
-import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/LiteralNode";
+import RootNode from "@framework/selinux/policyparser/ast/RootNode";
+import AllowDenyStatementNode from "@framework/selinux/policyparser/ast/AllowDenyStatementNode";
+import type Node from "@framework/selinux/policyparser/ast/Node";
+import ModuleBlockStatementNode from "@framework/selinux/policyparser/ast/ModuleBlockStatementNode";
+import BlockStatementNode from "@framework/selinux/policyparser/ast/BlockStatementNode";
+import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ast/ModuleBlockPropertyNode";
+import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/ast/LiteralNode";
 
 const RANGE_TRUNCATED: Range = { start: [0, 1, 1], end: [0, 1, 1] };
 
@@ -177,14 +177,14 @@ describe("PolicyModuleParser", () => {
             expect(
                 truncateLocation(
                     parser.parse(`
-                module {
-                    name "base";
-                    author "Ar Rakin <rakinar2@sudobot.org>";
-                    version 1000;
-                }
+                        module {
+                            name "base";
+                            author "Ar Rakin <rakinar2@sudobot.org>";
+                            version 1000;
+                        }
 
-                allow moderator_t user_t { BanMembers };
-            `)
+                        allow moderator_t user_t { BanMembers };
+                    `)
                 )
             ).toStrictEqual(
                 new RootNode(
