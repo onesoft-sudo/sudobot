@@ -21,8 +21,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       discord.js:
-        specifier: 14.24.2
-        version: 14.24.2
+        specifier: 14.25.1
+        version: 14.25.1
       dotenv:
         specifier: 17.2.3
         version: 17.2.3
@@ -57,8 +57,8 @@ importers:
         specifier: 2.8.1
         version: 2.8.1
       typebox:
-        specifier: 1.0.53
-        version: 1.0.53
+        specifier: 1.0.55
+        version: 1.0.55
       uuid:
         specifier: 13.0.0
         version: 13.0.0
@@ -247,16 +247,16 @@ packages:
     resolution: {integrity: sha512-LiSusze9Tc7qF03sLCujF5iZp7K+vRNEDBZ86FT9aQAv3vxMLihUvKvpsCWiQ2DJq1tVckopKm1rxomgNUc9hg==}
     engines: {node: '>=18'}
 
-  '@discordjs/formatters@0.6.1':
-    resolution: {integrity: sha512-5cnX+tASiPCqCWtFcFslxBVUaCetB0thvM/JyavhbXInP1HJIEU+Qv/zMrnuwSsX3yWH2lVXNJZeDK3EiP4HHg==}
+  '@discordjs/formatters@0.6.2':
+    resolution: {integrity: sha512-y4UPwWhH6vChKRkGdMB4odasUbHOUwy7KL+OVwF86PvT6QVOwElx+TiI1/6kcmcEe+g5YRXJFiXSXUdabqZOvQ==}
     engines: {node: '>=16.11.0'}
 
   '@discordjs/rest@2.6.0':
     resolution: {integrity: sha512-RDYrhmpB7mTvmCKcpj+pc5k7POKszS4E2O9TYc+U+Y4iaCP+r910QdO43qmpOja8LRr1RJ0b3U+CqVsnPqzf4w==}
     engines: {node: '>=18'}
 
-  '@discordjs/util@1.1.1':
-    resolution: {integrity: sha512-eddz6UnOBEB1oITPinyrB2Pttej49M9FZQY8NxgEvc3tq6ZICZ19m70RsmzRdDHk80O9NoYN/25AqJl8vPVf/g==}
+  '@discordjs/util@1.2.0':
+    resolution: {integrity: sha512-3LKP7F2+atl9vJFhaBjn4nOaSWahZ/yWjOvA4e5pnXkt2qyXRCHLxoBQy81GFtLGCq7K9lPm9R517M1U+/90Qg==}
     engines: {node: '>=18'}
 
   '@discordjs/ws@1.2.3':
@@ -1176,8 +1176,8 @@ packages:
   discord-api-types@0.38.34:
     resolution: {integrity: sha512-muq7xKGznj5MSFCzuIm/2TO7DpttuomUTemVM82fRqgnMl70YRzEyY24jlbiV6R9tzOTq6A6UnZ0bsfZeKD38Q==}
 
-  discord.js@14.24.2:
-    resolution: {integrity: sha512-VMEDbmguRdX/EeMaTsf9Mb0IQA90WdYF2cn4QDfslQFXgQ6LFtmlPn0FSotnS0kcFbFp+JBSIxtnF+bnAHG/hQ==}
+  discord.js@14.25.1:
+    resolution: {integrity: sha512-2l0gsPOLPs5t6GFZfQZKnL1OJNYFcuC/ETWsW4VtKVD/tg4ICa9x+jb9bkPffkMdRpRpuUaO/fKkHCBeiCKh8g==}
     engines: {node: '>=18'}
 
   dot-prop@5.3.0:
@@ -2097,8 +2097,8 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
-  typebox@1.0.53:
-    resolution: {integrity: sha512-fCi3wnKP4owdhs+LRIUfkPzR4p5RLa3tM4O6gqO7TeAo6SsamvqA59yPb1GyKDcCgB/ClmifVJ9BqQ128a4uvQ==}
+  typebox@1.0.55:
+    resolution: {integrity: sha512-TP02wN0B6tDZngprrGVu/Z9s/QUyVEmR7VIg1yEOtsqyDdXXEoQPSfWdkD2PsA2lGLxu6GgwOTtGZVS9CAoERg==}
 
   typedoc-plugin-rename-defaults@0.7.3:
     resolution: {integrity: sha512-fDtrWZ9NcDfdGdlL865GW7uIGQXlthPscURPOhDkKUe4DBQSRRFUf33fhWw41FLlsz8ZTeSxzvvuNmh54MynFA==}
@@ -2438,8 +2438,8 @@ snapshots:
 
   '@discordjs/builders@1.13.0':
     dependencies:
-      '@discordjs/formatters': 0.6.1
-      '@discordjs/util': 1.1.1
+      '@discordjs/formatters': 0.6.2
+      '@discordjs/util': 1.2.0
       '@sapphire/shapeshift': 4.0.0
       discord-api-types: 0.38.34
       fast-deep-equal: 3.1.3
@@ -2450,14 +2450,14 @@ snapshots:
 
   '@discordjs/collection@2.1.1': {}
 
-  '@discordjs/formatters@0.6.1':
+  '@discordjs/formatters@0.6.2':
     dependencies:
       discord-api-types: 0.38.34
 
   '@discordjs/rest@2.6.0':
     dependencies:
       '@discordjs/collection': 2.1.1
-      '@discordjs/util': 1.1.1
+      '@discordjs/util': 1.2.0
       '@sapphire/async-queue': 1.5.5
       '@sapphire/snowflake': 3.5.3
       '@vladfrangu/async_event_emitter': 2.4.7
@@ -2466,13 +2466,15 @@ snapshots:
       tslib: 2.8.1
       undici: 6.21.3
 
-  '@discordjs/util@1.1.1': {}
+  '@discordjs/util@1.2.0':
+    dependencies:
+      discord-api-types: 0.38.34
 
   '@discordjs/ws@1.2.3':
     dependencies:
       '@discordjs/collection': 2.1.1
       '@discordjs/rest': 2.6.0
-      '@discordjs/util': 1.1.1
+      '@discordjs/util': 1.2.0
       '@sapphire/async-queue': 1.5.5
       '@types/ws': 8.18.1
       '@vladfrangu/async_event_emitter': 2.4.7
@@ -3313,13 +3315,13 @@ snapshots:
 
   discord-api-types@0.38.34: {}
 
-  discord.js@14.24.2:
+  discord.js@14.25.1:
     dependencies:
       '@discordjs/builders': 1.13.0
       '@discordjs/collection': 1.5.3
-      '@discordjs/formatters': 0.6.1
+      '@discordjs/formatters': 0.6.2
       '@discordjs/rest': 2.6.0
-      '@discordjs/util': 1.1.1
+      '@discordjs/util': 1.2.0
       '@discordjs/ws': 1.2.3
       '@sapphire/snowflake': 3.5.3
       discord-api-types: 0.38.34
@@ -4132,7 +4134,7 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
-  typebox@1.0.53: {}
+  typebox@1.0.55: {}
 
   typedoc-plugin-rename-defaults@0.7.3(typedoc@0.28.14(typescript@5.9.3)):
     dependencies:
