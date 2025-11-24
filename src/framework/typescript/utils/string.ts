@@ -33,14 +33,15 @@ export function isAlpha(char: string) {
     return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
 }
 
-export function preformat(args: TemplateStringsArray, ...parts: unknown[]) {
+export function preformat(args: TemplateStringsArray, ...values: unknown[]) {
     let fullString = "";
 
     for (const part of args) {
-        fullString += part + (parts.shift()?.toString() ?? "");
+        fullString += part.replace(/^\s+|\s*\n$/gm, "") + (values.shift()?.toString() ?? "");
     }
 
-    return fullString.replace(/^\s+|\s*\n$/gm, "");
+    return fullString;
 }
 
 export const f = preformat;
+export const stripIndents = preformat;

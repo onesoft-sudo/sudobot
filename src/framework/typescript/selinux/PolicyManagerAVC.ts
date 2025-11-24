@@ -183,7 +183,7 @@ class PolicyManagerAVC {
         }
     }
 
-    public async compileAll(guildId: Snowflake) {
+    public async buildStore(guildId: Snowflake) {
         const start = performance.now();
         const cache = await this.cacheGuild(guildId);
 

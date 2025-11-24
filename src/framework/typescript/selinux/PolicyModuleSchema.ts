@@ -23,8 +23,13 @@ import { Compile } from "typebox/compile";
 
 export const PolicyModuleSchema = Type.Object({
     policy_module: Type.Object({
-        name: Type.String(),
-        version: Type.Integer({ minimum: 0 })
+        name: Type.String({
+            get default(): string {
+                return `${Date.now}${Math.random() * 10000}`;
+            }
+        }),
+        version: Type.Integer({ minimum: 0, default: 1000 }),
+        author: Type.Optional(Type.String())
     }),
     map_types: Type.Array(Type.String()),
     type_labeling: Type.Optional(
@@ -41,7 +46,7 @@ export const PolicyModuleSchema = Type.Object({
                 Type.Object({
                     context: Type.Integer(),
                     requiredRoles: Type.Optional(Type.Array(SnowflakeSchema)),
-                    excludedRoles: Type.Optional(Type.Array(SnowflakeSchema)),
+                    excludedRoles: Type.Optional(Type.Array(SnowflakeSchema))
                 })
             )
         })

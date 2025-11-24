@@ -28,6 +28,8 @@ import PolicyModuleParserError from "./PolicyModuleParserError";
 import type { Token } from "./PolicyModuleParserTypes";
 import { PolicyModuleTokenType } from "./PolicyModuleTokenType";
 import RootNode from "./ast/RootNode";
+import RequireBlockStatementNode from "./ast/RequireBlockStatementNode";
+import RequireTypeStatementNode from "./ast/RequireTypeStatementNode";
 
 class PolicyModuleParser {
     private static SIMPLE_TOKENS = {
@@ -82,10 +84,23 @@ class PolicyModuleParser {
 
     private parseStatements(): RootNode {
         const children: Node[] = [];
+        let moduleParsed = false;
 
         while (!this.isEOF()) {
             const statement = this.parseStatement();
             children.push(statement);
+
+            if (statement instanceof ModuleBlockStatementNode) {
+                if (!moduleParsed) {
+                    moduleParsed = true;
+                }
+                else {
+                    throw new PolicyModuleParserError(
+                        "Multiple 'module' block declarations are not allowed",
+                        statement.range
+                    );
+                }
+            }
         }
 
         return new RootNode(
@@ -95,6 +110,26 @@ class PolicyModuleParser {
                 end: [0, 1, 1]
             }
         );
+    }
+
+    private parseRequireBlockStatement(): Node {
+        const token = this.peek();
+        let statement: Node;
+
+        switch (token.type) {
+            case PolicyModuleTokenType.Type:
+                statement = this.parseRequireTypeStatement();
+                break;
+
+            default:
+                throw new PolicyModuleParserError(`Unexpected token ${token.type}`, token.loc);
+        }
+
+        while (this.peek().type === PolicyModuleTokenType.Semicolon) {
+            this.consume();
+        }
+
+        return statement;
     }
 
     private parseModuleBlockStatement(): Node {
@@ -115,6 +150,15 @@ class PolicyModuleParser {
         }
 
         return statement;
+    }
+
+    private parseRequireTypeStatement(): Node {
+        const start = this.expect(PolicyModuleTokenType.Type);
+        const identifier = this.expect(PolicyModuleTokenType.Identifier);
+        return new RequireTypeStatementNode(identifier.value, {
+            start: start.loc.start,
+            end: identifier.loc.end
+        });
     }
 
     private parseModuleBlockDeclaration(): Node {
@@ -311,6 +355,10 @@ class PolicyModuleParser {
                 statement = this.parseModuleBlock();
                 break;
 
+            case PolicyModuleTokenType.Require:
+                statement = this.parseRequireBlock();
+                break;
+
             default:
                 throw new PolicyModuleParserError(`Unexpected token ${token.type}`, token.loc);
         }
@@ -322,9 +370,9 @@ class PolicyModuleParser {
         return statement;
     }
 
-    private parseBlock(callback: () => Node): BlockStatementNode {
+    private parseBlock<T extends Node>(callback: () => T): BlockStatementNode {
         const start = this.expect(PolicyModuleTokenType.BraceOpen);
-        const children: Node[] = [];
+        const children: T[] = [];
 
         while (!this.isEOF() && this.peek().type !== PolicyModuleTokenType.BraceClose) {
             const statement = callback();
@@ -333,7 +381,7 @@ class PolicyModuleParser {
 
         const end = this.expect(PolicyModuleTokenType.BraceClose);
 
-        return new BlockStatementNode(children, {
+        return new BlockStatementNode<T>(children, {
             start: start.loc.start,
             end: end.loc.end
         });
@@ -345,7 +393,19 @@ class PolicyModuleParser {
             return this.parseModuleBlockStatement();
         });
 
-        return new ModuleBlockStatementNode(block, {
+        return new ModuleBlockStatementNode(block as BlockStatementNode<ModuleBlockPropertyNode>, {
+            start: start.loc.start,
+            end: block.range.end
+        });
+    }
+
+    private parseRequireBlock(): Node {
+        const start = this.expect(PolicyModuleTokenType.Require);
+        const block = this.parseBlock(() => {
+            return this.parseRequireBlockStatement();
+        });
+
+        return new RequireBlockStatementNode(block as BlockStatementNode<RequireTypeStatementNode>, {
             start: start.loc.start,
             end: block.range.end
         });

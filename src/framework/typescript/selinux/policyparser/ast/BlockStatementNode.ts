@@ -1,10 +1,10 @@
 import Node from "./Node";
 import type { Range } from "../PolicyModuleParserTypes";
 
-class BlockStatementNode extends Node {
-    public readonly children: Node[];
+class BlockStatementNode<T extends Node = Node> extends Node {
+    public readonly children: T[];
 
-    public constructor(children: Node[], range: Range) {
+    public constructor(children: T[], range: Range) {
         super(range);
         this.children = children;
     }

@@ -28,6 +28,8 @@ import ModuleBlockStatementNode from "@framework/selinux/policyparser/ast/Module
 import BlockStatementNode from "@framework/selinux/policyparser/ast/BlockStatementNode";
 import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ast/ModuleBlockPropertyNode";
 import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/ast/LiteralNode";
+import RequireBlockStatementNode from "@framework/selinux/policyparser/ast/RequireBlockStatementNode";
+import RequireTypeStatementNode from "@framework/selinux/policyparser/ast/RequireTypeStatementNode";
 
 const RANGE_TRUNCATED: Range = { start: [0, 1, 1], end: [0, 1, 1] };
 
@@ -167,6 +169,46 @@ describe("PolicyModuleParser", () => {
                             ["BanMembers", "ManageRoles"],
                             RANGE_TRUNCATED
                         )
+                    ],
+                    RANGE_TRUNCATED
+                )
+            );
+        });
+
+        it("can parse a require block", () => {
+            expect(
+                truncateLocation(
+                    parser.parse(`
+                        require {
+                            type unconfined_t;
+                            type user_t;
+                            type moderator_t;
+                        }
+                    `)
+                )
+            ).toStrictEqual(
+                new RootNode(
+                    [
+                        new RequireBlockStatementNode(
+                            new BlockStatementNode(
+                                [
+                                    new RequireTypeStatementNode(
+                                        "unconfined_t",
+                                        RANGE_TRUNCATED
+                                    ),
+                                    new RequireTypeStatementNode(
+                                        "user_t",
+                                        RANGE_TRUNCATED
+                                    ),
+                                    new RequireTypeStatementNode(
+                                        "moderator_t",
+                                        RANGE_TRUNCATED
+                                    ),
+                                ],
+                                RANGE_TRUNCATED
+                            ),
+                            RANGE_TRUNCATED
+                        ),
                     ],
                     RANGE_TRUNCATED
                 )

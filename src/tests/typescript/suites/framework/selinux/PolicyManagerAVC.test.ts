@@ -85,7 +85,11 @@ describe("PolicyManagerAVC", () => {
             deny_types: [],
             allow_types_on_targets: {
                 2: {
-                    1: PermissionFlagsBits.ModerateMembers
+                    1: PermissionFlagsBits.ModerateMembers,
+                    2: 0n
+                },
+                1: {
+                    1: 0n
                 }
             },
             deny_types_on_targets: {}
@@ -95,7 +99,7 @@ describe("PolicyManagerAVC", () => {
 
         await policyManager.loadModule(guildId, policy1);
         await policyManager.loadModule(guildId, policy2);
-        await policyManager.compileAll(guildId);
+        await policyManager.buildStore(guildId);
 
         expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.AttachFiles);
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(
@@ -139,7 +143,7 @@ describe("PolicyManagerAVC", () => {
         });
 
         await policyManager.loadModule(guildId, policy);
-        await policyManager.compileAll(guildId);
+        await policyManager.buildStore(guildId);
 
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
         expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.SendMessages);
@@ -185,7 +189,7 @@ describe("PolicyManagerAVC", () => {
 
         await policyManager.loadModule(guildId, policy);
         await policyManager.loadModule(guildId, policy);
-        await policyManager.compileAll(guildId);
+        await policyManager.buildStore(guildId);
 
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
