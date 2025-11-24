@@ -47,7 +47,7 @@ type AccessOptions = {
 };
 
 const access = (
-    object: object | unknown[],
+    object: Record<PropertyKey, object> | unknown[],
     accessor: string,
     setter?: (value: unknown) => unknown,
     options: AccessOptions = {
@@ -143,7 +143,7 @@ const access = (
 };
 
 export const get = <V = unknown>(
-    object: object | unknown[],
+    object: Record<PropertyKey, object> | unknown[],
     accessor: string,
     options: AccessOptions = {
         create: false,
@@ -153,7 +153,7 @@ export const get = <V = unknown>(
     }
 ) => access(object, accessor, undefined, options) as V;
 export const has = (
-    object: object | unknown[],
+    object: Record<PropertyKey, object> | unknown[],
     accessor: string,
     options: AccessOptions = {
         create: false,
@@ -162,7 +162,7 @@ export const has = (
         returnExists: false
     }
 ) => access(object, accessor, undefined, { ...options, returnExists: true });
-export const set = (object: object | unknown[], accessor: string, value: unknown, options?: AccessOptions) =>
+export const set = (object: Record<PropertyKey, object> | unknown[], accessor: string, value: unknown, options?: AccessOptions) =>
     access(object, accessor, () => value, options);
 
 export const toDotted = (object: Record<string, unknown>, arrayAccess = false) => {
@@ -187,7 +187,7 @@ export const pickCastArray = <T = never>(target: object, key: string): T[] => {
     return key in target ? [target[key as keyof typeof target]] : target[`${key}s` as keyof typeof target];
 };
 
-export const unset = (object: object | unknown[], accessor: string) => {
+export const unset = (object: Record<PropertyKey, object> | unknown[], accessor: string) => {
     assert(accessor, "Accessor must be provided");
 
     const accessors = accessor.split(".");

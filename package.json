@@ -105,7 +105,7 @@
         "typedoc-plugin-rename-defaults": "^0.7.3",
         "typedoc-theme-hierarchy": "^6.0.0",
         "typescript": "5.9.3",
-        "typescript-eslint": "^8.47.0",
+        "typescript-eslint": "^8.48.0",
         "unplugin-swc": "^1.5.8",
         "vitest": "4.0.10"
     }
