@@ -320,8 +320,13 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
     }
 
     @Override
-    public toString() {
+    public toString(): string {
         return this.format();
+    }
+
+    @Override
+    public valueOf(): number {
+        return this.toMilliseconds();
     }
 
     @Override
@@ -329,12 +334,13 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return this.toMilliseconds();
     }
 
+    @Override
     public [Symbol.toPrimitive](hint: "string" | "number" | "default") {
-        if (hint === "number") {
-            return this.toMilliseconds();
+        if (hint === "string") {
+            return this.toString();
         }
 
-        return this.toString();
+        return this.toMilliseconds();
     }
 }
 
