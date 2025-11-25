@@ -23,7 +23,6 @@ import PolicyModuleError from "./PolicyModuleError";
 import { Logger } from "@framework/log/Logger";
 import { performance } from "perf_hooks";
 import { readFile } from "fs/promises";
-import { decode, encode, ExtensionCodec } from "@msgpack/msgpack";
 import { writeFile } from "fs/promises";
 import { CacheValidator, type AVCType } from "./AVCSchema";
 import { LRUCache } from "lru-cache";

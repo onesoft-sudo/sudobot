@@ -103,7 +103,8 @@ class PolicyCompiler {
         if (node.isWildcard()) {
             const targetRecord = node.type === "allow" ? module.allow_types : module.deny_types;
             targetRecord[subjectIndex] = this.resolvePermissionsOrFail(node, node.permissions);
-        } else {
+        }
+        else {
             const targetRecord = node.type === "allow" ? module.allow_types_on_targets : module.deny_types_on_targets;
             const targetIndex = this.getTypeIndexOrFail(node, node.target, module);
             targetRecord[subjectIndex] ??= {};
