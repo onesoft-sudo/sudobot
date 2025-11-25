@@ -58,6 +58,7 @@ describe("PolicyCompiler", () => {
             }
 
             allow moderator_t user_t { BanMembers };
+            allow moderator_t * { ModerateMembers };
         `);
 
         expect(result.policy_module).toStrictEqual({
@@ -71,10 +72,13 @@ describe("PolicyCompiler", () => {
                 0: PermissionFlagsBits.BanMembers
             }
         });
+        expect(result.deny_types).toEqual([]);
+        expect(result.allow_types).toEqual([undefined, PermissionFlagsBits.ModerateMembers]);
     });
 
     it("can report errors when appropriate", () => {
-        expect(() => compiler.compile(preformat`
+        expect(() =>
+            compiler.compile(preformat`
             module {
                 name "base";
                 version 1000;
@@ -86,6 +90,55 @@ describe("PolicyCompiler", () => {
             }
 
             allow admin_t user_t { BanMembers };
-        `)).toThrowError(PoilcyModuleCompilationError);
+        `)
+        ).toThrowError(PoilcyModuleCompilationError);
+
+        expect(() =>
+            compiler.compile(preformat`
+            module {
+                name "base";
+                version 1000;
+            }
+
+            require {
+                type user_t;
+                type bad_rule_t;
+            }
+
+            allow bad_rule_t user_t { NonExistingPermission };
+        `)
+        ).toThrowError(PoilcyModuleCompilationError);
+    });
+
+    it("reported errors can be formatted to string correctly", () => {
+        try {
+            compiler.compile(preformat`
+                module {
+                    name "base";
+                    version 1000;
+                }
+
+                require {
+                    type user_t;
+                    type moderator_t;
+                }
+
+                allow admin_t user_t { BanMembers };
+            `);
+
+            expect("This should never be reached").toBe(true);
+        } catch (error) {
+            expect(error).toBeInstanceOf(PoilcyModuleCompilationError);
+            const compilationError = error as PoilcyModuleCompilationError;
+            const formattedLines = compilationError.formatASCII().split("\n");
+
+            expect(formattedLines).toStrictEqual([
+                "<input>:11:1: error: Invalid type 'admin_t': Did you forget to require it?",
+                "",
+                "11   | allow admin_t user_t { BanMembers };",
+                "       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+                ""
+            ]);
+        }
     });
 });

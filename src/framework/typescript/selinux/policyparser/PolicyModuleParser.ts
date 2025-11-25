@@ -36,7 +36,12 @@ class PolicyModuleParser {
         "{": PolicyModuleTokenType.BraceOpen,
         "}": PolicyModuleTokenType.BraceClose,
         ";": PolicyModuleTokenType.Semicolon,
-        ",": PolicyModuleTokenType.Comma
+        ",": PolicyModuleTokenType.Comma,
+        "+": PolicyModuleTokenType.Plus,
+        "-": PolicyModuleTokenType.Minus,
+        "*": PolicyModuleTokenType.Times,
+        "/": PolicyModuleTokenType.Slash,
+        "%": PolicyModuleTokenType.Percent,
     };
 
     private static KEYWORDS = {
@@ -54,7 +59,13 @@ class PolicyModuleParser {
     private tokenIndex = 0;
     private tokens: Token[] = [];
 
+    public reset() {
+        this.tokens = [];
+        this.tokenIndex = 0;
+    }
+
     public parse(content: string) {
+        this.reset();
         this.tokens = this.lex(content);
         return this.parseStatements();
     }
@@ -294,7 +305,7 @@ class PolicyModuleParser {
         const start = left;
 
         while (
-            [PolicyModuleTokenType.Times, PolicyModuleTokenType.Slash, PolicyModuleTokenType.Modulus].includes(
+            [PolicyModuleTokenType.Times, PolicyModuleTokenType.Slash, PolicyModuleTokenType.Percent].includes(
                 this.tokens[this.tokenIndex].type
             )
         ) {
@@ -304,7 +315,7 @@ class PolicyModuleParser {
                     ? "*"
                     : operatorToken.type === PolicyModuleTokenType.Slash
                       ? "/"
-                      : operatorToken.type === PolicyModuleTokenType.Modulus
+                      : operatorToken.type === PolicyModuleTokenType.Percent
                         ? "%"
                         : "?";
 
@@ -414,7 +425,7 @@ class PolicyModuleParser {
     private parseAllowDenyStatement(): Node {
         const first = this.expect([PolicyModuleTokenType.Allow, PolicyModuleTokenType.Deny]);
         const subject = this.expect(PolicyModuleTokenType.Identifier).value;
-        const target = this.expect(PolicyModuleTokenType.Identifier).value;
+        const { value, type } = this.expect([PolicyModuleTokenType.Identifier, PolicyModuleTokenType.Times]);
         const permissions: string[] = [];
 
         this.expect(PolicyModuleTokenType.BraceOpen);
@@ -428,6 +439,7 @@ class PolicyModuleParser {
         }
 
         const last = this.expect(PolicyModuleTokenType.BraceClose);
+        const target = type === PolicyModuleTokenType.Times ? "*" : value;
 
         return new AllowDenyStatementNode(
             first.type === PolicyModuleTokenType.Allow ? "allow" : "deny",

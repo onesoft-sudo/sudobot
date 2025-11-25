@@ -37,7 +37,7 @@ export enum PolicyModuleTokenType {
     Minus = "-",
     Times = "*",
     Slash = "/",
-    Modulus = "%",
+    Percent = "%",
     True = "true",
     False = "false",
 }

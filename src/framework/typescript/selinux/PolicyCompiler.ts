@@ -19,7 +19,7 @@
 
 import { readFile } from "fs/promises";
 import PolicyModuleParser from "./policyparser/PolicyModuleParser";
-import type { PolicyModuleType } from "./PolicyModuleSchema";
+import { PolicyModuleValidator, type PolicyModuleType } from "./PolicyModuleSchema";
 import ModuleBlockStatementNode from "./policyparser/ast/ModuleBlockStatementNode";
 import PoilcyModuleCompilationError from "./PoilcyModuleCompilationError";
 import type LiteralNode from "./policyparser/ast/LiteralNode";
@@ -29,13 +29,28 @@ import RequireBlockStatementNode from "./policyparser/ast/RequireBlockStatementN
 import RequireTypeStatementNode from "./policyparser/ast/RequireTypeStatementNode";
 import AllowDenyStatementNode from "./policyparser/ast/AllowDenyStatementNode";
 import { PermissionFlagsBits } from "discord.js";
+import type Node from "./policyparser/ast/Node";
+import MessagePackEncoder from "./MessagePackEncoder";
 
 class PolicyCompiler {
     private readonly policyModuleParser = new PolicyModuleParser();
+    private readonly encoder = new MessagePackEncoder();
+    private source: string = "";
+    private filename: string = "";
 
-    public compile(source: string | Buffer<ArrayBufferLike>) {
-        source = typeof source === "string" ? source : source.toString("utf-8");
-        const parsedRootNode = this.policyModuleParser.parse(source);
+    public encode(module: PolicyModuleType) {
+        return this.encoder.encode(module);
+    }
+
+    public decode(data: ArrayLike<number> | ArrayBufferView | ArrayBufferLike): PolicyModuleType {
+        return PolicyModuleValidator.Parse(this.encoder.decode(data));
+    }
+
+    public compile(source: string | Buffer<ArrayBufferLike>, filename = "<input>"): PolicyModuleType {
+        this.source = typeof source === "string" ? source : source.toString("utf-8");
+        this.filename = filename;
+
+        const parsedRootNode = this.policyModuleParser.parse(this.source);
         const module: PolicyModuleType = {
             policy_module: {
                 name: "",
@@ -52,9 +67,9 @@ class PolicyCompiler {
         return module;
     }
 
-    public async compileFromFile(filepath: string) {
+    public async compileFromFile(filepath: string): Promise<PolicyModuleType> {
         const contents = await readFile(filepath, "utf-8");
-        return this.compile(contents);
+        return this.compile(contents, filepath);
     }
 
     protected compileRootNode(node: RootNode, module: PolicyModuleType) {
@@ -78,15 +93,25 @@ class PolicyCompiler {
         }
     }
 
-    protected compileRuleNode(node: AllowDenyStatementNode, module: PolicyModuleType) {
-        const targetRecord = node.type === "allow" ? module.allow_types_on_targets : module.deny_types_on_targets;
-        const subjectIndex = this.getTypeIndexOrFail(node.subject, module);
-        const targetIndex = this.getTypeIndexOrFail(node.target, module);
-        targetRecord[subjectIndex] ??= {};
-        targetRecord[subjectIndex][targetIndex] = this.resolvePermissionsOrFail(node.permissions);
+    protected error(node: Node | null, message: string): never {
+        throw new PoilcyModuleCompilationError(message, this.filename, this.source, node);
     }
 
-    protected resolvePermissionsOrFail(permissions: string[]) {
+    protected compileRuleNode(node: AllowDenyStatementNode, module: PolicyModuleType) {
+        const subjectIndex = this.getTypeIndexOrFail(node, node.subject, module);
+
+        if (node.isWildcard()) {
+            const targetRecord = node.type === "allow" ? module.allow_types : module.deny_types;
+            targetRecord[subjectIndex] = this.resolvePermissionsOrFail(node, node.permissions);
+        } else {
+            const targetRecord = node.type === "allow" ? module.allow_types_on_targets : module.deny_types_on_targets;
+            const targetIndex = this.getTypeIndexOrFail(node, node.target, module);
+            targetRecord[subjectIndex] ??= {};
+            targetRecord[subjectIndex][targetIndex] = this.resolvePermissionsOrFail(node, node.permissions);
+        }
+    }
+
+    protected resolvePermissionsOrFail(node: Node, permissions: string[]) {
         let bitfield = 0n;
 
         for (const permission of permissions) {
@@ -95,17 +120,17 @@ class PolicyCompiler {
                 continue;
             }
 
-            throw new PoilcyModuleCompilationError(`Invalid permission type '${permission}'`);
+            this.error(node, `Invalid permission type '${permission}'`);
         }
 
         return bitfield;
     }
 
-    protected getTypeIndexOrFail(typeString: string, module: PolicyModuleType) {
+    protected getTypeIndexOrFail(node: Node, typeString: string, module: PolicyModuleType) {
         const index = module.map_types.indexOf(typeString);
 
         if (index === -1) {
-            throw new PoilcyModuleCompilationError(`Invalid type '${typeString}': Did you forget to require it?`);
+            this.error(node, `Invalid type '${typeString}': Did you forget to require it?`);
         }
 
         return index;
@@ -136,15 +161,15 @@ class PolicyCompiler {
         const version = values.get("version");
 
         if (name && name.kind !== LiteralKind.String) {
-            throw new PoilcyModuleCompilationError("module.name must be a valid string");
+            this.error(node, "module.name must be a valid string");
         }
 
         if (author && author.kind !== LiteralKind.String) {
-            throw new PoilcyModuleCompilationError("module.author must be a valid string");
+            this.error(node, "module.author must be a valid string");
         }
 
         if (version && version.kind !== LiteralKind.Integer) {
-            throw new PoilcyModuleCompilationError("module.version must be a valid integer");
+            this.error(node, "module.version must be a valid integer");
         }
 
         module.policy_module.name = name?.value ?? module.policy_module.name;
@@ -153,7 +178,7 @@ class PolicyCompiler {
     }
 
     protected unsupported(): never {
-        throw new PoilcyModuleCompilationError("Unsupported node type: This indicates a compiler bug");
+        this.error(null, "Unsupported node type: This indicates a compiler bug");
     }
 }
 

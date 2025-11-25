@@ -37,10 +37,10 @@ export function preformat(args: TemplateStringsArray, ...values: unknown[]) {
     let fullString = "";
 
     for (const part of args) {
-        fullString += part.replace(/^\s+|\s*\n$/gm, "") + (values.shift()?.toString() ?? "");
+        fullString += part.replace(/^\n\s+/gm, "\n") + (values.shift()?.toString() ?? "");
     }
 
-    return fullString;
+    return fullString.trimStart();
 }
 
 export const f = preformat;

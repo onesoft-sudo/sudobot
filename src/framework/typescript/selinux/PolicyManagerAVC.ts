@@ -30,6 +30,7 @@ import { LRUCache } from "lru-cache";
 import { systemPrefix } from "@main/utils/utils";
 import path from "path";
 import { createRegex, regexTest } from "@framework/utils/re2";
+import MessagePackEncoder from "./MessagePackEncoder";
 
 type CacheEntry = {
     avc: AVCType;
@@ -38,29 +39,8 @@ type CacheEntry = {
 
 class PolicyManagerAVC {
     public static readonly POLICY_VERSION = 1;
-    public static readonly extensionCodec = new ExtensionCodec();
-    public static readonly messagePackOptions = { extensionCodec: this.extensionCodec, useBigInt64: true };
-    protected static readonly AVC_CACHE_DIR = systemPrefix("cache/avc", true);
-
-    static {
-        const MAP_EXT_TYPE = 0;
-
-        this.extensionCodec.register({
-            type: MAP_EXT_TYPE,
-            encode: (object: unknown): Uint8Array | null => {
-                if (object instanceof Map) {
-                    return encode([...object], this.messagePackOptions);
-                }
-                else {
-                    return null;
-                }
-            },
-            decode: (data: Uint8Array) => {
-                const array = decode(data, this.messagePackOptions) as Array<[unknown, unknown]>;
-                return new Map(array);
-            }
-        });
-    }
+    public static readonly AVC_CACHE_DIR = systemPrefix("cache/avc", true);
+    protected readonly encoder = new MessagePackEncoder();
 
     protected readonly cache = new LRUCache<Snowflake, CacheEntry>({
         max: 2500,
@@ -134,7 +114,7 @@ class PolicyManagerAVC {
         const data = await readFile(filepath);
 
         try {
-            const parsed = decode(data, PolicyManagerAVC.messagePackOptions);
+            const parsed = this.encoder.decode(data);
             const final = PolicyModuleValidator.Parse(parsed);
             await this.loadModule(guildId, final);
         }
@@ -154,7 +134,7 @@ class PolicyManagerAVC {
 
     public async storeAVC(guildId: Snowflake, filepath: string): Promise<void> {
         const cache = this.cache.get(guildId) ?? this.newCacheEntry();
-        const encoded = encode(cache, PolicyManagerAVC.messagePackOptions);
+        const encoded = this.encoder.encode(cache);
         await writeFile(filepath, encoded);
     }
 
@@ -162,7 +142,7 @@ class PolicyManagerAVC {
         const data = await readFile(filepath);
 
         try {
-            const { avc, modules } = CacheValidator.Parse(decode(data, PolicyManagerAVC.messagePackOptions));
+            const { avc, modules } = CacheValidator.Parse(this.encoder.decode(data));
 
             if (avc.details.version > PolicyManagerAVC.POLICY_VERSION) {
                 throw new PolicyModuleError("Unsupported policy version: " + avc.details.version);

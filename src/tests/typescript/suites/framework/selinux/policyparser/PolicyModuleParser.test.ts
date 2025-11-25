@@ -140,7 +140,7 @@ describe("PolicyModuleParser", () => {
             );
         });
 
-        it("can parse multiple statements", () => {
+        it("can parse multiple rule statements", () => {
             expect(
                 truncateLocation(
                     parser.parse(`
@@ -169,6 +169,25 @@ describe("PolicyModuleParser", () => {
                             ["BanMembers", "ManageRoles"],
                             RANGE_TRUNCATED
                         )
+                    ],
+                    RANGE_TRUNCATED
+                )
+            );
+        });
+
+        it("can parse rules with wildcard as target", () => {
+            expect(
+                truncateLocation(
+                    parser.parse(`
+                allow moderator_t * { BanMembers };
+                deny moderator_t * { AttachFiles };
+            `)
+                )
+            ).toStrictEqual(
+                new RootNode(
+                    [
+                        new AllowDenyStatementNode("allow", "moderator_t", "*", ["BanMembers"], RANGE_TRUNCATED),
+                        new AllowDenyStatementNode("deny", "moderator_t", "*", ["AttachFiles"], RANGE_TRUNCATED),
                     ],
                     RANGE_TRUNCATED
                 )

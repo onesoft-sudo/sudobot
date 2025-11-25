@@ -37,6 +37,10 @@ class AllowDenyStatementNode extends Node {
     public override branches() {
         return [];
     }
+
+    public isWildcard(): this is this & { target: "*" } {
+        return this.target === "*";
+    }
 }
 
 export default AllowDenyStatementNode;

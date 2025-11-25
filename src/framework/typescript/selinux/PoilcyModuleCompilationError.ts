@@ -17,6 +17,52 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-class PoilcyModuleCompilationError extends Error {}
+import type Node from "./policyparser/ast/Node";
+
+class PoilcyModuleCompilationError extends Error {
+    public readonly node: Node | null;
+    public readonly source: string | null;
+    public readonly filename: string | null;
+    public readonly sourceLines: string[];
+
+    public constructor(message: string, filename: string, source: string | null, node: Node | null) {
+        super(message);
+        this.filename = filename;
+        this.source = source;
+        this.node = node;
+        this.sourceLines = source ? source.split("\n") : [];
+    }
+
+    public formatASCII() {
+        let str = "";
+
+        str += `${this.filename}:`;
+
+        if (this.node) {
+            str += `${this.node.range.start[1]}:${this.node.range.start[2]}:`;
+        }
+
+        str += ` error: ${this.message}\n\n`;
+
+        if (this.node) {
+            const range = this.node.range;
+
+            for (let line = range.start[1]; line <= range.end[1]; line++) {
+                str += `${line.toString().padEnd(4)} | ${this.sourceLines[line - 1]}\n`;
+            }
+
+            const markerRange = range.start[1] !== range.end[1] ? [1, range.end[2]] : [range.start[2], range.end[2]];
+            str += "      " + " ".repeat(markerRange[0]);
+
+            for (let i = markerRange[0] - 1; i < markerRange[1]; i++) {
+                str += "^";
+            }
+
+            str += "\n";
+        }
+
+        return str;
+    }
+}
 
 export default PoilcyModuleCompilationError;
