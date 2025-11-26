@@ -22,6 +22,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+            bun-version: latest
+
       - uses: pnpm/action-setup@v4
         with:
             version: 10
@@ -37,6 +42,13 @@ jobs:
 
       - name: "Test"
         run: npx vitest run --coverage
+
+      - name: "Bundle"
+        run: pnpm run bundle
+
+      - name: "Build Executable"
+        run: bin/gensea all
+        shell: sh
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.5.1
