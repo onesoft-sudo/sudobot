@@ -37,22 +37,25 @@
     },
     "funding": {
         "type": "paypal",
-        "url": "https://www.sudobot.online/donate?utm_source=package-json&utm_medium=funding&utm_campaign=paypal"
+        "url": "https://www.sudobot.org/donate?utm_source=package-json&utm_medium=funding&utm_campaign=paypal"
     },
     "scripts": {
+        "prepare": "node bin/prepare.cjs",
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun src/main/typescript/bun.ts",
-        "prepare": "node bin/prepare.cjs",
+        "start:docker": "sh ./docker/start-container.sh",
+        "start:blazew": "node build/out/main/typescript/main.js",
         "dev": "bun run src/main/typescript/bun.ts",
         "dev:node": "node src/main/typescript/main.ts",
-        "start:blazew": "node build/out/main/typescript/main.js",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "format": "prettier -w src && eslint src --fix",
         "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out && cp -r src/main/resources build/out/main",
+        "bundle": "bin/genimports src/main/typescript && ncc build src/main/typescript/bundle.ts -o build && rm -rf build/src",
+        "sea:linux:x86_64": "pnpm run bundle && bin/gensea linux:x86_64",
+        "sea:all": "pnpm run bundle && bin/gensea all",
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
-        "test": "vitest",
-        "start:docker": "sh ./docker/start-container.sh"
+        "test": "vitest"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",
@@ -96,6 +99,7 @@
         "@types/node": "^24.10.1",
         "@typescript-eslint/utils": "^8.47.0",
         "@typescript/native-preview": "7.0.0-dev.20251117.1",
+        "@vercel/ncc": "^0.38.4",
         "@vitest/coverage-v8": "4.0.10",
         "discord-api-types": "^0.38.34",
         "eslint": "^9.39.1",

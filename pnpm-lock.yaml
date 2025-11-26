@@ -102,6 +102,9 @@ importers:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20251117.1
         version: 7.0.0-dev.20251117.1
+      '@vercel/ncc':
+        specifier: ^0.38.4
+        version: 0.38.4
       '@vitest/coverage-v8':
         specifier: 4.0.10
         version: 4.0.10(vitest@4.0.10(@types/node@24.10.1)(jiti@2.6.1)(yaml@2.8.1))
@@ -939,6 +942,10 @@ packages:
 
   '@typescript/native-preview@7.0.0-dev.20251117.1':
     resolution: {integrity: sha512-JgKY4Q6jRCszCJ46c8tVrGVnmdiRPSKTW0UQvcyxdI7LG9NYMchJ/W7iUyFZVjG8BV1iUTl3DYml1xErPHLKeg==}
+    hasBin: true
+
+  '@vercel/ncc@0.38.4':
+    resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
     hasBin: true
 
   '@vitest/coverage-v8@4.0.10':
@@ -3079,6 +3086,8 @@ snapshots:
       '@typescript/native-preview-linux-x64': 7.0.0-dev.20251117.1
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251117.1
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20251117.1
+
+  '@vercel/ncc@0.38.4': {}
 
   '@vitest/coverage-v8@4.0.10(vitest@4.0.10(@types/node@24.10.1)(jiti@2.6.1)(yaml@2.8.1))':
     dependencies:
