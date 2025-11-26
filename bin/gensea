@@ -6,8 +6,6 @@
 dir=`dirname "$0"`
 dir=`readlink -f "${dir}/.."`
 
-export NODE_ENV=production
-
 platforms="$1"
 test -z "$platforms" && platforms=linux:x86_64
 test "$platforms" = "all" && platforms='
@@ -34,7 +32,6 @@ year=`date +%Y`
 common_options='
     --minify-syntax
     --minify-whitespace
-    --env="NODE_EN*"
     --keep-names
     --compile
     --bytecode
