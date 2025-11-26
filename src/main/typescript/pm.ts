@@ -17,9 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "dotenv/config";
-import "module-alias/register";
-import "reflect-metadata";
+import "./preload";
 
 import { Logger } from "@framework/log/Logger";
 import { setEnvData } from "@main/env/env";
@@ -32,9 +30,9 @@ import { parse } from "dotenv";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { MlKem768 } from "mlkem";
-import path from "path";
 import { createInterface } from "readline/promises";
 import chalk from "chalk";
+import path from "path";
 import figlet from "figlet";
 import { version } from "@root/package.json";
 

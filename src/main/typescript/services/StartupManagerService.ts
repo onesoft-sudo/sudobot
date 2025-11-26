@@ -21,6 +21,7 @@ import Service from "@framework/services/Service";
 import FileSystem from "@framework/polyfills/FileSystem";
 import chalk from "chalk";
 import figlet from "figlet";
+import figletBigFont from "figlet/importable-fonts/Big.js";
 import { version } from "@root/package.json";
 import axios from "axios";
 import { chunkedString, systemPrefix } from "@main/utils/utils";
@@ -42,8 +43,16 @@ class StartupManagerService extends Service {
     public override readonly name: string = SERVICE_STARTUP_MANAGER;
 
     private async printBanner() {
+        figlet.parseFont("customBig", figletBigFont);
+
         console.info();
-        console.info(chalk.blueBright((await figlet.text("SudoBot")).replace(/\s+$/, "")));
+        console.info(
+            chalk.blueBright(
+                (
+                    await figlet.text("SudoBot", { font: "customBig" })
+                ).replace(/\s+$/, "")
+            )
+        );
         console.info();
         console.info(`      Version ${chalk.green(version)} -- booting up`);
         console.info();

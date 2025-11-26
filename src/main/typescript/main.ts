@@ -17,18 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "dotenv/config";
-import "module-alias/register";
-import "reflect-metadata";
+import "./preload";
+
+import path from "path";
+import { _meta, version } from "../../../package.json";
 
 import Application from "@framework/app/Application";
 import { Logger } from "@framework/log/Logger";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";
 import { setEnvData } from "@main/env/env";
-import { version, _meta } from "@root/package.json";
 import type { DotenvParseOutput } from "dotenv";
-import path from "path";
 import { parseArgs } from "util";
 
 const logger = new Logger("Main", true);

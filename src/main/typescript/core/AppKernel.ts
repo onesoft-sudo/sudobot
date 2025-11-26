@@ -23,8 +23,10 @@ import type Command from "@framework/commands/Command";
 import Kernel from "@framework/core/Kernel";
 import type EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
+import { getBundleData } from "@framework/utils/bundle";
 import { getEnvData } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
@@ -50,7 +52,7 @@ class AppKernel extends Kernel {
         "@services/StartupManagerService",
         "@services/ConfigurationManagerService",
         "@services/PermissionManagerService",
-        "@services/CommandManagerService",
+        "@services/CommandManagerService"
     ];
 
     public readonly eventListenersDirectory: string = path.join(__dirname, "../events");
@@ -134,6 +136,32 @@ class AppKernel extends Kernel {
     }
 
     private async loadEventListeners(application: Application): Promise<void> {
+        const onLoad = async (
+            filepath: string,
+            eventListenerClass: new (application: Application) => EventListener<Events>
+        ) => {
+            const eventListener = application.container.get(eventListenerClass, {
+                constructorArgs: [application]
+            });
+            await eventListener.onAppBoot?.();
+            this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
+            application.logger.info("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+        };
+
+        if (isBundle) {
+            const data = getBundleData();
+
+            if (!data?.events) {
+                return;
+            }
+
+            for (const event in data.events) {
+                await onLoad(event, data.events[event]);
+            }
+
+            return;
+        }
+
         await application.classLoader.loadClassesRecursive<
             DefaultExport<new (application: Application) => EventListener<Events>>
         >(this.eventListenersDirectory, {
@@ -141,44 +169,65 @@ class AppKernel extends Kernel {
                 application.logger.debug("Loading event listener: ", path.basename(filepath).replace(/\..*$/, ""));
             },
             postLoad: async (filepath, { default: EventListenerClass }) => {
-                const eventListener = application.container.get(EventListenerClass, {
-                    constructorArgs: [application]
-                });
-                await eventListener.onAppBoot?.();
-                this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
-                application.logger.info("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+                await onLoad(filepath, EventListenerClass);
             }
         });
     }
 
     private async loadCommands(application: Application): Promise<void> {
-        await application.classLoader.loadClassesRecursive<DefaultExport<new (application: Application) => Command>>(
-            this.commandsDirectory,
-            {
-                preLoad: filepath => {
-                    application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
-                },
-                postLoad: async (filepath, { default: CommandClass }) => {
-                    const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
-                        | CommandManagerService
-                        | undefined;
-                    const permissionManagerService = application.serviceManager.services.get(SERVICE_PERMISSION_MANAGER) as
-                        | PermissionManagerService
-                        | undefined;
-                    const command = application.container.get(CommandClass, {
-                        constructorArgs: [application, permissionManagerService]
-                    });
+        const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
+            | CommandManagerService
+            | undefined;
+        const permissionManagerService = application.serviceManager.services.get(SERVICE_PERMISSION_MANAGER) as
+            | PermissionManagerService
+            | undefined;
 
-                    await command.onAppBoot?.();
-                    const category = path.basename(path.dirname(filepath)).toLowerCase();
+        const onLoad = async (
+            filepath: string,
+            commandClass: new (
+                application: Application,
+                permissionManagerService: PermissionManagerServiceInterface
+            ) => Command
+        ) => {
+            const command = application.container.get(commandClass, {
+                constructorArgs: [application, permissionManagerService]
+            });
 
-                    commandManagerService?.register(command, category);
-                    application.logger.info(
-                        `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`
-                    );
-                }
+            await command.onAppBoot?.();
+            const category = path.basename(path.dirname(filepath)).toLowerCase();
+
+            commandManagerService?.register(command, category);
+            application.logger.info(
+                `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`
+            );
+        };
+
+        if (isBundle) {
+            const data = getBundleData();
+
+            if (!data?.commands) {
+                return;
             }
-        );
+
+            for (const command in data.commands) {
+                await onLoad(command, data.commands[command]);
+            }
+
+            return;
+        }
+
+        await application.classLoader.loadClassesRecursive<
+            DefaultExport<
+                new (application: Application, permissionManagerService: PermissionManagerServiceInterface) => Command
+            >
+        >(this.commandsDirectory, {
+            preLoad: filepath => {
+                application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
+            },
+            postLoad: async (filepath, { default: CommandClass }) => {
+                await onLoad(filepath, CommandClass);
+            }
+        });
     }
 
     public async boot(application: Application): Promise<void> {

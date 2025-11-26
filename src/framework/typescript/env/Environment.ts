@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { EnvironmentVariableSchema } from "@schemas/EnvironmentVariableSchema";
 import type { Type } from "typebox";
 import { Value } from "typebox/value";
 

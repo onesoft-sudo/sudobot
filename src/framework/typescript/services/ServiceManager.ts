@@ -24,6 +24,7 @@ import { Collection } from "discord.js";
 import { Logger } from "@framework/log/Logger";
 import { requireNonNull } from "@framework/utils/utils";
 import type { ConstructorOf } from "@framework/container/Container";
+import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle";
 
 class ServiceManager {
     public readonly application: Application;
@@ -34,7 +35,15 @@ class ServiceManager {
         this.application = application;
     }
 
-    public async load(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
+    public load(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
+        if (BUNDLE_DATA_SYMBOL in global) {
+            return this.loadFromBundle();
+        }
+
+        return this.loadFromList(services, aliases);
+    }
+
+    public async loadFromList(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
         for (const service of services) {
             this.logger.debug("Loading service: ", service);
 
@@ -49,26 +58,39 @@ class ServiceManager {
                     servicePath
                 );
 
-            const serviceInstance = this.application.container.get(ServiceClass, {
-                constructorArgs: [this.application]
-            });
-
-            if (!(serviceInstance instanceof Service)) {
-                throw new TypeError("Service " + ServiceClass.name + " does not extend Service base class");
-            }
-
-            this.services.set(serviceInstance.name, serviceInstance);
-            this.services.set(ServiceClass, serviceInstance);
-            this.application.container.register({
-                type: ServiceClass,
-                factory: () => serviceInstance,
-                singleton: true,
-                id: serviceInstance.name
-            });
-
-            await serviceInstance.boot?.();
-            this.logger.info("Loaded service: ", service, " (" + ServiceClass.name + ")");
+            await this.loadInstance(service, ServiceClass);
         }
+    }
+
+    public async loadFromBundle() {
+        const services = BUNDLE_DATA_SYMBOL in global ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services : {};
+
+        for (const service in services) {
+            this.logger.debug("Loading service: ", service);
+            await this.loadInstance(service, services[service]);
+        }
+    }
+
+    protected async loadInstance(service: string, serviceClass: new (application: Application) => Service) {
+        const serviceInstance = this.application.container.get(serviceClass, {
+            constructorArgs: [this.application]
+        });
+
+        if (!(serviceInstance instanceof Service)) {
+            throw new TypeError("Service " + serviceClass.name + " does not extend Service base class");
+        }
+
+        this.services.set(serviceInstance.name, serviceInstance);
+        this.services.set(serviceClass, serviceInstance);
+        this.application.container.register({
+            type: serviceClass,
+            factory: () => serviceInstance,
+            singleton: true,
+            id: serviceInstance.name
+        });
+
+        await serviceInstance.boot?.();
+        this.logger.info("Loaded service: ", service, " (" + serviceClass.name + ")");
     }
 
     public get<T extends Service>(service: ConstructorOf<T>): T;
