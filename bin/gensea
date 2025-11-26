@@ -120,25 +120,28 @@ for platform in $platforms; do
             ;;
 
         windows:x86_64|windows:x86_64-baseline)
-            winopts='
-                --windows-title=SudoBot
-                --windows-icon="${dir}/assets/logo.png"
-                --windows-publisher="OSN Developers"
-                --windows-version="$version"
-                --windows-description="A Discord Moderation Bot"
-                --windows-copyright="Copyright © $year OSN Developers"
-            '
-
             target=bun-windows-x64
-            test -n "$WINDIR" || winopts=''
             test "$platform" = "windows:x86_64-baseline" && target="$target-baseline"
 
-            bun build \
-                $common_options \
-                $winopts \
-                --target=$target \
-                --outfile=build/sudobot-$suffix \
-                build/index.js
+            if test -z "$WINDIR"; then
+                bun build \
+                    $common_options \
+                    --target=$target \
+                    --outfile=build/sudobot-$suffix \
+                    build/index.js
+            else
+                bun build \
+                    $common_options \
+                    --windows-title=SudoBot \
+                    --windows-icon="${dir}/assets/logo.png" \
+                    --windows-publisher="OSN Developers" \
+                    --windows-version="$version" \
+                    --windows-description="A Discord Moderation Bot" \
+                    --windows-copyright="Copyright © $year OSN Developers" \
+                    --target=$target \
+                    --outfile=build/sudobot-$suffix \
+                    build/index.js
+            fi
             ;;
 
         *)
