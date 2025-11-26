@@ -79,10 +79,6 @@ export function TestSuite(target: object | string) {
         };
     }
 
-    process.on("beforeExit", () => {
-        console.log(3);
-    });
-
     const object = new (target as new () => object)();
     executeSuite(object);
 }
