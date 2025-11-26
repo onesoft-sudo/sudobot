@@ -56,7 +56,7 @@ jobs:
                 https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts
 
       - name: Download build artifacts
-        if: exists('artifacts.json') && steps.auto_release.outputs.tag != ''
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         shell: sh
         run: |
             for platform in ubuntu macos windows; do
