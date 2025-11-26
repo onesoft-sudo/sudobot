@@ -15,7 +15,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v5
@@ -25,11 +26,12 @@ jobs:
       - name: Use Bun
         uses: oven-sh/setup-bun@v2
         with:
-            bun-version: latest
+          bun-version: latest
 
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-            version: 10
+          version: 10
 
       - name: "Install Dependencies"
         run: pnpm install
@@ -46,9 +48,57 @@ jobs:
       - name: "Bundle"
         run: pnpm run bundle
 
-      - name: "Build Executable"
-        run: bin/gensea all
+      - name: "Build Executables"
+        run: |
+            OS=linux
+
+            if test "${{ matrix.os }}" = "macos-latest"; then
+                OS=darwin
+            elif test "${{ matrix.os }}" = "windows-latest"; then
+                OS=windows
+            fi
+
+            bin/gensea $OS
         shell: sh
+
+      - name: Create Linux Distro Packages
+        id: linux_package
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt update && sudo apt install -y rpm dpkg-dev;
+          sudo hostnamectl set-hostname "github-actions-runner.sudobot.org";
+          cd packages;
+          make || exit 1;
+          cp *.deb *.rpm ../;
+          cd ..;
+          files="";
+          for f in *.deb *.rpm; do
+            files="$files,./$f"
+          done;
+          echo "files=$files" >> $GITHUB_OUTPUT;
+
+      - name: Prepare artifacts
+        shell: sh
+        run: |
+            mkdir -p build-${{ matrix.os }}/bin
+
+            if test "${{ matrix.os }}" = "ubuntu-latest"; then
+                mkdir -p build-${{ matrix.os }}/packages
+                mv -v build/*linux* build-${{ matrix.os }}/bin/
+                mv -v ${{ steps.linux_package.outputs.files }} build-${{ matrix.os }}/packages/
+            elif test "${{ matrix.os }}" = "macos-latest"; then
+                mv -v build/*darwin* build-${{ matrix.os }}/bin/
+            elif test "${{ matrix.os }}" = "windows-latest"; then
+                mv -v build/*.exe build-${{ matrix.os }}/bin/
+            fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: build-${{ matrix.os }}
+            path: build-${{ matrix.os }}
+            include-hidden-files: true
+            compression-level: 9
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.5.1
@@ -69,11 +119,13 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-            version: 10
+          version: 10
 
       - name: Build with BlazeBuild
         run: ./blazew build

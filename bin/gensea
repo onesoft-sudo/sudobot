@@ -16,6 +16,18 @@ test "$platforms" = "all" && platforms='
     windows:x86_64 windows:x86_64-baseline
 '
 
+test "$platforms" = "linux" && platforms='
+    linux:x86_64 linux:x86_64-baseline linux:x86_64-musl linux:x86_64-musl-baseline linux:arm64 linux:arm64-musl
+'
+
+test "$platforms" = "darwin" && platforms='
+    darwin:x86_64 darwin:x86_64-baseline darwin:arm64
+'
+
+test "$platforms" = "windows" && platforms='
+    windows:x86_64 windows:x86_64-baseline
+'
+
 version=`cd "$dir" && bun -e 'process.stdout.write(require("./package.json").version);'`
 year=`date +%Y`
 

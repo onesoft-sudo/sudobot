@@ -4,5 +4,10 @@
             "command": "node_modules/.bin/prettier",
             "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
+    },
+    "languages": {
+        "YAML": {
+            "tab_size": 2
+        }
     }
 }

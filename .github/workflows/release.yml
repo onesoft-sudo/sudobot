@@ -1,70 +1,29 @@
 name: Releases
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
 
 permissions:
   contents: write
   deployments: write
 
 jobs:
-  build:
-    if: github.repository_owner == 'onesoft-sudo' && github.ref == 'refs/heads/main'
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Use Node.js 25.x
-        uses: actions/setup-node@v5
-        with:
-          node-version: 25.x
-
-      - uses: pnpm/action-setup@v4
-        with:
-            version: 10
-
-      - name: "Build with BlazeBuild"
-        run: ./blazew build
-
-      - name: "Package the build output files"
-        run: |
-          OS="${{ matrix.os }}";
-          mkdir sudobot-release-${OS};
-          mv build sudobot-release-${OS};
-          mv src sudobot-release-${OS};
-          # mkdir sudobot-release-${OS}/lib;
-          # mv lib/build sudobot-release-${OS}/lib/build;
-          tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
-
-      - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sudobot-release-${{ matrix.os }}-incomplete
-          path: |
-            ./sudobot-release-${{ matrix.os }}-incomplete.tar.gz
-
   release:
-    needs: [build]
-    if: github.repository_owner == 'onesoft-sudo' && github.ref == 'refs/heads/main'
+    if: github.repository_owner == 'onesoft-sudo' && github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
 
       - name: Prepare Git
         run: |
           echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
           gpg --import private.key
           rm -f private.key
-          git config --global user.signingkey "6AE7B08C68169452"
+          git config --global user.signingkey 6AE7B08C68169452
           git config --global commit.gpgsign true
 
       - name: Conventional Release Action
@@ -80,63 +39,57 @@ jobs:
           changelog-format: markdown
           allowed-commit-types: feat,fix,refactor,perf,ci,build,test,revert,chore,release,deps
 
-      - name: Download Linux Release Artifact
-        uses: actions/download-artifact@v5
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        with:
-          name: sudobot-release-ubuntu-latest-incomplete
-
-      - name: Download macOS Release Artifact
-        uses: actions/download-artifact@v5
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        with:
-          name: sudobot-release-macos-latest-incomplete
-
-      - name: Extract Artifacts
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        run: |
-          tar -xvzf sudobot-release-ubuntu-latest-incomplete.tar.gz;
-          tar -xvzf sudobot-release-macos-latest-incomplete.tar.gz;
-
-      - name: Rename Artifacts
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        run: |
-          mv sudobot-release-ubuntu-latest sudobot-release-linux;
-          mv sudobot-release-macos-latest sudobot-release-darwin;
-
-      - name: Add package.json to Incomplete Artifacts
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        run: |
-          cp package.json sudobot-release-linux/package.json;
-          cp package.json sudobot-release-darwin/package.json;
-
-      - name: Re-package Artifacts
-        if: ${{ steps.auto_release.outputs.tag != '' }}
-        run: |
-          tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
-          tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
-
       - uses: oven-sh/setup-bun@v2
         if: ${{ steps.auto_release.outputs.tag != '' }}
         with:
           bun-version: latest
 
-      - name: Create Linux Distro Packages
-        id: linux_package
+      - name: Download build artifact information
         if: ${{ steps.auto_release.outputs.tag != '' }}
+        id: artifacts
+        shell: sh
         run: |
-          cp -r sudobot-release-linux/build .;
-          sudo apt update && sudo apt install -y rpm dpkg-dev;
-          sudo hostnamectl set-hostname "github-actions-runner.sudobot.online";
-          cd packages;
-          make || exit 1;
-          cp *.deb *.rpm ../;
-          cd ..;
-          files="";
-          for f in *.deb *.rpm; do
-            files="$files,./$f"
-          done;
-          echo "files=$files" >> $GITHUB_OUTPUT;
+            curl \
+                -L \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts
+
+      - name: Download build artifacts
+        if: exists('artifacts.json') && steps.auto_release.outputs.tag != ''
+        shell: sh
+        run: |
+            for platform in ubuntu macos windows; do
+                url=`bun -r "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
+                test -z "$url" && echo "No artifact found for: $platform" && exit 1
+                curl -L \
+                    -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                    "$url" \
+                    -o artifact.zip
+                unzip artifact.zip
+                rm -f artifact.zip
+            done
+
+            mv build-ubuntu-latest build-linux
+            mv build-macos-latest build-darwin
+            mv build-windows-latest build-windows
+
+            tar -czvf build-linux.tar.gz build-linux/bin/*linux*
+            tar -czvf build-darwin.tar.gz build-darwin/bin/*darwin*
+            zip -r build-windows.zip build-windows/bin/*.exe
+
+            for file in build-{linux,darwin}/bin/*; do
+                base=`basename "$file"`
+                test -f "$file" || continue
+                tar -czvf "${base}.tar.gz" "${file}"
+            done
+
+            for file in build-windows/bin/*; do
+                base=`basename "$file"`
+                test -f "$file" || continue
+                tar -czvf "${base}.tar.gz" "${file}"
+                zip -r "${base}.zip" "${file}"
+            done
 
       - name: Create Release
         id: create_release
@@ -150,12 +103,7 @@ jobs:
           body: ${{ steps.auto_release.outputs.release_notes }}
           artifactContentType: application/x-gzip
           artifacts: |
-            ./sudobot-release-linux.tar.gz,
-            ./sudobot-release-darwin.tar.gz
+            build-linux/packages/*,
+            *.tar.gz,
+            *.zip,
             ${{ steps.linux_package.outputs.files }}
-
-#  deploy-staging:
-#    needs: [build, release]
-#    if: github.repository_owner == 'onesoft-sudo'
-#    uses: ./.github/workflows/staging.yml
-#    secrets: inherit
