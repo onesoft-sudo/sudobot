@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# genimports -- generate bundler-friendly static imports for dynamic classes
+#
+#
+nl='
+'
+dir=`dirname "$0"`
+main="src/main/typescript"
+main_root=`readlink -f "${dir}/../${main}"`
+paths="services${nl}commands${nl}events"
+
+out="$1"
+test $# -eq 0 && out=`pwd`
+
+IFS="${nl}"
+
+buf_imports=""
+buf_exports=""
+buf_services=""
+buf_events=""
+buf_commands=""
+
+for path in $paths; do
+    fullpath=`readlink -f "$main_root/$path"`
+    cwd=`pwd`
+    cd "$main_root" || exit 1
+
+    printf "Checking path: %s\n" "${fullpath}"
+    result=`find "${path}" -type f -name '*.ts'`
+
+    for filepath in $result; do
+        printf "Found file: %s\n" "${filepath}"
+        base=`basename "${filepath}" | cut -d. -f1`
+        dirname=`dirname "${filepath}"`
+        buf_imports="${buf_imports}import ${base} from \"./${dirname}/${base}\";${nl}"
+        buf_exports="${buf_exports}\t${base},${nl}"
+
+        if test "$path" = "services"; then
+            buf_services="${buf_services}\t\"@${path}/${base}\": ${base},${nl}"
+        elif test "$path" = "events"; then
+            buf_events="${buf_events}\t${base},${nl}"
+        elif test "$path" = "commands"; then
+            buf_commands="${buf_commands}\t${base},${nl}"
+        fi
+    done
+
+    cd "$cwd" || exit 1
+done
+
+echo "${buf_imports}${nl}${nl}" > "${out}/imports.ts"
+echo "export const classes = {${nl}${buf_exports}};${nl}${nl}" >> "${out}/imports.ts"
+echo "export const services = {${nl}${buf_services}};${nl}${nl}" >> "${out}/imports.ts"
+echo "export const events = {${nl}${buf_events}};${nl}${nl}" >> "${out}/imports.ts"
+echo "export const commands = {${nl}${buf_commands}};${nl}${nl}" >> "${out}/imports.ts"

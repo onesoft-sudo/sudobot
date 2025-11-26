@@ -1,0 +1,137 @@
+#!/bin/sh
+#
+# gensea -- create a single executable application
+#
+
+dir=`dirname "$0"`
+dir=`readlink -f "${dir}/.."`
+
+export NODE_ENV=production
+
+platforms="$1"
+test -z "$platforms" && platforms=linux:x86_64
+test "$platforms" = "all" && platforms='
+    linux:x86_64 linux:x86_64-baseline linux:x86_64-musl linux:x86_64-musl-baseline linux:arm64 linux:arm64-musl
+    darwin:x86_64 darwin:x86_64-baseline darwin:arm64
+    windows:x86_64 windows:x86_64-baseline
+'
+
+version=`cd "$dir" && bun -e 'process.stdout.write(require("./package.json").version);'`
+year=`date +%Y`
+
+common_options='
+    --minify-syntax
+    --minify-whitespace
+    --env="NODE_EN*"
+    --keep-names
+    --compile
+    --bytecode
+    --no-compile-autoload-dotenv
+    --no-compile-autoload-bunfig
+'
+
+for platform in $platforms; do
+    printf "Building for: %s\n" "$platform"
+    suffix=`echo "$platform" | tr ':' '-'`
+
+    case "$platform" in
+        linux:x86_64)
+            bun build \
+                $common_options \
+                --target=bun-linux-x64-modern \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        linux:x86_64-baseline)
+            bun build \
+                $common_options \
+                --target=bun-linux-x64-baseline \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        linux:arm64)
+            bun build \
+                $common_options \
+                --target=bun-linux-arm64 \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        linux:x86_64-musl)
+            bun build \
+                $common_options \
+                --target=bun-linux-x64-musl \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        linux:x86_64-musl-baseline)
+            bun build \
+                $common_options \
+                --target=bun-linux-x64-musl-baseline \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        linux:arm64-musl)
+            bun build \
+                $common_options \
+                --target=bun-linux-arm64-musl \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        darwin:x86_64)
+            bun build \
+                $common_options \
+                --target=bun-darwin-x64 \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        darwin:x86_64-baseline)
+            bun build \
+                $common_options \
+                --target=bun-darwin-x64-baseline \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        darwin:arm64)
+            bun build \
+                $common_options \
+                --target=bun-darwin-arm64 \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        windows:x86_64|windows:x86_64-baseline)
+            winopts='
+                --windows-title=SudoBot
+                --windows-icon="${dir}/assets/logo.png"
+                --windows-publisher="OSN Developers"
+                --windows-version="$version"
+                --windows-description="A Discord Moderation Bot"
+                --windows-copyright="Copyright © $year OSN Developers"
+            '
+
+            target=bun-windows-x64
+            test -n "$WINDIR" || winopts=''
+            test "$platform" = "windows:x86_64-baseline" && target="$target-baseline"
+
+            bun build \
+                $common_options \
+                $winopts \
+                --target=$target \
+                --outfile=build/sudobot-$suffix \
+                build/index.js
+            ;;
+
+        *)
+            printf "Invalid platform: %s\n" "$platform" >&2
+            exit 1
+            ;;
+    esac
+done
