@@ -133,7 +133,7 @@ for platform in $platforms; do
                 bun build \
                     $common_options \
                     --windows-title=SudoBot \
-                    --windows-icon="${dir}/assets/logo.png" \
+                    --windows-icon="${dir}/assets/icon.ico" \
                     --windows-publisher="OSN Developers" \
                     --windows-version="$version" \
                     --windows-description="A Discord Moderation Bot" \
