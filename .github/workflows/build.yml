@@ -57,7 +57,7 @@ jobs:
           cd ..;
           files="";
           for f in *.deb *.rpm; do
-            files="$files,./$f"
+            files="$files ./$f"
           done;
           echo "files=$files" >> $GITHUB_OUTPUT;
 
@@ -86,12 +86,7 @@ jobs:
             if test "${{ matrix.os }}" = "ubuntu-latest"; then
                 mkdir -p build-${{ matrix.os }}/packages
                 mv -v build/*linux* build-${{ matrix.os }}/bin/
-
-                IFS=', '
-
-                for file in ${{ steps.linux_package.outputs.files }}; do
-                    mv -v "$file" build-${{ matrix.os }}/packages/
-                done
+                mv -v ${{ steps.linux_package.outputs.files }} build-${{ matrix.os }}/packages/
             elif test "${{ matrix.os }}" = "macos-latest"; then
                 mv -v build/*darwin* build-${{ matrix.os }}/bin/
             elif test "${{ matrix.os }}" = "windows-latest"; then

@@ -105,5 +105,4 @@ jobs:
           artifacts: |
             build-linux/packages/*,
             *.tar.gz,
-            *.zip,
-            ${{ steps.linux_package.outputs.files }}
+            *.zip
