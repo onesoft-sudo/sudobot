@@ -45,22 +45,6 @@ jobs:
       - name: "Test"
         run: npx vitest run --coverage
 
-      - name: "Bundle"
-        run: pnpm run bundle
-
-      - name: "Build Executables"
-        run: |
-            OS=linux
-
-            if test "${{ matrix.os }}" = "macos-latest"; then
-                OS=darwin
-            elif test "${{ matrix.os }}" = "windows-latest"; then
-                OS=windows
-            fi
-
-            bin/gensea $OS
-        shell: sh
-
       - name: Create Linux Distro Packages
         id: linux_package
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '25.x' }}
@@ -76,6 +60,22 @@ jobs:
             files="$files,./$f"
           done;
           echo "files=$files" >> $GITHUB_OUTPUT;
+
+      - name: "Bundle"
+        run: pnpm run bundle
+
+      - name: "Build Executables"
+        run: |
+            OS=linux
+
+            if test "${{ matrix.os }}" = "macos-latest"; then
+                OS=darwin
+            elif test "${{ matrix.os }}" = "windows-latest"; then
+                OS=windows
+            fi
+
+            bin/gensea $OS
+        shell: sh
 
       - name: Prepare artifacts
         if: ${{ matrix.node-version == '25.x' }}
