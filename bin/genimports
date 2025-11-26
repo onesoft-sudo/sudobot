@@ -34,14 +34,14 @@ for path in $paths; do
         base=`basename "${filepath}" | cut -d. -f1`
         dirname=`dirname "${filepath}"`
         buf_imports="${buf_imports}import ${base} from \"./${dirname}/${base}\";${nl}"
-        buf_exports="${buf_exports}\t${base},${nl}"
+        buf_exports="${buf_exports}    ${base},${nl}"
 
         if test "$path" = "services"; then
-            buf_services="${buf_services}\t\"@${path}/${base}\": ${base},${nl}"
+            buf_services="${buf_services}    \"@${path}/${base}\": ${base},${nl}"
         elif test "$path" = "events"; then
-            buf_events="${buf_events}\t${base},${nl}"
+            buf_events="${buf_events}    ${base},${nl}"
         elif test "$path" = "commands"; then
-            buf_commands="${buf_commands}\t${base},${nl}"
+            buf_commands="${buf_commands}    ${base},${nl}"
         fi
     done
 
