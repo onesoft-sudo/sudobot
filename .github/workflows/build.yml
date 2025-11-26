@@ -63,7 +63,7 @@ jobs:
 
       - name: Create Linux Distro Packages
         id: linux_package
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '25.x' }}
         run: |
           sudo apt update && sudo apt install -y rpm dpkg-dev;
           sudo hostnamectl set-hostname "github-actions-runner.sudobot.org";
@@ -78,6 +78,7 @@ jobs:
           echo "files=$files" >> $GITHUB_OUTPUT;
 
       - name: Prepare artifacts
+        if: ${{ matrix.node-version == '25.x' }}
         shell: sh
         run: |
             mkdir -p build-${{ matrix.os }}/bin
@@ -94,6 +95,7 @@ jobs:
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
+        if: ${{ matrix.node-version == '25.x' }}
         with:
             name: build-${{ matrix.os }}
             path: build-${{ matrix.os }}
