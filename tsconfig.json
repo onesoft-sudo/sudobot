@@ -1,10 +1,10 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "ES2022",
+        "target": "ES2023",
         "module": "CommonJS",
         "moduleResolution": "node",
-        "lib": ["ES2024", "Decorators", "DOM"],
+        "lib": ["ES2023", "Decorators", "DOM"],
         "types": ["node", "bun"],
         "resolveJsonModule": true,
         "declaration": true,

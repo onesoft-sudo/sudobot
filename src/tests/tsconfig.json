@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "ES2022",
+        "target": "ES2023",
         "module": "ESNext",
         "moduleResolution": "node",
         "types": ["node", "bun"],
-        "lib": ["ES2022", "Decorators", "DOM"],
+        "lib": ["ES2023", "Decorators", "DOM"],
         "resolveJsonModule": true,
         "noEmit": true,
         "importHelpers": true,
