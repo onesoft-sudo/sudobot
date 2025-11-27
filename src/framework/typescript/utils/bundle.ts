@@ -12,6 +12,8 @@ export type BundleData = {
     classes: Record<string, Function>;
     events: Record<string, new (application: Application) => EventListener<Events>>;
     commands: Record<string, new (application: Application, permissionManagerService: PermissionManagerServiceInterface) => Command>;
+    resources: Record<string, unknown>;
 };
 
 export const getBundleData = () => (global as { [BUNDLE_DATA_SYMBOL]?: BundleData })[BUNDLE_DATA_SYMBOL];
+export const hasBundleData = () => BUNDLE_DATA_SYMBOL in global;

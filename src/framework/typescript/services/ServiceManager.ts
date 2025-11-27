@@ -37,7 +37,7 @@ class ServiceManager {
 
     public load(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
         if (BUNDLE_DATA_SYMBOL in global) {
-            return this.loadFromBundle();
+            return this.loadFromBundle(services);
         }
 
         return this.loadFromList(services, aliases);
@@ -62,12 +62,14 @@ class ServiceManager {
         }
     }
 
-    public async loadFromBundle() {
-        const services = BUNDLE_DATA_SYMBOL in global ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services : {};
+    public async loadFromBundle(serviceNames: readonly string[]) {
+        const services = Object.entries(
+            BUNDLE_DATA_SYMBOL in global ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services : {}
+        ).toSorted(([a], [b]) => serviceNames.indexOf(a) - serviceNames.indexOf(b));
 
-        for (const service in services) {
+        for (const [service, serviceClass] of services) {
             this.logger.debug("Loading service: ", service);
-            await this.loadInstance(service, services[service]);
+            await this.loadInstance(service, serviceClass);
         }
     }
 

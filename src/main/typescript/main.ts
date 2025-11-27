@@ -29,6 +29,7 @@ import AppKernel from "@main/core/AppKernel";
 import { setEnvData } from "@main/env/env";
 import type { DotenvParseOutput } from "dotenv";
 import { parseArgs } from "util";
+import Resource from "@framework/resources/Resource";
 
 const logger = new Logger("Main", true);
 const argv0 = process.env.SUDOBOT_WRAPPER ? "sudobot" : path.basename(process.argv[1]);
@@ -185,6 +186,7 @@ async function main() {
     }
 
     Application.setupGlobals();
+    Resource.registerResourcePaths(path.resolve(__dirname, "../resources"));
     await loadEnvironmentData();
 
     const rootDirectoryPath = path.resolve(__dirname);

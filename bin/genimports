@@ -1,25 +1,31 @@
 #!/bin/sh
 #
-# genimports -- generate bundler-friendly static imports for dynamic classes
+# genimports -- generate bundler-friendly static imports for files and resources
 #
-#
+
 nl='
 '
 dir=`dirname "$0"`
-main="src/main/typescript"
-main_root=`readlink -f "${dir}/../${main}"`
+
+framework="src/framework"
+main="src/main"
+
+main_root=`readlink -f "${dir}/../${main}/typescript"`
+
 paths="services${nl}commands${nl}events"
+resource_paths="main/resources${nl}framework/resources"
 
 out="$1"
 test $# -eq 0 && out=`pwd`
 
 IFS="${nl}"
 
-buf_imports=""
+buf_imports="import { readFileSync } from \"fs\";${nl}import packageJSON from \"../../../package.json\";${nl}"
 buf_exports=""
 buf_services=""
 buf_events=""
 buf_commands=""
+buf_resources="    \"package.json\": packageJSON,${nl}"
 
 for path in $paths; do
     fullpath=`readlink -f "$main_root/$path"`
@@ -48,8 +54,42 @@ for path in $paths; do
     cd "$cwd" || exit 1
 done
 
-echo "${buf_imports}${nl}${nl}" > "${out}/imports.ts"
-echo "export const classes = {${nl}${buf_exports}};${nl}${nl}" >> "${out}/imports.ts"
-echo "export const services = {${nl}${buf_services}};${nl}${nl}" >> "${out}/imports.ts"
-echo "export const events = {${nl}${buf_events}};${nl}${nl}" >> "${out}/imports.ts"
-echo "export const commands = {${nl}${buf_commands}};${nl}${nl}" >> "${out}/imports.ts"
+srcdirpath=`readlink -f $dir/../src`
+
+for path in $resource_paths; do
+    fullpath=`readlink -f "$dir/../src/$path"`
+
+    cwd=`pwd`
+    cd "$main_root" || exit 1
+
+    printf "Checking path: %s\n" "${fullpath}"
+    result=`find "${fullpath}" -type f ! -name '.*'`
+
+     for filepath in $result; do
+         printf "Found file: %s\n" "${filepath}"
+         base=`basename "${filepath}"`
+         base_without_ext=`basename "${filepath}" | cut -d. -f1`
+         extension=`basename "${filepath}" | rev | cut -d. -f1 | rev`
+         dirname=`dirname "${filepath}"`
+
+         if test "$extension" = "json"; then
+             import_path=`echo "$filepath" | sed -E "s|^$srcdirpath/|../../|"`
+             buf_imports="${buf_imports}import ${base_without_ext} from \"${import_path}\";${nl}"
+             buf_resources="${buf_resources}    \"${base}\": ${base_without_ext},${nl}"
+         elif test "$extension" = "txt"; then
+             buf_resources="${buf_resources}    \"${base}\": \"$(cat "$filepath" | sed -E 's/"/\"/g')\",${nl}"
+         else
+             bytes=`xxd -i "$filepath" | awk 'BEGIN { prev = ""; } NR > 2 && $0 != "};" { print prev; prev = $0; }'`
+             buf_resources="${buf_resources}    \"${base}\": Buffer.from([${bytes}]),${nl}"
+         fi
+     done
+
+     cd "$cwd" || exit 1
+done
+
+echo "${buf_imports}${nl}${nl}" > "${out}/imports.gen.ts"
+echo "export const classes = {${nl}${buf_exports}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const services = {${nl}${buf_services}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const events = {${nl}${buf_events}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const commands = {${nl}${buf_commands}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const resources = {${nl}${buf_resources}};${nl}${nl}" >> "${out}/imports.gen.ts"

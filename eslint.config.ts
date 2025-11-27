@@ -79,7 +79,8 @@ export default defineConfig([
             "**/*.bak",
             "**/tests",
             "*.blaze.ts",
-            "build"
+            "build",
+            "imports.gen.ts"
         ]
     }
 ]);
