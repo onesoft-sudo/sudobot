@@ -65,7 +65,7 @@ class ServiceManager {
     public async loadFromBundle(serviceNames: readonly string[]) {
         const services = Object.entries(
             BUNDLE_DATA_SYMBOL in global ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services : {}
-        ).toSorted(([a], [b]) => serviceNames.indexOf(a) - serviceNames.indexOf(b));
+        ).sort(([a], [b]) => serviceNames.indexOf(a) - serviceNames.indexOf(b));
 
         for (const [service, serviceClass] of services) {
             this.logger.debug("Loading service: ", service);
