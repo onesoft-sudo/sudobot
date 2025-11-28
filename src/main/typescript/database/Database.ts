@@ -1,8 +1,10 @@
 import AbstractDatabase from "@framework/database/AbstractDatabase";
 import * as InfractionModels from "@main/models/Infraction";
+import * as PermissionLevelModels from "@main/models/PermissionLevel";
 
 const models = {
-    ...InfractionModels
+    ...InfractionModels,
+    ...PermissionLevelModels,
 } as const;
 
 type ModelRecordType = typeof models;

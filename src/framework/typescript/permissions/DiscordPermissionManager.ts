@@ -6,10 +6,10 @@ import type { RawPermissionResolvable, SystemPermissionResolvable } from "./Perm
 class DiscordPermissionManager extends AbstractImplicitPermissionManager {
     public override async getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
-        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects
+        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         return {
-            customPermissions: systemPermissions ? await this.customPermissionCheck(systemPermissions, user) : [],
+            customPermissions: systemPermissions ? await this.customPermissionCheck(systemPermissions, user) : undefined,
             discordPermissions: this.resolveDiscordPermissions(user),
             grantAll: false
         };

@@ -18,7 +18,7 @@
  */
 
 import type { APIInteractionGuildMember, Awaitable, GuildBasedChannel, PermissionResolvable, Role } from "discord.js";
-import { PermissionsBitField, User } from "discord.js";
+import { Collection, PermissionsBitField, User } from "discord.js";
 import type { GuildMember } from "discord.js";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable";
 import Permission from "./Permission";
@@ -26,17 +26,20 @@ import type Application from "@framework/app/Application";
 
 export type GetPermissionsResult = {
     discordPermissions: bigint;
-    customPermissions: Permission[];
+    customPermissions?: Set<Permission>;
     grantAll: boolean;
 };
 
 abstract class AbstractPermissionManager {
     protected readonly application: Application;
-    protected readonly permissionObjects: Permission[];
+    protected readonly permissionObjects = new Collection<string, Permission>();
 
     public constructor(application: Application, permissions: SystemPermissionResolvable[]) {
         this.application = application;
-        this.permissionObjects = permissions.map(c => Permission.resolve(application, c));
+        this.permissionObjects = new Collection(permissions.map(c => {
+            const instance = Permission.resolve(application, c);
+            return [instance.name, instance];
+        }));
     }
 
     public hasPermissions(
@@ -85,11 +88,10 @@ abstract class AbstractPermissionManager {
 
     public async getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
-        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects
+        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         if (!systemPermissions) {
             return {
-                customPermissions: [],
                 discordPermissions: this.resolveDiscordPermissions(user),
                 grantAll: false
             };
@@ -108,7 +110,6 @@ abstract class AbstractPermissionManager {
         }
 
         return {
-            customPermissions,
             discordPermissions:
                 user instanceof User
                     ? 0n
@@ -131,7 +132,7 @@ abstract class AbstractPermissionManager {
         systemPermissions: Iterable<SystemPermissionResolvable>,
         user: GuildMember | APIInteractionGuildMember | User
     ) {
-        const customPermissions = [];
+        const customPermissions = new Set<Permission>();
 
         for (const permission of systemPermissions) {
             const instance = Permission.resolve(this.application, permission);
@@ -140,7 +141,7 @@ abstract class AbstractPermissionManager {
                 continue;
             }
 
-            customPermissions.push(instance);
+            customPermissions.add(instance);
         }
 
         return customPermissions;

@@ -23,6 +23,7 @@ import Singleton from "@framework/objects/Singleton";
 import type { APIInteractionGuildMember, APIUser, Awaitable, GuildMember} from "discord.js";
 import { User } from "discord.js";
 import type { SystemPermissionResolvable } from "./PermissionResolvable";
+import { requireNonNull } from "@framework/utils/utils";
 
 abstract class Permission extends Singleton {
     public abstract readonly name: string;
@@ -50,7 +51,8 @@ abstract class Permission extends Singleton {
         application: Application,
         resolvable: SystemPermissionResolvable
     ): Permission {
-        return typeof resolvable === "function" ? resolvable.getInstance(application) : resolvable;
+        const value = typeof resolvable === "function" ? resolvable.getInstance(application) : resolvable;
+        return requireNonNull(value);
     }
 
     public hasMember(member: GuildMember | APIInteractionGuildMember): Awaitable<boolean> {

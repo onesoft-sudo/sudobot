@@ -33,7 +33,7 @@ class PermissionManager extends AbstractPermissionManager {
 
     public override getPermissions(
         member: User | GuildMember | APIInteractionGuildMember,
-        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects
+        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Awaitable<GetPermissionsResult> {
         return super.getPermissions(member, systemPermissions);
     }

@@ -20,13 +20,7 @@
 import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
 import type { APIInteractionGuildMember } from "discord.js";
-import {
-    User,
-    type GuildBasedChannel,
-    type Role,
-    GuildMember,
-    PermissionsBitField,
-} from "discord.js";
+import { User, type GuildBasedChannel, type Role, GuildMember, PermissionsBitField } from "discord.js";
 import PolicyManagerAVC from "./PolicyManagerAVC";
 import { LRUCache } from "lru-cache";
 import Permission from "@framework/permissions/Permission";
@@ -95,14 +89,14 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
 
     public override async getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
-        systemPermissions?: Iterable<SystemPermissionResolvable>
+        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         if (await this.canBypass(user)) {
-            const customPermissions = [...Permission.globalBypassPermissions];
+            const customPermissions = new Set(Permission.globalBypassPermissions);
 
             if (systemPermissions) {
                 for (const permission of systemPermissions) {
-                    customPermissions.push(Permission.resolve(this.application, permission));
+                    customPermissions.add(Permission.resolve(this.application, permission));
                 }
             }
 
@@ -172,13 +166,12 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return {
                 discordPermissions: PermissionsBitField.All,
                 grantAll: true,
-                customPermissions: [...Permission.globalBypassPermissions]
+                customPermissions: new Set(Permission.globalBypassPermissions)
             };
         }
 
         if (!("guild" in member)) {
             return {
-                customPermissions: [],
                 discordPermissions: 0n,
                 grantAll: false
             };
@@ -187,7 +180,6 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetChannel);
 
         return {
-            customPermissions: [],
             discordPermissions,
             grantAll: false
         };
@@ -201,13 +193,12 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return {
                 discordPermissions: PermissionsBitField.All,
                 grantAll: true,
-                customPermissions: [...Permission.globalBypassPermissions]
+                customPermissions: new Set(Permission.globalBypassPermissions)
             };
         }
 
         if (!("guild" in member)) {
             return {
-                customPermissions: [],
                 discordPermissions: 0n,
                 grantAll: false
             };
@@ -216,7 +207,6 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetRole);
 
         return {
-            customPermissions: [],
             discordPermissions,
             grantAll: false
         };
@@ -233,13 +223,12 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
             return {
                 discordPermissions: PermissionsBitField.All,
                 grantAll: true,
-                customPermissions: [...Permission.globalBypassPermissions]
+                customPermissions: new Set(Permission.globalBypassPermissions)
             };
         }
 
         if ((memberCanBypass && targetCanBypass) || !("guild" in member) || !("guild" in targetMember)) {
             return {
-                customPermissions: [],
                 discordPermissions: 0n,
                 grantAll: false
             };
@@ -248,7 +237,6 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         const discordPermissions = await this.computeDiscordPermissionsOnTarget(member, targetMember);
 
         return {
-            customPermissions: [],
             discordPermissions,
             grantAll: false
         };
