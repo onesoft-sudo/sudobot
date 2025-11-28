@@ -80,7 +80,7 @@ export default defineConfig([
             "**/tests",
             "*.blaze.ts",
             "build",
-            "imports.gen.ts"
+            "**/imports.gen.ts"
         ]
     }
 ]);

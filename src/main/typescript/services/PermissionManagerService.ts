@@ -21,11 +21,14 @@ import { Inject } from "@framework/container/Inject";
 import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
 import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import Service from "@framework/services/Service";
-import type { Snowflake } from "discord.js";
+import { Collection, ReadonlyCollection, type Snowflake } from "discord.js";
 import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 import { GuildConfigurationType } from "@schemas/GuildConfigurationSchema";
 import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager";
 import Application from "@framework/app/Application";
+import Permission from "@framework/permissions/Permission";
+import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
+import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager";
 
 export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
 
@@ -33,6 +36,12 @@ type PermissionModeString = NonNullable<GuildConfigurationType["permissions"]>["
 
 class PermissionManagerService extends Service implements PermissionManagerServiceInterface {
     public override readonly name = SERVICE_PERMISSION_MANAGER;
+    public readonly permissionObjects: ReadonlyCollection<string, Permission> = new Collection(
+        [SystemAdminPermission].map(c => {
+            const object = Permission.resolve(this.application, c);
+            return [object.name, object];
+        })
+    );
 
     private readonly permissionManagerRecord: Record<PermissionModeString, AbstractPermissionManager>;
 
@@ -41,8 +50,8 @@ class PermissionManagerService extends Service implements PermissionManagerServi
 
         this.permissionManagerRecord = {
             /* FIXME: Make an actual DiscordPermissionManager class */
-            discord: new SELinuxPermissionManager(application),
-            selinux: new SELinuxPermissionManager(application),
+            discord: new DiscordPermissionManager(application, [...this.permissionObjects.values()]),
+            selinux: new SELinuxPermissionManager(application, [...this.permissionObjects.values()])
         };
     }
 

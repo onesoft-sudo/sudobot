@@ -32,9 +32,11 @@ export type GetPermissionsResult = {
 
 abstract class AbstractPermissionManager {
     protected readonly application: Application;
+    protected readonly permissionObjects: Permission[];
 
-    public constructor(application: Application) {
+    public constructor(application: Application, permissions: SystemPermissionResolvable[]) {
         this.application = application;
+        this.permissionObjects = permissions.map(c => Permission.resolve(application, c));
     }
 
     public hasPermissions(
@@ -83,17 +85,12 @@ abstract class AbstractPermissionManager {
 
     public async getPermissions(
         user: GuildMember | APIInteractionGuildMember | User,
-        systemPermissions?: Iterable<SystemPermissionResolvable>
+        systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects
     ): Promise<GetPermissionsResult> {
         if (!systemPermissions) {
             return {
                 customPermissions: [],
-                discordPermissions:
-                    user instanceof User
-                        ? 0n
-                        : typeof user.permissions === "string"
-                          ? new PermissionsBitField(user.permissions as PermissionResolvable).bitfield
-                          : user.permissions.bitfield,
+                discordPermissions: this.resolveDiscordPermissions(user),
                 grantAll: false
             };
         }
@@ -120,6 +117,14 @@ abstract class AbstractPermissionManager {
                       : user.permissions.bitfield,
             grantAll: false
         };
+    }
+
+    protected resolveDiscordPermissions(user: User | GuildMember | APIInteractionGuildMember) {
+        return user instanceof User
+            ? 0n
+            : typeof user.permissions === "string"
+              ? new PermissionsBitField(user.permissions as PermissionResolvable).bitfield
+              : user.permissions.bitfield;
     }
 
     protected async customPermissionCheck(
