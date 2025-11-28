@@ -26,7 +26,8 @@ export const EnvironmentVariableSchema = Type.Object({
     SUDOBOT_HOME_GUILD_ID: SnowflakeSchema,
     SUDOBOT_SHARD_COUNT: Type.Optional(Type.String({ pattern: /^\d+$/ })),
     SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: Type.Enum(["1", "0"], { default: "0" }),
-    SUDOBOT_MODIFICATIONS_PUBLIC_URL: Type.Optional(Type.String({ format: "url" }))
+    SUDOBOT_MODIFICATIONS_PUBLIC_URL: Type.Optional(Type.String({ format: "url" })),
+    SUDOBOT_DATABASE_URL: Type.String({ format: "url" }),
 });
 
 export const EnvironmentVariableSchemaValidator = Compile(EnvironmentVariableSchema);

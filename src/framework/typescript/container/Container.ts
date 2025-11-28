@@ -28,11 +28,12 @@ import {
 } from "./Inject";
 
 export type ConstructorOf<T> = new (...args: never[]) => T;
+export type AbstractConstructorOf<T> = abstract new (...args: never[]) => T;
 
 type ContainerObjectFactoryOptions<T> = {
     singleton?: boolean;
     id?: string;
-    type: ConstructorOf<T>;
+    type: ConstructorOf<T> | AbstractConstructorOf<T>;
     factory?: ObjectFactory<NoInfer<T>>;
 };
 
@@ -64,7 +65,7 @@ class Container {
     >();
 
     public register<T extends object>(options: ContainerObjectFactoryOptions<T>): void {
-        this.factories.set(options.type, options);
+        this.factories.set(options.type as ConstructorOf<T>, options);
 
         if (options.id) {
             this.factories.set(options.id, options);
@@ -87,7 +88,7 @@ class Container {
         if (options.singleton) {
             if (!options.singletonValue) {
                 options.singletonValue = this.resolveObject(
-                    options.factory ? options.factory(this) : this.createInstance(options.type, constructorArgs)
+                    options.factory ? options.factory(this) : this.createInstance(options.type as ConstructorOf<T>, constructorArgs)
                 );
             }
 
@@ -95,7 +96,7 @@ class Container {
         }
 
         return this.resolveObject(
-            options.factory ? options.factory(this) : this.createInstance(options.type, constructorArgs)
+            options.factory ? options.factory(this) : this.createInstance(options.type as ConstructorOf<T>, constructorArgs)
         ) as T;
     }
 

@@ -17,16 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import BaseApplication from "@framework/app/Application";
+import Application from "@main/core/Application";
 import ClassLoader from "@framework/class/ClassLoader";
 import type Command from "@framework/commands/Command";
 import Kernel from "@framework/core/Kernel";
+import AbstractDatabase from "@framework/database/AbstractDatabase";
 import type EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
 import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
 import { getBundleData } from "@framework/utils/bundle";
+import Database from "@main/database/Database";
 import { getEnvData } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
@@ -95,40 +98,60 @@ class AppKernel extends Kernel {
     }
 
     private registerFactories(application: Application): void {
-        application.container.register({
-            type: Logger,
-            id: "logger",
-            singleton: true,
-            factory: () => application.logger
-        });
+        const bindings = [
+            {
+                type: Logger,
+                id: "logger",
+                singleton: true,
+                factory: () => application.logger
+            },
+            {
+                type: Application,
+                id: "application",
+                singleton: true,
+                factory: () => application
+            },
+            {
+                type: BaseApplication,
+                id: "application::base",
+                singleton: true,
+                factory: () => application
+            },
+            {
+                type: AppKernel,
+                id: "kernel",
+                singleton: true,
+                factory: () => this
+            },
+            {
+                type: Client,
+                id: "client",
+                singleton: true,
+                factory: () => this.client
+            },
+            {
+                type: ClassLoader,
+                id: "classLoader",
+                singleton: true,
+                factory: () => application.classLoader
+            },
+            {
+                type: Database,
+                id: "database",
+                singleton: true,
+                factory: () => application.database
+            },
+            {
+                type: AbstractDatabase,
+                id: "database::base",
+                singleton: true,
+                factory: () => application.database
+            }
+        ] as const;
 
-        application.container.register({
-            type: Application,
-            id: "application",
-            singleton: true,
-            factory: () => application
-        });
-
-        application.container.register({
-            type: AppKernel,
-            id: "kernel",
-            singleton: true,
-            factory: () => this
-        });
-
-        application.container.register({
-            type: Client,
-            id: "client",
-            singleton: true,
-            factory: () => this.client
-        });
-
-        application.container.register({
-            type: ClassLoader,
-            id: "classLoader",
-            singleton: true,
-            factory: () => application.classLoader
-        });
+        for (const binding of bindings) {
+            application.container.register<object>(binding);
+        }
     }
 
     private async loadServices(application: Application): Promise<void> {
