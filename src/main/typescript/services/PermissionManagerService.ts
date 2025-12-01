@@ -25,10 +25,12 @@ import { Collection, ReadonlyCollection, type Snowflake } from "discord.js";
 import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 import { GuildConfigurationType } from "@schemas/GuildConfigurationSchema";
 import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager";
-import Application from "@framework/app/Application";
+import Application from "@main/core/Application";
 import Permission from "@framework/permissions/Permission";
 import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
 import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager";
+import { SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
+import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
 
 export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
 
@@ -42,16 +44,22 @@ class PermissionManagerService extends Service implements PermissionManagerServi
             return [object.name, object];
         })
     );
+    public readonly systemAdminPermission: SystemPermissionResolvable = SystemAdminPermission;
 
     private readonly permissionManagerRecord: Record<PermissionModeString, AbstractPermissionManager>;
 
     public constructor(application: Application) {
         super(application);
+        this.permissionManagerRecord = this.createManagers(application);
+    }
 
-        this.permissionManagerRecord = {
-            /* FIXME: Make an actual DiscordPermissionManager class */
-            discord: new DiscordPermissionManager(application, [...this.permissionObjects.values()]),
-            selinux: new SELinuxPermissionManager(application, [...this.permissionObjects.values()])
+    protected createManagers(application: Application): typeof this.permissionManagerRecord {
+        const permissionObjects = [...this.permissionObjects.values()];
+
+        return {
+            discord: new DiscordPermissionManager(application, permissionObjects, this.systemAdminPermission),
+            leveled: new LeveledPermissionManager(application, permissionObjects, this.systemAdminPermission),
+            selinux: new SELinuxPermissionManager(application, permissionObjects, this.systemAdminPermission)
         };
     }
 

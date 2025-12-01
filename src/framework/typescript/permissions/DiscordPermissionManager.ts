@@ -1,11 +1,11 @@
-import type { GuildMember, APIInteractionGuildMember, User, Awaitable } from "discord.js";
+import type { GuildMember, User, Awaitable } from "discord.js";
 import AbstractImplicitPermissionManager from "./AbstractImplicitPermissionManager";
 import type { GetPermissionsResult } from "./AbstractPermissionManager";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable";
 
 class DiscordPermissionManager extends AbstractImplicitPermissionManager {
     public override async getPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         return {
@@ -16,7 +16,7 @@ class DiscordPermissionManager extends AbstractImplicitPermissionManager {
     }
 
     public override hasPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         permissions?: RawPermissionResolvable,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<boolean> {

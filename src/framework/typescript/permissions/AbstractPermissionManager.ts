@@ -33,23 +33,33 @@ export type GetPermissionsResult = {
 abstract class AbstractPermissionManager {
     protected readonly application: Application;
     protected readonly permissionObjects = new Collection<string, Permission>();
+    protected readonly systemAdminPermission?: Permission;
 
-    public constructor(application: Application, permissions: SystemPermissionResolvable[]) {
+    public constructor(
+        application: Application,
+        permissions: SystemPermissionResolvable[],
+        systemAdminPermission: SystemPermissionResolvable | null
+    ) {
         this.application = application;
-        this.permissionObjects = new Collection(permissions.map(c => {
-            const instance = Permission.resolve(application, c);
-            return [instance.name, instance];
-        }));
+        this.permissionObjects = new Collection(
+            permissions.map(c => {
+                const instance = Permission.resolve(application, c);
+                return [instance.name, instance];
+            })
+        );
+        this.systemAdminPermission = systemAdminPermission
+            ? Permission.resolve(application, systemAdminPermission)
+            : undefined;
     }
 
     public hasPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         permissions?: RawPermissionResolvable,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<boolean>;
 
     public async hasPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         permissions?: RawPermissionResolvable,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<boolean> {
@@ -82,12 +92,12 @@ abstract class AbstractPermissionManager {
     }
 
     public getPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Awaitable<GetPermissionsResult>;
 
     public async getPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         if (!systemPermissions) {
@@ -120,6 +130,81 @@ abstract class AbstractPermissionManager {
         };
     }
 
+    public canModerate(
+        user: GuildMember | User,
+        moderator: GuildMember | User,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ): Awaitable<boolean>;
+
+    public async canModerate(
+        user: GuildMember | User,
+        moderator: GuildMember | User,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ): Promise<boolean> {
+        const moderatorIsSystemAdmin = await this.isSystemAdmin(moderator);
+
+        /* If a system adminstrator, skip all checks and allow the operation >:) */
+        if (moderatorIsSystemAdmin) {
+            return true;
+        }
+
+        /* If either is not a GuildMember, we cannot safely proceed. Reject early. */
+        if (user instanceof User || moderator instanceof User) {
+            return false;
+        }
+
+        /* If both are not in the same Guild, we are in an invalid state. */
+        if (user.guild.id !== moderator.guild.id) {
+            return false;
+        }
+
+        /* Checks for Guild owners. */
+        const guild = user.guild;
+        const userIsOwner = guild.ownerId === user.id;
+        const moderatorIsOwner = guild.ownerId === moderator.id;
+
+        if (moderatorIsOwner) {
+            return true;
+        }
+
+        if (userIsOwner) {
+            return false;
+        }
+
+        return this.canModerateGuildMemberCheck(user, moderator, permissions, systemPermissions);
+    }
+
+    protected async canModerateGuildMemberCheck(
+        user: GuildMember,
+        moderator: GuildMember,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ) {
+        /* Compare highest role positions, like Discord does. */
+        if (moderator.roles.highest.position <= user.roles.highest.position) {
+            return false;
+        }
+
+        if (permissions || systemPermissions) {
+            if (
+                (permissions && !(await this.hasPermissionsOnMember(moderator, user, permissions))) ||
+                (systemPermissions && !(await this.hasPermissions(moderator, undefined, systemPermissions)))
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public isSystemAdmin(user: GuildMember | User): Awaitable<boolean>;
+
+    public isSystemAdmin(user: GuildMember | User) {
+        return this.systemAdminPermission ? this.systemAdminPermission.has(user) : false;
+    }
+
     protected resolveDiscordPermissions(user: User | GuildMember | APIInteractionGuildMember) {
         return user instanceof User
             ? 0n
@@ -130,7 +215,7 @@ abstract class AbstractPermissionManager {
 
     protected async customPermissionCheck(
         systemPermissions: Iterable<SystemPermissionResolvable>,
-        user: GuildMember | APIInteractionGuildMember | User
+        user: GuildMember | User
     ) {
         const customPermissions = new Set<Permission>();
 

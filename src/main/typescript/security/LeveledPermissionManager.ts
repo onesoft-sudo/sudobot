@@ -3,7 +3,8 @@ import AbstractImplicitPermissionManager from "@framework/permissions/AbstractIm
 import type Application from "@main/core/Application";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
 import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
-import type { APIInteractionGuildMember, Snowflake, User } from "discord.js";
+import type { User } from "discord.js";
+import { type Snowflake } from "discord.js";
 import { PermissionsBitField } from "discord.js";
 import { GuildMember } from "discord.js";
 import { and, eq, or, sql } from "drizzle-orm";
@@ -22,8 +23,8 @@ export type GetLeveledPermissionsCache = Omit<GetPermissionsResult, "discordPerm
 class LeveledPermissionManager extends AbstractImplicitPermissionManager {
     public override readonly application: Application;
 
-    public constructor(application: Application, permissions: SystemPermissionResolvable[]) {
-        super(application, permissions);
+    public constructor(application: Application, permissions: SystemPermissionResolvable[], systemAdminPermission: SystemPermissionResolvable | null) {
+        super(application, permissions, systemAdminPermission);
         this.application = application;
     }
 
@@ -33,7 +34,7 @@ class LeveledPermissionManager extends AbstractImplicitPermissionManager {
     });
 
     public override async getPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetLeveledPermissionsResult> {
         if (!(user instanceof GuildMember)) {
@@ -54,7 +55,7 @@ class LeveledPermissionManager extends AbstractImplicitPermissionManager {
     }
 
     public override async hasPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         permissions?: RawPermissionResolvable,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<boolean> {
@@ -142,6 +143,22 @@ class LeveledPermissionManager extends AbstractImplicitPermissionManager {
 
         this.cache.set(`${member.guild.id}:${member.id}`, result);
         return result;
+    }
+
+    public override async canModerateGuildMemberCheck(
+        user: GuildMember,
+        moderator: GuildMember,
+        permissions?: RawPermissionResolvable,
+        systemPermissions?: Iterable<SystemPermissionResolvable>
+    ): Promise<boolean> {
+        const userLevel = await this.getLevelOf(user);
+        const moderatorLevel = await this.getLevelOf(moderator);
+
+        if (moderatorLevel <= userLevel) {
+            return false;
+        }
+
+        return super.canModerateGuildMemberCheck(user, moderator, permissions, systemPermissions);
     }
 }
 

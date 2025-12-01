@@ -19,7 +19,6 @@
 
 import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
 import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import type { APIInteractionGuildMember } from "discord.js";
 import { User, type GuildBasedChannel, type Role, GuildMember, PermissionsBitField } from "discord.js";
 import PolicyManagerAVC from "./PolicyManagerAVC";
 import { LRUCache } from "lru-cache";
@@ -32,7 +31,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         ttl: 1000 * 60 * 10
     });
 
-    public async canBypass(user: GuildMember | APIInteractionGuildMember | User): Promise<boolean> {
+    public async canBypass(user: GuildMember | User): Promise<boolean> {
         for (const permission of Permission.globalBypassPermissions) {
             if (!(await permission.has(user))) {
                 return false;
@@ -43,7 +42,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         permissions: RawPermissionResolvable = 0n,
         systemPermissions?: Iterable<SystemPermissionResolvable>
     ): Promise<boolean> {
@@ -88,7 +87,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissions(
-        user: GuildMember | APIInteractionGuildMember | User,
+        user: GuildMember | User,
         systemPermissions: Iterable<SystemPermissionResolvable> = this.permissionObjects.values()
     ): Promise<GetPermissionsResult> {
         if (await this.canBypass(user)) {
@@ -124,7 +123,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
         return result;
     }
 
-    private async computeDiscordPermissions(member: GuildMember | APIInteractionGuildMember) {
+    private async computeDiscordPermissions(member: GuildMember) {
         if (!("guild" in member)) {
             return 0n;
         }
@@ -159,7 +158,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissionsOnChannel(
-        member: GuildMember | APIInteractionGuildMember,
+        member: GuildMember,
         targetChannel: GuildBasedChannel
     ): Promise<GetPermissionsResult> {
         if (await this.canBypass(member)) {
@@ -186,7 +185,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissionsOnRole(
-        member: GuildMember | APIInteractionGuildMember,
+        member: GuildMember,
         targetRole: Role
     ): Promise<GetPermissionsResult> {
         if (await this.canBypass(member)) {
@@ -213,8 +212,8 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async getPermissionsOnMember(
-        member: GuildMember | APIInteractionGuildMember,
-        targetMember: GuildMember | APIInteractionGuildMember
+        member: GuildMember,
+        targetMember: GuildMember
     ): Promise<GetPermissionsResult> {
         const memberCanBypass = await this.canBypass(member);
         const targetCanBypass = await this.canBypass(targetMember);
@@ -243,7 +242,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnChannel(
-        member: GuildMember | APIInteractionGuildMember,
+        member: GuildMember,
         targetChannel: GuildBasedChannel,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
@@ -267,7 +266,7 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnRole(
-        member: GuildMember | APIInteractionGuildMember,
+        member: GuildMember,
         targetRole: Role,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
@@ -291,8 +290,8 @@ class SELinuxPermissionManager extends AbstractPermissionManager {
     }
 
     public override async hasPermissionsOnMember(
-        member: GuildMember | APIInteractionGuildMember,
-        targetMember: GuildMember | APIInteractionGuildMember,
+        member: GuildMember,
+        targetMember: GuildMember,
         permissions: RawPermissionResolvable
     ): Promise<boolean> {
         const memberCanBypass = await this.canBypass(member);
