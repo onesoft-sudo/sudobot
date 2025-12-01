@@ -22,7 +22,7 @@ import "./preload";
 import path from "path";
 import { _meta, version } from "../../../package.json";
 
-import Application from "@framework/app/Application";
+import Application from "@main/core/Application";
 import { Logger } from "@framework/log/Logger";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";

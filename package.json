@@ -41,6 +41,7 @@
     },
     "scripts": {
         "prepare": "node bin/prepare.cjs",
+        "migrate": "drizzle-kit migrate",
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun src/main/typescript/bun.ts",
         "start:docker": "sh ./docker/start-container.sh",
@@ -104,6 +105,7 @@
         "@vercel/ncc": "^0.38.4",
         "@vitest/coverage-v8": "4.0.10",
         "discord-api-types": "^0.38.34",
+        "drizzle-kit": "^0.31.7",
         "eslint": "^9.39.1",
         "husky": "^9.1.7",
         "prettier": "^3.6.2",

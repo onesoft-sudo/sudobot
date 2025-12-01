@@ -32,7 +32,7 @@ class ClientReadyEventListener extends EventListener<Events.ClientReady> {
     @Inject()
     private readonly logger!: Logger;
 
-    @Inject()
+    @Inject("database")
     private readonly database!: Database;
 
     @Inject()

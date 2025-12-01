@@ -1,18 +1,18 @@
 import "dotenv/config";
-import { readdir } from "fs/promises";
+import { readdirSync } from "fs";
 import path from "path";
 
 try {
-    const { defineConfig } = await import(String("drizzle-kit"));
+    const { defineConfig } = require(String("drizzle-kit"));
 
     module.exports = defineConfig({
         dialect: "postgresql",
         out: "./drizzle",
-        schema: (await readdir(path.resolve(__dirname, "src/main/typescript/models"))).map((file: string) =>
+        schema: (readdirSync(path.resolve(__dirname, "src/main/typescript/models"))).map((file: string) =>
             path.resolve(__dirname, "src/main/typescript/models", file)
         ),
         dbCredentials: {
-            url: process.env.SUDOBOT_DB_URL
+            url: process.env.SUDOBOT_DATABASE_URL
         },
         verbose: true,
         strict: true
