@@ -14,7 +14,7 @@
         "@types/bun": "latest",
         "@types/glob": "^9.0.0",
         "typescript": "^5.8.3",
-        "prettier": "^3.6.2"
+        "prettier": "^3.7.3"
     },
     "exports": {
         ".": "./src/main/typescript/index.ts"
