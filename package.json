@@ -128,7 +128,7 @@
         "eslint": "^9.34.0",
         "husky": "^9.1.7",
         "prettier": "^3.6.2",
-        "typedoc": "^0.28.12",
+        "typedoc": "^0.28.15",
         "typedoc-plugin-rename-defaults": "^0.7.3",
         "typedoc-theme-hierarchy": "^6.0.0",
         "typescript": "5.9.3",
