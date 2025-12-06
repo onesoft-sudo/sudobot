@@ -31,6 +31,7 @@ import { getAxiosClient } from "@main/utils/axios";
 import { LogEventType } from "@schemas/LoggingSchema";
 import { GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
 import { and, eq, sql } from "drizzle-orm";
+import { regexes } from "zod";
 
 @Name("newMemberMessageInspectionService")
 class NewMemberMessageInspectionService extends Service implements HasEventListeners {
@@ -178,7 +179,12 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
-        const result = await this.paxmodModerateText(message.content);
+        const result = await this.paxmodModerateText(
+            message.content,
+            message.attachments
+                .map(a => (!a.contentType || a.contentType?.startsWith("image/") ? a.proxyURL : null))
+                .filter(a => a !== null)
+        );
         this.application.logger.debug(NewMemberMessageInspectionService.name, "Paxmod response", result.data);
 
         if (result.success && result.flagged && result.data) {
@@ -232,7 +238,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
-        const result = await this.paxmodModerateText(message.content);
+        const result = await this.paxmodModerateText(message.content, []);
 
         if (result.success && result.flagged && result.data) {
             await this.onFlag(message, result.data);
@@ -274,7 +280,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                       ...action,
                       reason:
                           "reason" in action && action.reason
-                              ? action.reason?.replace("{{reason}}", data.reason)
+                              ? action.reason?.replace("{{reason}}", data.reason || "")
                               : `Your message was flagged: ${data.reason}`
                   })),
                   {
@@ -287,37 +293,81 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         await Promise.all([promise1, promise2] as unknown as Promise<unknown>[]);
     }
 
-    private async paxmodModerateText(text: string) {
-        try {
-            const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
-                "https://www.paxmod.com/api/v1/text",
-                {
-                    message: text
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${getEnvData().PAXMOD_API_KEY}`
-                    }
-                }
-            );
+    private async paxmodModerateText(text: string, fileURLs: string[], autoScan = true) {
+        const scannedTexts: string[] = [];
+        const matches = new Set<string>();
+        const OCR_SPACE_API_KEY = process.env.OCR_SPACE_API_KEY;
 
-            if (response.data.status !== "success") {
+        if (OCR_SPACE_API_KEY && autoScan) {
+            const regex = /(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|localhost)(:\d{1,5})?(\/[^\s]*)?/gi;
+
+            for (const [str] of text.matchAll(regex) || []) {
+                if (str) {
+                    matches.add(str);
+                }
+            }
+        }
+
+        console.log(fileURLs, matches);
+
+        if (OCR_SPACE_API_KEY) {
+            for (const fileURL of [...fileURLs, ...matches]) {
+                try {
+                    const response = await getAxiosClient().get<OCRSpaceScanResult>(
+                        `https://api.ocr.space/parse/imageurl?apikey=${encodeURIComponent(OCR_SPACE_API_KEY)}&url=${encodeURIComponent(fileURL)}`
+                    );
+
+                    if (
+                        !response.data.IsErroredOnProcessing &&
+                        !response.data.ParsedResults?.[0].ErrorMessage &&
+                        !response.data.ParsedResults?.[0].ErrorDetails &&
+                        response.data.ParsedResults?.[0].ParsedText
+                    ) {
+                        scannedTexts.push(response.data.ParsedResults?.[0].ParsedText);
+                    }
+                } catch (error) {
+                    this.application.logger.error(error);
+                    continue;
+                }
+            }
+        }
+
+        console.log("Texts:", scannedTexts);
+
+        for (const message of [text, ...scannedTexts]) {
+            try {
+                const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
+                    "https://www.paxmod.com/api/v1/text",
+                    {
+                        message
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${getEnvData().PAXMOD_API_KEY}`
+                        }
+                    }
+                );
+
+                if (response.data.status !== "success") {
+                    return { success: false, flagged: false };
+                }
+
+                if (response.data.result !== "flagged" && !response.data.content_moderation?.flagged) {
+                    return { success: true, flagged: false };
+                }
+
+                return {
+                    success: true,
+                    flagged: true,
+                    data: response.data
+                };
+            } catch (error) {
+                this.application.logger.error(error);
                 return { success: false, flagged: false };
             }
-
-            if (response.data.result !== "flagged" && !response.data.content_moderation?.flagged) {
-                return { success: true, flagged: false };
-            }
-
-            return {
-                success: true,
-                flagged: true,
-                data: response.data
-            };
-        } catch (error) {
-            this.application.logger.error(error);
-            return { success: false, flagged: false };
         }
+
+        return { success: true, flagged: false };
     }
 }
 
@@ -356,5 +406,14 @@ type PaxmodModerateTextErrorResponse = {
 };
 
 type PaxmodModerateTextResponse = PaxmodModerateTextErrorResponse | PaxmodModerateTextSuccessResponse;
+
+type OCRSpaceScanResult = {
+    ParsedResults?: Array<{
+        ParsedText?: string;
+        ErrorMessage?: string;
+        ErrorDetails?: string;
+    }>;
+    IsErroredOnProcessing?: boolean;
+};
 
 export default NewMemberMessageInspectionService;

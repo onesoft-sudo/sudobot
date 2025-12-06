@@ -2217,7 +2217,8 @@ class AuditLoggingService extends Service {
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
                         new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(message.url).setLabel("Context")
                     )
-                ]
+                ],
+                files: [...message.attachments.values()].map(file => ({ attachment: file.proxyURL, name: file.name }))
             },
             eventType: LogEventType.SystemUserMessageSave
         });
