@@ -1,5 +1,165 @@
 # Changelog
 
+### 06-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat:** image OCR scanning    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 05-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** bump jws from 3.2.2 to 3.2.3 in the npm_and_yarn group across 1 directory (#400)    
+      
+      
+
+### 04-12-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump jws in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the / directory:**  [jws](https://github.com/brianloveswords/node-jws).  
+      
+      
+    Updates `jws` from 3.2.2 to 3.2.3  
+    **- [Release notes](https:** //github.com/brianloveswords/node-jws/releases)  
+    **- [Changelog](https:** //github.com/auth0/node-jws/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/brianloveswords/node-jws/compare/v3.2.2...v3.2.3)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  jws  
+    **  dependency-version:**  3.2.3  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 02-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** bump express from 5.1.0 to 5.2.0 in the npm_and_yarn group across 1 directory (#398)    
+      
+      
+
+### 01-12-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump express in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the / directory:**  [express](https://github.com/expressjs/express).  
+      
+      
+    Updates `express` from 5.1.0 to 5.2.0  
+    **- [Release notes](https:** //github.com/expressjs/express/releases)  
+    **- [Changelog](https:** //github.com/expressjs/express/blob/master/History.md)  
+    **- [Commits](https:** //github.com/expressjs/express/compare/v5.1.0...v5.2.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  express  
+    **  dependency-version:**  5.2.0  
+    **  dependency-type:**  direct:production  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 26-11-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** bump body-parser from 2.2.0 to 2.2.1 in the npm_and_yarn group across 1 directory    
+      
+      
+  * **chore(deps):** bump body-parser from 2.2.0 to 2.2.1 in /extensions/counting in the npm_and_yarn group across 1 directory    
+      
+    **chore(deps):**  bump body-parser from 2.2.0 to 2.2.1 in /extensions/counting in the npm_and_yarn group across 1 directory  
+
+### 25-11-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **chore(deps):** bump body-parser    
+      
+    **Bumps the npm_and_yarn group with 1 update in the /extensions/counting directory:**  [body-parser](https://github.com/expressjs/body-parser).  
+      
+      
+    Updates `body-parser` from 2.2.0 to 2.2.1  
+    **- [Release notes](https:** //github.com/expressjs/body-parser/releases)  
+    **- [Changelog](https:** //github.com/expressjs/body-parser/blob/master/HISTORY.md)  
+    **- [Commits](https:** //github.com/expressjs/body-parser/compare/v2.2.0...v2.2.1)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  body-parser  
+    **  dependency-version:**  2.2.1  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps:** bump body-parser in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the / directory:**  [body-parser](https://github.com/expressjs/body-parser).  
+      
+      
+    Updates `body-parser` from 2.2.0 to 2.2.1  
+    **- [Release notes](https:** //github.com/expressjs/body-parser/releases)  
+    **- [Changelog](https:** //github.com/expressjs/body-parser/blob/master/HISTORY.md)  
+    **- [Commits](https:** //github.com/expressjs/body-parser/compare/v2.2.0...v2.2.1)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  body-parser  
+    **  dependency-version:**  2.2.1  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 19-11-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **chore:** update sudobot.online links    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 05-11-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat(nmmi):** support reasoning placeholder    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 20-10-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump vite in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the / directory:**  [vite](https://github.com/vitejs/vite/tree/HEAD/packages/vite).  
+      
+      
+    Updates `vite` from 7.1.4 to 7.1.11  
+    **- [Release notes](https:** //github.com/vitejs/vite/releases)  
+    **- [Changelog](https:** //github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/vitejs/vite/commits/v7.1.11/packages/vite)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  vite  
+    **  dependency-version:**  7.1.11  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 16-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **ci:** add Node.js version 25.x to build matrix    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+
+### 14-10-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.24.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 14-10-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix(commands):** sendreply command must not require hardcoded permissions (#373)    
