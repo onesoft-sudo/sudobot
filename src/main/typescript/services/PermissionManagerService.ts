@@ -31,6 +31,7 @@ import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
 import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager";
 import { SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
 import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
+import LayeredPermissionManager from "@main/security/LayeredPermissionManager";
 
 export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
 
@@ -59,6 +60,7 @@ class PermissionManagerService extends Service implements PermissionManagerServi
         return {
             discord: new DiscordPermissionManager(application, permissionObjects, this.systemAdminPermission),
             leveled: new LeveledPermissionManager(application, permissionObjects, this.systemAdminPermission),
+            layered: new LayeredPermissionManager(application, permissionObjects, this.systemAdminPermission),
             selinux: new SELinuxPermissionManager(application, permissionObjects, this.systemAdminPermission)
         };
     }

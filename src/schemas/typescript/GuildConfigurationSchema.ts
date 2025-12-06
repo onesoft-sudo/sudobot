@@ -28,7 +28,9 @@ export const GuildConfigurationSchema = Type.Object({
     ),
     permissions: Type.Optional(
         Type.Object({
-            mode: Type.Enum(["discord", "leveled", "selinux"])
+            mode: Type.Enum(["discord", "leveled", "layered", "selinux"], {
+                default: "discord"
+            })
         })
     )
 });
