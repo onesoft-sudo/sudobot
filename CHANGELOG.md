@@ -1,5 +1,23 @@
 # Changelog
 
+### 09-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix:** empty message rejection    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore:** debug    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 06-12-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.26.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 06-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **feat:** image OCR scanning    
