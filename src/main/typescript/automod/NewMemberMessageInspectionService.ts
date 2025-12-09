@@ -335,6 +335,8 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         console.log("Texts:", scannedTexts);
 
         for (const message of [text, ...scannedTexts]) {
+            console.log("Message: ", message);
+
             try {
                 const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
                     "https://www.paxmod.com/api/v1/text",
@@ -343,7 +345,8 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                     },
                     {
                         headers: {
-                            Authorization: `Bearer ${getEnvData().PAXMOD_API_KEY}`
+                            Authorization: `Bearer ${getEnvData().PAXMOD_API_KEY}`,
+                            "Content-Type": "application/json"
                         }
                     }
                 );
