@@ -335,7 +335,9 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         console.log("Texts:", scannedTexts);
 
         for (const message of [text, ...scannedTexts]) {
-            console.log("Message: ", message);
+            if (!message.trim()) {
+                continue;
+            }
 
             try {
                 const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
