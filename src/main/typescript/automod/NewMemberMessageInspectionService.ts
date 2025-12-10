@@ -29,9 +29,12 @@ import type ConfigurationManager from "@main/services/ConfigurationManager";
 import ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
 import { LogEventType } from "@schemas/LoggingSchema";
+import axios from "axios";
 import { GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
 import { and, eq, sql } from "drizzle-orm";
-import { regexes } from "zod";
+import FormData from "form-data";
+import { Readable } from "node:stream";
+import sharp from "sharp";
 
 @Name("newMemberMessageInspectionService")
 class NewMemberMessageInspectionService extends Service implements HasEventListeners {
@@ -179,12 +182,37 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
+        const urls: string[] = [];
+        const buffers = [];
+
+        for (const attachment of message.attachments.values()) {
+            console.log(attachment);
+
+            if ((!attachment.contentType || ["image/png", "image/jpeg", "image/gif"].includes(attachment.contentType))) {
+                urls.push(attachment.proxyURL);
+            }
+            else {
+                try {
+                    const response = await axios.get(attachment.proxyURL, { responseType: "arraybuffer" });
+                    const buffer = Buffer.from(response.data);
+                    const pngBuffer = await sharp(buffer)
+                        .png()
+                        .toBuffer();
+
+                    buffers.push({ name: attachment.name, type: "image/png", data: pngBuffer });
+                }
+                catch (error) {
+                    this.application.logger.error(`Conversion of ${attachment.name} failed: `, error);
+                }
+            }
+        }
+
         const result = await this.paxmodModerateText(
             message.content,
-            message.attachments
-                .map(a => (!a.contentType || a.contentType?.startsWith("image/") ? a.proxyURL : null))
-                .filter(a => a !== null)
+            urls,
+            buffers,
         );
+
         this.application.logger.debug(NewMemberMessageInspectionService.name, "Paxmod response", result.data);
 
         if (result.success && result.flagged && result.data) {
@@ -238,7 +266,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
-        const result = await this.paxmodModerateText(message.content, []);
+        const result = await this.paxmodModerateText(message.content, [], []);
 
         if (result.success && result.flagged && result.data) {
             await this.onFlag(message, result.data);
@@ -293,7 +321,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         await Promise.all([promise1, promise2] as unknown as Promise<unknown>[]);
     }
 
-    private async paxmodModerateText(text: string, fileURLs: string[], autoScan = true) {
+    private async paxmodModerateText(text: string, fileURLs: string[], files: Array<{name: string, data: Uint8Array<ArrayBufferLike>, type: string }>, autoScan = true) {
         const scannedTexts: string[] = [];
         const matches = new Set<string>();
         const OCR_SPACE_API_KEY = process.env.OCR_SPACE_API_KEY;
@@ -308,7 +336,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             }
         }
 
-        console.log(fileURLs, matches);
+        console.log(fileURLs, files, matches);
 
         if (OCR_SPACE_API_KEY) {
             for (const fileURL of [...fileURLs, ...matches]) {
@@ -324,6 +352,45 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                         response.data.ParsedResults?.[0].ParsedText
                     ) {
                         scannedTexts.push(response.data.ParsedResults?.[0].ParsedText);
+                    }
+                } catch (error) {
+                    this.application.logger.error(error);
+                    continue;
+                }
+            }
+
+            for (const { name, data, type } of files) {
+                try {
+                    const formData = new FormData();
+
+                    formData.append("file", Readable.from(data), {
+                        filename: name,
+                        contentType: type,
+                    });
+
+                    formData.append("apikey", OCR_SPACE_API_KEY);
+
+                    const response = await getAxiosClient().post<OCRSpaceScanResult>(
+                        "https://api.ocr.space/parse/image", formData, {
+                            headers: {
+                                ...formData.getHeaders(),
+                                apikey: OCR_SPACE_API_KEY
+                            },
+                            maxContentLength: Infinity,
+                            maxBodyLength: Infinity,
+                        }
+                    );
+
+                    console.log("response", response);
+
+                    if (
+                        !response.data.IsErroredOnProcessing &&
+                        !response.data.ParsedResults?.[0].ErrorMessage &&
+                        !response.data.ParsedResults?.[0].ErrorDetails &&
+                        response.data.ParsedResults?.[0].ParsedText
+                    ) {
+                        scannedTexts.push(response.data.ParsedResults?.[0].ParsedText);
+                        console.log("successful");
                     }
                 } catch (error) {
                     this.application.logger.error(error);
