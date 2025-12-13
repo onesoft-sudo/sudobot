@@ -51,8 +51,9 @@ export const permissionLevels = pgTable("permission_levels", {
         .array()
         .notNull()
         .default(sql`'{}'`),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
+        .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())
 });

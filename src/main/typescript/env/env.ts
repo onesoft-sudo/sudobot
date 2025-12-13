@@ -25,6 +25,10 @@ let envData: EnvironmentVariableType | undefined;
 
 export function getEnvData(): EnvironmentVariableType {
     if (envData === undefined) {
+        if (Environment.isTest()) {
+            return process.env as EnvironmentVariableType;
+        }
+
         envData = Environment.parseVariables(EnvironmentVariableSchema);
     }
 
