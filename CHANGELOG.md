@@ -1,5 +1,95 @@
 # Changelog
 
+### 21-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat(automod:nmmi):** support contexts    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 17-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** bump systeminformation from 5.27.10 to 5.27.14 in the npm_and_yarn group across 1 directory    
+      
+      
+  * **chore(deps):** bump systeminformation from 5.27.11 to 5.27.14 in /extensions/counting in the npm_and_yarn group across 1 directory    
+      
+      
+
+### 16-12-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump systeminformation    
+      
+    **Bumps the npm_and_yarn group with 1 update in the / directory:**  [systeminformation](https://github.com/sebhildebrandt/systeminformation).  
+      
+      
+    Updates `systeminformation` from 5.27.10 to 5.27.14  
+    **- [Changelog](https:** //github.com/sebhildebrandt/systeminformation/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/sebhildebrandt/systeminformation/compare/v5.27.10...v5.27.14)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  systeminformation  
+    **  dependency-version:**  5.27.14  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **chore(deps):** bump systeminformation    
+      
+    **Bumps the npm_and_yarn group with 1 update in the /extensions/counting directory:**  [systeminformation](https://github.com/sebhildebrandt/systeminformation).  
+      
+      
+    Updates `systeminformation` from 5.27.11 to 5.27.14  
+    **- [Changelog](https:** //github.com/sebhildebrandt/systeminformation/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/sebhildebrandt/systeminformation/compare/v5.27.11...v5.27.14)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  systeminformation  
+    **  dependency-version:**  5.27.14  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 14-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** bump next from 14.2.32 to 14.2.35 in /docs in the npm_and_yarn group across 1 directory    
+      
+      
+
+### 13-12-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump next in /docs in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the /docs directory:**  [next](https://github.com/vercel/next.js).  
+      
+      
+    Updates `next` from 14.2.32 to 14.2.35  
+    **- [Release notes](https:** //github.com/vercel/next.js/releases)  
+    **- [Changelog](https:** //github.com/vercel/next.js/blob/canary/release.js)  
+    **- [Commits](https:** //github.com/vercel/next.js/compare/v14.2.32...v14.2.35)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  next  
+    **  dependency-version:**  14.2.35  
+    **  dependency-type:**  direct:production  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 10-12-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.27.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 10-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **feat(ocr):** support image conversion    
