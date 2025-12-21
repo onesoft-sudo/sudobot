@@ -30,7 +30,7 @@ import ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
 import { LogEventType } from "@schemas/LoggingSchema";
 import axios from "axios";
-import { GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
+import { Collection, GuildMember, Message, type PartialMessage, type Snowflake, TextChannel } from "discord.js";
 import { and, eq, sql } from "drizzle-orm";
 import FormData from "form-data";
 import { Readable } from "node:stream";
@@ -39,6 +39,7 @@ import sharp from "sharp";
 @Name("newMemberMessageInspectionService")
 class NewMemberMessageInspectionService extends Service implements HasEventListeners {
     private readonly trustedCache = new Set<`${Snowflake}::${Snowflake}`>();
+    private readonly memberContextCache = new Collection<`${Snowflake}::${Snowflake}`, { lastmod: number, messages: string[] }>();
 
     @Inject("configManager")
     private readonly configManager!: ConfigurationManager;
@@ -52,6 +53,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
     public override boot() {
         setInterval(() => {
             this.trustedCache.clear();
+            this.memberContextCache.sweep(cache => Date.now() - cache.lastmod >= (2 * 60 * 60 * 1000));
         }, 30_000);
     }
 
@@ -112,6 +114,11 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         }
 
         this.trustedCache.delete(`${member.guild.id}::${member.user.id}`);
+        this.memberContextCache.set(`${member.guild.id}::${member.user.id}`, {
+            lastmod: Date.now(),
+            messages: [],
+        });
+
         await this.application.database.drizzle.insert(earlyMessageInspectionEntries).values({
             guildId: member.guild.id,
             userId: member.user.id,
@@ -126,6 +133,8 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         }
 
         this.trustedCache.delete(`${member.guild.id}::${member.user.id}`);
+        this.memberContextCache.delete(`${member.guild.id}::${member.user.id}`);
+
         await this.application.database.drizzle
             .delete(earlyMessageInspectionEntries)
             .where(
@@ -208,7 +217,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         }
 
         const result = await this.paxmodModerateText(
-            message.content,
+            message,
             urls,
             buffers,
         );
@@ -266,7 +275,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             return;
         }
 
-        const result = await this.paxmodModerateText(message.content, [], []);
+        const result = await this.paxmodModerateText(message, [], []);
 
         if (result.success && result.flagged && result.data) {
             await this.onFlag(message, result.data);
@@ -321,10 +330,16 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
         await Promise.all([promise1, promise2] as unknown as Promise<unknown>[]);
     }
 
-    private async paxmodModerateText(text: string, fileURLs: string[], files: Array<{name: string, data: Uint8Array<ArrayBufferLike>, type: string }>, autoScan = true) {
+    private async paxmodModerateText(message: Message<true>, fileURLs: string[], files: Array<{ name: string, data: Uint8Array<ArrayBufferLike>, type: string }>, autoScan = true) {
         const scannedTexts: string[] = [];
+        const text = message.content;
         const matches = new Set<string>();
         const OCR_SPACE_API_KEY = process.env.OCR_SPACE_API_KEY;
+
+        const contextCache = this.memberContextCache.get(`${message.guildId}::${message.author.id}`) || {
+            lastmod: Date.now(),
+            messages: [],
+        };
 
         if (OCR_SPACE_API_KEY && autoScan) {
             const regex = /(https?:\/\/)?((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|localhost)(:\d{1,5})?(\/[^\s]*)?/gi;
@@ -399,6 +414,16 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
             }
         }
 
+        const contextContent = contextCache.messages.join("\n");
+        contextCache.lastmod = Date.now();
+
+        if (contextCache.messages.length >= 10) {
+            contextCache.messages.shift();
+        }
+
+        contextCache.messages.push(text + "\n" + scannedTexts.join("\n"));
+        this.memberContextCache.set(`${message.guildId}::${message.author.id}`, contextCache);
+
         console.log("Texts:", scannedTexts);
 
         for (const message of [text, ...scannedTexts]) {
@@ -410,7 +435,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                 const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
                     "https://www.paxmod.com/api/v1/text",
                     {
-                        message
+                        message: contextContent + "\n" + message
                     },
                     {
                         headers: {
