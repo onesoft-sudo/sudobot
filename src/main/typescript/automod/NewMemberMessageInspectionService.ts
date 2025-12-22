@@ -435,7 +435,7 @@ class NewMemberMessageInspectionService extends Service implements HasEventListe
                 const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
                     "https://www.paxmod.com/api/v1/text",
                     {
-                        message: contextContent + "\n" + content,
+                        message: content,
                         user_id: message.author.id,
                         context_id: message.channel.id,
                     },
