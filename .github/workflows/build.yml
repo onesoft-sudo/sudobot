@@ -56,7 +56,7 @@ jobs:
         run: npx vitest run --coverage
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5.5.1
+        uses: codecov/codecov-action@v5.5.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: onesoft-sudo/sudobot
