@@ -39,11 +39,11 @@ importers:
         specifier: 0.44.0
         version: 0.44.0(@types/pg@8.15.5)(bun-types@1.2.23(@types/react@19.1.12))(pg@8.16.3)
       express:
-        specifier: 5.2.0
-        version: 5.2.0
+        specifier: 5.2.1
+        version: 5.2.1
       express-rate-limit:
-        specifier: 8.1.0
-        version: 8.1.0(express@5.2.0)
+        specifier: 8.2.1
+        version: 8.2.1(express@5.2.1)
       figlet:
         specifier: 1.9.0
         version: 1.9.0
@@ -1773,14 +1773,14 @@ packages:
     resolution: {integrity: sha512-JhFGDVJ7tmDJItKhYgJCGLOWjuK9vPxiXoUFLwLDc99NlmklilbiQJwoctZtt13+xMw91MCk/REan6MWHqDjyA==}
     engines: {node: '>=12.0.0'}
 
-  express-rate-limit@8.1.0:
-    resolution: {integrity: sha512-4nLnATuKupnmwqiJc27b4dCFmB/T60ExgmtDD7waf4LdrbJ8CPZzZRHYErDYNhoz+ql8fUdYwM/opf90PoPAQA==}
+  express-rate-limit@8.2.1:
+    resolution: {integrity: sha512-PCZEIEIxqwhzw4KF0n7QF4QqruVTcF73O5kFKUnGOyjbCCgizBBiFaYpd/fnBLUMPw/BWw9OsiN7GgrNYr7j6g==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
 
-  express@5.2.0:
-    resolution: {integrity: sha512-XdpJDLxfztVY59X0zPI6sibRiGcxhTPXRD3IhJmjKf2jwMvkRGV1j7loB8U+heeamoU3XvihAaGRTR4aXXUN3A==}
+  express@5.2.1:
+    resolution: {integrity: sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==}
     engines: {node: '>= 18'}
 
   extrareqp2@1.0.0:
@@ -4775,12 +4775,12 @@ snapshots:
 
   expect-type@1.2.2: {}
 
-  express-rate-limit@8.1.0(express@5.2.0):
+  express-rate-limit@8.2.1(express@5.2.1):
     dependencies:
-      express: 5.2.0
+      express: 5.2.1
       ip-address: 10.0.1
 
-  express@5.2.0:
+  express@5.2.1:
     dependencies:
       accepts: 2.0.0
       body-parser: 2.2.1
