@@ -314,27 +314,51 @@ async function main() {
 
     let restarts = 0;
     let lastRestart: number = 0;
+    const promises = [];
+    const exitStatus: { exited: boolean }[] = [];
 
     for (;;) {
         if (process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT) {
-            const promises = [];
             const count = +process.env.SUDOBOT_SHARD_COUNT;
             const abortController = new AbortController();
 
             for (let i = 0; i < count; i++) {
                 const promise = createShard(result, i, count, abortController.signal);
-                promises.push(
-                    promise.then(result => {
-                        if (!result) {
-                            abortController.abort();
-                            logger.error("One or more shard(s) errored");
-                            setTimeout(() => process.exit(-1), 5000);
-                        }
-                    })
-                );
+                exitStatus[i] = { exited: false };
+                promises[i] = promise.then(result => {
+                    logger.error(`Shard #${i} errored`);
+                    exitStatus[i] = { exited: true };
+
+                    if (result === false) {
+                        logger.error("Exiting in 5 seconds");
+                        abortController.abort();
+                        setTimeout(() => process.exit(-1), 5000);
+                    }
+                });
             }
 
-            await Promise.all(promises);
+            for (;;) {
+                await Promise.race(promises);
+
+                for (let i = 0; i < count; i++) {
+                    if (!exitStatus[i].exited) {
+                        continue;
+                    }
+
+                    const promise = createShard(result, i, count, abortController.signal);
+                    exitStatus[i] = { exited: false };
+                    promises[i] = promise.then(result => {
+                        logger.error(`Shard #${i} errored`);
+                        exitStatus[i] = { exited: true };
+
+                        if (result === false) {
+                            logger.error("Exiting in 5 seconds");
+                            abortController.abort();
+                            setTimeout(() => process.exit(-1), 5000);
+                        }
+                    });
+                }
+            }
         }
         else {
             await createChild(result);
