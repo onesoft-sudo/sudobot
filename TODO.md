@@ -1,6 +1,5 @@
 # Todo List
 
-* Permission systems
 * Command rate limiter
 * Better shard control
 
