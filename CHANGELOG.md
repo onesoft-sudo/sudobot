@@ -1,5 +1,34 @@
 # Changelog
 
+### 20-01-2026 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **feat:** add voice logging    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 06-01-2026 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **deps:** update qs    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **deps:** update express    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 22-12-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.29.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.29.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 22-12-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
   * **fix(nmmi):** unpredictable behavior    
@@ -8,13 +37,6 @@
   * **feat(automod:nmmi):** specify context and user IDs    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
-      
-
-### 22-12-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.29.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 21-12-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
