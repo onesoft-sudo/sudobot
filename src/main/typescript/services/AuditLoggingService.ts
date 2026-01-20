@@ -2088,7 +2088,7 @@ class AuditLoggingService extends Service {
                             name: member.user.username,
                             icon_url: member.user.displayAvatarURL() ?? undefined
                         },
-                        color: Colors.Green,
+                        color: Colors.Red,
                         timestamp: new Date().toISOString(),
                         fields: [
                             {
