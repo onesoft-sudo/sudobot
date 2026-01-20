@@ -2,9 +2,20 @@
 
 ### 20-01-2026 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * **fix:** correct embed color    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **feat:** add voice logging    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 20-01-2026 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.30.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 06-01-2026 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
