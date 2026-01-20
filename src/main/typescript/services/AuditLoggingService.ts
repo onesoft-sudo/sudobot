@@ -76,6 +76,7 @@ import {
     Snowflake,
     TextChannel,
     User,
+    VoiceState,
     Webhook,
     bold,
     inlineCode,
@@ -134,7 +135,9 @@ class AuditLoggingService extends Service {
         [LogEventType.GuildVerificationAttempt]: this.logGuildVerificationAttempt,
         [LogEventType.GuildVerificationSuccess]: this.logGuildVerificationSuccess,
         [LogEventType.GuildVerificationNotEnoughInfo]: this.logGuildVerificationNotEnoughInfo,
-        [LogEventType.NewMemberMessageInspection]: this.logNewMemberMessageInspection
+        [LogEventType.NewMemberMessageInspection]: this.logNewMemberMessageInspection,
+        [LogEventType.MemberVoiceChannelJoin]: this.logMemberVoiceChannelJoin,
+        [LogEventType.MemberVoiceChannelLeave]: this.logMemberVoiceChannelLeave,
     };
 
     @Inject("configManager")
@@ -2071,6 +2074,70 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberRoleModification
+        });
+    }
+
+    private async logMemberVoiceChannelLeave(member: GuildMember, channel: GuildBasedChannel, _state: VoiceState) {
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Member left voice channel",
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields: [
+                            {
+                                name: "Member",
+                                value: userInfo(member.user),
+                                inline: true,
+                            },
+                            {
+                                name: "Channel",
+                                value: channelInfo(channel),
+                                inline: true,
+                            }
+                        ]
+                    }
+                ],
+            },
+            eventType: LogEventType.MemberVoiceChannelLeave
+        });
+    }
+
+    private async logMemberVoiceChannelJoin(member: GuildMember, channel: GuildBasedChannel, _state: VoiceState) {
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Member joined voice channel",
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields: [
+                            {
+                                name: "Member",
+                                value: userInfo(member.user),
+                                inline: true,
+                            },
+                            {
+                                name: "Channel",
+                                value: channelInfo(channel),
+                                inline: true,
+                            }
+                        ]
+                    }
+                ],
+            },
+            eventType: LogEventType.MemberVoiceChannelJoin
         });
     }
 

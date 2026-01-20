@@ -48,7 +48,9 @@ export enum LogEventType {
     GuildVerificationAttempt = "guild_verification_attempt",
     GuildVerificationSuccess = "guild_verification_success",
     GuildVerificationNotEnoughInfo = "guild_verification_not_enough_info",
-    NewMemberMessageInspection = "NewMemberMessageInspectionLog"
+    NewMemberMessageInspection = "NewMemberMessageInspectionLog",
+    MemberVoiceChannelJoin = "memebr_voice_channel_join",
+    MemberVoiceChannelLeave = "memebr_voice_channel_leave",
 }
 
 const LogEventSchema = z.enum(

@@ -6,6 +6,7 @@ import type { MessageRuleType } from "@schemas/MessageRuleSchema";
 import type { ModerationActionType } from "@schemas/ModerationActionSchema";
 import type {
     Guild,
+    GuildBasedChannel,
     GuildMember,
     GuildTextBasedChannel,
     Message,
@@ -14,7 +15,8 @@ import type {
     PartialUser,
     ReadonlyCollection,
     Snowflake,
-    User
+    User,
+    VoiceState
 } from "discord.js";
 
 export type LogEventArgs = {
@@ -52,6 +54,8 @@ export type LogEventArgs = {
     [LogEventType.GuildVerificationNotEnoughInfo]: [payload: LogGuildVerificationNotEnoughInfoPayload];
     [LogEventType.GuildVerificationNotEnoughInfo]: [payload: LogGuildVerificationNotEnoughInfoPayload];
     [LogEventType.NewMemberMessageInspection]: [payload: LogNewMemberMessageInspectionPayload];
+    [LogEventType.MemberVoiceChannelJoin]: [member: GuildMember, channel: GuildBasedChannel, state: VoiceState];
+    [LogEventType.MemberVoiceChannelLeave]: [member: GuildMember, channel: GuildBasedChannel, state: VoiceState];
 };
 
 export type LogNewMemberMessageInspectionPayload = {
