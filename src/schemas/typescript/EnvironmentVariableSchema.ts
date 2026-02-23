@@ -18,13 +18,13 @@
  */
 
 import { SnowflakeSchema } from "./SnowflakeSchema";
-import { z } from 'zod';
+import { z } from "zod";
 
 export const EnvironmentVariableSchema = z.object({
     SUDOBOT_TOKEN: z.string(),
     SUDOBOT_HOME_GUILD_ID: SnowflakeSchema,
     SUDOBOT_SHARD_COUNT: z.string().regex(/^\d+$/).optional(),
-    SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: z.enum(["1", "0"]).prefault('0'),
+    SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: z.enum(["1", "0"]).prefault("0"),
     SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
     SUDOBOT_DATABASE_URL:z.string(),
 });

@@ -32,7 +32,7 @@ type ParserContext = {
     isInteractive: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+ 
 type ParseStepResult<T extends object = Record<never, never>> = T & {
     error?: string;
 };

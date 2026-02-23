@@ -32,7 +32,7 @@ export default class FileSystem {
         path: string,
         { json }: ReadFileContentOptions<T> = {}
     ): Promise<ReadFileResult<T, unknown>> {
-        let contents = "";
+        let contents: string;
 
         if (process.versions.bun) {
             const file = Bun.file(path);

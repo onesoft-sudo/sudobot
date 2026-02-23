@@ -3,6 +3,8 @@ import "reflect-metadata";
 import dotenv from "dotenv";
 import path from "path";
 import { _moduleAliases } from "../../../package.json";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import Module = require("module");
 
 function resolveFilename(name: string) {
@@ -25,7 +27,8 @@ if (!("__preloaded" in global)) {
                 return nextResolve(resolved ?? specifier, context);
             }
         });
-    } else {
+    }
+    else {
         const originalResolveFilename = (Module as unknown as Record<string, unknown>)._resolveFilename as (
             request: unknown,
             parent: unknown,

@@ -19,7 +19,7 @@
 
 import type { Snowflake } from "discord.js";
 import { PolicyModuleTypeLabelCommonPatternSchema, PolicyModuleTypeLabelMemberPatternSchema } from "./PolicyModuleSchema";
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AVCSchema = z.object({
     details: z.object({

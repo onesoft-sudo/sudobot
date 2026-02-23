@@ -65,7 +65,7 @@ class DirectiveParser {
             }
 
             let arg;
-            let length = 0;
+            let length: number;
 
             try {
                 const { json, length: computedLength, str } = this.getNextJSON5Literal(sliced, name);

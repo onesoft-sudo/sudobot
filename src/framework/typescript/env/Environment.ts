@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ZodType, z } from 'zod';
+import type { ZodType, z } from "zod";
 
 class Environment {
     public static isProduction(): boolean {

@@ -20,7 +20,7 @@
 import type { FileResolvable } from "../io/File";
 import { File } from "../io/File";
 import PropertySyntaxError from "./PropertySyntaxError";
-import { z, ZodType } from "zod";
+import type { z, ZodType } from "zod";
 
 type Schema = ZodType;
 

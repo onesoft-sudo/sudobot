@@ -5,6 +5,15 @@
             "arguments": ["--stdin-filepath", "{buffer_path}"]
         }
     },
+    "lsp": {
+        "eslint": {
+            "settings": {
+                "problems": {
+                    "shortenToSingleLine": true
+                }
+            }
+        }
+    },
     "languages": {
         "YAML": {
             "tab_size": 2

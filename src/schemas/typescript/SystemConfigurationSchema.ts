@@ -26,10 +26,10 @@ export const SystemConfigurationSchema = z.object({
     restart_exit_code: z.int().min(0).max(255).prefault(0),
     presence: z.object({
         type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Watching"),
-        name: z.string(),
+        name: z.string().prefault("over the server"),
         url: z.url().optional(),
         status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
-    }),
+    }).prefault({}),
     guilds_with_selinux_permission_mode_allowed: z.array(SnowflakeSchema).prefault([]),
 });
 

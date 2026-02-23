@@ -69,20 +69,20 @@ const access = (
         return object;
     }
 
-    for (const access of accessors) {
-        const last = access === accessors[accessors.length - 1];
+    for (const subaccessor of accessors) {
+        const last = subaccessor === accessors[accessors.length - 1];
 
         if (current instanceof Object) {
-            if (options.arrayAccess && /\[\d+\]$/.test(access)) {
+            if (options.arrayAccess && /\[\d+\]$/.test(subaccessor)) {
                 const array = current[
-                    access.slice(0, access.indexOf("[")) as keyof typeof current
+                    subaccessor.slice(0, subaccessor.indexOf("[")) as keyof typeof current
                 ] as unknown as Array<unknown>;
 
                 if (!Array.isArray(array)) {
-                    throw new Error(`Cannot access index ${access} of non-array value (${prevAccessor ?? "root"})`);
+                    throw new Error(`Cannot access index ${subaccessor} of non-array value (${prevAccessor ?? "root"})`);
                 }
 
-                const index = parseInt(access.match(/\d+/)![0]);
+                const index = parseInt(subaccessor.match(/\d+/)![0]);
 
                 if (Number.isNaN(index)) {
                     throw new Error(`Invalid index ${index} (${prevAccessor ?? "root"})`);
@@ -107,24 +107,24 @@ const access = (
                     return options?.returnExists ? false : undefined;
                 }
 
-                let value = current[access as keyof typeof current];
+                let value = current[subaccessor as keyof typeof current];
 
                 if (options?.returnExists && last) {
-                    return access in current;
+                    return subaccessor in current;
                 }
 
-                if (!(access in current) && options.create) {
+                if (!(subaccessor in current) && options.create) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    current[access as keyof typeof current] = {} as any;
-                    value = current[access as keyof typeof current];
+                    current[subaccessor as keyof typeof current] = {} as any;
+                    value = current[subaccessor as keyof typeof current];
                 }
 
                 setObject: if (setter && last) {
-                    if (!options.modify && access in current && !options.create && !(access in current)) {
+                    if (!options.modify && subaccessor in current && !options.create && !(subaccessor in current)) {
                         break setObject;
                     }
 
-                    (current as Record<PropertyKey, unknown>)[access as PropertyKey] = setter(current);
+                    (current as Record<PropertyKey, unknown>)[subaccessor as PropertyKey] = setter(current);
                 }
 
                 current = value;
@@ -137,6 +137,8 @@ const access = (
 
             return setter ? current : undefined;
         }
+
+        prevAccessor = prevAccessor === "" ? subaccessor : `${prevAccessor}.${subaccessor}`;
     }
 
     return options?.returnExists ? true : current;
@@ -162,8 +164,12 @@ export const has = (
         returnExists: false
     }
 ) => access(object, accessor, undefined, { ...options, returnExists: true });
-export const set = (object: Record<PropertyKey, object> | unknown[], accessor: string, value: unknown, options?: AccessOptions) =>
-    access(object, accessor, () => value, options);
+export const set = (
+    object: Record<PropertyKey, object> | unknown[],
+    accessor: string,
+    value: unknown,
+    options?: AccessOptions
+) => access(object, accessor, () => value, options);
 
 export const toDotted = (object: Record<string, unknown>, arrayAccess = false) => {
     const result: Record<string, unknown> = {};

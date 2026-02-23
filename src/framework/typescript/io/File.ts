@@ -23,7 +23,7 @@ import type { CreateReadStreamOptions, FileHandle } from "fs/promises";
 import { lstat, open, realpath, rm } from "fs/promises";
 import { basename, resolve } from "path";
 import FileSystem from "../polyfills/FileSystem";
-import { Awaitable } from "discord.js";
+import type { Awaitable } from "discord.js";
 
 export type FileResolvable = string | File;
 
@@ -205,19 +205,19 @@ export class File implements Disposable, AsyncDisposable {
 
     public async runStat() {
         const stat = await lstat(this.path);
-        this.attribute("stat", () => stat);
+        await this.attribute("stat", () => stat);
         return this;
     }
 
     public async checkExists() {
         const exists = await FileSystem.exists(this.path);
-        this.attribute("exists", () => exists);
+        await this.attribute("exists", () => exists);
         return this;
     }
 
     public async checkRealpath() {
         const path = await realpath(this.path);
-        this.attribute("realpath", () => path);
+        await this.attribute("realpath", () => path);
         return this;
     }
 
