@@ -23,7 +23,8 @@ import { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
 import Database from "@main/database/Database";
 import CommandManagerService from "@main/services/CommandManagerService";
-import type { Client } from "discord.js";
+import ConfigurationManagerService from "@main/services/ConfigurationManagerService";
+import { ActivityType, type Client } from "discord.js";
 import { sql } from "drizzle-orm";
 
 class ClientReadyEventListener extends EventListener<Events.ClientReady> {
@@ -37,11 +38,27 @@ class ClientReadyEventListener extends EventListener<Events.ClientReady> {
 
     @Inject()
     private readonly commandManagerService!: CommandManagerService;
+    @Inject()
+    private readonly configurationManagerService!: ConfigurationManagerService;
 
-    public override onEvent(client: Client<true>) {
+    public override async onEvent(client: Client<true>): Promise<void> {
         this.logger.info(`Logged in successfully as: ${client.user.username} (${client.user.id})`);
         this.commandManagerService.onClientReady().catch(this.logger.error);
         this.database.drizzle.execute(sql`SELECT 1;`);
+
+        const presence = this.configurationManagerService.systemConfig.presence;
+        this.logger.debug("Setting client presence");
+
+        client.user.setPresence({
+            status: presence.status,
+            activities: [
+                {
+                    name: presence.name,
+                    type: ActivityType[presence.type],
+                    url: presence.url,
+                }
+            ]
+        });
     }
 }
 

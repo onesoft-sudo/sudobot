@@ -25,8 +25,8 @@ export const SystemConfigurationSchema = z.object({
     emoji_resolve_strategy: z.enum(["application", "home_guild", "both"]).prefault("both"),
     restart_exit_code: z.int().min(0).max(255).prefault(0),
     presence: z.object({
-        type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Watching"),
-        name: z.string().prefault("over the server"),
+        type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Custom"),
+        name: z.string().prefault("Moderating the server"),
         url: z.url().optional(),
         status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
     }).prefault({}),
