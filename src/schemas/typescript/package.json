@@ -51,6 +51,6 @@
         "typescript": "^5.9.3"
     },
     "peerDependencies": {
-        "typebox": "^1"
+        "zod": "^4"
     }
 }

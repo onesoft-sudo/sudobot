@@ -208,7 +208,7 @@ function detectPackageManager() {
 }
 
 async function createNewProject() {
-    console.log(`${chalk.blue("==>")} Creating a new BlazeBuild project...`);
+    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating a new BlazeBuild project...")}`);
 
     process.stdout.write("Enter project name: ");
     let name = "";
@@ -225,11 +225,11 @@ async function createNewProject() {
         break;
     }
 
-    console.log(`${chalk.blue("==>")} Creating directory: ${chalk.cyan(name)}`);
+    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating directory: ${chalk.cyan(name)}")}`);
     await mkdir(name);
     chdir(name);
 
-    console.log(`${chalk.blue("==>")} Creating project files...`);
+    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating project files...")}`);
 
     await writeFile("package.json", packageJsonTemplate, "utf8");
     await writeFile("build.blaze.ts", buildBlazeScriptTemplate, "utf8");
@@ -254,7 +254,7 @@ async function createNewProject() {
         "utf8"
     );
 
-    console.log(`${chalk.blue("==>")} Installing initial dependencies...`);
+    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Installing initial dependencies...")}`);
 
     const pm = detectPackageManager();
 

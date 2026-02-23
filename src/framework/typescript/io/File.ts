@@ -23,6 +23,7 @@ import type { CreateReadStreamOptions, FileHandle } from "fs/promises";
 import { lstat, open, realpath, rm } from "fs/promises";
 import { basename, resolve } from "path";
 import FileSystem from "../polyfills/FileSystem";
+import { Awaitable } from "discord.js";
 
 export type FileResolvable = string | File;
 
@@ -45,6 +46,7 @@ export class File implements Disposable, AsyncDisposable {
     private cache: Cache = {};
     public readonly path: string;
     private _state: FileState = FileState.Closed;
+    private _exists?: boolean;
 
     public constructor(path: string);
     public constructor(resolvable: FileResolvable);
@@ -58,26 +60,30 @@ export class File implements Disposable, AsyncDisposable {
     }
 
     public get exists(): boolean {
-        return this.attribute("exists", () => (this.cache.handle ? true : existsSync(this.path)));
+        if (this._exists === undefined) {
+            this._exists = this.cache.handle ? true : existsSync(this.path);
+        }
+
+        return this._exists;
     }
 
-    public get name(): string {
+    public async getName() {
         return this.attribute("basename", () => basename(this.path));
     }
 
-    public get realpath(): string {
+    public async getRealpath() {
         return this.attribute("realpath", () => realpathSync(this.path));
     }
 
-    public get lastModified(): number {
-        return this.stat.mtimeMs;
+    public async getLastModified() {
+        return (await this.getStat()).mtimeMs;
     }
 
-    public get size(): number {
-        return this.stat.size;
+    public async getSize() {
+        return (await this.getStat()).size;
     }
 
-    public get stat(): Stats {
+    public async getStat() {
         return this.attribute("stat", () => lstatSync(this.path));
     }
 
@@ -150,9 +156,12 @@ export class File implements Disposable, AsyncDisposable {
         });
     }
 
-    private attribute<K extends keyof Cache>(name: K, compute: () => NonNullable<Cache[K]>): NonNullable<Cache[K]> {
+    private async attribute<K extends keyof Cache>(
+        name: K,
+        compute: () => Awaitable<NonNullable<Cache[K]>>
+    ): Promise<NonNullable<Cache[K]>> {
         if (!(name in this.cache) || this.cache[name] === undefined) {
-            this.cache[name] = compute();
+            this.cache[name] = await compute();
         }
 
         return this.cache[name] as NonNullable<Cache[K]>;

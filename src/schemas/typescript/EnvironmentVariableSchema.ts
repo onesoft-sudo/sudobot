@@ -17,18 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Type } from "typebox";
-import { Compile } from "typebox/compile";
 import { SnowflakeSchema } from "./SnowflakeSchema";
+import { z } from 'zod';
 
-export const EnvironmentVariableSchema = Type.Object({
-    SUDOBOT_TOKEN: Type.String(),
+export const EnvironmentVariableSchema = z.object({
+    SUDOBOT_TOKEN: z.string(),
     SUDOBOT_HOME_GUILD_ID: SnowflakeSchema,
-    SUDOBOT_SHARD_COUNT: Type.Optional(Type.String({ pattern: /^\d+$/ })),
-    SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: Type.Enum(["1", "0"], { default: "0" }),
-    SUDOBOT_MODIFICATIONS_PUBLIC_URL: Type.Optional(Type.String({ format: "url" })),
-    SUDOBOT_DATABASE_URL: Type.String(),
+    SUDOBOT_SHARD_COUNT: z.string().regex(/^\d+$/).optional(),
+    SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: z.enum(["1", "0"]).prefault('0'),
+    SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
+    SUDOBOT_DATABASE_URL:z.string(),
 });
 
-export const EnvironmentVariableSchemaValidator = Compile(EnvironmentVariableSchema);
-export type EnvironmentVariableType = Type.Static<typeof EnvironmentVariableSchema>;
+export type EnvironmentVariableType = z.infer<typeof EnvironmentVariableSchema>;

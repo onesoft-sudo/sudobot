@@ -18,38 +18,35 @@
  */
 
 import type { Snowflake } from "discord.js";
-import { Type } from "typebox";
-import { Compile } from "typebox/compile";
-import { PolicyModuleSchema } from "./PolicyModuleSchema";
+import { PolicyModuleTypeLabelCommonPatternSchema, PolicyModuleTypeLabelMemberPatternSchema } from "./PolicyModuleSchema";
+import { z } from 'zod';
 
-export const AVCSchema = Type.Object({
-    details: Type.Object({
-        version: Type.Integer({ minimum: 0 })
+export const AVCSchema = z.object({
+    details: z.object({
+        version: z.int().min(0),
     }),
-    typeLabelPatterns: Type.Object({
-        members: PolicyModuleSchema["properties"]["type_labeling"]["properties"]["commonPatterns"],
-        roles: PolicyModuleSchema["properties"]["type_labeling"]["properties"]["commonPatterns"],
-        channels: PolicyModuleSchema["properties"]["type_labeling"]["properties"]["commonPatterns"],
-        memberPatterns: PolicyModuleSchema["properties"]["type_labeling"]["properties"]["memberPatterns"],
+    typeLabelPatterns: z.object({
+        members: z.array(PolicyModuleTypeLabelCommonPatternSchema),
+        roles: z.array(PolicyModuleTypeLabelCommonPatternSchema),
+        channels: z.array(PolicyModuleTypeLabelCommonPatternSchema),
+        memberPatterns: z.array(PolicyModuleTypeLabelMemberPatternSchema),
     }),
-    mapTypes: Type.Any(),
-    allowTypes: Type.Any(),
-    denyTypes: Type.Any(),
-    allowTypesOnTargets: Type.Any(),
-    denyTypesOnTargets: Type.Any(),
-    mapTypeIds: Type.Any(),
-    entityContexts: Type.Any(),
-    nextTypeId: Type.Integer()
+    mapTypes: z.any(),
+    allowTypes: z.any(),
+    denyTypes: z.any(),
+    allowTypesOnTargets: z.any(),
+    denyTypesOnTargets: z.any(),
+    mapTypeIds: z.any(),
+    entityContexts: z.any(),
+    nextTypeId: z.int()
 });
 
-export const CacheSchema = Type.Object({
+export const CacheSchema = z.object({
     avc: AVCSchema,
-    modules: Type.Any()
+    modules: z.any()
 });
 
-export const AVCValidator = Compile(AVCSchema);
-export const CacheValidator = Compile(CacheSchema);
-export type AVCType = Pick<Type.Static<typeof AVCSchema>, "details" | "nextTypeId" | "typeLabelPatterns"> & {
+export type AVCType = Pick<z.infer<typeof AVCSchema>, "details" | "nextTypeId" | "typeLabelPatterns"> & {
     mapTypes: Map<number, string>;
     mapTypeIds: Map<string, number>;
     allowTypes: Map<number, bigint>;

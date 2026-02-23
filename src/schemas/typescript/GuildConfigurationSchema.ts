@@ -17,25 +17,25 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Type } from "typebox";
-import { Compile } from "typebox/compile";
+import z from "zod";
 
-export const GuildConfigurationSchema = Type.Object({
-    commands: Type.Optional(
-        Type.Object({
-            prefix: Type.String({ default: "-", pattern: /^[^\s]+$/, minLength: 1 })
+export const GuildConfigurationSchema = z.object({
+    commands: z
+        .object({
+            prefix: z
+                .string()
+                .min(1)
+                .regex(/^[^\s]+$/)
+                .prefault("-")
         })
-    ),
-    permissions: Type.Optional(
-        Type.Object({
-            mode: Type.Enum(["discord", "leveled", "layered", "selinux"], {
-                default: "discord"
-            })
+        .optional(),
+    permissions: z
+        .object({
+            mode: z.enum(["discord", "leveled", "layered", "selinux"]).prefault("discord")
         })
-    )
+        .optional()
 });
 
-export const GuildConfigurationSchemaValidator = Compile(GuildConfigurationSchema);
-export type GuildConfigurationType = Type.Static<typeof GuildConfigurationSchema>;
+export type GuildConfigurationType = z.infer<typeof GuildConfigurationSchema>;
 
-export const GuildConfigurationDefaultValue = GuildConfigurationSchemaValidator.Parse({});
+export const GuildConfigurationDefaultValue = GuildConfigurationSchema.parse({});

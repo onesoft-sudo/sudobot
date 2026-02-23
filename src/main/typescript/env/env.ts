@@ -18,12 +18,11 @@
  */
 
 import Environment from "@framework/env/Environment";
-import { Value } from "typebox/value";
 import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/EnvironmentVariableSchema";
 
 let envData: EnvironmentVariableType | undefined;
 
-export function env(): EnvironmentVariableType {
+export function getEnv(): EnvironmentVariableType {
     if (envData === undefined) {
         if (Environment.isTest()) {
             return process.env as EnvironmentVariableType;
@@ -36,5 +35,5 @@ export function env(): EnvironmentVariableType {
 }
 
 export function setEnv(data: Record<string, string | undefined>): void {
-    envData = Value.Parse(EnvironmentVariableSchema, data);
+    envData = EnvironmentVariableSchema.parse(data);
 }

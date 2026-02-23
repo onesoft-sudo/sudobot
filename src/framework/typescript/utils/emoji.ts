@@ -18,7 +18,7 @@
  */
 
 import type Application from "@framework/app/Application";
-import { env } from "@main/env/env";
+import { getEnv } from "@main/env/env";
 import type ConfigurationManagerService from "@main/services/ConfigurationManagerService";
 import type { ApplicationEmoji, GuildEmoji } from "discord.js";
 
@@ -32,7 +32,7 @@ export function findEmoji(application: Application, name: string): GuildEmoji | 
             .emoji_resolve_strategy;
 
     ifGuild: if (strategy !== "application") {
-        const homeGuild = application.client.guilds.cache.get(env().SUDOBOT_HOME_GUILD_ID);
+        const homeGuild = application.client.guilds.cache.get(getEnv().SUDOBOT_HOME_GUILD_ID);
 
         if (!homeGuild) {
             break ifGuild;

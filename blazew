@@ -246,7 +246,7 @@ install_node
 install_bun
 
 export PATH="$PATH"
-print_info "PATH is now: $PATH"
+print_debug "PATH is now: $PATH"
 
 pm=""
 

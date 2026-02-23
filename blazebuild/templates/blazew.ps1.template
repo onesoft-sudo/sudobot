@@ -2,7 +2,10 @@
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BlazeDir = Join-Path $ScriptDir ".blazebuild"
+$BlazeSrcDir = Join-Path $ScriptDir "blazebuild"
+$NodeModulesDir = Join-Path $ScriptDir "node_modules"
 $BlazeEntry = Join-Path $ScriptDir "node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
+$BlazeNodeModulesDir = Join-Path $ScriptDir "blazebuild/node_modules"
 
 $Arch = switch ((Get-CimInstance Win32_Processor).Architecture) {
     9 { "x64" }
@@ -18,11 +21,21 @@ if (-not (Test-Path $BlazeDir)) {
     New-Item -ItemType Directory -Path $BlazeDir -Force | Out-Null
 }
 
+function Debug-Log {
+    param (
+        [string]$Message
+    )
+
+    if ($env:DEBUG -eq "1") {
+        Write-Host "$Message"
+    }
+}
+
 function Get-BlazeProperty {
     param (
         [string]$PropertyName
     )
-    
+
     $PropertyFile = Join-Path $ScriptDir "blaze/wrapper/blaze_wrapper.properties"
 
     if (-not (Test-Path $PropertyFile)) {
@@ -53,14 +66,14 @@ function Install-Node {
         $SplittedGlobalInstalledVersion = $GlobalInstalledVersion -split '\.'
         $MajorInstalled = $SplittedGlobalInstalledVersion[0]
 
-        Write-Host "Found Node.js at $($NodePath.Source)"
+        Debug-Log "Found Node.js at $($NodePath.Source)"
 
         if ($MajorInstalled -ge $Major) {
-            Write-Host "Node.js version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Node.js version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $NodePath
         }
 
-        Write-Host "Node.js version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
+        Debug-Log "Node.js version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
         $NodePath = $null
     }
 
@@ -68,20 +81,21 @@ function Install-Node {
         $NodePath = Join-Path $BlazeDir "node/node.exe"
 
         if (Test-Path $NodePath) {
-            Write-Host "Found project local Node.js at $NodePath"
+            Debug-Log "Found project local Node.js at $NodePath"
 
             $LocalInstalledVersion = (& $NodePath --version).Substring(1)
             $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
             $MajorLocalInstalled = $SplittedLocalInstalledVersion[0]
 
             if ($MajorLocalInstalled -ge $Major) {
-                Write-Host "Node.js version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Node.js version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $NodePath
             }
 
-            Write-Host "Node.js version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
-            $NodePath = $null
+            Debug-Log "Node.js version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
         }
+
+        $NodePath = $null
     }
 
     if (-not $NodePath) {
@@ -91,17 +105,24 @@ function Install-Node {
         $ZipPath = Join-Path $BlazeDir "node.zip"
         $NodeDir = Join-Path $BlazeDir "node"
 
-        Start-BitsTransfer -Source $Url -Destination $ZipPath
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
 
         if (!$?) {
             Write-Error "Failed to download Node.js from $Url"
             exit 1
         }
 
-        Expand-Archive -Path $ZipPath -DestinationPath $NodeDir -Force
+        Expand-Archive -Path $ZipPath -DestinationPath $BlazeDir -Force
 
         if (!$?) {
             Write-Error "Failed to extract Node.js from $ZipPath"
+            exit 1
+        }
+
+        Move-Item -Path (Join-Path $BlazeDir "node-v$Version-win-$Arch") -Destination $NodeDir -Force
+
+        if (!$?) {
+            Write-Error "Failed to move Node.js to $NodeDir"
             exit 1
         }
 
@@ -125,24 +146,24 @@ function Install-Bun {
     $BunPath = Get-Command bun -ErrorAction SilentlyContinue
 
     if ($BunPath) {
-        $GlobalInstalledVersion = (& $BunPath --version).Substring(1)
+        $GlobalInstalledVersion = & $BunPath --version
         $SplittedGlobalInstalledVersion = $GlobalInstalledVersion -split '\.'
         $MajorInstalled = $SplittedGlobalInstalledVersion[0]
         $MinorInstalled = $SplittedGlobalInstalledVersion[1]
 
-        Write-Host "Found Bun at $($BunPath.Source)"
+        Debug-Log "Found Bun at $($BunPath.Source)"
 
         if ($MajorInstalled -gt $Major) {
-            Write-Host "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $BunPath
         }
 
         if ($MajorInstalled -eq $Major -and $MinorInstalled -ge $Minor) {
-            Write-Host "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $BunPath
         }
 
-        Write-Host "Bun version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
+        Debug-Log "Bun version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
         $BunPath = $null
     }
 
@@ -150,52 +171,60 @@ function Install-Bun {
         $LocalBunPath = Join-Path $BlazeDir "bun/bun.exe"
 
         if (Test-Path $LocalBunPath) {
-            Write-Host "Found project local Bun at $LocalBunPath"
+            Debug-Log "Found project local Bun at $LocalBunPath"
 
-            $LocalInstalledVersion = (& $LocalBunPath --version).Substring(1)
+            $LocalInstalledVersion = & $LocalBunPath --version
             $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
             $MajorLocalInstalled = $SplittedLocalInstalledVersion[0]
             $MinorLocalInstalled = $SplittedLocalInstalledVersion[1]
 
             if ($MajorLocalInstalled -gt $Major) {
-                Write-Host "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $LocalBunPath
             }
 
             if ($MajorLocalInstalled -eq $Major -and $MinorLocalInstalled -ge $Minor) {
-                Write-Host "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $LocalBunPath
             }
 
-            Write-Host "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
-            $BunPath = $null
+            Debug-Log "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
         }
+
+        $BunPath = $null
     }
 
     if (-not $BunPath) {
         Write-Host "Bun version $Version is not installed. Installing..."
-        $Url = "https://github.com/oven-sh/bun/releases/latest/download/bun-windows-x64.zip"
+        $Url = "https://github.com/oven-sh/bun/releases/latest/download/bun-windows-$Arch.zip"
         $ZipPath = Join-Path $BlazeDir "bun.zip"
         $BunDir = Join-Path $BlazeDir "bun"
 
-        Start-BitsTransfer -Source $Url -Destination $ZipPath
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
 
         if (!$?) {
             Write-Error "Failed to download Bun from $Url"
             exit 1
         }
 
-        Expand-Archive -Path $ZipPath -DestinationPath $BunDir -Force
+        Expand-Archive -Path $ZipPath -DestinationPath $BlazeDir -Force
 
         if (!$?) {
             Write-Error "Failed to extract Bun from $ZipPath"
             exit 1
         }
 
+        Move-Item -Path (Join-Path $BlazeDir "bun-windows-$Arch") -Destination $BunDir -Force
+
+        if (!$?) {
+            Write-Error "Failed to move Bun to $BunDir"
+            exit 1
+        }
+
         Remove-Item -Path $ZipPath
 
         $BunPath = Join-Path $BunDir "bun.exe"
-        $InstalledVersion = (& $BunPath --version).Substring(1)
+        $InstalledVersion = & $BunPath --version
 
         Write-Host "Bun version $InstalledVersion installed at $BunPath"
     }
@@ -206,40 +235,64 @@ function Install-Bun {
 Install-Node
 $BUN_EXE = Install-Bun
 
-if (-not (Test-Path $BlazeEntry)) {
-    $PackageManager = ""
+$env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
 
-    if (Get-Command pnpm -ErrorAction SilentlyContinue) {
-        $PackageManager = "pnpm"
-    }
-    elseif (Get-Command bun -ErrorAction SilentlyContinue) {
-        $PackageManager = "bun"
-    }
-    elseif (Get-Command npm -ErrorAction SilentlyContinue) {
-        $PackageManager = "npm"
-    }
-    elseif (Get-Command yarn -ErrorAction SilentlyContinue) {
-        $PackageManager = "yarn"
-    }
-    else {
-        Write-Error "No package manager found. Please install pnpm, bun, npm, or yarn."
-        exit 1
-    }
+$PackageManager = ""
 
-    Write-Host "Installing project dependencies using $PackageManager..."
-    $InstallCommand = "$PackageManager install"
-
-    & $InstallCommand
-
-    if (!$?) {
-        Write-Error "Failed to install project dependencies using $PackageManager."
-        exit 1
-    }
-
-    Write-Host "Project dependencies installed successfully."
+if (Get-Command pnpm -ErrorAction SilentlyContinue) {
+    $PackageManager = "pnpm"
+}
+elseif (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PackageManager = "bun"
+}
+elseif (Get-Command npm -ErrorAction SilentlyContinue) {
+    $PackageManager = "npm"
+}
+elseif (Get-Command yarn -ErrorAction SilentlyContinue) {
+    $PackageManager = "yarn"
+}
+else {
+    Write-Error "No package manager found. Please install pnpm, bun, npm, or yarn."
+    exit 1
 }
 
-$env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
+if (-not (Test-Path $BlazeEntry)) {
+    Write-Host "Installing project dependencies..."
+
+    $NodeModulesOSNDir = Join-Path $NodeModulesDir "@onesoftnet"
+    $NodeModulesBlazeDir = Join-Path $NodeModulesOSNDir "blazebuild"
+
+    New-Item -ItemType Directory -Path $NodeModulesOSNDir -Force
+
+    if (!$?) {
+        Write-Error "Failed to install project dependencies."
+        exit 1
+    }
+
+    New-Item -ItemType SymbolicLink -Path $NodeModulesBlazeDir -Target $BlazeSrcDir
+
+    if (!$?) {
+        Write-Error "Failed to install project dependencies."
+        exit 1
+    }
+
+    Debug-Log "Project dependencies installed successfully."
+}
+
+if (-not (Test-Path $BlazeNodeModulesDir)) {
+    Write-Host "Installing blazebuild dependencies using $PackageManager..."
+
+    cd "blazebuild"
+    & $PackageManager install
+    cd ".."
+
+    if (!$?) {
+        Write-Error "Failed to install blazebuild dependencies using $PackageManager."
+        exit 1
+    }
+
+    Debug-Log "Blazebuild dependencies installed successfully."
+}
 
 $Process = Start-Process -FilePath $BUN_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
 $Process.WaitForExit()

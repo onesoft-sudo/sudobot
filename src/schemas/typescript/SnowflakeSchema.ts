@@ -17,6 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Type from "typebox";
+import z from "zod";
 
-export const SnowflakeSchema = Type.String({ pattern: /^\d{17,22}$/, minLength: 1 });
+export const SnowflakeSchema = z
+    .string()
+    .min(1)
+    .regex(/^\d{17,22}$/);

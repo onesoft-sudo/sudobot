@@ -19,7 +19,7 @@
 
 import { readFile } from "fs/promises";
 import PolicyModuleParser from "./policyparser/PolicyModuleParser";
-import { PolicyModuleValidator, type PolicyModuleType } from "./PolicyModuleSchema";
+import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema";
 import ModuleBlockStatementNode from "./policyparser/ast/ModuleBlockStatementNode";
 import PoilcyModuleCompilationError from "./PoilcyModuleCompilationError";
 import type LiteralNode from "./policyparser/ast/LiteralNode";
@@ -43,7 +43,7 @@ class PolicyCompiler {
     }
 
     public decode(data: ArrayLike<number> | ArrayBufferView | ArrayBufferLike): PolicyModuleType {
-        return PolicyModuleValidator.Parse(this.encoder.decode(data));
+        return PolicyModuleSchema.parse(this.encoder.decode(data));
     }
 
     public compile(source: string | Buffer<ArrayBufferLike>, filename = "<input>"): PolicyModuleType {

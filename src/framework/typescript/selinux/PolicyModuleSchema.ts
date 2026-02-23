@@ -18,50 +18,38 @@
  */
 
 import { SnowflakeSchema } from "@schemas/SnowflakeSchema";
-import { Type } from "typebox";
-import { Compile } from "typebox/compile";
+import { z } from "zod";
 
-export const PolicyModuleSchema = Type.Object({
-    policy_module: Type.Object({
-        name: Type.String({
-            get default(): string {
-                return `${Date.now}${Math.random() * 10000}`;
-            }
-        }),
-        version: Type.Integer({ minimum: 0, default: 1000 }),
-        author: Type.Optional(Type.String())
-    }),
-    map_types: Type.Array(Type.String()),
-    type_labeling: Type.Optional(
-        Type.Object({
-            commonPatterns: Type.Array(
-                Type.Object({
-                    pattern: Type.Tuple([Type.String(), Type.String()]),
-                    entity_type: Type.Enum(["member", "role", "channel"]),
-                    entity_attr: Type.Enum(["name", "username", "nickname", "id", "topic", "parent_id"]),
-                    context: Type.Integer()
-                })
-            ),
-            memberPatterns: Type.Array(
-                Type.Object({
-                    context: Type.Integer(),
-                    requiredRoles: Type.Optional(Type.Array(SnowflakeSchema)),
-                    excludedRoles: Type.Optional(Type.Array(SnowflakeSchema))
-                })
-            )
-        })
-    ),
-    allow_types: Type.Array(Type.Union([Type.String(), Type.BigInt()])),
-    deny_types: Type.Array(Type.Union([Type.String(), Type.BigInt()])),
-    allow_types_on_targets: Type.Record(
-        Type.Integer(),
-        Type.Record(Type.Integer(), Type.Union([Type.String(), Type.BigInt()]))
-    ),
-    deny_types_on_targets: Type.Record(
-        Type.Integer(),
-        Type.Record(Type.Integer(), Type.Union([Type.String(), Type.BigInt()]))
-    )
+export const PolicyModuleTypeLabelCommonPatternSchema = z.object({
+    pattern: z.tuple([z.string(), z.string()]),
+    entity_type: z.enum(["member", "role", "channel"]),
+    entity_attr: z.enum(["name", "username", "nickname", "id", "topic", "parent_id"]),
+    context: z.int()
 });
 
-export const PolicyModuleValidator = Compile(PolicyModuleSchema);
-export type PolicyModuleType = Type.Static<typeof PolicyModuleSchema>;
+export const PolicyModuleTypeLabelMemberPatternSchema = z.object({
+    context: z.int(),
+    requiredRoles: z.array(SnowflakeSchema),
+    excludedRoles: z.array(SnowflakeSchema)
+});
+
+export const PolicyModuleSchema = z.object({
+    policy_module: z.object({
+        name: z.string().prefault(() => `${Date.now}${Math.random() * 10000}`),
+        version: z.int().min(0).max(1000),
+        author: z.string().optional()
+    }),
+    map_types: z.array(z.string()),
+    type_labeling: z
+        .object({
+            commonPatterns: z.array(PolicyModuleTypeLabelCommonPatternSchema),
+            memberPatterns: z.array(PolicyModuleTypeLabelMemberPatternSchema)
+        })
+        .optional(),
+    allow_types: z.array(z.union([z.string(), z.bigint()])),
+    deny_types: z.array(z.union([z.string(), z.bigint()])),
+    allow_types_on_targets: z.record(z.int(), z.record(z.int(), z.union([z.string(), z.bigint()]))),
+    deny_types_on_targets: z.record(z.int(), z.record(z.int(), z.union([z.string(), z.bigint()])))
+});
+
+export type PolicyModuleType = z.infer<typeof PolicyModuleSchema>;

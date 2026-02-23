@@ -25,7 +25,7 @@ import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationM
 import CommandContextType from "@framework/commands/CommandContextType";
 import LegacyContext from "@framework/commands/LegacyContext";
 import InteractionContext from "@framework/commands/InteractionContext";
-import { env } from "@main/env/env";
+import { getEnv } from "@main/env/env";
 import { Logger } from "@framework/log/Logger";
 import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { isDevelopmentMode } from "@framework/utils/utils";
@@ -117,7 +117,7 @@ class CommandManagerService extends Service implements HasEventListeners {
         }
 
         if (homeGuild) {
-            const guild = this.application.client.guilds.cache.get(env().SUDOBOT_HOME_GUILD_ID);
+            const guild = this.application.client.guilds.cache.get(getEnv().SUDOBOT_HOME_GUILD_ID);
 
             if (!guild) {
                 this.logger.debug("Home guild not found, skipping");

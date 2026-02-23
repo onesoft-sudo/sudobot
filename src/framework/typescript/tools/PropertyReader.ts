@@ -17,13 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Type from "typebox";
 import type { FileResolvable } from "../io/File";
 import { File } from "../io/File";
 import PropertySyntaxError from "./PropertySyntaxError";
-import Value from "typebox/value";
+import { z, ZodType } from "zod";
 
-type Schema = Type.Base;
+type Schema = ZodType;
 
 class PropertyReader {
     public constructor(private readonly fileResolvable: FileResolvable) {}
@@ -69,7 +68,7 @@ class PropertyReader {
         return plainProperties;
     }
 
-    public async read<T extends Type.Base | undefined = undefined>(schema?: T): Promise<Properties<T>> {
+    public async read<T extends Schema | undefined = undefined>(schema?: T): Promise<Properties<T>> {
         const plainProperties = await this.readPlain();
         const properties: Record<string, unknown> = {};
 
@@ -78,7 +77,7 @@ class PropertyReader {
             this.set(properties, key, this.parseValue(value));
         }
 
-        return (schema ? Value.Parse(schema, properties) : properties) as Properties<T>;
+        return (schema ? schema.parse(properties) : properties) as Properties<T>;
     }
 
     private set(object: object, key: string, value: unknown) {
@@ -127,7 +126,7 @@ class PropertyReader {
 }
 
 export type Properties<T extends Schema | undefined = undefined> = T extends Schema
-    ? Type.Static<T>
+    ? z.infer<T>
     : Record<string, unknown>;
 
 export default PropertyReader;

@@ -1,10 +1,10 @@
 import BaseApplication from "@framework/app/Application";
 import Database from "@main/database/Database";
-import { env } from "@main/env/env";
+import { getEnv } from "@main/env/env";
 
 class Application extends BaseApplication {
     public readonly database = new Database(this, {
-        url: env().SUDOBOT_DATABASE_URL
+        url: getEnv().SUDOBOT_DATABASE_URL
     });
 }
 

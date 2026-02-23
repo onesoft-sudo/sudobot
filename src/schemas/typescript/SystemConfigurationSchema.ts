@@ -17,31 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Type } from "typebox";
-import { Compile } from "typebox/compile";
 import { SnowflakeSchema } from "./SnowflakeSchema";
+import z from "zod";
 
-export const SystemConfigurationSchema = Type.Object({
-    system_admins: Type.Array(SnowflakeSchema, { default: [] }),
-    emoji_resolve_strategy: Type.Enum(["application", "home_guild", "both"], { default: "both" }),
-    restart_exit_code: Type.Integer({ default: 0, minimum: 0, maximum: 255 }),
-    presence: Type.Optional(
-        Type.Object({
-            type: Type.Enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"], {
-                default: "Watching"
-            }),
-            name: Type.String(),
-            url: Type.Optional(
-                Type.String({
-                    format: "url"
-                })
-            ),
-            status: Type.Enum(["online", "idle", "dnd", "invisible"], { default: "dnd" })
-        })
-    )
+export const SystemConfigurationSchema = z.object({
+    system_admins: z.array(SnowflakeSchema).prefault([]),
+    emoji_resolve_strategy: z.enum(["application", "home_guild", "both"]).prefault("both"),
+    restart_exit_code: z.int().min(0).max(255).prefault(0),
+    presence: z.object({
+        type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Watching"),
+        name: z.string(),
+        url: z.url().optional(),
+        status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
+    })
 });
 
-export const SystemConfigurationSchemaValidator = Compile(SystemConfigurationSchema);
-export type SystemConfigurationType = Type.Static<typeof SystemConfigurationSchema>;
+export type SystemConfigurationType = z.infer<typeof SystemConfigurationSchema>;
 
-export const SystemConfigurationDefaultValue = SystemConfigurationSchemaValidator.Parse({});
+export const SystemConfigurationDefaultValue = SystemConfigurationSchema.parse({});

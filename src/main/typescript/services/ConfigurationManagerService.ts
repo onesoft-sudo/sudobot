@@ -23,12 +23,12 @@ import Service from "@framework/services/Service";
 import { isSnowflake } from "@framework/utils/utils";
 import {
     GuildConfigurationDefaultValue,
-    GuildConfigurationSchemaValidator,
+    GuildConfigurationSchema,
     type GuildConfigurationType
 } from "@schemas/GuildConfigurationSchema";
 import {
     SystemConfigurationDefaultValue,
-    SystemConfigurationSchemaValidator,
+    SystemConfigurationSchema,
     type SystemConfigurationType
 } from "@schemas/SystemConfigurationSchema";
 import { systemPrefix } from "@main/utils/utils";
@@ -84,7 +84,7 @@ class ConfigurationManagerService extends Service {
         });
 
         try {
-            const config = SystemConfigurationSchemaValidator.Parse(configJSON);
+            const config = SystemConfigurationSchema.parse(configJSON);
             this.systemConfig = config;
         }
         catch (error) {
@@ -106,7 +106,7 @@ class ConfigurationManagerService extends Service {
         );
 
         try {
-            const config = GuildConfigurationSchemaValidator.Parse(configJSON);
+            const config = GuildConfigurationSchema.parse(configJSON);
             this.cache.set(`${type}::${id}`, config);
             return config;
         }

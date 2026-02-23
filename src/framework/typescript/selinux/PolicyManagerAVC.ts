@@ -18,13 +18,13 @@
  */
 
 import { type GuildBasedChannel, GuildMember, Role, User, type Snowflake } from "discord.js";
-import { PolicyModuleValidator, type PolicyModuleType } from "./PolicyModuleSchema";
+import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema";
 import PolicyModuleError from "./PolicyModuleError";
 import { Logger } from "@framework/log/Logger";
 import { performance } from "perf_hooks";
 import { readFile } from "fs/promises";
 import { writeFile } from "fs/promises";
-import { CacheValidator, type AVCType } from "./AVCSchema";
+import { CacheSchema, type AVCType } from "./AVCSchema";
 import { LRUCache } from "lru-cache";
 import { systemPrefix } from "@main/utils/utils";
 import path from "path";
@@ -114,7 +114,7 @@ class PolicyManagerAVC {
 
         try {
             const parsed = this.encoder.decode(data);
-            const final = PolicyModuleValidator.Parse(parsed);
+            const final = PolicyModuleSchema.parse(parsed);
             await this.loadModule(guildId, final);
         }
         catch (error) {
@@ -141,7 +141,7 @@ class PolicyManagerAVC {
         const data = await readFile(filepath);
 
         try {
-            const { avc, modules } = CacheValidator.Parse(this.encoder.decode(data));
+            const { avc, modules } = CacheSchema.parse(this.encoder.decode(data));
 
             if (avc.details.version > PolicyManagerAVC.POLICY_VERSION) {
                 throw new PolicyModuleError("Unsupported policy version: " + avc.details.version);

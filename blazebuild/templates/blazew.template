@@ -1,6 +1,7 @@
 #!/bin/sh
 
-topdir="$(pwd)"
+topdir="$(dirname "$0")"
+topdir="$(readlink -f "$topdir")"
 
 entry="$topdir/node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
 blazedir="$topdir/.blazebuild"
@@ -16,9 +17,6 @@ if [ ! -d "$blazedir" ]; then
 fi
 
 argv0="$0"
-
-BLAZEW_INTERNAL_ARGV0="$0"
-export BLAZEW_INTERNAL_ARGV0
 
 if ! command -v grep >/dev/null 2>&1; then
     echo "$argv0: grep not found, please install it" >&2
@@ -37,6 +35,11 @@ fi
 
 if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
     echo """$argv0"": curl or wget not found, please install one of them" >&2
+    exit 1
+fi
+
+if ! command -v bash >/dev/null 2>&1; then
+    echo """$argv0"": bash not found, please install it" >&2
     exit 1
 fi
 
@@ -108,7 +111,7 @@ install_node() {
         installed_version="$("$nodejs_dir/bin/node" --version | cut -d'v' -f2)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         node_interpreter="$nodejs_dir/bin/node"
-        export PATH="$nodejs_dir/bin:$PATH"
+        PATH="$nodejs_dir/bin:$PATH"
         print_debug "found project local node version: $installed_version"
     fi
 
@@ -118,11 +121,11 @@ install_node() {
     fi
 
     if [ -n "$installed_version" ]; then
-        print_error "node version $major ($version) or higher is required, but found $installed_version"
+        print_debug "node version $major ($version) or higher is required, but found $installed_version"
     else
-        print_error "node version $major ($version) or higher is required, but no installed version found"
+        print_debug "node version $major ($version) or higher is required, but no installed version found"
     fi
-    
+
     print_info "installing node version $version"
 
     url="https://nodejs.org/dist/v$version/node-v$version-$os-$arch.tar.gz"
@@ -132,7 +135,7 @@ install_node() {
         print_error "failed to download node version $version"
         return 1
     fi
-    
+
     print_debug "downloaded node version $version to $dest"
     print_debug "extracting node version $version"
 
@@ -155,6 +158,7 @@ install_node() {
         node_interpreter="$nodejs_dir/bin/node"
         version="$("$node_interpreter" --version | cut -d'v' -f2)"
         print_debug "version: $version"
+        PATH="$nodejs_dir/bin:$PATH"
     else
         print_error "failed to find node interpreter in $nodejs_dir"
         return 1
@@ -187,14 +191,20 @@ install_bun() {
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
         node_interpreter="$bun_dir/bin/bun"
-        export PATH="$bun_dir/bin:$PATH"
+        PATH="$bun_dir/bin:$PATH"
         print_debug "found project local bun version: $installed_version"
     fi
 
-    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
-       [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-        print_debug "bun version $major.$minor ($version) or higher is already installed"
-        return 0
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ]; then
+        if [ "$installed_version_major" -gt "$major" ]; then
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            return 0
+        fi
+
+        if [ "$installed_version_major" -eq "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            return 0
+        fi
     fi
 
     if [ -n "$installed_version" ]; then
@@ -212,17 +222,20 @@ install_bun() {
     fi
 
     # shellcheck disable=SC1091
-    BUN_INSTALL="$blazedir/bun" sh "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
+    BUN_INSTALL="$blazedir/bun" HOME="$blazedir" bash "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
 
     if [ $? -ne 0 ]; then
         print_error "failed to install bun version $version"
+        print_debug "bun install log:"
+        cat "$blazedir/bun_install.log"
         return 1
     fi
 
     rm "$blazedir/bun.sh"
     print_debug "installed bun version $version to $bun_dir"
     print_debug "found bun interpreter: $bun_dir/bin/bun"
-    
+    PATH="$bun_dir/bin:$PATH"
+
     bun_interpreter="$bun_dir/bin/bun"
     version="$("$bun_interpreter" --version)"
 
@@ -232,4 +245,49 @@ install_bun() {
 install_node
 install_bun
 
-exec "$bun_interpreter" "$entry" -- "$@"
+export PATH="$PATH"
+print_debug "PATH is now: $PATH"
+
+pm=""
+
+if command -v pnpm >/dev/null; then
+    pm="pnpm"
+elif command -v bun >/dev/null; then
+    pm="bun"
+elif command -v yarn >/dev/null; then
+    pm="yarn"
+elif command -v npm >/dev/null; then
+    pm="npm"
+else
+    print_error "no package manager found (pnpm, bun, yarn, npm)"
+    exit 1
+fi
+
+print_debug "using package manager: $pm"
+
+if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
+    print_debug "installing project dependencies"
+
+    mkdir -p "$topdir/node_modules/@onesoftnet"
+    ln -s "$topdir/blazebuild" "$topdir/node_modules/@onesoftnet/blazebuild"
+
+    print_debug "installed project dependencies"
+fi
+
+if [ ! -d "$topdir/blazebuild/node_modules" ]; then
+    print_debug "installing blazebuild dependencies"
+    print_info "installing blazebuild dependencies with '$pm install'"
+
+    dir=`pwd`
+    cd "$topdir/blazebuild"
+
+    if ! $pm install; then
+        print_error "failed to install blazebuild dependencies"
+        exit 1
+    fi
+
+    cd "$dir"
+    print_debug "installed blazebuild dependencies"
+fi
+
+BLAZEW_INTERNAL_ARGV0="$0" exec "$bun_interpreter" "$entry" -- "$@"
