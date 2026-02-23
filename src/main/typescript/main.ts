@@ -28,7 +28,7 @@ import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";
 import { setEnv } from "@main/env/env";
 import type { DotenvParseOutput } from "dotenv";
-import { parseArgs, ParseArgsConfig } from "util";
+import { parseArgs, type ParseArgsConfig } from "util";
 import Resource from "@framework/resources/Resource";
 
 const logger = new Logger("Main", true);
@@ -157,7 +157,8 @@ try {
                 console.error(`${argv0}: error: ${error.message}`);
                 break;
         }
-    } else {
+    }
+    else {
         throw error;
     }
 
