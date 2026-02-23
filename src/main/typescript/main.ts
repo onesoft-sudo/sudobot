@@ -26,7 +26,7 @@ import Application from "@main/core/Application";
 import { Logger } from "@framework/log/Logger";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";
-import { setEnvData } from "@main/env/env";
+import { setEnv } from "@main/env/env";
 import type { DotenvParseOutput } from "dotenv";
 import { parseArgs } from "util";
 import Resource from "@framework/resources/Resource";
@@ -55,7 +55,7 @@ async function loadEnvironmentData() {
                         return;
                     }
 
-                    setEnvData({
+                    setEnv({
                         ...process.env,
                         ...data
                     } as unknown as Record<string, string | undefined>);

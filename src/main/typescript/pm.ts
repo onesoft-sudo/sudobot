@@ -20,7 +20,7 @@
 import "./preload";
 
 import { Logger } from "@framework/log/Logger";
-import { setEnvData } from "@main/env/env";
+import { setEnv } from "@main/env/env";
 import { systemPrefix } from "@main/utils/utils";
 import axios from "axios";
 import { fork } from "child_process";
@@ -115,7 +115,7 @@ async function fetchCredentials(url: string, key: string) {
             try {
                 const data = parse(decryptedTextData);
 
-                setEnvData({
+                setEnv({
                     ...process.env,
                     ...data
                 } as unknown as Record<string, string | undefined>);

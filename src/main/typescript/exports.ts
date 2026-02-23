@@ -17,4 +17,4 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const SUDOBOT_VERSION = "10";
+export const SUDOBOT_VERSION = "11";

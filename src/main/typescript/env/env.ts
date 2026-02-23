@@ -23,7 +23,7 @@ import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schema
 
 let envData: EnvironmentVariableType | undefined;
 
-export function getEnvData(): EnvironmentVariableType {
+export function env(): EnvironmentVariableType {
     if (envData === undefined) {
         if (Environment.isTest()) {
             return process.env as EnvironmentVariableType;
@@ -35,6 +35,6 @@ export function getEnvData(): EnvironmentVariableType {
     return envData;
 }
 
-export function setEnvData(data: Record<string, string | undefined>): void {
+export function setEnv(data: Record<string, string | undefined>): void {
     envData = Value.Parse(EnvironmentVariableSchema, data);
 }

@@ -30,7 +30,7 @@ import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
 import { getBundleData } from "@framework/utils/bundle";
 import Database from "@main/database/Database";
-import { getEnvData } from "@main/env/env";
+import { env } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
@@ -262,7 +262,7 @@ class AppKernel extends Kernel {
 
     public async run(_application: Application): Promise<void> {
         await Promise.resolve();
-        await this.client.login(getEnvData().SUDOBOT_TOKEN);
+        await this.client.login(env().SUDOBOT_TOKEN);
     }
 }
 

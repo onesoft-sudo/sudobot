@@ -19,7 +19,7 @@
 
 import Command from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
-import { getEnvData } from "@main/env/env";
+import { env } from "@main/env/env";
 import {
     ContainerBuilder,
     TextDisplayBuilder,
@@ -39,7 +39,7 @@ class AboutCommand extends Command {
     public override readonly aliases: string[] = ["botinfo"];
 
     public override async execute(context: Context): Promise<void> {
-        const env = getEnvData();
+        const env = env();
         const avatar = this.application.client.user?.displayAvatarURL();
         const emoji = context.emoji("sudobot") || null;
         const codeName = metadata._meta.release_codename;
