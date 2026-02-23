@@ -29,7 +29,8 @@ export const SystemConfigurationSchema = z.object({
         name: z.string(),
         url: z.url().optional(),
         status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
-    })
+    }),
+    guilds_with_selinux_permission_mode_allowed: z.array(SnowflakeSchema).prefault([]),
 });
 
 export type SystemConfigurationType = z.infer<typeof SystemConfigurationSchema>;

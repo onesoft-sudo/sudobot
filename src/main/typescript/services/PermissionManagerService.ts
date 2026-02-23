@@ -75,6 +75,17 @@ class PermissionManagerService extends Service implements PermissionManagerServi
         );
 
         const mode = permissions?.mode ?? "discord";
+
+        if (
+            mode === "selinux" &&
+            (!guildId ||
+                !this.configurationManagerService.systemConfig.guilds_with_selinux_permission_mode_allowed.includes(
+                    guildId
+                ))
+        ) {
+            return this.permissionManagerRecord.discord;
+        }
+
         return this.permissionManagerRecord[mode] || this.permissionManagerRecord.discord;
     }
 }
