@@ -53,12 +53,15 @@ else
     fi
 fi
 
+script_root=`dirname "$0"`
+script_root=`dirname "$script_root"`
+
 if [ "$interpreter" = "bun" ]; then
     if [ -f /etc/sudobot/env ]; then
         arg="--env-file=/etc/sudobot/env"
     fi
 
-    exec bun run $arg src/main/typescript/main.ts "$@"
+    exec bun run $arg "$script_root/src/main/typescript/main.ts" "$@"
 else
-    exec node --env-file-if-exists=/etc/sudobot/env -- build/out/main/typescript/main.js "$@"
+    exec node --env-file-if-exists=/etc/sudobot/env -- "$script_root/build/out/main/typescript/main.js" "$@"
 fi

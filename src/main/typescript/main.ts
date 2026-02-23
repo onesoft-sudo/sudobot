@@ -28,7 +28,7 @@ import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";
 import { setEnv } from "@main/env/env";
 import type { DotenvParseOutput } from "dotenv";
-import { parseArgs } from "util";
+import { parseArgs, ParseArgsConfig } from "util";
 import Resource from "@framework/resources/Resource";
 
 const logger = new Logger("Main", true);
@@ -105,7 +105,7 @@ declare global {
     var optionValues: OptionValues;
 }
 
-const { values } = parseArgs({
+const parseArgsOptions = {
     args: process.argv.slice(2),
     allowPositionals: false,
     strict: true,
@@ -132,7 +132,37 @@ const { values } = parseArgs({
             type: "boolean"
         }
     }
-});
+} satisfies ParseArgsConfig;
+let values: ReturnType<typeof parseArgs<typeof parseArgsOptions>>["values"];
+
+try {
+    const result = parseArgs(parseArgsOptions);
+    values = result.values;
+} catch (error) {
+    if (error instanceof TypeError && "code" in error) {
+        switch (error.code) {
+            case "ERR_PARSE_ARGS_UNKNOWN_OPTION":
+                console.error(`${argv0}: unknown option: ${error.message}`);
+                break;
+
+            case "ERR_PARSE_ARGS_UNEXPECTED_POSITIONAL":
+                console.error(`${argv0}: unexpected positional argument: ${error.message}`);
+                break;
+
+            case "ERR_PARSE_ARGS_UNEXPECTED_OPTION":
+                console.error(`${argv0}: unexpected option: ${error.message}`);
+                break;
+
+            default:
+                console.error(`${argv0}: error: ${error.message}`);
+                break;
+        }
+    } else {
+        throw error;
+    }
+
+    process.exit(-1);
+}
 
 globalThis.optionValues = values;
 
