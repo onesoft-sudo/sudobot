@@ -21,17 +21,15 @@ import { Logger } from "@framework/log/Logger";
 import FileSystem from "@framework/polyfills/FileSystem";
 import Service from "@framework/services/Service";
 import { isSnowflake } from "@framework/utils/utils";
+import { systemPrefix } from "@main/utils/utils";
 import {
     GuildConfigurationDefaultValue,
     GuildConfigurationSchema,
-    type GuildConfigurationType
-} from "@schemas/GuildConfigurationSchema";
-import {
+    type GuildConfigurationType,
     SystemConfigurationDefaultValue,
     SystemConfigurationSchema,
     type SystemConfigurationType
-} from "@schemas/SystemConfigurationSchema";
-import { systemPrefix } from "@main/utils/utils";
+} from "@schemas/all";
 import type { Awaitable, Snowflake } from "discord.js";
 import { readdir } from "fs/promises";
 import { LRUCache } from "lru-cache";
@@ -86,8 +84,7 @@ class ConfigurationManagerService extends Service {
         try {
             const config = SystemConfigurationSchema.parse(configJSON);
             this.systemConfig = config;
-        }
-        catch (error) {
+        } catch (error) {
             this.logger.error("Validation error for system configuration: ", error);
         }
     }
@@ -109,8 +106,7 @@ class ConfigurationManagerService extends Service {
             const config = GuildConfigurationSchema.parse(configJSON);
             this.cache.set(`${type}::${id}`, config);
             return config;
-        }
-        catch (error) {
+        } catch (error) {
             this.logger.error("Validation error for: ", type, id, error);
         }
     }
@@ -130,8 +126,7 @@ class ConfigurationManagerService extends Service {
             }
 
             return config;
-        }
-        catch (error) {
+        } catch (error) {
             this.logger.debug(error);
             this.cache.set(`${type}::${id}`, structuredClone(GuildConfigurationDefaultValue));
         }

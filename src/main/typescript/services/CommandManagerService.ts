@@ -18,19 +18,17 @@
  */
 
 import Command from "@framework/commands/Command";
-import { Inject } from "@framework/container/Inject";
-import Service from "@framework/services/Service";
-import { Awaitable, ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
-import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 import CommandContextType from "@framework/commands/CommandContextType";
-import LegacyContext from "@framework/commands/LegacyContext";
 import InteractionContext from "@framework/commands/InteractionContext";
-import { getEnv } from "@main/env/env";
+import LegacyContext from "@framework/commands/LegacyContext";
+import { Inject } from "@framework/container/Inject";
 import { Logger } from "@framework/log/Logger";
+import Service from "@framework/services/Service";
 import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { isDevelopmentMode } from "@framework/utils/utils";
-import Permission from "@framework/permissions/Permission";
-import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
+import { getEnv } from "@main/env/env";
+import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
+import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 
@@ -42,10 +40,6 @@ class CommandManagerService extends Service implements HasEventListeners {
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
-
-    public override boot(): Awaitable<void> {
-        Permission.globalBypassPermissions.add(SystemAdminPermission.getInstance(this.application));
-    }
 
     public register(command: Command, group?: string) {
         this.commands.set(command.name, command);
@@ -127,8 +121,7 @@ class CommandManagerService extends Service implements HasEventListeners {
             const { size } = await guild.commands.set(commands);
             this.logger.info(`Successfully updated ${size} application guild commands`);
             return size;
-        }
-        else {
+        } else {
             const application = this.application.client.application;
 
             if (!application) {

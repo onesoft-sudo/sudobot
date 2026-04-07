@@ -17,9 +17,4 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const SCHEMA_VERSION = 2;
-
-export * from "./defs/EnvironmentVariableSchema";
-export * from "./defs/GuildConfigurationSchema";
-export * from "./defs/SnowflakeSchema";
-export * from "./defs/SystemConfigurationSchema";
+export * from "./all";

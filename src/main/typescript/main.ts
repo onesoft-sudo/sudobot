@@ -22,14 +22,14 @@ import "./preload";
 import path from "path";
 import { _meta, version } from "../../../package.json";
 
-import Application from "@main/core/Application";
 import { Logger } from "@framework/log/Logger";
+import Resource from "@framework/resources/Resource";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import AppKernel from "@main/core/AppKernel";
+import Application from "@main/core/Application";
 import { setEnv } from "@main/env/env";
 import type { DotenvParseOutput } from "dotenv";
 import { parseArgs, type ParseArgsConfig } from "util";
-import Resource from "@framework/resources/Resource";
 
 const logger = new Logger("Main", true);
 const argv0 = process.env.SUDOBOT_WRAPPER ? "sudobot" : path.basename(process.argv[1]);

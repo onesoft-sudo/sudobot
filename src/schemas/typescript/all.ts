@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024, 2025 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -17,23 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Environment from "@framework/env/Environment";
-import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/all";
+export const SCHEMA_VERSION = 2;
 
-let envData: EnvironmentVariableType | undefined;
-
-export function getEnv(): EnvironmentVariableType {
-    if (envData === undefined) {
-        if (Environment.isTest()) {
-            return process.env as EnvironmentVariableType;
-        }
-
-        envData = Environment.parseVariables(EnvironmentVariableSchema);
-    }
-
-    return envData;
-}
-
-export function setEnv(data: Record<string, string | undefined>): void {
-    envData = EnvironmentVariableSchema.parse(data);
-}
+export * from "./defs/EnvironmentVariableSchema";
+export * from "./defs/GuildConfigurationSchema";
+export * from "./defs/SnowflakeSchema";
+export * from "./defs/SystemConfigurationSchema";

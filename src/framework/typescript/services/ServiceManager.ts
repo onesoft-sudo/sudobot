@@ -18,13 +18,13 @@
  */
 
 import type Application from "@framework/app/Application";
-import Service from "./Service";
-import type { DefaultExport } from "@framework/types/Utils";
-import { Collection } from "discord.js";
-import { Logger } from "@framework/log/Logger";
-import { requireNonNull } from "@framework/utils/utils";
 import type { ConstructorOf } from "@framework/container/Container";
+import { Logger } from "@framework/log/Logger";
+import type { DefaultExport } from "@framework/types/Utils";
 import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle";
+import { requireNonNull } from "@framework/utils/utils";
+import { Collection } from "discord.js";
+import Service from "./Service";
 
 class ServiceManager {
     public readonly application: Application;
@@ -92,7 +92,7 @@ class ServiceManager {
         });
 
         await serviceInstance.boot?.();
-        this.logger.info("Loaded service: ", service, " (" + serviceClass.name + ")");
+        this.logger.debug("Loaded service: ", service, " (" + serviceClass.name + ")");
     }
 
     public get<T extends Service>(service: ConstructorOf<T>): T;

@@ -51,7 +51,7 @@ class AppKernel extends Kernel {
         services: path.resolve(__dirname, "../services"),
         automod: path.resolve(__dirname, "../automod")
     };
-    
+
     public readonly services: readonly string[] = [
         "@services/StartupManagerService",
         "@services/ConfigurationManagerService",
@@ -169,7 +169,7 @@ class AppKernel extends Kernel {
             });
             await eventListener.onAppBoot?.();
             this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
-            application.logger.info("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+            application.logger.debug("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
         };
 
         if (isBundle) {
@@ -221,7 +221,7 @@ class AppKernel extends Kernel {
             const category = path.basename(path.dirname(filepath)).toLowerCase();
 
             commandManagerService?.register(command, category);
-            application.logger.info(
+            application.logger.debug(
                 `Loaded command: ${command.name} (${path.basename(filepath).replace(/\..*$/, "")})`
             );
         };

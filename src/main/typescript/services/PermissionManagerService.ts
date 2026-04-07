@@ -19,19 +19,19 @@
 
 import { Inject } from "@framework/container/Inject";
 import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
-import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import Service from "@framework/services/Service";
-import { Collection, ReadonlyCollection, type Snowflake } from "discord.js";
-import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
-import { GuildConfigurationType } from "@schemas/GuildConfigurationSchema";
-import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager";
-import Application from "@main/core/Application";
-import Permission from "@framework/permissions/Permission";
-import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
 import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager";
+import Permission from "@framework/permissions/Permission";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import { SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
+import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager";
+import Service from "@framework/services/Service";
+import Application from "@main/core/Application";
+import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
 import LayeredPermissionManager from "@main/security/LayeredPermissionManager";
+import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
+import { GuildConfigurationType } from "@schemas/all";
+import { Awaitable, Collection, ReadonlyCollection, type Snowflake } from "discord.js";
+import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
 
 export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
 
@@ -52,6 +52,10 @@ class PermissionManagerService extends Service implements PermissionManagerServi
     public constructor(application: Application) {
         super(application);
         this.permissionManagerRecord = this.createManagers(application);
+    }
+
+    public override boot(): Awaitable<void> {
+        Permission.globalBypassPermissions.add(SystemAdminPermission.getInstance(this.application));
     }
 
     protected createManagers(application: Application): typeof this.permissionManagerRecord {

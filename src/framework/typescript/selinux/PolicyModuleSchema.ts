@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SnowflakeSchema } from "@schemas/SnowflakeSchema";
+import { SnowflakeSchema } from "@schemas/all";
 import { z } from "zod";
 
 export const PolicyModuleTypeLabelCommonPatternSchema = z.object({
