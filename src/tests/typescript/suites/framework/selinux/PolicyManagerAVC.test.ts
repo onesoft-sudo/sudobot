@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { beforeEach, describe, it, vi } from "vitest";
 import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC";
 import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema";
-import { PermissionFlagsBits } from "discord.js";
 import { createClient, createMember } from "@tests/mocks/discord";
+import { PermissionFlagsBits } from "discord.js";
+import { beforeEach, describe, it, vi } from "vitest";
 
 const makePolicy = <T extends Partial<PolicyModuleType>>(name: string, payload: T) => {
     return {
@@ -166,7 +166,7 @@ describe("PolicyManagerAVC", () => {
     it("reads caches from disk only once on module load", async ({ expect }) => {
         vi.mock("fs/promises", () => {
             const readFileMock = vi.fn(() => {
-                throw new Error("File does not exist");
+                throw new Error("[Mock] File does not exist");
             });
 
             return {
@@ -199,7 +199,7 @@ describe("PolicyManagerAVC", () => {
     it("does not read cache more than once when getting permissions with no modules", async ({ expect }) => {
         vi.mock("fs/promises", () => {
             const readFileMock = vi.fn(() => {
-                throw new Error("File does not exist");
+                throw new Error("[Mock] File does not exist");
             });
 
             return {

@@ -18,7 +18,6 @@
  */
 
 import BaseApplication from "@framework/app/Application";
-import Application from "@main/core/Application";
 import ClassLoader from "@framework/class/ClassLoader";
 import type Command from "@framework/commands/Command";
 import Kernel from "@framework/core/Kernel";
@@ -29,6 +28,7 @@ import type PermissionManagerServiceInterface from "@framework/permissions/Permi
 import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
 import { getBundleData } from "@framework/utils/bundle";
+import Application from "@main/core/Application";
 import Database from "@main/database/Database";
 import { getEnv } from "@main/env/env";
 import type CommandManagerService from "@main/services/CommandManagerService";
@@ -51,6 +51,7 @@ class AppKernel extends Kernel {
         services: path.resolve(__dirname, "../services"),
         automod: path.resolve(__dirname, "../automod")
     };
+    
     public readonly services: readonly string[] = [
         "@services/StartupManagerService",
         "@services/ConfigurationManagerService",

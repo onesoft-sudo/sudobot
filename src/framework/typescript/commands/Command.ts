@@ -17,33 +17,37 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type Application from "@framework/app/Application";
+import ArgumentParser from "@framework/arguments/ArgumentParser";
+import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
+import { Memoize } from "@framework/decorators/Memoize";
+import Guard from "@framework/guards/Guard";
+import type { GuardResolvable } from "@framework/guards/GuardResolvable";
+import Permission from "@framework/permissions/Permission";
+import PermissionDeniedError from "@framework/permissions/PermissionDeniedError";
+import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
+import type { PermissionResolvable, RawPermissionResolvable } from "@framework/permissions/PermissionResolvable";
+import { ArrayOrSingle } from "@framework/types/Utils";
 import {
     APIInteractionGuildMember,
+    ApplicationCommandType,
+    type Awaitable,
     ContextMenuCommandBuilder,
+    GuildMember,
+    inlineCode,
     InteractionContextType,
     PermissionsBitField,
     SlashCommandBuilder,
     SlashCommandOptionsOnlyBuilder,
-    SlashCommandSubcommandsOnlyBuilder
+    SlashCommandSubcommandsOnlyBuilder,
+    User
 } from "discord.js";
-import { ApplicationCommandType, type Awaitable, GuildMember, inlineCode, User } from "discord.js";
-import CommandContextType from "./CommandContextType";
-import type Context from "./Context";
-import { CommandMode } from "./CommandMode";
-import type { PermissionResolvable, RawPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import Permission from "@framework/permissions/Permission";
-import type Application from "@framework/app/Application";
-import PermissionDeniedError from "@framework/permissions/PermissionDeniedError";
-import type { GuardResolvable } from "@framework/guards/GuardResolvable";
-import Guard from "@framework/guards/Guard";
 import CommandAbortedError from "./CommandAbortedError";
-import ArgumentParser from "@framework/arguments/ArgumentParser";
-import { Memoize } from "@framework/decorators/Memoize";
-import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
-import LegacyContext from "./LegacyContext";
+import CommandContextType from "./CommandContextType";
+import { CommandMode } from "./CommandMode";
+import type Context from "./Context";
 import InteractionContext from "./InteractionContext";
-import { ArrayOrSingle } from "@framework/types/Utils";
-import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
+import LegacyContext from "./LegacyContext";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -326,7 +330,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
 
         let systemPermissions: PermissionResolvable | null = context.me?.permissions.has(
-            this.cachedSystemPermissions[0], true
+            this.cachedSystemPermissions[0],
+            true
         )
             ? null
             : this.cachedSystemPermissions[0];
@@ -473,8 +478,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
                 context.error(error.message).catch(this.application.logger.error);
                 return;
-            }
-            else {
+            } else {
                 throw error;
             }
         }
@@ -486,8 +490,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         if (result?.errors?.length) {
             if (result.errors.length === 1 || !this.argumentSchema) {
                 context.error(result?.errors[0]).catch(this.application.logger.error);
-            }
-            else {
+            } else {
                 let str = "No overloads of this command could be used with the given arguments:\n";
 
                 for (let i = 0; i < result.errors.length; i++) {

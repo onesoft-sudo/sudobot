@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SnowflakeSchema } from "./SnowflakeSchema";
 import { z } from "zod";
+import { SnowflakeSchema } from "./SnowflakeSchema";
 
 export const EnvironmentVariableSchema = z.object({
     SUDOBOT_TOKEN: z.string(),
@@ -26,7 +26,7 @@ export const EnvironmentVariableSchema = z.object({
     SUDOBOT_SHARD_COUNT: z.string().regex(/^\d+$/).optional(),
     SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: z.enum(["1", "0"]).prefault("0"),
     SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
-    SUDOBOT_DATABASE_URL:z.string(),
+    SUDOBOT_DATABASE_URL: z.string()
 });
 
 export type EnvironmentVariableType = z.infer<typeof EnvironmentVariableSchema>;

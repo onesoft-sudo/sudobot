@@ -2,8 +2,8 @@
     "compilerOptions": {
         "incremental": true,
         "target": "ES2023",
-        "module": "ESNext",
-        "moduleResolution": "node",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "types": ["node", "bun"],
         "lib": ["ES2023", "Decorators", "DOM"],
         "resolveJsonModule": true,
@@ -22,7 +22,6 @@
         "experimentalDecorators": true,
         "noImplicitOverride": true,
         "importsNotUsedAsValues": "remove",
-        /* These paths are only used in BlazeBuild scripts, when ran with bun. */
         "paths": {
             "@main/*": ["../main/typescript/*"],
             "@framework/*": ["../framework/typescript/*"],

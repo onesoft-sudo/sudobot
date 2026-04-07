@@ -19,8 +19,7 @@
 
 import type Application from "@framework/app/Application";
 import { emoji } from "@framework/utils/emoji";
-import type {
-    GuildMember} from "discord.js";
+import type { GuildMember } from "discord.js";
 import {
     type ChatInputCommandInteraction,
     type ContextMenuCommandInteraction,
