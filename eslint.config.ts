@@ -1,29 +1,31 @@
 import eslint from "@eslint/js";
+import stylistic from "@stylistic/eslint-plugin";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
-import stylistic from "@stylistic/eslint-plugin";
 import LocalPlugin from "./src/eslint/typescript/LocalPlugin";
+
+declare let __dirname: string;
 
 export default defineConfig([
     {
         extends: [
             eslint.configs.recommended,
             ...tseslint.configs.recommended,
-            ...tseslint.configs.recommendedTypeChecked,
+            ...tseslint.configs.recommendedTypeChecked
         ],
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
             parserOptions: {
                 project: true,
-                tsconfigRootDir: import.meta.dirname,
+                tsconfigRootDir: __dirname,
                 ecmaVersion: "latest",
                 sourceType: "module"
             }
         },
         plugins: {
-            '@stylistic': stylistic,
-            '@local': LocalPlugin
+            "@stylistic": stylistic,
+            "@local": LocalPlugin
         },
         rules: {
             indent: "off",
@@ -46,14 +48,20 @@ export default defineConfig([
                 }
             ],
             "@typescript-eslint/no-var-requires": "off",
-            "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }],
+            "@typescript-eslint/consistent-type-imports": [
+                "error",
+                { disallowTypeAnnotations: false }
+            ],
             "@typescript-eslint/no-misused-promises": [
                 "warn",
                 {
                     checksVoidReturn: false
                 }
             ],
-            "@typescript-eslint/explicit-member-accessibility": ["error", { accessibility: "explicit" }],
+            "@typescript-eslint/explicit-member-accessibility": [
+                "error",
+                { accessibility: "explicit" }
+            ],
             "@typescript-eslint/no-unsafe-member-access": "off",
             "@typescript-eslint/no-unsafe-call": "off",
             "@typescript-eslint/no-unsafe-assignment": "off",
@@ -68,7 +76,7 @@ export default defineConfig([
                     caughtErrorsIgnorePattern: "^_"
                 }
             ],
-            "@local/break-before-control": "error",
+            "@local/break-before-control": "error"
         },
         files: ["src/**/*.ts"],
         ignores: [

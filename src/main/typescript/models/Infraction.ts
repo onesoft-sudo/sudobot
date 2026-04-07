@@ -36,8 +36,8 @@ export enum InfractionType {
     Bean = "Bean",
     Note = "Note",
     Role = "Role",
-    ModMessage = "ModMessage",
     Shot = "Shot",
+    ModeratorMessage = "ModeratorMessage",
     ReactionClear = "ReactionClear"
 }
 
@@ -49,10 +49,7 @@ export enum InfractionDeliveryStatus {
 }
 
 export const infractionTypeEnum = pgEnum("infraction_type", InfractionType);
-export const infractionDeliveryStatusEnum = pgEnum(
-    "infraction_delivery_status",
-    InfractionDeliveryStatus
-);
+export const infractionDeliveryStatusEnum = pgEnum("infraction_delivery_status", InfractionDeliveryStatus);
 
 export const infractions = pgTable("infractions", {
     id: serial("id").primaryKey(),
@@ -63,9 +60,7 @@ export const infractions = pgTable("infractions", {
     reason: varchar("reason"),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     metadata: json("metadata"),
-    deliveryStatus: infractionDeliveryStatusEnum("delivery_status")
-        .notNull()
-        .default(InfractionDeliveryStatus.Success),
+    deliveryStatus: infractionDeliveryStatusEnum("delivery_status").notNull().default(InfractionDeliveryStatus.Success),
     attachments: text("attachments")
         .notNull()
         .array()

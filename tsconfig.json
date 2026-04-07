@@ -53,6 +53,7 @@
         "./storage",
         "drizzle.config.ts",
         "commitlint.config.ts",
+        "eslint.config.ts",
         "./src/tests"
     ]
 }

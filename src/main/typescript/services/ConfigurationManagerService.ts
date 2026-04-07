@@ -84,7 +84,8 @@ class ConfigurationManagerService extends Service {
         try {
             const config = SystemConfigurationSchema.parse(configJSON);
             this.systemConfig = config;
-        } catch (error) {
+        }
+        catch (error) {
             this.logger.error("Validation error for system configuration: ", error);
         }
     }
@@ -106,7 +107,8 @@ class ConfigurationManagerService extends Service {
             const config = GuildConfigurationSchema.parse(configJSON);
             this.cache.set(`${type}::${id}`, config);
             return config;
-        } catch (error) {
+        }
+        catch (error) {
             this.logger.error("Validation error for: ", type, id, error);
         }
     }
@@ -126,7 +128,8 @@ class ConfigurationManagerService extends Service {
             }
 
             return config;
-        } catch (error) {
+        }
+        catch (error) {
             this.logger.debug(error);
             this.cache.set(`${type}::${id}`, structuredClone(GuildConfigurationDefaultValue));
         }

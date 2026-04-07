@@ -25,6 +25,8 @@ import AbstractDatabase from "@framework/database/AbstractDatabase";
 import type EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
 import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
+import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
+import type QueueManager from "@framework/queues/QueueManager";
 import type { Events } from "@framework/types/ClientEvents";
 import type { DefaultExport } from "@framework/types/Utils";
 import { getBundleData } from "@framework/utils/bundle";
@@ -35,6 +37,8 @@ import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService";
+import type QueueManagerService from "@main/services/QueueManagerService";
+import { SERVICE_QUEUE_MANAGER } from "@main/services/QueueManagerService";
 import type { ClientOptions } from "discord.js";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
@@ -56,11 +60,19 @@ class AppKernel extends Kernel {
         "@services/StartupManagerService",
         "@services/ConfigurationManagerService",
         "@services/PermissionManagerService",
-        "@services/CommandManagerService"
+        "@services/CommandManagerService",
+        "@services/QueueManagerService"
     ];
 
-    public readonly eventListenersDirectory: string = path.join(__dirname, "../events");
-    public readonly commandsDirectory: string = path.join(__dirname, "../commands");
+    public readonly eventListenersDirectory: string = path.join(
+        __dirname,
+        "../events"
+    );
+    public readonly commandsDirectory: string = path.join(
+        __dirname,
+        "../commands"
+    );
+    public readonly queuesDirectory: string = path.join(__dirname, "../queues");
 
     public readonly shards?: number[];
     public readonly shardCount?: number;
@@ -162,14 +174,25 @@ class AppKernel extends Kernel {
     private async loadEventListeners(application: Application): Promise<void> {
         const onLoad = async (
             filepath: string,
-            eventListenerClass: new (application: Application) => EventListener<Events>
+            eventListenerClass: new (
+                application: Application
+            ) => EventListener<Events>
         ) => {
-            const eventListener = application.container.get(eventListenerClass, {
-                constructorArgs: [application]
-            });
+            const eventListener = application.container.get(
+                eventListenerClass,
+                {
+                    constructorArgs: [application]
+                }
+            );
             await eventListener.onAppBoot?.();
-            this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
-            application.logger.debug("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+            this.client.on(
+                eventListener.type as never,
+                eventListener.onEvent.bind(eventListener)
+            );
+            application.logger.debug(
+                "Loaded event listener: ",
+                path.basename(filepath).replace(/\..*$/, "")
+            );
         };
 
         if (isBundle) {
@@ -187,10 +210,15 @@ class AppKernel extends Kernel {
         }
 
         await application.classLoader.loadClassesRecursive<
-            DefaultExport<new (application: Application) => EventListener<Events>>
+            DefaultExport<
+                new (application: Application) => EventListener<Events>
+            >
         >(this.eventListenersDirectory, {
             preLoad: filepath => {
-                application.logger.debug("Loading event listener: ", path.basename(filepath).replace(/\..*$/, ""));
+                application.logger.debug(
+                    "Loading event listener: ",
+                    path.basename(filepath).replace(/\..*$/, "")
+                );
             },
             postLoad: async (filepath, { default: EventListenerClass }) => {
                 await onLoad(filepath, EventListenerClass);
@@ -198,13 +226,69 @@ class AppKernel extends Kernel {
         });
     }
 
+    private async loadQueues(application: Application): Promise<void> {
+        const onLoad = async (
+            filepath: string,
+            queueClass: new (
+                application: Application,
+                queueManager: QueueManager
+            ) => AbstractQueuedJob<object>
+        ) => {
+            const queue = application.container.get(queueClass, {
+                constructorArgs: [application]
+            });
+            await queue.onAppBoot?.();
+            application.service<QueueManagerService>(SERVICE_QUEUE_MANAGER);
+
+            application
+                .service<QueueManagerService>(SERVICE_QUEUE_MANAGER)
+                .register(queue);
+
+            application.logger.debug(
+                "Loaded queue: ",
+                path.basename(filepath).replace(/\..*$/, "")
+            );
+        };
+
+        if (isBundle) {
+            const data = getBundleData();
+
+            if (!data?.queues) {
+                return;
+            }
+
+            for (const queue in data.queues) {
+                await onLoad(queue, data.queues[queue]);
+            }
+
+            return;
+        }
+
+        await application.classLoader.loadClassesRecursive<
+            DefaultExport<
+                new (application: Application) => AbstractQueuedJob<object>
+            >
+        >(this.queuesDirectory, {
+            preLoad: filepath => {
+                application.logger.debug(
+                    "Loading queue: ",
+                    path.basename(filepath).replace(/\..*$/, "")
+                );
+            },
+            postLoad: async (filepath, { default: QueueClass }) => {
+                await onLoad(filepath, QueueClass);
+            }
+        });
+    }
+
     private async loadCommands(application: Application): Promise<void> {
-        const commandManagerService = application.serviceManager.services.get(SERVICE_COMMAND_MANAGER) as
-            | CommandManagerService
-            | undefined;
-        const permissionManagerService = application.serviceManager.services.get(SERVICE_PERMISSION_MANAGER) as
-            | PermissionManagerService
-            | undefined;
+        const commandManagerService = application.serviceManager.services.get(
+            SERVICE_COMMAND_MANAGER
+        ) as CommandManagerService | undefined;
+        const permissionManagerService =
+            application.serviceManager.services.get(
+                SERVICE_PERMISSION_MANAGER
+            ) as PermissionManagerService | undefined;
 
         const onLoad = async (
             filepath: string,
@@ -218,7 +302,9 @@ class AppKernel extends Kernel {
             });
 
             await command.onAppBoot?.();
-            const category = path.basename(path.dirname(filepath)).toLowerCase();
+            const category = path
+                .basename(path.dirname(filepath))
+                .toLowerCase();
 
             commandManagerService?.register(command, category);
             application.logger.debug(
@@ -242,11 +328,17 @@ class AppKernel extends Kernel {
 
         await application.classLoader.loadClassesRecursive<
             DefaultExport<
-                new (application: Application, permissionManagerService: PermissionManagerServiceInterface) => Command
+                new (
+                    application: Application,
+                    permissionManagerService: PermissionManagerServiceInterface
+                ) => Command
             >
         >(this.commandsDirectory, {
             preLoad: filepath => {
-                application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
+                application.logger.debug(
+                    "Loading command: ",
+                    path.basename(filepath).replace(/\..*$/, "")
+                );
             },
             postLoad: async (filepath, { default: CommandClass }) => {
                 await onLoad(filepath, CommandClass);
@@ -256,7 +348,9 @@ class AppKernel extends Kernel {
 
     public async boot(application: Application): Promise<void> {
         this.registerFactories(application);
+
         await this.loadServices(application);
+        await this.loadQueues(application);
         await this.loadEventListeners(application);
         await this.loadCommands(application);
     }

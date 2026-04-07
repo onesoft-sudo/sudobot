@@ -20,22 +20,23 @@
 import Command from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { getEnv } from "@main/env/env";
+import metadata from "@root/package.json";
 import {
-    ContainerBuilder,
-    TextDisplayBuilder,
-    SectionBuilder,
-    ThumbnailBuilder,
-    SeparatorSpacingSize,
+    ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    ActionRowBuilder,
-    MessageFlags
+    ContainerBuilder,
+    MessageFlags,
+    SectionBuilder,
+    SeparatorSpacingSize,
+    TextDisplayBuilder,
+    ThumbnailBuilder
 } from "discord.js";
-import metadata from "@root/package.json";
 
 class AboutCommand extends Command {
     public override readonly name: string = "about";
-    public override readonly description: string = "Show information about the bot.";
+    public override readonly description: string =
+        "Show information about the bot.";
     public override readonly aliases: string[] = ["botinfo"];
 
     public override async execute(context: Context): Promise<void> {
@@ -53,7 +54,8 @@ class AboutCommand extends Command {
                 "This bot is **free software**, and you are welcome to redistribute it under certain conditions.",
                 "If you make changes to the bot, you must make the source code of the modified version available to the public, under the same license.",
                 "See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.",
-                env.SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE !== "1" && !env.SUDOBOT_MODIFICATIONS_PUBLIC_URL
+                env.SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE !== "1" &&
+                !env.SUDOBOT_MODIFICATIONS_PUBLIC_URL
                     ? "\n**Notice:** If you make changes to the bot, as stated above, please make your changes public, and set the `MODIFICATIONS_PUBLIC_URL` environment variable to the URL of the source code of the modified version, which should be publicly accessible.\n" +
                       'To hide this notice, set the `HIDE_MODIFICATIONS_URL_NOTICE` environment variable to `"1"`'
                     : "",
@@ -69,31 +71,46 @@ class AboutCommand extends Command {
         );
 
         if (avatar) {
-            const topSection = new SectionBuilder().addTextDisplayComponents(topHeader);
-            topSection.setThumbnailAccessory(new ThumbnailBuilder().setURL(avatar));
+            const topSection = new SectionBuilder().addTextDisplayComponents(
+                topHeader
+            );
+            topSection.setThumbnailAccessory(
+                new ThumbnailBuilder().setURL(avatar)
+            );
             container.addSectionComponents(topSection);
         }
         else {
             container.addTextDisplayComponents(topHeader);
         }
 
-        container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
+        container.addSeparatorComponents(separator =>
+            separator.setSpacing(SeparatorSpacingSize.Large)
+        );
 
         const versionSection = new SectionBuilder()
             .addTextDisplayComponents(
-                new TextDisplayBuilder().setContent(`**Version:** ${metadata.version}\n**Codename:** ${codeName}`)
+                new TextDisplayBuilder().setContent(
+                    `**Version:** ${metadata.version}\n**Codename:** ${codeName}`
+                )
             )
             .setButtonAccessory(
-                new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(metadata.repository.url).setLabel("Source Code")
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(metadata.repository.url)
+                    .setLabel("Source Code")
             );
 
         container.addSectionComponents(versionSection);
         container.addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`**Author:** [${metadata.author.name}](${metadata.author.url})`)
+            new TextDisplayBuilder().setContent(
+                `**Author:** [${metadata.author.name}](${metadata.author.url})`
+            )
         );
 
         const supportSection = new SectionBuilder()
-            .addTextDisplayComponents(new TextDisplayBuilder().setContent("### Need Help?"))
+            .addTextDisplayComponents(
+                new TextDisplayBuilder().setContent("### Need Help?")
+            )
             .setButtonAccessory(
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
@@ -106,13 +123,20 @@ class AboutCommand extends Command {
             new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
-                    .setURL("https://docs.sudobot.onesoftnet.eu.org/getting-started#help--support")
+                    .setURL(
+                        "https://docs.sudobot.onesoftnet.eu.org/getting-started#help--support"
+                    )
                     .setLabel("Contact Us"),
-                new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(metadata.funding.url).setLabel("Donate")
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(metadata.funding.url)
+                    .setLabel("Donate")
             )
         );
 
-        container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
+        container.addSeparatorComponents(separator =>
+            separator.setSpacing(SeparatorSpacingSize.Large)
+        );
 
         container.addTextDisplayComponents(
             new TextDisplayBuilder().setContent(

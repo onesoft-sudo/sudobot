@@ -121,7 +121,8 @@ class CommandManagerService extends Service implements HasEventListeners {
             const { size } = await guild.commands.set(commands);
             this.logger.info(`Successfully updated ${size} application guild commands`);
             return size;
-        } else {
+        }
+        else {
             const application = this.application.client.application;
 
             if (!application) {

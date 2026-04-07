@@ -478,7 +478,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
                 context.error(error.message).catch(this.application.logger.error);
                 return;
-            } else {
+            }
+            else {
                 throw error;
             }
         }
@@ -490,7 +491,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         if (result?.errors?.length) {
             if (result.errors.length === 1 || !this.argumentSchema) {
                 context.error(result?.errors[0]).catch(this.application.logger.error);
-            } else {
+            }
+            else {
                 let str = "No overloads of this command could be used with the given arguments:\n";
 
                 for (let i = 0; i < result.errors.length; i++) {

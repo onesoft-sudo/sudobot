@@ -1,10 +1,9 @@
 {
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit",
         "source.fixAll": "explicit"
     },
-    "typescript.tsdk": "node_modules/typescript/lib",
     "window.commandCenter": true,
     "workbench.experimental.share.enabled": true,
     "cSpell.words": [
@@ -111,7 +110,6 @@
         "arguments": "Messages",
         "blazebuild": "Project"
     },
-    "typescript.preferences.importModuleSpecifier": "non-relative",
     "eslint.useFlatConfig": true,
     "todo-tree.tree.showBadges": true,
     "files.exclude": {
@@ -132,6 +130,12 @@
         "**/.git/subtree-cache/**": true
     },
     "search.followSymlinks": false,
-    "makefile.configureOnOpen": false,
-    "typescript.experimental.useTsgo": true
+    "js/ts.experimental.useTsgo": true,
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
+    "js/ts.preferences.importModuleSpecifier": "non-relative",
+    "editor.rulers": [80],
+    "editor.formatOnPaste": false,
+    "eslint.rules.customizations": [
+        { "rule": "@local/break-before-control", "severity": "off" }
+    ]
 }
