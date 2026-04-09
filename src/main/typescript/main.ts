@@ -32,7 +32,9 @@ import type { DotenvParseOutput } from "dotenv";
 import { parseArgs, type ParseArgsConfig } from "util";
 
 const logger = new Logger("Main", true);
-const argv0 = process.env.SUDOBOT_WRAPPER ? "sudobot" : path.basename(process.argv[1]);
+const argv0 = process.env.SUDOBOT_WRAPPER
+    ? "sudobot"
+    : path.basename(process.argv[1]);
 
 async function loadEnvironmentData() {
     if (process.send) {
@@ -86,17 +88,30 @@ function usage() {
     console.info("  -h, --help                Show this help and exit.");
     console.info("  -v, --version             Show version information.");
     console.info("  -s, --shard=ID            Set shard ID for this process.");
-    console.info("                            Can be passed multiple times with");
+    console.info(
+        "                            Can be passed multiple times with"
+    );
     console.info("                            different values.");
-    console.info("  -S, --shardcount=<COUNT>  Set total shard count. Required to be used");
-    console.info("                            When the --shard option is used.");
-    console.info("  -U, --update=[MODE]       Update application commands. MODE can be");
+    console.info(
+        "  -S, --shardcount=<COUNT>  Set total shard count. Required to be used"
+    );
+    console.info(
+        "                            When the --shard option is used."
+    );
+    console.info(
+        "  -U, --update=[MODE]       Update application commands. MODE can be"
+    );
     console.info("                            either 'local' or 'global'.");
 }
 
 function showVersion() {
     console.info(`SudoBot version ${version} (${_meta.release_codename})`);
-    console.info("Copyright (C) 2022-2025 OSN Developers.");
+    console.info(
+        `Copyright (C) 2022-${new Date().getFullYear()} OSN Developers.`
+    );
+    console.info(
+        "License AGPLv3.0+: This is free software. There is no warranty."
+    );
 }
 
 type OptionValues = typeof values;
@@ -146,7 +161,9 @@ try {
                 break;
 
             case "ERR_PARSE_ARGS_UNEXPECTED_POSITIONAL":
-                console.error(`${argv0}: unexpected positional argument: ${error.message}`);
+                console.error(
+                    `${argv0}: unexpected positional argument: ${error.message}`
+                );
                 break;
 
             case "ERR_PARSE_ARGS_UNEXPECTED_OPTION":
@@ -155,10 +172,10 @@ try {
 
             default:
                 console.error(`${argv0}: error: ${error.message}`);
-                break;
+     
+              break;
         }
-    }
-    else {
+    } else {
         throw error;
     }
 
@@ -207,12 +224,20 @@ async function main() {
     }
 
     if ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount)) {
-        console.error(`${argv0}: Please use both --shard (-s) and --shardcount (-S) together`);
+        console.error(
+            `${argv0}: Please use both --shard (-s) and --shardcount (-S) together`
+        );
         process.exit(1);
     }
 
-    if (values.update && values.update !== "local" && values.update !== "global") {
-        console.error(`${argv0}: Option --update (-U) only accepts either 'local' or 'global' as argument`);
+    if (
+        values.update &&
+        values.update !== "local" &&
+        values.update !== "global"
+    ) {
+        console.error(
+            `${argv0}: Option --update (-U) only accepts either 'local' or 'global' as argument`
+        );
         process.exit(1);
     }
 
