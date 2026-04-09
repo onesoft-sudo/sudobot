@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021, 2022, 2023, 2024, 2025 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -17,15 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type { Awaitable, Client } from "discord.js";
+import type { Collection } from "discord.js";
 
-abstract class Kernel {
-    public abstract readonly client: Client;
-
-    public abstract bootPhase1(application: Application): Awaitable<void>;
-    public abstract bootPhase2(application: Application): Awaitable<void>;
-    public abstract run(application: Application): Awaitable<void>;
-}
-
-export default Kernel;
+export type ReadonlyCollection<K, V> = Omit<Collection<K, V>, "set" | "delete" | "clear" | "sweep">;

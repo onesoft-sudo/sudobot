@@ -18,14 +18,16 @@
  */
 
 import type Application from "@framework/app/Application";
-import type { Awaitable } from "discord.js";
+import type { Awaitable, Client } from "discord.js";
 
 abstract class Service {
     protected readonly application: Application;
+    protected readonly client: Client;
     public abstract readonly name: string;
 
     public constructor(application: Application) {
         this.application = application;
+        this.client = application.client;
     }
 
     public boot?(): Awaitable<void>;

@@ -23,6 +23,7 @@ import type Command from "@framework/commands/Command";
 import Kernel from "@framework/core/Kernel";
 import AbstractDatabase from "@framework/database/AbstractDatabase";
 import type EventListener from "@framework/events/EventListener";
+import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener";
 import { Logger } from "@framework/log/Logger";
 import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
@@ -61,7 +62,11 @@ class AppKernel extends Kernel {
         "@services/ConfigurationManagerService",
         "@services/PermissionManagerService",
         "@services/CommandManagerService",
-        "@services/QueueManagerService"
+        "@services/QueueManagerService",
+        "@services/InviteTrackingService",
+        "@services/ModerationActionService",
+        "@services/AuditLoggingService",
+        "@services/InfractionManagerService"
     ];
 
     public readonly eventListenersDirectory: string = path.join(
@@ -184,6 +189,8 @@ class AppKernel extends Kernel {
                     constructorArgs: [application]
                 }
             );
+
+            registerGatewayEventListeners(application.client, eventListener);
             await eventListener.onAppBoot?.();
             this.client.on(
                 eventListener.type as never,
@@ -237,6 +244,7 @@ class AppKernel extends Kernel {
             const queue = application.container.get(queueClass, {
                 constructorArgs: [application]
             });
+            registerGatewayEventListeners(application.client, queue);
             await queue.onAppBoot?.();
             application.service<QueueManagerService>(SERVICE_QUEUE_MANAGER);
 
@@ -301,6 +309,7 @@ class AppKernel extends Kernel {
                 constructorArgs: [application, permissionManagerService]
             });
 
+            registerGatewayEventListeners(application.client, command);
             await command.onAppBoot?.();
             const category = path
                 .basename(path.dirname(filepath))
@@ -346,9 +355,11 @@ class AppKernel extends Kernel {
         });
     }
 
-    public async boot(application: Application): Promise<void> {
+    public bootPhase1(application: Application): void {
         this.registerFactories(application);
+    }
 
+    public async bootPhase2(application: Application): Promise<void> {
         await this.loadServices(application);
         await this.loadQueues(application);
         await this.loadEventListeners(application);

@@ -20,11 +20,13 @@
 import type Command from "./Command";
 
 class CommandAbortedError extends Error {
-    public constructor(
-        public readonly command: Command,
-        message: string
-    ) {
-        super(message);
+    public readonly command?: Command;
+
+    public constructor(command: Command, message: string);
+    public constructor(message: string);
+
+    public constructor(command: Command | string, message?: string) {
+        super(message ?? (typeof command === "string" ? command : "[Unknown]"));
     }
 }
 

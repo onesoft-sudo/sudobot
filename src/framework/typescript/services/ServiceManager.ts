@@ -19,6 +19,7 @@
 
 import type Application from "@framework/app/Application";
 import type { ConstructorOf } from "@framework/container/Container";
+import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener";
 import { Logger } from "@framework/log/Logger";
 import type { DefaultExport } from "@framework/types/Utils";
 import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle";
@@ -35,7 +36,10 @@ class ServiceManager {
         this.application = application;
     }
 
-    public load(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
+    public load(
+        services: readonly string[],
+        aliases: Readonly<Record<string, string>> = {}
+    ) {
         if (BUNDLE_DATA_SYMBOL in global) {
             return this.loadFromBundle(services);
         }
@@ -43,20 +47,26 @@ class ServiceManager {
         return this.loadFromList(services, aliases);
     }
 
-    public async loadFromList(services: readonly string[], aliases: Readonly<Record<string, string>> = {}) {
+    public async loadFromList(
+        services: readonly string[],
+        aliases: Readonly<Record<string, string>> = {}
+    ) {
         for (const service of services) {
             this.logger.debug("Loading service: ", service);
 
             let servicePath = service;
 
             for (const alias in aliases) {
-                servicePath = servicePath.replaceAll(`@${alias}`, aliases[alias]);
+                servicePath = servicePath.replaceAll(
+                    `@${alias}`,
+                    aliases[alias]
+                );
             }
 
             const { default: ServiceClass } =
-                await this.application.classLoader.loadClass<DefaultExport<new (application: Application) => Service>>(
-                    servicePath
-                );
+                await this.application.classLoader.loadClass<
+                    DefaultExport<new (application: Application) => Service>
+                >(servicePath);
 
             await this.loadInstance(service, ServiceClass);
         }
@@ -64,7 +74,9 @@ class ServiceManager {
 
     public async loadFromBundle(serviceNames: readonly string[]) {
         const services = Object.entries(
-            BUNDLE_DATA_SYMBOL in global ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services : {}
+            BUNDLE_DATA_SYMBOL in global
+                ? (global[BUNDLE_DATA_SYMBOL] as BundleData)?.services
+                : {}
         ).sort(([a], [b]) => serviceNames.indexOf(a) - serviceNames.indexOf(b));
 
         for (const [service, serviceClass] of services) {
@@ -73,13 +85,20 @@ class ServiceManager {
         }
     }
 
-    protected async loadInstance(service: string, serviceClass: new (application: Application) => Service) {
+    protected async loadInstance(
+        service: string,
+        serviceClass: new (application: Application) => Service
+    ) {
         const serviceInstance = this.application.container.get(serviceClass, {
             constructorArgs: [this.application]
         });
 
         if (!(serviceInstance instanceof Service)) {
-            throw new TypeError("Service " + serviceClass.name + " does not extend Service base class");
+            throw new TypeError(
+                "Service " +
+                    serviceClass.name +
+                    " does not extend Service base class"
+            );
         }
 
         this.services.set(serviceInstance.name, serviceInstance);
@@ -91,15 +110,23 @@ class ServiceManager {
             id: serviceInstance.name
         });
 
+        registerGatewayEventListeners(this.application.client, serviceInstance);
         await serviceInstance.boot?.();
-        this.logger.debug("Loaded service: ", service, " (" + serviceClass.name + ")");
+        this.logger.debug(
+            "Loaded service: ",
+            service,
+            " (" + serviceClass.name + ")"
+        );
     }
 
     public get<T extends Service>(service: ConstructorOf<T>): T;
     public get<T extends Service>(name: string): T;
 
     public get<T extends Service>(service: ConstructorOf<T> | string): T {
-        return requireNonNull(this.services.get(service), "Service could not be resolved") as T;
+        return requireNonNull(
+            this.services.get(service),
+            "Service could not be resolved"
+        ) as T;
     }
 }
 

@@ -2,7 +2,8 @@
     "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit",
-        "source.fixAll": "explicit"
+        "source.fixAll": "explicit",
+        "source.fixAll.eslint": "explicit"
     },
     "window.commandCenter": true,
     "workbench.experimental.share.enabled": true,
@@ -134,8 +135,5 @@
     "js/ts.tsdk.path": "node_modules/typescript/lib",
     "js/ts.preferences.importModuleSpecifier": "non-relative",
     "editor.rulers": [80],
-    "editor.formatOnPaste": false,
-    "eslint.rules.customizations": [
-        { "rule": "@local/break-before-control", "severity": "off" }
-    ]
+    "editor.formatOnPaste": false
 }

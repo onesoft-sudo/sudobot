@@ -65,17 +65,22 @@ class Application {
         Application._self = this;
     }
 
+    public getClient() {
+        return this.client;
+    }
+
     public static current() {
         return Application._self;
     }
 
     public async run(kernel: Kernel) {
-        await kernel.boot(this);
+        await kernel.bootPhase1(this);
 
         Object.defineProperty(this, "client", {
             value: kernel.client
         });
 
+        await kernel.bootPhase2(this);
         await kernel.run(this);
     }
 

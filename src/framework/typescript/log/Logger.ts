@@ -52,10 +52,12 @@ export class Logger {
 
     public constructor(
         private readonly name: string,
-        private readonly logTime: boolean = false,
+        private readonly logTime: boolean = true,
         private readonly formattedTime: boolean = false
     ) {
-        (this as unknown as Logger).log = (this as unknown as Logger).log.bind(this);
+        (this as unknown as Logger).log = (this as unknown as Logger).log.bind(
+            this
+        );
         this.print = this.print.bind(this);
         this.colorize = this.colorize.bind(this);
         this.debug = this.debug.bind(this as unknown as void);
@@ -75,7 +77,9 @@ export class Logger {
     public log(level: LogLevel, ...args: unknown[]) {
         const levelName = LogLevel[level].toLowerCase();
         const methodName =
-            level === LogLevel.Info || level === LogLevel.Success || level === LogLevel.Event
+            level === LogLevel.Info ||
+            level === LogLevel.Success ||
+            level === LogLevel.Event
                 ? "info"
                 : level === LogLevel.Debug || level === LogLevel.Performance
                   ? "debug"
@@ -98,7 +102,10 @@ export class Logger {
         }
     }
 
-    public print(methodName: "log" | "info" | "warn" | "error" | "debug" | "trace", ...args: unknown[]) {
+    public print(
+        methodName: "log" | "info" | "warn" | "error" | "debug" | "trace",
+        ...args: unknown[]
+    ) {
         if (process.env.SUPPRESS_LOGS) {
             return;
         }
@@ -151,7 +158,11 @@ export class Logger {
     }
 
     public bug(this: void, ...args: unknown[]) {
-        (this as unknown as Logger).log(LogLevel.Bug, chalk.red("BUG:"), ...args);
+        (this as unknown as Logger).log(
+            LogLevel.Bug,
+            chalk.red("BUG:"),
+            ...args
+        );
     }
 
     public perfStart(id: string, ...args: unknown[]) {
@@ -162,13 +173,22 @@ export class Logger {
         this.perf("timeEnd", id, ...args);
     }
 
-    private perf(this: void, method: "time" | "timeEnd", id: string, ...args: unknown[]) {
+    private perf(
+        this: void,
+        method: "time" | "timeEnd",
+        id: string,
+        ...args: unknown[]
+    ) {
         if (!isDevelopmentMode()) {
             return;
         }
 
         console[method](id);
-        (this as unknown as Logger).log(LogLevel.Performance, chalk.magenta(id), ...args);
+        (this as unknown as Logger).log(
+            LogLevel.Performance,
+            chalk.magenta(id),
+            ...args
+        );
     }
 
     public info(this: void, ...args: unknown[]) {

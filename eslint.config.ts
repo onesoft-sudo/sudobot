@@ -75,8 +75,7 @@ export default defineConfig([
                     varsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_"
                 }
-            ],
-            "@local/break-before-control": "error"
+            ]
         },
         files: ["src/**/*.ts"],
         ignores: [

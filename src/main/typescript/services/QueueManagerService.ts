@@ -26,7 +26,7 @@ import Service from "@framework/services/Service";
 import type Application from "@main/core/Application";
 import PgJobDatabaseDriver from "@main/database/PgJobDatabaseDriver";
 import { queuedJobs } from "@main/models/QueuedJob";
-import { isNotNull } from "drizzle-orm";
+import { inArray, isNotNull } from "drizzle-orm";
 
 export const SERVICE_QUEUE_MANAGER = "queueManagerService";
 
@@ -66,6 +66,8 @@ class QueueManagerService extends Service {
             where: isNotNull(queuedJobs.runsAt)
         });
 
+        const jobsToDelete = [];
+
         for (const queueInfo of jobs) {
             const {
                 name,
@@ -83,15 +85,23 @@ class QueueManagerService extends Service {
                 continue;
             }
 
-            const queue = this.queueManager.create<object>(name, {
-                guildId: guildId ?? undefined,
-                userId: userId ?? undefined,
-                channelId: channelId ?? undefined,
-                messageId: messageId ?? undefined,
-                runsAt,
-                id,
-                createdAt: createdAt ?? undefined
-            });
+            let queue: Job<object>;
+
+            try {
+                queue = this.queueManager.create<object>(name, {
+                    guildId: guildId ?? undefined,
+                    userId: userId ?? undefined,
+                    channelId: channelId ?? undefined,
+                    messageId: messageId ?? undefined,
+                    runsAt,
+                    id,
+                    createdAt: createdAt ?? undefined
+                });
+            } catch (error) {
+                this.application.logger.error(error);
+                jobsToDelete.push(id);
+                continue;
+            }
 
             this.application.logger.debug(queue.id);
 
@@ -105,6 +115,12 @@ class QueueManagerService extends Service {
 
             await queue.schedule(data as object | null);
             this.application.logger.debug("Queued", queue.id);
+        }
+
+        if (jobsToDelete.length) {
+            await this.application.database.drizzle
+                .delete(queuedJobs)
+                .where(inArray(queuedJobs.id, jobsToDelete));
         }
 
         this.application.logger.info(`Synced ${jobs.length} queued jobs`);
