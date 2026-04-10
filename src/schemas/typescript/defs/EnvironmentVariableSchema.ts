@@ -26,7 +26,8 @@ export const EnvironmentVariableSchema = z.object({
     SUDOBOT_SHARD_COUNT: z.string().regex(/^\d+$/).optional(),
     SUDOBOT_HIDE_MODIFICATIONS_URL_NOTICE: z.enum(["1", "0"]).prefault("0"),
     SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
-    SUDOBOT_DATABASE_URL: z.string()
+    SUDOBOT_DATABASE_URL: z.string(),
+    SUDOBOT_VALKEY_URL: z.string(),
 });
 
 export type EnvironmentVariableType = z.infer<typeof EnvironmentVariableSchema>;

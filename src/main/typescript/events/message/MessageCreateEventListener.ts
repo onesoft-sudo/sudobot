@@ -20,8 +20,9 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
+import AwayFromKeyboardService from "@main/services/AwayFromKeyboardService";
 import CommandManagerService from "@main/services/CommandManagerService";
-import { OmitPartialGroupDMChannel, Message, Awaitable, MessageType } from "discord.js";
+import { ChannelType, Message, MessageType } from "discord.js";
 
 class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     public override readonly type = Events.MessageCreate;
@@ -31,12 +32,21 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject()
     private readonly commandManagerService!: CommandManagerService;
 
-    public override onEvent(message: OmitPartialGroupDMChannel<Message<boolean>>): Awaitable<void> {
+    @Inject()
+    private readonly awayFromKeyboardService!: AwayFromKeyboardService;
+
+    public override async onEvent(message: Message<boolean>): Promise<void> {
         if (message.author.bot || !this.supportedTypes.includes(message.type)) {
             return;
         }
 
-        this.commandManagerService.run(message).catch(this.application.logger.error);
+        if (message.inGuild() || message.channel.type === ChannelType.GroupDM) {
+            await this.awayFromKeyboardService.onMessageCreate(message);
+        }
+
+        if (await this.commandManagerService.run(message).catch(this.application.logger.error)) {
+            return;
+        }
     }
 }
 

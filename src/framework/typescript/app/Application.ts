@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type MessageBus from "@framework/bus/MessageBus";
 import ClassLoader from "@framework/class/ClassLoader";
 import Container, { type ConstructorOf } from "@framework/container/Container";
 import type Kernel from "@framework/core/Kernel";
@@ -33,7 +34,7 @@ export type ApplicationOptions = {
     shardCount?: number;
 };
 
-class Application {
+abstract class Application {
     public readonly rootDirectoryPath: string;
     public readonly projectRootDirectoryPath: string;
     public readonly version: string;
@@ -45,6 +46,7 @@ class Application {
 
     public readonly shards: number[] = [];
     public readonly shardCount: number = 1;
+    public abstract readonly bus: MessageBus;
 
     private static _self: Application;
 

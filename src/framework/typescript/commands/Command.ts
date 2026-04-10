@@ -32,6 +32,7 @@ import {
     APIInteractionGuildMember,
     ApplicationCommandType,
     type Awaitable,
+    Client,
     ContextMenuCommandBuilder,
     GuildMember,
     inlineCode,
@@ -157,6 +158,11 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     protected readonly application: Application;
 
     /**
+     * The discord client instance.
+     */
+    protected readonly client: Client;
+
+    /**
      * The argument parser instance.
      */
     protected readonly argumentParser: ArgumentParser;
@@ -168,6 +174,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
 
     public constructor(application: Application, permissionManagerService: PermissionManagerServiceInterface) {
         this.application = application;
+        this.client = application.client;
         this.permissionManagerService = permissionManagerService;
         this.argumentParser = this.createArgumentParser();
     }

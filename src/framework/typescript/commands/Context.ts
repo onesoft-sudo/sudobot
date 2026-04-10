@@ -70,6 +70,22 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
         return this.commandMessage.guild;
     }
 
+    public get channel() {
+        return this.commandMessage.channel;
+    }
+
+    public get guildId() {
+        return this.commandMessage.guildId;
+    }
+
+    public get channelId() {
+        return this.commandMessage.channelId;
+    }
+
+    public get userId() {
+        return this.user.id;
+    }
+
     public emoji(name: string) {
         return emoji(this.application, name);
     }

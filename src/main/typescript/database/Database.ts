@@ -23,13 +23,15 @@ import * as MuteRecordModels from "@main/models/MuteRecord";
 import * as PermissionLevelModels from "@main/models/PermissionLevel";
 import * as PermissionProfileModels from "@main/models/PermissionProfile";
 import * as QueuedJobModels from "@main/models/QueuedJob";
+import * as AFKEntryModels from "@main/models/AFKEntry";
 
 const models = {
     ...InfractionModels,
     ...PermissionLevelModels,
     ...PermissionProfileModels,
     ...QueuedJobModels,
-    ...MuteRecordModels
+    ...MuteRecordModels,
+    ...AFKEntryModels,
 } as const;
 
 type ModelRecordType = typeof models;

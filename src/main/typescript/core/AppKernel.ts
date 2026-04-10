@@ -66,7 +66,8 @@ class AppKernel extends Kernel {
         "@services/InviteTrackingService",
         "@services/ModerationActionService",
         "@services/AuditLoggingService",
-        "@services/InfractionManagerService"
+        "@services/InfractionManagerService",
+        "@services/AwayFromKeyboardService",
     ];
 
     public readonly eventListenersDirectory: string = path.join(

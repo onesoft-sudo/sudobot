@@ -45,6 +45,7 @@
         "./build",
         "./extensions",
         "./docs",
+        "./docs/**/*",
         "./.blaze",
         "./blaze",
         "./blazebuild",

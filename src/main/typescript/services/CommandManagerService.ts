@@ -27,8 +27,16 @@ import Service from "@framework/services/Service";
 import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import { getEnv } from "@main/env/env";
-import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message } from "discord.js";
-import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
+import {
+    calculateShardId,
+    ChatInputCommandInteraction,
+    Collection,
+    ContextMenuCommandInteraction,
+    Message
+} from "discord.js";
+import ConfigurationManagerService, {
+    ConfigurationType
+} from "./ConfigurationManagerService";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 
@@ -53,7 +61,12 @@ class CommandManagerService extends Service implements HasEventListeners {
         }
     }
 
-    public run(message: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction): Promise<boolean> {
+    public run(
+        message:
+            | Message
+            | ChatInputCommandInteraction
+            | ContextMenuCommandInteraction
+    ): Promise<boolean> {
         if (message instanceof Message) {
             return this.runFromMessage(message);
         }
@@ -63,7 +76,9 @@ class CommandManagerService extends Service implements HasEventListeners {
 
     private async runFromMessage(message: Message): Promise<boolean> {
         const config = await this.configurationManagerService.get(
-            message.inGuild() ? ConfigurationType.Guild : ConfigurationType.DirectMessage,
+            message.inGuild()
+                ? ConfigurationType.Guild
+                : ConfigurationType.DirectMessage,
             message.guildId || message.author.id
         );
         const prefix = config.commands?.prefix || "-";
@@ -81,7 +96,17 @@ class CommandManagerService extends Service implements HasEventListeners {
             return false;
         }
 
-        await command.run(new LegacyContext(this.application, message, commandName, commandContent, argv, args));
+        await command.run(
+            new LegacyContext(
+                this.application,
+                message,
+                commandName,
+                commandContent,
+                argv,
+                args
+            )
+        );
+
         return true;
     }
 
@@ -94,7 +119,10 @@ class CommandManagerService extends Service implements HasEventListeners {
             return false;
         }
 
-        await command.run(new InteractionContext(this.application, interaction));
+        await command.run(
+            new InteractionContext(this.application, interaction)
+        );
+
         return true;
     }
 
@@ -107,11 +135,15 @@ class CommandManagerService extends Service implements HasEventListeners {
             }
 
             const built = command.build();
-            commands.push(...(Array.isArray(built) ? built : [built]).map(c => c.toJSON()));
+            commands.push(
+                ...(Array.isArray(built) ? built : [built]).map(c => c.toJSON())
+            );
         }
 
         if (homeGuild) {
-            const guild = this.application.client.guilds.cache.get(getEnv().SUDOBOT_HOME_GUILD_ID);
+            const guild = this.application.client.guilds.cache.get(
+                getEnv().SUDOBOT_HOME_GUILD_ID
+            );
 
             if (!guild) {
                 this.logger.debug("Home guild not found, skipping");
@@ -119,10 +151,11 @@ class CommandManagerService extends Service implements HasEventListeners {
             }
 
             const { size } = await guild.commands.set(commands);
-            this.logger.info(`Successfully updated ${size} application guild commands`);
+            this.logger.info(
+                `Successfully updated ${size} application guild commands`
+            );
             return size;
-        }
-        else {
+        } else {
             const application = this.application.client.application;
 
             if (!application) {
@@ -131,9 +164,13 @@ class CommandManagerService extends Service implements HasEventListeners {
             }
 
             const { size } = await application.commands.set(commands);
-            this.logger.info(`Successfully updated ${size} application commands`);
+            this.logger.info(
+                `Successfully updated ${size} application commands`
+            );
             return size;
         }
+
+        return 0;
     }
 
     public async onClientReady(): Promise<void> {
@@ -141,6 +178,21 @@ class CommandManagerService extends Service implements HasEventListeners {
         const isDevMode = isDevelopmentMode();
 
         if (isDevMode || updateMode) {
+            const homeGuild = updateMode ? updateMode === "local" : isDevMode;
+
+            if (
+                (homeGuild &&
+                    !this.client.ws.shards.has(
+                        calculateShardId(
+                            getEnv().SUDOBOT_HOME_GUILD_ID,
+                            this.application.shardCount
+                        )
+                    )) ||
+                (!homeGuild && !this.client.ws.shards.has(0))
+            ) {
+                return;
+            }
+
             try {
                 await this.sync({
                     homeGuild: updateMode ? updateMode === "local" : isDevMode

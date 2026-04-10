@@ -17,7 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { ApplicationOptions } from "@framework/app/Application";
 import BaseApplication from "@framework/app/Application";
+import type MessageBus from "@framework/bus/MessageBus";
+import RedisMessageBus from "@framework/bus/RedisMessageBus";
 import Database from "@main/database/Database";
 import { getEnv } from "@main/env/env";
 
@@ -25,6 +28,13 @@ class Application extends BaseApplication {
     public readonly database = new Database(this, {
         url: getEnv().SUDOBOT_DATABASE_URL
     });
+
+    public override readonly bus: MessageBus;
+
+    public constructor(options: ApplicationOptions) {
+        super(options);
+        this.bus = new RedisMessageBus(getEnv().SUDOBOT_VALKEY_URL);
+    }
 }
 
 export default Application;

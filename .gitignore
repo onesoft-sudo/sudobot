@@ -55,3 +55,4 @@ fly.toml
 .blazebuild
 
 imports.gen.ts
+/src/main/typescript/commands/settings/TestCommand.ts
