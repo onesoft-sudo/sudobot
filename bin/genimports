@@ -12,7 +12,7 @@ main="src/main"
 
 main_root=`readlink -f "${dir}/../${main}/typescript"`
 
-paths="services${nl}commands${nl}events"
+paths="services${nl}commands${nl}events${nl}queues${nl}rules"
 resource_paths="main/resources${nl}framework/resources"
 
 out="$1"
@@ -25,6 +25,8 @@ buf_exports=""
 buf_services=""
 buf_events=""
 buf_commands=""
+buf_queues=""
+buf_rules=""
 buf_resources="    \"package.json\": packageJSON,${nl}"
 
 for path in $paths; do
@@ -48,6 +50,10 @@ for path in $paths; do
             buf_events="${buf_events}    ${base},${nl}"
         elif test "$path" = "commands"; then
             buf_commands="${buf_commands}    ${base},${nl}"
+        elif test "$path" = "queues"; then
+            buf_queues="${buf_queues}    ${base},${nl}"
+        elif test "$path" = "rules"; then
+            buf_rules="${buf_rules}    ${base},${nl}"
         fi
     done
 
@@ -92,4 +98,6 @@ echo "export const classes = {${nl}${buf_exports}};${nl}${nl}" >> "${out}/import
 echo "export const services = {${nl}${buf_services}};${nl}${nl}" >> "${out}/imports.gen.ts"
 echo "export const events = {${nl}${buf_events}};${nl}${nl}" >> "${out}/imports.gen.ts"
 echo "export const commands = {${nl}${buf_commands}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const queues = {${nl}${buf_queues}};${nl}${nl}" >> "${out}/imports.gen.ts"
+echo "export const rules = {${nl}${buf_rules}};${nl}${nl}" >> "${out}/imports.gen.ts"
 echo "export const resources = {${nl}${buf_resources}};${nl}${nl}" >> "${out}/imports.gen.ts"

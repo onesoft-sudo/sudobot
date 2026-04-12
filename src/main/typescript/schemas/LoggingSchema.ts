@@ -18,9 +18,10 @@
  */
 
 import type Duration from "@framework/datetime/Duration";
+import type { RuleExecResult } from "@main/moderation/RuleManager";
 import type { LogEventType } from "@schemas/defs/LoggingSchema";
-import type { MessageRuleType } from "@schemas/defs/MessageRuleSchema";
 import type { ModerationActionType } from "@schemas/defs/ModerationActionSchema";
+import type { RuleDefinition } from "@schemas/defs/RuleSchema";
 import type {
     Guild,
     GuildBasedChannel,
@@ -35,8 +36,6 @@ import type {
     User,
     VoiceState
 } from "discord.js";
-
-type RuleExecResult = "TODO: FIX THIS";
 
 export type PaxmodModerateTextSuccessResponse = {
     status: "success";
@@ -78,7 +77,7 @@ export type LogEventArgs = {
     [LogEventType.SystemAutoModRuleModeration]: [
         type: "profile" | "message",
         messageOrMember: Message | GuildMember,
-        rule: MessageRuleType,
+        rule: RuleDefinition,
         result: RuleExecResult
     ];
     [LogEventType.MemberMassBan]: [payload: LogMemberMassBanPayload];

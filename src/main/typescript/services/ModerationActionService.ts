@@ -82,6 +82,7 @@ class ModerationActionService extends Service {
                 this.application.logger.warn(
                     `Skipping member-only action on user: ${target.id}, action: ${action.type}`
                 );
+
                 continue;
             }
 

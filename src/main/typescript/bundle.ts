@@ -25,7 +25,7 @@ import Resource from "@framework/resources/Resource";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This file will only be created when a bundler is executed
-import { classes, services, commands, events, resources } from "./imports.gen";
+import { classes, services, commands, events, queues, rules, resources } from "./imports.gen";
 
 Object.defineProperty(global, BUNDLE_DATA_SYMBOL, {
     value: {
@@ -33,7 +33,9 @@ Object.defineProperty(global, BUNDLE_DATA_SYMBOL, {
         services,
         commands,
         events,
-        resources
+        resources,
+        queues,
+        rules
     }
 });
 

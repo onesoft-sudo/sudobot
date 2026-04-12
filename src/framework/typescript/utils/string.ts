@@ -17,12 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export function normalize(str: string, skip = false) {
-    if (skip) {
-        return str;
-    }
+import unidecode from "unidecode";
 
-    return str.replace(/[\u0300-\u036f]/g, "");
+export function normalize(str: string) {
+    return unidecode(str.replace(/[\u0300-\u036f]/g, ""));
 }
 
 export function isDigit(char: string) {
@@ -37,7 +35,8 @@ export function preformat(args: TemplateStringsArray, ...values: unknown[]) {
     let fullString = "";
 
     for (const part of args) {
-        fullString += part.replace(/^\n\s+/gm, "\n") + (values.shift()?.toString() ?? "");
+        fullString +=
+            part.replace(/^\n\s+/gm, "\n") + (values.shift()?.toString() ?? "");
     }
 
     return fullString.trimStart();

@@ -22,8 +22,7 @@ export const SCHEMA_VERSION = 2;
 export * from "./defs/EnvironmentVariableSchema";
 export * from "./defs/GuildConfigurationSchema";
 export * from "./defs/LoggingSchema";
-export * from "./defs/MessageRuleSchema";
+export * from "./defs/RuleSchema";
 export * from "./defs/ModerationActionSchema";
 export * from "./defs/SnowflakeSchema";
 export * from "./defs/SystemConfigurationSchema";
-

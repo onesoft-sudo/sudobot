@@ -25,6 +25,8 @@ import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
 import type QueueManager from "@framework/queues/QueueManager";
 import type Service from "@framework/services/Service";
 import type { Events } from "@framework/types/ClientEvents";
+import type Rule from "@main/moderation/Rule";
+import type { RuleType } from "@schemas/all";
 
 export const BUNDLE_DATA_SYMBOL = Symbol("BundleData");
 export type BundleData = {
@@ -41,6 +43,12 @@ export type BundleData = {
             application: Application,
             permissionManagerService: PermissionManagerServiceInterface
         ) => Command
+    >;
+    rules: Record<
+        string,
+        new (
+            application: Application,
+        ) => Rule<RuleType, unknown>
     >;
     queues: Record<
         string,

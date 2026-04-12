@@ -24,6 +24,7 @@ import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds";
 import { fetchChannel } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { Colors } from "@main/constants/Colors";
+import { RuleExecResult } from "@main/moderation/RuleManager";
 import {
     LogEventArgs,
     LogEventType,
@@ -51,18 +52,21 @@ import {
     LogUserNoteAddPayload,
     LoggingExclusionType
 } from "@main/schemas/LoggingSchema";
-import ConfigurationManagerService, {
+import type ConfigurationManagerService from "@main/services/ConfigurationManagerService";
+import {
     ConfigurationType,
     SERVICE_CONFIGURATION_MANAGER
 } from "@main/services/ConfigurationManagerService";
-import InviteTrackingService, {
+import type InviteTrackingService from "@main/services/InviteTrackingService";
+import {
     SERVICE_INVITE_TRACKING
 } from "@main/services/InviteTrackingService";
-import ModerationActionService, {
+import type ModerationActionService from "@main/services/ModerationActionService";
+import {
     SERVICE_MODERATION_ACTION
 } from "@main/services/ModerationActionService";
-import { TODO, chunkedString } from "@main/utils/utils";
-import { MessageRuleType } from "@schemas/defs/MessageRuleSchema";
+import { chunkedString } from "@main/utils/utils";
+import { RuleDefinition } from "@schemas/defs/RuleSchema";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
@@ -84,6 +88,7 @@ import {
     VoiceState,
     Webhook,
     bold,
+    inlineCode,
     italic,
     roleMention,
     time,
@@ -582,7 +587,7 @@ class AuditLoggingService extends Service {
         }
     }
 
-    private ruleAttributes(rule: MessageRuleType) {
+    private ruleAttributes(rule: RuleDefinition) {
         let attributes = "";
         const { bail, mode, exceptions, for: ruleFor } = rule;
 
@@ -607,75 +612,74 @@ class AuditLoggingService extends Service {
             : attributes;
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
-    private async logMessageRuleModeration(
-        _type: "profile" | "message",
-        _messageOrMember: Message | GuildMember,
-        _rule: MessageRuleType,
-        _result: unknown // RuleExecResult
-    ): Promise<Message | undefined> {
-        TODO("Not re-implemented");
-        // const member =
-        //     messageOrMember instanceof GuildMember
-        //         ? messageOrMember
-        //         : messageOrMember.member!;
-        // const message =
-        //     messageOrMember instanceof Message ? messageOrMember : undefined;
 
-        // return this.send({
-        //     guildId: message?.guildId ?? member.guild.id,
-        //     messageCreateOptions: {
-        //         embeds: [
-        //             {
-        //                 ...result.logEmbed,
-        //                 color: Colors.Red,
-        //                 fields: [
-        //                     ...(result.fields ?? []),
-        //                     ...(result.logEmbed?.fields ?? []),
-        //                     {
-        //                         name: "Rule Type",
-        //                         value: inlineCode(rule.type)
-        //                     },
-        //                     {
-        //                         name: "Action Taken By",
-        //                         value: "System"
-        //                     },
-        //                     {
-        //                         name: "User",
-        //                         value: userInfo(message?.author ?? member.user)
-        //                     },
-        //                     {
-        //                         name: "Reason",
-        //                         value:
-        //                             result.reason ??
-        //                             italic("No reason provided")
-        //                     },
-        //                     {
-        //                         name: "Actions Taken",
-        //                         value: this.application
-        //                             .service("moderationActionService")
-        //                             .summarizeActions(rule.actions),
-        //                         inline: true
-        //                     },
-        //                     {
-        //                         name: "Additional Attributes",
-        //                         value: this.ruleAttributes(rule),
-        //                         inline: true
-        //                     }
-        //                 ],
-        //                 title: "AutoMod Rule Action",
-        //                 author: {
-        //                     name: (message?.author ?? member.user).username,
-        //                     icon_url:
-        //                         (
-        //                             message?.author ?? member.user
-        //                         ).displayAvatarURL() ?? undefined
-        //                 }
-        //             }
-        //         ]
-        //     },
-        //     eventType: LogEventType.SystemAutoModRuleModeration
-        // });
+    private async logMessageRuleModeration(
+        type: "profile" | "message",
+        messageOrMember: Message | GuildMember,
+        rule: RuleDefinition,
+        result: RuleExecResult
+    ): Promise<Message | undefined> {
+        const member =
+            messageOrMember instanceof GuildMember
+                ? messageOrMember
+                : messageOrMember.member!;
+        const message =
+            messageOrMember instanceof Message ? messageOrMember : undefined;
+
+        return this.send({
+            guildId: message?.guildId ?? member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        ...result.logEmbed,
+                        color: Colors.Red,
+                        fields: [
+                            ...(result.fields ?? []),
+                            ...(result.logEmbed?.fields ?? []),
+                            {
+                                name: "Rule Type",
+                                value: inlineCode(rule.type)
+                            },
+                            {
+                                name: "Action Taken By",
+                                value: "System"
+                            },
+                            {
+                                name: "User",
+                                value: userInfo(message?.author ?? member.user)
+                            },
+                            {
+                                name: "Reason",
+                                value:
+                                    result.reason ??
+                                    italic("No reason provided")
+                            },
+                            {
+                                name: "Actions Taken",
+                                value: this.application
+                                    .service<ModerationActionService>(SERVICE_MODERATION_ACTION)
+                                    .summarizeActions(rule.actions),
+                                inline: true
+                            },
+                            {
+                                name: "Additional Attributes",
+                                value: this.ruleAttributes(rule),
+                                inline: true
+                            }
+                        ],
+                        title: "AutoMod Rule Action",
+                        author: {
+                            name: (message?.author ?? member.user).username,
+                            icon_url:
+                                (
+                                    message?.author ?? member.user
+                                ).displayAvatarURL() ?? undefined
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.SystemAutoModRuleModeration
+        });
     }
 
     private async logMessageDelete(message: Message<true>, moderator?: User) {

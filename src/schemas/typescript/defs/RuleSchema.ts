@@ -183,7 +183,7 @@ export const ProfileFilter = z.object({
     normalize: z.boolean().default(true)
 });
 
-export const MessageRuleSchema = z.union([
+export const RuleSchema = z.union([
     DomainFilterRule,
     MimeTypeFilterRule,
     FileExtensionFilterRule,
@@ -201,4 +201,6 @@ export const MessageRuleSchema = z.union([
     AIScanFilter
 ]);
 
-export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
+export type RuleDefinition = z.infer<typeof RuleSchema>;
+export type RuleType = RuleDefinition["type"];
+export type RuleDefinitionByType<T extends RuleType> = Extract<RuleDefinition, { type: T }>;

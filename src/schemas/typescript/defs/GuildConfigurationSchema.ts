@@ -20,6 +20,7 @@
 import z from "zod";
 import { LoggingSchema } from "./LoggingSchema";
 import { SnowflakeSchema } from "./SnowflakeSchema";
+import { RuleSchema } from "./RuleSchema";
 
 export const GuildConfigurationSchema = z.object({
     commands: z
@@ -93,7 +94,12 @@ export const GuildConfigurationSchema = z.object({
         .object({
             role: SnowflakeSchema.optional()
         })
-        .optional()
+        .optional(),
+    rule_moderation: z.object({
+        enabled: z.boolean().prefault(false),
+        message_rules: z.array(RuleSchema).prefault([]),
+        profile_rules: z.array(RuleSchema).prefault([]),
+    }).optional()
 });
 
 export type GuildConfigurationType = z.infer<typeof GuildConfigurationSchema>;

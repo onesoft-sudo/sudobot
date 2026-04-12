@@ -34,12 +34,16 @@ import { getBundleData } from "@framework/utils/bundle";
 import Application from "@main/core/Application";
 import Database from "@main/database/Database";
 import { getEnv } from "@main/env/env";
+import type Rule from "@main/moderation/Rule";
 import type CommandManagerService from "@main/services/CommandManagerService";
 import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService";
 import type QueueManagerService from "@main/services/QueueManagerService";
 import { SERVICE_QUEUE_MANAGER } from "@main/services/QueueManagerService";
+import type RuleModerationService from "@main/services/RuleModerationService";
+import {SERVICE_RULE_MODERATION} from "@main/services/RuleModerationService";
+import type { RuleType } from "@schemas/all";
 import type { ClientOptions } from "discord.js";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
@@ -68,6 +72,7 @@ class AppKernel extends Kernel {
         "@services/AuditLoggingService",
         "@services/InfractionManagerService",
         "@services/AwayFromKeyboardService",
+        "@services/RuleModerationService",
     ];
 
     public readonly eventListenersDirectory: string = path.join(
@@ -79,6 +84,7 @@ class AppKernel extends Kernel {
         "../commands"
     );
     public readonly queuesDirectory: string = path.join(__dirname, "../queues");
+    public readonly rulesDirectory: string = path.join(__dirname, "../rules");
 
     public readonly shards?: number[];
     public readonly shardCount?: number;
@@ -247,7 +253,6 @@ class AppKernel extends Kernel {
             });
             registerGatewayEventListeners(application.client, queue);
             await queue.onAppBoot?.();
-            application.service<QueueManagerService>(SERVICE_QUEUE_MANAGER);
 
             application
                 .service<QueueManagerService>(SERVICE_QUEUE_MANAGER)
@@ -275,7 +280,7 @@ class AppKernel extends Kernel {
 
         await application.classLoader.loadClassesRecursive<
             DefaultExport<
-                new (application: Application) => AbstractQueuedJob<object>
+                new (application: Application, queueManager: QueueManager) => AbstractQueuedJob<object>
             >
         >(this.queuesDirectory, {
             preLoad: filepath => {
@@ -286,6 +291,60 @@ class AppKernel extends Kernel {
             },
             postLoad: async (filepath, { default: QueueClass }) => {
                 await onLoad(filepath, QueueClass);
+            }
+        });
+    }
+
+    private async loadRules(application: Application): Promise<void> {
+        const onLoad = async (
+            filepath: string,
+            ruleClass: new (
+                application: Application,
+            ) => Rule<RuleType, unknown>
+        ) => {
+            const rule = application.container.get(ruleClass, {
+                constructorArgs: [application]
+            });
+            registerGatewayEventListeners(application.client, rule);
+            await rule.onAppBoot?.();
+
+            application
+                .service<RuleModerationService>(SERVICE_RULE_MODERATION)
+                .register(rule);
+
+            application.logger.debug(
+                "Loaded rule: ",
+                path.basename(filepath).replace(/\..*$/, "")
+            );
+        };
+
+        if (isBundle) {
+            const data = getBundleData();
+
+            if (!data?.rules) {
+                return;
+            }
+
+            for (const rule in data.rules) {
+                await onLoad(rule, data.rules[rule]);
+            }
+
+            return;
+        }
+
+        await application.classLoader.loadClassesRecursive<
+            DefaultExport<
+                new (application: Application) => Rule<RuleType, unknown>
+            >
+        >(this.rulesDirectory, {
+            preLoad: filepath => {
+                application.logger.debug(
+                    "Loading rule: ",
+                    path.basename(filepath).replace(/\..*$/, "")
+                );
+            },
+            postLoad: async (filepath, { default: RuleClass }) => {
+                await onLoad(filepath, RuleClass);
             }
         });
     }
@@ -363,6 +422,7 @@ class AppKernel extends Kernel {
     public async bootPhase2(application: Application): Promise<void> {
         await this.loadServices(application);
         await this.loadQueues(application);
+        await this.loadRules(application);
         await this.loadEventListeners(application);
         await this.loadCommands(application);
     }

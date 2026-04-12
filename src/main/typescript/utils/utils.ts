@@ -170,6 +170,12 @@ export function assertUnreachable(_value: never): never {
     throw new Error("This statement should be unreachable");
 }
 
+export function assert(value: unknown, message?: string) {
+    if (!value) {
+        throw new Error(message ?? "Assertion failed");
+    }
+}
+
 export function TODO(message?: string): never {
     throw new Error(message ?? "Not implemented");
 }
