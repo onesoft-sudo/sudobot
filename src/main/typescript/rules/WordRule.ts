@@ -1,7 +1,7 @@
 import { normalize } from "@framework/utils/string";
 import type { ProfileMessageRulePayload } from "@main/moderation/ProfileMessageRule";
 import ProfileMessageRule from "@main/moderation/ProfileMessageRule";
-import { RuleContext } from "@main/moderation/Rule";
+import type { RuleContext } from "@main/moderation/Rule";
 import type { RuleDefinitionByType } from "@schemas/all";
 import type { Awaitable } from "discord.js";
 

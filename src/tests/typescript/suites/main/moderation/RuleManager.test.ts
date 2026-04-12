@@ -19,7 +19,7 @@
 
 import Application from "@main/core/Application";
 import MessageRule from "@main/moderation/MessageRule";
-import { RuleContext } from "@main/moderation/Rule";
+import type { RuleContext } from "@main/moderation/Rule";
 import type { RuleConstructor } from "@main/moderation/RuleManager";
 import RuleManager from "@main/moderation/RuleManager";
 import type { RuleDefinitionByType, RuleType } from "@schemas/all";
