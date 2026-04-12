@@ -74,7 +74,7 @@ class InviteTrackingService extends Service implements HasEventListeners {
             }
         }
 
-        this.application.logger.info(
+        this.logger.info(
             `Synchronized ${this._invites.size} invites`
         );
     }

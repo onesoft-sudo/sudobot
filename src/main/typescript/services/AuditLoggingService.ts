@@ -19,7 +19,6 @@
 
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import { Logger } from "@framework/log/Logger";
 import Service from "@framework/services/Service";
 import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds";
 import { fetchChannel } from "@framework/utils/entities";
@@ -90,7 +89,7 @@ import {
     time,
     userMention
 } from "discord.js";
-import { LRUCache } from "lru-cache/raw";
+import { LRUCache } from "lru-cache";
 
 type WebhookInfo =
     | {
@@ -109,7 +108,6 @@ export const SEVICE_AUDIT_LOGGING = "auditLoggingService" as const;
 
 class AuditLoggingService extends Service {
     public override readonly name: string = SEVICE_AUDIT_LOGGING;
-    private readonly logger = Logger.getLogger(AuditLoggingService);
 
     private readonly webhooks = new LRUCache<
         `${Snowflake}::${Snowflake}`,

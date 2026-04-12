@@ -22,7 +22,6 @@ import CommandContextType from "@framework/commands/CommandContextType";
 import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
-import { Logger } from "@framework/log/Logger";
 import Service from "@framework/services/Service";
 import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { isDevelopmentMode } from "@framework/utils/utils";
@@ -43,8 +42,6 @@ export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 class CommandManagerService extends Service implements HasEventListeners {
     public override readonly name: string = SERVICE_COMMAND_MANAGER;
     public readonly commands = new Collection<string, Command>();
-
-    private readonly logger = Logger.getLogger(CommandManagerService);
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;

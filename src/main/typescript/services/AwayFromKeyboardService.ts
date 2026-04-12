@@ -34,7 +34,7 @@ import {
     time
 } from "discord.js";
 import { and, eq } from "drizzle-orm";
-import { LRUCache } from "lru-cache/raw";
+import { LRUCache } from "lru-cache";
 
 export const SERVICE_AWAY_FROM_KEYBOARD = "awayFromKeyboardService" as const;
 
