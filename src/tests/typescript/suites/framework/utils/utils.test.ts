@@ -59,8 +59,8 @@ describe("utils", () => {
     describe("requireNonNull", () => {
         it("throws error when the given argument is null or undefined", () => {
             expect(requireNonNull("Test")).toBe("Test");
-            expect(() => requireNonNull(null)).toThrowError();
-            expect(() => requireNonNull(undefined)).toThrowError();
+            expect(() => requireNonNull(null)).toThrow();
+            expect(() => requireNonNull(undefined)).toThrow();
         });
     });
 
