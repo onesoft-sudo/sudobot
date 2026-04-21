@@ -22,7 +22,7 @@ import { TestContext, TestSuite } from "@tests/core/TestSuite";
 import ArgumentParser from "@framework/arguments/ArgumentParser";
 import StringArgument from "@framework/arguments/StringArgument";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
-import Application from "@framework/app/Application";
+import Application from "@tests/mocks/core/Application";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { createClient, createMessage } from "@tests/mocks/discord";
 import { Client } from "discord.js";

@@ -62,7 +62,7 @@ export function GatewayEventListener(event: keyof ClientEvents | "raw") {
             });
 
             (contextOrMethodName.metadata as unknown) ??= {};
-            contextOrMethodName.metadata.eventListeners = eventListeners;
+            (contextOrMethodName.metadata as Record<string, unknown>).eventListeners = eventListeners;
             return originalMethodOrTarget as void;
         }
     };

@@ -17,19 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@tests/mocks/core/Application";
 import Command from "@framework/commands/Command";
 import LegacyContext from "@framework/commands/LegacyContext";
 import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
 import { BeforeEach, TestCase } from "@tests/core/Test";
 import { TestContext, TestSuite } from "@tests/core/TestSuite";
-import { createClient, createMember, createMessage } from "@tests/mocks/discord";
-import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService";
 import {
-    Client,
-    PermissionFlagsBits,
-    PermissionsBitField
-} from "discord.js";
+    createClient,
+    createMember,
+    createMessage
+} from "@tests/mocks/discord";
+import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService";
+import { Client, PermissionFlagsBits, PermissionsBitField } from "discord.js";
 import { vi } from "vitest";
 
 @TestSuite
@@ -40,9 +40,21 @@ class CommandTest {
 
     @BeforeEach
     public initialize() {
-        this.application = new Application({ projectRootDirectoryPath: "", rootDirectoryPath: "", version: "1" });
+        this.application = new Application({
+            projectRootDirectoryPath: "",
+            rootDirectoryPath: "",
+            version: "1"
+        });
+
         this.client = createClient();
-        this.permissionManagerService = new PermissionManagerService(this.application);
+
+        Object.defineProperty(this.application, "client", {
+            value: this.client
+        });
+
+        this.permissionManagerService = new PermissionManagerService(
+            this.application
+        );
     }
 
     @TestCase
@@ -53,18 +65,33 @@ class CommandTest {
             public execute = vi.fn();
         })(this.application, this.permissionManagerService);
 
-        const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
+        const context = new LegacyContext(
+            this.application,
+            createMessage(this.client),
+            "name",
+            "name",
+            [],
+            []
+        );
         await command.run(context);
 
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, {}, {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(
+            context,
+            {},
+            {}
+        );
     }
 
     @TestCase
-    public async itAbortsExecutionIfPermissionsAreMissing({ expect }: TestContext) {
+    public async itAbortsExecutionIfPermissionsAreMissing({
+        expect
+    }: TestContext) {
         const command = new (class extends Command {
             public override readonly name = "name";
             public override readonly description = "name";
-            public override readonly permissions = [PermissionFlagsBits.BanMembers];
+            public override readonly permissions = [
+                PermissionFlagsBits.BanMembers
+            ];
             public execute = vi.fn();
         })(this.application, this.permissionManagerService);
 
@@ -90,9 +117,30 @@ class CommandTest {
             value: member2
         });
 
-        const context1 = new LegacyContext(this.application, message1, "name", "name", [], []);
-        const context2 = new LegacyContext(this.application, message2, "name", "name", [], []);
-        const context3 = new LegacyContext(this.application, message3, "name", "name", [], []);
+        const context1 = new LegacyContext(
+            this.application,
+            message1,
+            "name",
+            "name",
+            [],
+            []
+        );
+        const context2 = new LegacyContext(
+            this.application,
+            message2,
+            "name",
+            "name",
+            [],
+            []
+        );
+        const context3 = new LegacyContext(
+            this.application,
+            message3,
+            "name",
+            "name",
+            [],
+            []
+        );
 
         const error1 = vi.fn().mockImplementation(async () => {});
         const error2 = vi.fn().mockImplementation(async () => {});
@@ -108,11 +156,19 @@ class CommandTest {
         expect(command.execute).not.toHaveBeenCalled();
         expect(error1).toHaveBeenCalledOnce();
         expect(error2).toHaveBeenCalledOnce();
-        expect(error1.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
-        expect(error2.mock.calls[0]?.[0]).toMatch(/You don't have enough permissions/);
+        expect(error1.mock.calls[0]?.[0]).toMatch(
+            /You don't have enough permissions/
+        );
+        expect(error2.mock.calls[0]?.[0]).toMatch(
+            /You don't have enough permissions/
+        );
 
         await command.run(context3);
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context3, {}, {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(
+            context3,
+            {},
+            {}
+        );
         expect(error3).not.toHaveBeenCalled();
     }
 }

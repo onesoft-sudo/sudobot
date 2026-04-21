@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@tests/mocks/core/Application";
 import Command from "@framework/commands/Command";
 import LegacyContext from "@framework/commands/LegacyContext";
 import Guard from "@framework/guards/Guard";
@@ -38,9 +38,21 @@ class GuardTest {
 
     @BeforeEach
     public initialize() {
-        this.application = new Application({ projectRootDirectoryPath: "", rootDirectoryPath: "", version: "1" });
+        this.application = new Application({
+            projectRootDirectoryPath: "",
+            rootDirectoryPath: "",
+            version: "1"
+        });
+
         this.client = createClient();
-        this.permissionManagerService = new PermissionManagerService(this.application);
+
+        Object.defineProperty(this.application, "client", {
+            value: this.client
+        });
+
+        this.permissionManagerService = new PermissionManagerService(
+            this.application
+        );
     }
 
     @TestCase
@@ -59,7 +71,14 @@ class GuardTest {
             public override execute = vi.fn();
         })(this.application, this.permissionManagerService);
 
-        const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
+        const context = new LegacyContext(
+            this.application,
+            createMessage(this.client),
+            "name",
+            "name",
+            [],
+            []
+        );
         const error = vi.fn().mockImplementation(async () => {});
         context.error = error;
         await command.run(context);
@@ -75,7 +94,11 @@ class GuardTest {
 
         await command.run(context);
 
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, {}, {});
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(
+            context,
+            {},
+            {}
+        );
         expect(error).not.toBeCalled();
         expect(check).toHaveBeenCalledExactlyOnceWith(command, context);
     }

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@tests/mocks/core/Application";
 import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
 import Job from "@framework/queues/Job";
 import JobDatabaseDriver from "@framework/queues/JobDatabaseDriver";

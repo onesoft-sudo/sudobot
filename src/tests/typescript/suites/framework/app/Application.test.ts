@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@tests/mocks/core/Application";
 import { describe, expect, it } from "vitest";
 
 describe("Application", () => {
