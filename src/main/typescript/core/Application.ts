@@ -33,7 +33,7 @@ class Application extends BaseApplication {
 
     public constructor(options: ApplicationOptions) {
         super(options);
-        this.bus = new RedisMessageBus("redis://localhost/1");
+        this.bus = new RedisMessageBus(getEnv().SUDOBOT_VALKEY_URL);
     }
 }
 
