@@ -25,7 +25,7 @@ let re2: RE2Type | null | undefined;
 
 try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    re2 = require("re2" as string);
+    re2 = require("re2");
 } catch {
     re2 = null;
 }

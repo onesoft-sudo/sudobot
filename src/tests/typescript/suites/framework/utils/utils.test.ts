@@ -66,8 +66,8 @@ describe("utils", () => {
 
     describe("notIn", () => {
         it("checks if key(s) are not in the given objects correctly", () => {
-            expect(notIn({ a: 1, b: 2 } as Record<string, number>, "c")).toBe(true);
-            expect(notIn({ a: 1, b: 2 } as Record<string, number>, "b")).toBe(false);
+            expect(notIn({ a: 1, b: 2 }, "c")).toBe(true);
+            expect(notIn({ a: 1, b: 2 }, "b")).toBe(false);
         });
     });
 

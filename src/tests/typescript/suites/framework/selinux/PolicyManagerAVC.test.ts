@@ -176,7 +176,7 @@ describe("PolicyManagerAVC", () => {
         });
 
         const guildId = "1";
-        const { readFileMock } = await import(<string>"fs/promises");
+        const { readFileMock } = await import("fs/promises");
         readFileMock.mockClear();
 
         const policy: PolicyModuleType = makePolicy("base", {
@@ -209,7 +209,7 @@ describe("PolicyManagerAVC", () => {
         });
 
         const guildId = "1";
-        const { readFileMock } = await import(<string>"fs/promises");
+        const { readFileMock } = await import("fs/promises");
         readFileMock.mockClear();
 
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);

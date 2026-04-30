@@ -147,7 +147,7 @@ class StartupManagerService extends Service {
             activities: [
                 {
                     name: presence?.name ?? "over the server",
-                    type: ActivityType[presence?.type ?? "Watching"] as unknown as ActivityType,
+                    type: ActivityType[presence?.type ?? "Watching"],
                     url: presence?.url
                 }
             ],

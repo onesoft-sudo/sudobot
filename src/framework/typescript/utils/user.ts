@@ -122,7 +122,7 @@ export const userFlagsToString = (flags: Exclude<User["flags"], null>) => {
     const strings = [];
 
     for (const [flag, description] of flagmap.entries()) {
-        if (flags.has(flag as Parameters<typeof flags.has>[0])) {
+        if (flags.has(flag)) {
             strings.push(description);
         }
     }

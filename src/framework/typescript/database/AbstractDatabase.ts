@@ -52,7 +52,7 @@ abstract class AbstractDatabase<const T extends Record<string, unknown>> {
         const client = drizzle<T>(pool, {
             schema: this.createSchema(),
             logger: new QueryLogger()
-        } as { logger: QueryLogger });
+        });
 
         return { pool, client };
     }

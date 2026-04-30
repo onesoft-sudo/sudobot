@@ -46,7 +46,7 @@ export default class FileSystem {
             }
         }
 
-        return contents as ReadFileResult<T, unknown>;
+        return contents;
     }
 
     public static async exists(filePath: string) {

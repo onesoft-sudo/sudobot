@@ -118,7 +118,7 @@ async function fetchCredentials(url: string, key: string) {
                 setEnv({
                     ...process.env,
                     ...data
-                } as unknown as Record<string, string | undefined>);
+                });
 
                 for (const key in data) {
                     process.env[key] = data[key];

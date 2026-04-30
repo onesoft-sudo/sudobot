@@ -71,7 +71,7 @@ abstract class AbstractPermissionManager {
             user instanceof User
                 ? null
                 : typeof user.permissions === "string"
-                  ? new PermissionsBitField(user.permissions as PermissionResolvable)
+                  ? new PermissionsBitField(user.permissions)
                   : user.permissions;
 
         if (permissions && !computedPermissions?.has(permissions, true)) {
@@ -124,7 +124,7 @@ abstract class AbstractPermissionManager {
                 user instanceof User
                     ? 0n
                     : typeof user.permissions === "string"
-                      ? new PermissionsBitField(user.permissions as PermissionResolvable).bitfield
+                      ? new PermissionsBitField(user.permissions).bitfield
                       : user.permissions.bitfield,
             grantAll: false
         };
