@@ -20,7 +20,7 @@ test $# -eq 0 && out=`pwd`
 
 IFS="${nl}"
 
-buf_imports="import { readFileSync } from \"fs\";${nl}import packageJSON from \"../../../package.json\";${nl}"
+buf_imports="import packageJSON from \"../../../package.json\";${nl}"
 buf_exports=""
 buf_services=""
 buf_events=""
