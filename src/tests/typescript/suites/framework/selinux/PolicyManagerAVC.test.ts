@@ -21,6 +21,7 @@ import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC";
 import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema";
 import { createClient, createMember } from "@tests/mocks/discord";
 import { PermissionFlagsBits } from "discord.js";
+import type { Mock } from "vitest";
 import { beforeEach, describe, it, vi } from "vitest";
 
 const makePolicy = <T extends Partial<PolicyModuleType>>(name: string, payload: T) => {
@@ -176,7 +177,7 @@ describe("PolicyManagerAVC", () => {
         });
 
         const guildId = "1";
-        const { readFileMock } = await import("fs/promises");
+        const { readFileMock } = await import("fs/promises") as unknown as { readFileMock: Mock<() => never> };
         readFileMock.mockClear();
 
         const policy: PolicyModuleType = makePolicy("base", {
@@ -209,7 +210,7 @@ describe("PolicyManagerAVC", () => {
         });
 
         const guildId = "1";
-        const { readFileMock } = await import("fs/promises");
+        const { readFileMock } = await import("fs/promises") as unknown as { readFileMock: Mock<() => never> };
         readFileMock.mockClear();
 
         expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);

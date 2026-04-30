@@ -66,7 +66,7 @@ describe("utils", () => {
 
     describe("notIn", () => {
         it("checks if key(s) are not in the given objects correctly", () => {
-            expect(notIn({ a: 1, b: 2 }, "c")).toBe(true);
+            expect(notIn({ a: 1, b: 2 }, "c" as unknown as "a" | "b")).toBe(true);
             expect(notIn({ a: 1, b: 2 }, "b")).toBe(false);
         });
     });
