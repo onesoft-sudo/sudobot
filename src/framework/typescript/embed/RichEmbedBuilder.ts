@@ -20,6 +20,7 @@ class RichEmbedBuilder extends ContainerBuilder {
     private topSectionIconURL: string | null = null;
     private topSectionIconDescription: string | null = null;
     private topSectionIconSpoiler: boolean = false;
+    private textContents = "";
 
     public clearFields() {
         this.fields.length = 0;
@@ -42,6 +43,11 @@ class RichEmbedBuilder extends ContainerBuilder {
 
     public setFooterText(text: string | null) {
         this.footerText = text;
+        return this;
+    }
+
+    public addTextContent(text: string) {
+        this.textContents += text;
         return this;
     }
 
@@ -162,6 +168,12 @@ class RichEmbedBuilder extends ContainerBuilder {
                 : new TextDisplayBuilder().setContent(text);
 
             components.push(component.toJSON());
+        }
+
+        if (this.textContents) {
+            components.push(
+                new TextDisplayBuilder().setContent(this.textContents).toJSON()
+            );
         }
 
         components.push(...json.components);
