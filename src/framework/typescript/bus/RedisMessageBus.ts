@@ -18,7 +18,10 @@
  */
 
 import type { Awaitable } from "discord.js";
-import MessageBus, { type MessageBusRequest, type MessageDetails } from "./MessageBus";
+import MessageBus, {
+    type MessageBusRequest,
+    type MessageDetails
+} from "./MessageBus";
 import { Redis } from "ioredis";
 import { encode, decode } from "@msgpack/msgpack";
 import EventEmitter from "events";
@@ -30,7 +33,10 @@ class RedisMessageBus extends MessageBus {
 
     private readonly emitter = new EventEmitter();
     private _nextRequestId: number = 0;
-    private readonly responseControls = new Map<number, { callback: (data: unknown) => void; timeout: Timer }>();
+    private readonly responseControls = new Map<
+        number,
+        { callback: (data: unknown) => void; timeout: Timer }
+    >();
     private requestHandler?: (request: MessageBusRequest) => unknown;
     private readonly busId: string;
 
@@ -40,6 +46,14 @@ class RedisMessageBus extends MessageBus {
         this.busId = busId;
         this.subscriber = new Redis(url);
         this.publisher = new Redis(url);
+
+        this.subscriber.on("error", error => {
+            throw error;
+        });
+
+        this.publisher.on("error", error => {
+            throw error;
+        });
 
         this.subscriber.on("messageBuffer", async (channel, message) => {
             try {
@@ -56,9 +70,10 @@ class RedisMessageBus extends MessageBus {
                     return;
                 }
 
-                this.emitter.emit(channelName, { data } satisfies MessageDetails);
-            }
-            catch (error) {
+                this.emitter.emit(channelName, {
+                    data
+                } satisfies MessageDetails);
+            } catch (error) {
                 console.error(error);
                 this.emit("error", error);
             }
@@ -66,14 +81,20 @@ class RedisMessageBus extends MessageBus {
     }
 
     public override async enableRequestResponse() {
-        await this.subscriber.subscribe(`request_${this.busId}`, `response_${this.busId}`);
+        await this.subscriber.subscribe(
+            `request_${this.busId}`,
+            `response_${this.busId}`
+        );
     }
 
     public override publish(channel: string, data: unknown): Promise<number> {
         return this.publisher.publish(channel, Buffer.from(encode(data)));
     }
 
-    public override async subscribe(channel: string, callback: (message: MessageDetails) => Awaitable<void>) {
+    public override async subscribe(
+        channel: string,
+        callback: (message: MessageDetails) => Awaitable<void>
+    ) {
         try {
             await this.subscriber.subscribe(channel);
             this.emitter.on(channel, callback);
@@ -83,7 +104,10 @@ class RedisMessageBus extends MessageBus {
         }
     }
 
-    public override async request<T>(toBusId: string, data: unknown): Promise<T> {
+    public override async request<T>(
+        toBusId: string,
+        data: unknown
+    ): Promise<T> {
         const id = this._nextRequestId++;
         const { promise, resolve, reject } = promiseWithResolvers<T>();
 
@@ -105,7 +129,9 @@ class RedisMessageBus extends MessageBus {
         return promise;
     }
 
-    public override setRequestHandler(callback: (request: MessageBusRequest) => unknown) {
+    public override setRequestHandler(
+        callback: (request: MessageBusRequest) => unknown
+    ) {
         this.requestHandler = callback;
     }
 
