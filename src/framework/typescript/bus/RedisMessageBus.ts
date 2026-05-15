@@ -57,12 +57,20 @@ class RedisMessageBus extends MessageBus {
                 throw error;
             }
 
+            if (process.env.NODE_ENV === "test") {
+                return;
+            }
+
             console.error(error);
         });
 
         this.publisher.on("error", error => {
             if (process.env.NODE_ENV === "production") {
                 throw error;
+            }
+
+            if (process.env.NODE_ENV === "test") {
+                return;
             }
 
             console.error(error);
