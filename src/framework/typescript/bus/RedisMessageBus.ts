@@ -53,11 +53,19 @@ class RedisMessageBus extends MessageBus {
         this.publisher = new Redis(url, options);
 
         this.subscriber.on("error", error => {
-            throw error;
+            if (process.env.NODE_ENV === "production") {
+                throw error;
+            }
+
+            console.error(error);
         });
 
         this.publisher.on("error", error => {
-            throw error;
+            if (process.env.NODE_ENV === "production") {
+                throw error;
+            }
+
+            console.error(error);
         });
 
         this.subscriber.on("messageBuffer", async (channel, message) => {
