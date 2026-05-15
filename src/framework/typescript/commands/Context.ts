@@ -31,6 +31,7 @@ import {
 import CommandContextType from "./CommandContextType";
 import type InteractionContext from "./InteractionContext";
 import type LegacyContext from "./LegacyContext";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
 
 export type ContextReplyOptions = InteractionReplyOptions | InteractionEditReplyOptions | MessageCreateOptions | string;
 
@@ -45,6 +46,7 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
     }
 
     public abstract reply(options: ContextReplyOptions): Promise<Message<boolean>>;
+    public abstract replyRichEmbed(...richEmbeds: RichEmbedBuilder[]): Promise<Message<boolean>>;
 
     public get me(): GuildMember | null {
         return this.commandMessage.guild?.members.me ?? null;

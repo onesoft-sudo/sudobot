@@ -17,10 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Message, MessageCreateOptions } from "discord.js";
+import {
+    MessageFlags,
+    type Message,
+    type MessageCreateOptions
+} from "discord.js";
 import CommandContextType from "./CommandContextType";
 import Context, { type ContextReplyOptions } from "./Context";
 import type Application from "@framework/app/Application";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
 
 class LegacyContext extends Context<CommandContextType.Legacy> {
     public override readonly type = CommandContextType.Legacy;
@@ -46,8 +51,19 @@ class LegacyContext extends Context<CommandContextType.Legacy> {
         this.args = args;
     }
 
-    public override reply(options: ContextReplyOptions): Promise<Message<boolean>> {
+    public override reply(
+        options: ContextReplyOptions
+    ): Promise<Message<boolean>> {
         return this.commandMessage.reply(options as MessageCreateOptions);
+    }
+
+    public override replyRichEmbed(
+        ...richEmbeds: RichEmbedBuilder[]
+    ): Promise<Message<boolean>> {
+        return this.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: richEmbeds
+        });
     }
 }
 

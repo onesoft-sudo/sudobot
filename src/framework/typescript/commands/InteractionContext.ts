@@ -17,17 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type {
-    ChatInputCommandInteraction,
-    ContextMenuCommandInteraction,
-    InteractionEditReplyOptions,
-    InteractionReplyOptions,
-    Message
+import {
+    MessageFlags,
+    type ChatInputCommandInteraction,
+    type ContextMenuCommandInteraction,
+    type InteractionEditReplyOptions,
+    type InteractionReplyOptions,
+    type Message
 } from "discord.js";
 import CommandContextType from "./CommandContextType";
 import Context, { type ContextReplyOptions } from "./Context";
 import { requireNonNull } from "@framework/utils/utils";
 import type Application from "@framework/app/Application";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
 
 class InteractionContext extends Context<CommandContextType.Interactive> {
     public override readonly type = CommandContextType.Interactive;
@@ -55,6 +57,15 @@ class InteractionContext extends Context<CommandContextType.Interactive> {
         );
 
         return requireNonNull(response.resource?.message);
+    }
+
+    public override replyRichEmbed(
+        ...richEmbeds: RichEmbedBuilder[]
+    ): Promise<Message<boolean>> {
+        return this.reply({
+            flags: MessageFlags.IsComponentsV2,
+            components: richEmbeds
+        });
     }
 }
 
