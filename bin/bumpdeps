@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# bumpdeps -- bump dependency versions to latest
+#
+
+me=`basename "$0"`
+
+pkgs=`pnpm outdated --no-color --stream --format list | awk '
+    $0 != "" {
+        split($0, parts, /\s+/);
+
+        if (version_row) {
+            pkg_version_new = parts[3];
+            printf("%s@%s ", pkg_name, pkg_version_new);
+            version_row = 0;
+        }
+        else {
+            pkg_name = parts[1];
+            version_row = 1;
+        }
+    }
+
+    END {
+        printf("\n");
+    }
+'`
+
+echo "${me}: Packages to update: ${pkgs}"
+echo "${me}: Running 'pnpm install -- ${pkgs}'"
+
+exec -- pnpm install -- ${pkgs}
