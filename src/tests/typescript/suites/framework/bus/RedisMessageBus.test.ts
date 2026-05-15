@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import RedisMessageBus from "@framework/bus/RedisMessageBus";
+import { encode } from "@msgpack/msgpack";
 import { TestCase } from "@tests/core/Test";
 import { TestContext, TestSuite } from "@tests/core/TestSuite";
-import RedisMessageBus from "@framework/bus/RedisMessageBus";
-import { expect, vi } from "vitest";
 import * as ioredis from "ioredis";
-import { encode } from "@msgpack/msgpack";
+import { expect, Mock, vi } from "vitest";
 
 const RedisConstructorMock = vi.fn();
 
@@ -56,42 +56,65 @@ class RedisMessageBusTest {
         const url = "redis://localhost:1234/0";
         new RedisMessageBus(url);
 
-        expect(RedisConstructorMock).toHaveBeenNthCalledWith(1, url);
-        expect(RedisConstructorMock).toHaveBeenNthCalledWith(2, url);
+        expect(RedisConstructorMock).toHaveBeenNthCalledWith(1, url, {});
+        expect(RedisConstructorMock).toHaveBeenNthCalledWith(2, url, {});
     }
 
     @TestCase
     public async itCorrectlySubscribesToChannels({ expect }: TestContext) {
+        ((ioredis as unknown as ioredis.Redis).on as Mock).mockClear();
+        ((ioredis as unknown as ioredis.Redis).subscribe as Mock).mockClear();
+
         const url = "redis://localhost:1234/0";
-        const bus = new RedisMessageBus(url);
+        const bus = new RedisMessageBus(url, undefined, {
+            socketTimeout: 60_000
+        });
+
         const onEvent = vi.fn();
         await bus.subscribe("event", onEvent);
 
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect((ioredis as unknown as ioredis.Redis).subscribe).toHaveBeenCalledExactlyOnceWith("event");
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect((ioredis as unknown as ioredis.Redis).on).toHaveBeenCalledTimes(2);
         expect(
-            ((ioredis as unknown as ioredis.Redis).on as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]
-        ).toBe("messageBuffer");
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            (ioredis as unknown as ioredis.Redis).subscribe
+        ).toHaveBeenCalledExactlyOnceWith("event");
+
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        expect((ioredis as unknown as ioredis.Redis).on).toHaveBeenCalledTimes(
+            3
+        );
+
         expect(
-            ((ioredis as unknown as ioredis.Redis).on as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[1]
-        ).toBeInstanceOf(Function);
+            (
+                (ioredis as unknown as ioredis.Redis)
+                    .on as unknown as ReturnType<typeof vi.fn>
+            ).mock.calls.find(v => v[0] === "messageBuffer")
+        ).toBeDefined();
     }
 
     @TestCase
     public async itCorrectlyPublishesMessages({ expect }: TestContext) {
+        ((ioredis as unknown as ioredis.Redis).publish as Mock).mockClear();
+        ((ioredis as unknown as ioredis.Redis).subscribe as Mock).mockClear();
+
         const url = "redis://localhost:1234/0";
         const bus = new RedisMessageBus(url);
         await bus.publish("event", { data: "idk" });
 
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        expect((ioredis as unknown as ioredis.Redis).publish).toHaveBeenCalledTimes(1);
         expect(
-            ((ioredis as unknown as ioredis.Redis).publish as unknown as ReturnType<typeof vi.fn>).mock.lastCall?.[0]
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            (ioredis as unknown as ioredis.Redis).publish
+        ).toHaveBeenCalledTimes(1);
+        expect(
+            (
+                (ioredis as unknown as ioredis.Redis)
+                    .publish as unknown as ReturnType<typeof vi.fn>
+            ).mock.lastCall?.[0]
         ).toBe("event");
         expect(
-            ((ioredis as unknown as ioredis.Redis).publish as unknown as ReturnType<typeof vi.fn>).mock.lastCall?.[1]
+            (
+                (ioredis as unknown as ioredis.Redis)
+                    .publish as unknown as ReturnType<typeof vi.fn>
+            ).mock.lastCall?.[1]
         ).toStrictEqual(Buffer.from(encode({ data: "idk" })));
     }
 }

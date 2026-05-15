@@ -17,15 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { promiseWithResolvers } from "@framework/polyfills/Promise";
+import { decode, encode } from "@msgpack/msgpack";
 import type { Awaitable } from "discord.js";
+import EventEmitter from "events";
+import type { RedisOptions } from "ioredis";
+import { Redis } from "ioredis";
 import MessageBus, {
     type MessageBusRequest,
     type MessageDetails
 } from "./MessageBus";
-import { Redis } from "ioredis";
-import { encode, decode } from "@msgpack/msgpack";
-import EventEmitter from "events";
-import { promiseWithResolvers } from "@framework/polyfills/Promise";
 
 class RedisMessageBus extends MessageBus {
     private readonly subscriber: Redis;
@@ -40,12 +41,16 @@ class RedisMessageBus extends MessageBus {
     private requestHandler?: (request: MessageBusRequest) => unknown;
     private readonly busId: string;
 
-    public constructor(url: string, busId = Date.now().toString()) {
+    public constructor(
+        url: string,
+        busId = Date.now().toString(),
+        options: RedisOptions = {}
+    ) {
         super();
 
         this.busId = busId;
-        this.subscriber = new Redis(url);
-        this.publisher = new Redis(url);
+        this.subscriber = new Redis(url, options);
+        this.publisher = new Redis(url, options);
 
         this.subscriber.on("error", error => {
             throw error;
