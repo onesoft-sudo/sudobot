@@ -21,9 +21,9 @@ let buildScriptLastModifiedTime = 0;
 let settingsScriptLastModifiedTime = 0;
 
 async function loadBuildScript() {
-    const buildScriptTsPath = path.resolve(process.cwd(), "build.blaze.ts");
-    const buildScriptMtsPath = path.resolve(process.cwd(), "build.blaze.mts");
-    const buildScriptJsPath = path.resolve(process.cwd(), "build.blaze.js");
+    const buildScriptTsPath = "build.blaze.ts";
+    const buildScriptMtsPath = "build.blaze.mts";
+    const buildScriptJsPath = "build.blaze.js";
     let buildScriptPath: string;
 
     if (existsSync(buildScriptTsPath)) {
@@ -35,7 +35,7 @@ async function loadBuildScript() {
 
         buildScriptPath = buildScriptTsPath;
     } else if (existsSync(buildScriptMtsPath)) {
-        await import(buildScriptMtsPath, {
+        await import(String(buildScriptMtsPath), {
             with: {
                 type: "module"
             }
@@ -57,23 +57,13 @@ async function loadBuildScript() {
     }
 
     const buildScriptStats = await lstat(buildScriptPath);
-
     buildScriptLastModifiedTime = buildScriptStats.mtimeMs;
 }
 
 async function loadSettingsScript() {
-    const settingsScriptTsPath = path.resolve(
-        process.cwd(),
-        "settings.blaze.ts"
-    );
-    const settingsScriptMtsPath = path.resolve(
-        process.cwd(),
-        "settings.blaze.mts"
-    );
-    const settingsScriptJsPath = path.resolve(
-        process.cwd(),
-        "settings.blaze.js"
-    );
+    const settingsScriptTsPath = "settings.blaze.ts";
+    const settingsScriptMtsPath = "settings.blaze.mts";
+    const settingsScriptJsPath = "settings.blaze.js";
     let settingsScriptPath: string;
 
     if (existsSync(settingsScriptTsPath)) {
@@ -85,7 +75,7 @@ async function loadSettingsScript() {
 
         settingsScriptPath = settingsScriptTsPath;
     } else if (existsSync(settingsScriptMtsPath)) {
-        await import(settingsScriptMtsPath, {
+        await import(String(settingsScriptMtsPath), {
             with: {
                 type: "module"
             }
@@ -107,7 +97,6 @@ async function loadSettingsScript() {
     }
 
     const settingsScriptStats = await lstat(settingsScriptPath);
-
     settingsScriptLastModifiedTime = settingsScriptStats.mtimeMs;
 }
 
@@ -402,7 +391,8 @@ async function main() {
             for (const alias in _moduleAliases) {
                 if (name.startsWith(alias)) {
                     const ret =
-                        "." + path.sep +
+                        "." +
+                        path.sep +
                         path.join(
                             _moduleAliases[
                                 alias as keyof typeof _moduleAliases
