@@ -15,17 +15,12 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: 24
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+          node-version: 26
 
       - name: Install Dependencies
-        run: bun install -D
+        run: npm install -D
 
       - name: Create a production build
-        run: bun run build
+        run: npm run build
