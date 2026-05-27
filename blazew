@@ -224,4 +224,4 @@ if [ ! -d "$topdir/blazebuild/build" ]; then
     print_debug "built blazebuild"
 fi
 
-BLAZEW_INTERNAL_ARGV0="$0" exec -- "$node_interpreter" "$entry" "$@"
+BLAZEW_INTERNAL_ARGV0="$0" exec "$node_interpreter" "$entry" "$@"
