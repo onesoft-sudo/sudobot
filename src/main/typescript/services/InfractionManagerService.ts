@@ -70,11 +70,9 @@ import {
     PrivateThreadChannel,
     Role,
     RoleResolvable,
-    SectionBuilder,
     Snowflake,
     TextBasedChannel,
     TextDisplayBuilder,
-    ThumbnailBuilder,
     User,
     bold,
     italic,
@@ -88,6 +86,7 @@ import ConfigurationManagerService, {
     ConfigurationType
 } from "./ConfigurationManagerService";
 import QueueManagerService from "./QueueManagerService";
+import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService";
 
 export const SERVICE_INFRACTION_MANAGER = "infractionManager" as const;
 
@@ -142,7 +141,7 @@ class InfractionManagerService extends Service {
     @Inject()
     private readonly queueService!: QueueManagerService;
 
-    @Inject("auditLoggingService")
+    @Inject(SERVICE_AUDIT_LOGGING)
     private readonly auditLoggingService!: AuditLoggingService;
 
     private createError<E extends boolean>(result: InfractionCreateResult<E>) {
@@ -266,31 +265,20 @@ class InfractionManagerService extends Service {
                       ? `You have received a **moderator message** in ${guild.name}`
                       : `You have been **${actionDoneName}** in ${guild.name}`;
 
-        const topSection = new SectionBuilder().addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(title)
-        );
-
         const iconURL = guild.iconURL();
 
-        if (iconURL) {
-            topSection.setThumbnailAccessory(
-                new ThumbnailBuilder()
-                    .setDescription(`Icon of guild: ${guild.name}`)
-                    .setURL(iconURL)
-            );
-        }
-
         const richEmbed = new RichEmbedBuilder()
-            .addSectionComponents(topSection)
-            .addField({
-                name: "Reason",
-                value: infraction.reason ?? "No reason provided"
-            })
+            .setAuthorName(title)
+            .setIconURL(iconURL)
             .setAccentColor(
                 actionDoneName === "bean" || actionDoneName.startsWith("un")
                     ? Colors.Green
                     : Colors.Red
             )
+            .addField({
+                name: "Reason",
+                value: infraction.reason ?? "No reason provided"
+            })
             .setTimestamp();
 
         if (infraction.expiresAt) {

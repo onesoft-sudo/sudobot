@@ -109,10 +109,10 @@ type WebhookInfo =
 
 /* eslint-disable @typescript-eslint/unbound-method */
 
-export const SEVICE_AUDIT_LOGGING = "auditLoggingService" as const;
+export const SERVICE_AUDIT_LOGGING = "auditLoggingService" as const;
 
 class AuditLoggingService extends Service {
-    public override readonly name: string = SEVICE_AUDIT_LOGGING;
+    public override readonly name: string = SERVICE_AUDIT_LOGGING;
 
     private readonly webhooks = new LRUCache<
         `${Snowflake}::${Snowflake}`,

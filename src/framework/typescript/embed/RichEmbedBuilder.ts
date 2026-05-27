@@ -1,3 +1,4 @@
+import { markdownInvisibleSpace } from "@framework/utils/markdown";
 import type { APIContainerComponent } from "discord.js";
 import {
     ContainerBuilder,
@@ -5,6 +6,8 @@ import {
     heading,
     HeadingLevel,
     SectionBuilder,
+    SeparatorBuilder,
+    SeparatorSpacingSize,
     TextDisplayBuilder,
     time
 } from "discord.js";
@@ -100,7 +103,7 @@ class RichEmbedBuilder extends ContainerBuilder {
 
         for (const field of this.fields) {
             str += `${heading(field.name, HeadingLevel.Three)}\n`;
-            str += `${field.escape ? escapeMarkdown(field.value) : field.value}\n\n`;
+            str += `${field.escape ? escapeMarkdown(field.value) : field.value}\n`;
         }
 
         return str.trim();
@@ -179,6 +182,14 @@ class RichEmbedBuilder extends ContainerBuilder {
         components.push(...json.components);
 
         if (fieldString) {
+            if (components.length) {
+                components.push(
+                    new SeparatorBuilder()
+                        .setDivider(false)
+                        .setSpacing(SeparatorSpacingSize.Small)
+                );
+            }
+
             components.push(
                 new TextDisplayBuilder().setContent(fieldString).toJSON()
             );

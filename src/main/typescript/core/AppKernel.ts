@@ -68,9 +68,9 @@ class AppKernel extends Kernel {
         "@services/CommandManagerService",
         "@services/QueueManagerService",
         "@services/InviteTrackingService",
-        "@services/ModerationActionService",
         "@services/AuditLoggingService",
         "@services/InfractionManagerService",
+        "@services/ModerationActionService",
         "@services/AwayFromKeyboardService",
         "@services/RuleModerationService",
     ];
