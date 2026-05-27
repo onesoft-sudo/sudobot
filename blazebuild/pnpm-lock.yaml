@@ -21,6 +21,9 @@ importers:
       '@types/glob':
         specifier: ^9.0.0
         version: 9.0.0
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -45,6 +48,9 @@ packages:
   '@types/glob@9.0.0':
     resolution: {integrity: sha512-00UxlRaIUvYm4R4W9WYkN8/J+kV8fmOQ7okeH6YFtGWFMt3odD45tpG5yA5wnL7HE6lLgjaTW5n14ju2hl2NNA==}
     deprecated: This is a stub types definition. glob provides its own type definitions, so you do not need this installed.
+
+  '@types/node@25.9.1':
+    resolution: {integrity: sha512-xfrlY7UD5rMJk3ZVJP8BNzS28J36YJg+xp+LPXV1TdWxr8uMH5A860QNxYDGQe/ylDSgjxE52Q9VnO7p75tJxg==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -170,6 +176,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  undici-types@7.24.6:
+    resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
+
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -203,6 +212,10 @@ snapshots:
   '@types/glob@9.0.0':
     dependencies:
       glob: 11.0.3
+
+  '@types/node@25.9.1':
+    dependencies:
+      undici-types: 7.24.6
 
   ansi-regex@5.0.1: {}
 
@@ -306,6 +319,8 @@ snapshots:
       ansi-regex: 6.2.2
 
   typescript@5.9.3: {}
+
+  undici-types@7.24.6: {}
 
   which@2.0.2:
     dependencies:

@@ -11,8 +11,9 @@
     },
     "devDependencies": {
         "@types/glob": "^9.0.0",
-        "typescript": "^5.8.3",
-        "prettier": "^3.6.2"
+        "@types/node": "^25.9.1",
+        "prettier": "^3.6.2",
+        "typescript": "^5.8.3"
     },
     "exports": {
         ".": "./build/main/typescript/index.js"
