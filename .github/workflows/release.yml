@@ -39,10 +39,10 @@ jobs:
           changelog-format: markdown
           allowed-commit-types: feat,fix,refactor,perf,ci,build,test,revert,chore,release,deps
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v6
         if: ${{ steps.auto_release.outputs.tag != '' }}
         with:
-          bun-version: latest
+          node-version: latest
 
       - name: Download build artifact information
         if: ${{ steps.auto_release.outputs.tag != '' }}
@@ -60,7 +60,7 @@ jobs:
         shell: sh
         run: |
             for platform in ubuntu macos windows; do
-                url=`bun -r "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
+                url=`node -r "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
                 test -z "$url" && echo "No artifact found for: $platform" && exit 1
                 curl -L \
                     -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
