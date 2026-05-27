@@ -19,7 +19,7 @@ class DependenciesTask extends AbstractTask {
             return;
         }
 
-        await x(`bun install --trust`);
+        await x(`npm install`);
     }
 
     @TaskOutputGenerator

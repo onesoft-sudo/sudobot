@@ -18,7 +18,7 @@ import path from "path";
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
-        await x(`bun x tsc`);
+        await x(`tsc`);
 
         const buildOutputDirectory =
             this.blaze.projectManager.properties.structure
