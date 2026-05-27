@@ -1,4 +1,4 @@
-import Service from "../core/Service";
+import Service from "../core/Service.ts";
 
 export type ProjectAuthor = { name: string; email?: string; url?: string };
 export type Project = {

@@ -3,9 +3,9 @@ import {
     Task,
     TaskAction,
     TaskOutputGenerator,
-    isInPath
+    isInPath,
+    x
 } from "@onesoftnet/blazebuild";
-import { $ } from "bun";
 
 @Task({
     description: "Installs the dependencies",
@@ -15,11 +15,11 @@ class DependenciesTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         if (isInPath("pnpm")) {
-            await $`pnpm install --prefer-offline --no-color`;
+            await x(`pnpm install --prefer-offline --no-color`);
             return;
         }
 
-        await $`bun install --trust`;
+        await x(`bun install --trust`);
     }
 
     @TaskOutputGenerator

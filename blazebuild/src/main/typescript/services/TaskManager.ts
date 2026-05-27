@@ -1,13 +1,13 @@
 import chalk from "chalk";
 import { lstat } from "fs/promises";
-import type BlazeBuild from "../core/BlazeBuild";
-import BuiltInTasks from "../core/BuiltInTasks";
-import Service from "../core/Service";
-import type { UnregisteredTaskError } from "../delegates/ProjectTasks";
-import type AbstractTask from "../tasks/AbstractTask";
-import type TaskBuilder from "../tasks/TaskBuilder";
-import TaskContext from "../tasks/TaskContext";
-import TaskControl from "../tasks/TaskControl";
+import type BlazeBuild from "../core/BlazeBuild.ts";
+import BuiltInTasks from "../core/BuiltInTasks.ts";
+import Service from "../core/Service.ts";
+import type { UnregisteredTaskError } from "../delegates/ProjectTasks.ts";
+import type AbstractTask from "../tasks/AbstractTask.ts";
+import type TaskBuilder from "../tasks/TaskBuilder.ts";
+import TaskContext from "../tasks/TaskContext.ts";
+import TaskControl from "../tasks/TaskControl.ts";
 
 export type TaskGraph = Map<string, TaskControl[]>;
 export type TaskExecutionReport = {
@@ -99,7 +99,7 @@ class TaskManager extends Service {
             try {
                 const stats = await lstat(file);
 
-                if (!mtime || stats.mtimeMs > mtime) {
+                if (!mtime || stats.mtimeMs > Number(mtime)) {
                     return false;
                 }
             } catch (error) {
@@ -111,7 +111,7 @@ class TaskManager extends Service {
             try {
                 const stats = await lstat(file);
 
-                if (!mtime || stats.mtimeMs < mtime) {
+                if (!mtime || stats.mtimeMs < Number(mtime)) {
                     return false;
                 }
             } catch (error) {

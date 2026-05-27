@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { lstat, mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import Service from "../core/Service";
+import Service from "../core/Service.ts";
 
 export type TaskCache = {
     taskArgs: string[];

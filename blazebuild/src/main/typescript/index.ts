@@ -1,20 +1,20 @@
 import "reflect-metadata";
 
-import BlazeBuild from "./core/BlazeBuild";
-import { Task } from "./decorators/Task";
-import { TaskAction } from "./decorators/TaskAction";
-import { TaskDependencyGenerator } from "./decorators/TaskDependencyGenerator";
-import { TaskInputGenerator } from "./decorators/TaskInputGenerator";
-import { TaskOutputGenerator } from "./decorators/TaskOutputGenerator";
-import ProjectTasks from "./delegates/ProjectTasks";
-import Settings from "./delegates/Settings";
-import BlazePlugin from "./plugins/BlazePlugin";
-import type { Project } from "./services/ProjectManager";
-import AbstractTask from "./tasks/AbstractTask";
-import TaskContext from "./tasks/TaskContext";
-import type { Awaitable } from "./types/Awaitable";
-import type { TaskConstructor } from "./types/TaskConstructor";
-import { files, isInPath, x } from "./utils/helpers";
+import BlazeBuild from "./core/BlazeBuild.ts";
+import { Task } from "./decorators/Task.ts";
+import { TaskAction } from "./decorators/TaskAction.ts";
+import { TaskDependencyGenerator } from "./decorators/TaskDependencyGenerator.ts";
+import { TaskInputGenerator } from "./decorators/TaskInputGenerator.ts";
+import { TaskOutputGenerator } from "./decorators/TaskOutputGenerator.ts";
+import ProjectTasks from "./delegates/ProjectTasks.ts";
+import Settings from "./delegates/Settings.ts";
+import BlazePlugin from "./plugins/BlazePlugin.ts";
+import type { Project } from "./services/ProjectManager.ts";
+import AbstractTask from "./tasks/AbstractTask.ts";
+import TaskContext from "./tasks/TaskContext.ts";
+import type { Awaitable } from "./types/Awaitable.ts";
+import type { TaskConstructor } from "./types/TaskConstructor.ts";
+import { files, isInPath, x } from "./utils/helpers.ts";
 
 const blaze = (
     globalThis as {

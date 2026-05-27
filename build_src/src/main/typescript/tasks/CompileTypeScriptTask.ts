@@ -6,9 +6,9 @@ import {
     TaskInputGenerator,
     TaskOutputGenerator,
     files,
+    x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { $ } from "bun";
 import path from "path";
 
 @Task({
@@ -18,7 +18,7 @@ import path from "path";
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
-        await $`bun x tsc`;
+        await x(`bun x tsc`);
 
         const buildOutputDirectory =
             this.blaze.projectManager.properties.structure
@@ -30,9 +30,9 @@ class CompileTypeScriptTask extends AbstractTask {
             );
         }
 
-        await $`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`;
-        await $`rm -rf ${buildOutputDirectory}/out`;
-        await $`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`;
+        await x(`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`);
+        await x(`rm -rf ${buildOutputDirectory}/out`);
+        await x(`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`);
     }
 
     @TaskInputGenerator

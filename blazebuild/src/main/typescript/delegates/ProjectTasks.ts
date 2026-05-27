@@ -1,7 +1,7 @@
-import type BlazeBuild from "../core/BlazeBuild";
-import type TaskManager from "../services/TaskManager";
-import type AbstractTask from "../tasks/AbstractTask";
-import TaskBuilder from "../tasks/TaskBuilder";
+import type BlazeBuild from "../core/BlazeBuild.ts";
+import type TaskManager from "../services/TaskManager.ts";
+import type AbstractTask from "../tasks/AbstractTask.ts";
+import TaskBuilder from "../tasks/TaskBuilder.ts";
 
 export class UnregisteredTaskError extends Error {
     public readonly taskBuilder: TaskBuilder;

@@ -1,4 +1,4 @@
-import { NullOrUndefinedError } from "./NullOrUndefinedError";
+import { NullOrUndefinedError } from "./NullOrUndefinedError.ts";
 
 export class Utils {
     public static requireNonNull<T>(value: T | null | undefined, message: string): T {

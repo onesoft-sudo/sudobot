@@ -1,4 +1,4 @@
-import type { SettingData } from "../core/BlazeBuild";
+import type { SettingData } from "../core/BlazeBuild.ts";
 
 class Settings {
     public readonly build: SettingData["build"];

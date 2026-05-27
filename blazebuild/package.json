@@ -1,9 +1,8 @@
 {
     "name": "@onesoftnet/blazebuild",
-    "main": "src/main/typescript/index.ts",
-    "module": "src/main/typescript/index.ts",
+    "module": "./build/main/typescript/index.js",
     "private": false,
-    "version": "2.1.0",
+    "version": "3.0.0",
     "type": "module",
     "dependencies": {
         "chalk": "^5.3.0",
@@ -11,18 +10,17 @@
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {
-        "@types/bun": "latest",
         "@types/glob": "^9.0.0",
         "typescript": "^5.8.3",
         "prettier": "^3.6.2"
     },
     "exports": {
-        ".": "./src/main/typescript/index.ts"
+        ".": "./build/main/typescript/index.js"
     },
     "typesVersions": {
         "*": {
             "*": [
-                "./src/main/typescript/index.ts"
+                "./build/main/typescript/index.d.ts"
             ]
         }
     },
@@ -33,6 +31,9 @@
         "templates"
     ],
     "bin": {
-        "blazebuild": "./src/main/typescript/main.ts"
+        "blazebuild": "./build/main/typescript/main.js"
+    },
+    "scripts": {
+        "build": "tsc && node -e 'const fs = require(\"fs\"); const path = require(\"path\"); fs.rmSync(\"build.next\", { recursive: true, force: true }); fs.renameSync(path.resolve(\"build/src\"), \"build.next\"); fs.rmSync(\"build\", { recursive: true }); fs.renameSync(\"build.next\", \"build\");'"
     }
 }

@@ -1,6 +1,6 @@
-import type BlazeBuild from "../core/BlazeBuild";
-import type TaskControl from "./TaskControl";
-import { PrivateTaskOptionsSymbol } from "./TaskControl";
+import type BlazeBuild from "../core/BlazeBuild.ts";
+import type TaskControl from "./TaskControl.ts";
+import { PrivateTaskOptionsSymbol } from "./TaskControl.ts";
 
 class TaskContext {
     private readonly taskControl: TaskControl;

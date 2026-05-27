@@ -1,14 +1,20 @@
-import { $ } from "bun";
+import { exec } from "child_process";
 import { existsSync } from "fs";
 import { glob } from "glob";
 import path from "path";
 
 export const x = async (command: string) => {
-    const result = await $`${command}`;
+    const proc = exec(`${command}`);
 
-    if (result.exitCode !== 0) {
-        console.error(`Command failed: ${command}`);
-        process.exit(result.exitCode);
+    await new Promise((resolve, reject) => {
+        proc.once("error", reject);
+        proc.once("close", resolve);
+        proc.once("disconnect", resolve);
+        proc.once("exit", resolve);
+    });
+
+    if (proc.exitCode !== 0) {
+        throw new Error(`Command failed: ${command}`);
     }
 };
 

@@ -1,4 +1,4 @@
-import type BlazeBuild from "./BlazeBuild";
+import type BlazeBuild from "./BlazeBuild.ts";
 
 abstract class Service {
     protected readonly blaze: BlazeBuild;

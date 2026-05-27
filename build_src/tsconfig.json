@@ -1,25 +1,31 @@
 {
     "compilerOptions": {
-        "incremental": true,
+        // Enable latest features
+        "lib": ["ESNext", "DOM"],
         "target": "ES2022",
         "module": "CommonJS",
-        "rootDir": "src",
-        "types": ["node", "bun"],
-        "lib": ["ES2022", "DOM"],
+        "moduleDetection": "force",
         "resolveJsonModule": true,
         "declaration": true,
-        "noEmit": true,
-        "newLine": "lf",
-        "noEmitOnError": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
+        "types": ["node"],
+
+        // Bundler mode
+        "outDir": "build",
+        "rootDir": "src",
+
+        // Best practices
         "strict": true,
         "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
+        "noFallthroughCasesInSwitch": true,
+
+        // Some stricter flags (disabled by default)
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noPropertyAccessFromIndexSignature": false,
         "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove"
+        "noImplicitThis": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     }
 }

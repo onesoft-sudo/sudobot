@@ -60,7 +60,7 @@ jobs:
         shell: sh
         run: |
             for platform in ubuntu macos windows; do
-                url=`node -r "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
+                url=`node -e "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
                 test -z "$url" && echo "No artifact found for: $platform" && exit 1
                 curl -L \
                     -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \

@@ -1,4 +1,4 @@
-import type { TaskOptions } from "../tasks/TaskControl";
+import type { TaskOptions } from "../tasks/TaskControl.ts";
 
 type TaskDecoratorOptions = Partial<
     Omit<TaskOptions, "handler" | "inputFiles" | "outputFiles">

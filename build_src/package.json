@@ -1,8 +1,9 @@
 {
     "private": true,
-    "main": "src/main/typescript/BuildPlugin.ts",
     "devDependencies": {
-        "@types/bun": "^1.0.12",
         "@types/node": "^20.12.7"
+    },
+    "scripts": {
+        "build": "tsc"
     }
 }

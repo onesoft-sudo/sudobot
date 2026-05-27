@@ -1,6 +1,6 @@
-import type BlazeBuild from "../core/BlazeBuild";
-import type { Awaitable } from "../types/Awaitable";
-import type TaskContext from "./TaskContext";
+import type BlazeBuild from "../core/BlazeBuild.ts";
+import type { Awaitable } from "../types/Awaitable.ts";
+import type TaskContext from "./TaskContext.ts";
 
 abstract class AbstractTask {
     protected readonly blaze: BlazeBuild;

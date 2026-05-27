@@ -137,113 +137,13 @@ function Install-Node {
     return $NodePath
 }
 
-function Install-Bun {
-    $Version = Get-BlazeProperty "bun.version"
-    $SplittedVersion = $Version -split '\.'
-    $Major = $SplittedVersion[0]
-    $Minor = $SplittedVersion[1]
-
-    $BunPath = Get-Command bun -ErrorAction SilentlyContinue
-
-    if ($BunPath) {
-        $GlobalInstalledVersion = & $BunPath --version
-        $SplittedGlobalInstalledVersion = $GlobalInstalledVersion -split '\.'
-        $MajorInstalled = $SplittedGlobalInstalledVersion[0]
-        $MinorInstalled = $SplittedGlobalInstalledVersion[1]
-
-        Debug-Log "Found Bun at $($BunPath.Source)"
-
-        if ($MajorInstalled -gt $Major) {
-            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
-            return $BunPath
-        }
-
-        if ($MajorInstalled -eq $Major -and $MinorInstalled -ge $Minor) {
-            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
-            return $BunPath
-        }
-
-        Debug-Log "Bun version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
-        $BunPath = $null
-    }
-
-    if (-not $BunPath) {
-        $LocalBunPath = Join-Path $BlazeDir "bun/bun.exe"
-
-        if (Test-Path $LocalBunPath) {
-            Debug-Log "Found project local Bun at $LocalBunPath"
-
-            $LocalInstalledVersion = & $LocalBunPath --version
-            $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
-            $MajorLocalInstalled = $SplittedLocalInstalledVersion[0]
-            $MinorLocalInstalled = $SplittedLocalInstalledVersion[1]
-
-            if ($MajorLocalInstalled -gt $Major) {
-                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
-                return $LocalBunPath
-            }
-
-            if ($MajorLocalInstalled -eq $Major -and $MinorLocalInstalled -ge $Minor) {
-                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
-                return $LocalBunPath
-            }
-
-            Debug-Log "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
-        }
-
-        $BunPath = $null
-    }
-
-    if (-not $BunPath) {
-        Write-Host "Bun version $Version is not installed. Installing..."
-        $Url = "https://github.com/oven-sh/bun/releases/latest/download/bun-windows-$Arch.zip"
-        $ZipPath = Join-Path $BlazeDir "bun.zip"
-        $BunDir = Join-Path $BlazeDir "bun"
-
-        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
-
-        if (!$?) {
-            Write-Error "Failed to download Bun from $Url"
-            exit 1
-        }
-
-        Expand-Archive -Path $ZipPath -DestinationPath $BlazeDir -Force
-
-        if (!$?) {
-            Write-Error "Failed to extract Bun from $ZipPath"
-            exit 1
-        }
-
-        Move-Item -Path (Join-Path $BlazeDir "bun-windows-$Arch") -Destination $BunDir -Force
-
-        if (!$?) {
-            Write-Error "Failed to move Bun to $BunDir"
-            exit 1
-        }
-
-        Remove-Item -Path $ZipPath
-
-        $BunPath = Join-Path $BunDir "bun.exe"
-        $InstalledVersion = & $BunPath --version
-
-        Write-Host "Bun version $InstalledVersion installed at $BunPath"
-    }
-
-    return $BunPath
-}
-
-Install-Node
-$BUN_EXE = Install-Bun
-
-$env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
+$NODE_EXE = Install-Node
+$env:PATH = "$($BlazeDir)\node;$env:PATH"
 
 $PackageManager = ""
 
 if (Get-Command pnpm -ErrorAction SilentlyContinue) {
     $PackageManager = "pnpm"
-}
-elseif (Get-Command bun -ErrorAction SilentlyContinue) {
-    $PackageManager = "bun"
 }
 elseif (Get-Command npm -ErrorAction SilentlyContinue) {
     $PackageManager = "npm"
@@ -251,13 +151,16 @@ elseif (Get-Command npm -ErrorAction SilentlyContinue) {
 elseif (Get-Command yarn -ErrorAction SilentlyContinue) {
     $PackageManager = "yarn"
 }
+elseif (Get-Command bun -ErrorAction SilentlyContinue) {
+    $PackageManager = "bun"
+}
 else {
-    Write-Error "No package manager found. Please install pnpm, bun, npm, or yarn."
+    Write-Error "No package manager found. Please install one of pnpm, npm, yarn, or bun."
     exit 1
 }
 
 if (-not (Test-Path $BlazeEntry)) {
-    Write-Host "Installing project dependencies..."
+    Write-Host "Creating project dependencies directory..."
 
     $NodeModulesOSNDir = Join-Path $NodeModulesDir "@onesoftnet"
     $NodeModulesBlazeDir = Join-Path $NodeModulesOSNDir "blazebuild"
@@ -265,18 +168,18 @@ if (-not (Test-Path $BlazeEntry)) {
     New-Item -ItemType Directory -Path $NodeModulesOSNDir -Force
 
     if (!$?) {
-        Write-Error "Failed to install project dependencies."
+        Write-Error "Failed to create project dependencies directory."
         exit 1
     }
 
     New-Item -ItemType SymbolicLink -Path $NodeModulesBlazeDir -Target $BlazeSrcDir
 
     if (!$?) {
-        Write-Error "Failed to install project dependencies."
+        Write-Error "Failed to create project dependencies directory."
         exit 1
     }
 
-    Debug-Log "Project dependencies installed successfully."
+    Debug-Log "Project dependencies directory created successfully."
 }
 
 if (-not (Test-Path $BlazeNodeModulesDir)) {
@@ -294,7 +197,7 @@ if (-not (Test-Path $BlazeNodeModulesDir)) {
     Debug-Log "Blazebuild dependencies installed successfully."
 }
 
-$Process = Start-Process -FilePath $BUN_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
+$Process = Start-Process -FilePath $NODE_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
 $Process.WaitForExit()
 $ExitCode = $Process.ExitCode
 exit $ExitCode

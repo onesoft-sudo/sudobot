@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 
 import "reflect-metadata";
 
@@ -7,23 +7,24 @@ import { existsSync } from "fs";
 import { lstat, writeFile } from "fs/promises";
 import path, { basename } from "path";
 import { parseArgs } from "util";
-import BlazeBuild from "./core/BlazeBuild";
+import BlazeBuild from "./core/BlazeBuild.ts";
 
-import { $ } from "bun";
 import { chmod, mkdir } from "fs/promises";
 import { chdir } from "process";
-import blazewPs1Template from "../../../templates/blazew.ps1.template" with { type: "text" };
-import blazewScriptTemplate from "../../../templates/blazew.template" with { type: "text" };
-import buildBlazeScriptTemplate from "../../../templates/build.blaze.ts.template" with { type: "text" };
-import packageJsonTemplate from "../../../templates/package.json.template" with { type: "text" };
-import settingsBlazeScriptTemplate from "../../../templates/settings.blaze.ts.template" with { type: "text" };
+import { x } from "./utils/helpers.ts";
+import { createInterface } from "readline/promises";
+import { execSync } from "child_process";
+
+import Module from "module";
 
 let buildScriptLastModifiedTime = 0;
 let settingsScriptLastModifiedTime = 0;
 
 async function loadBuildScript() {
     const buildScriptTsPath = path.resolve(process.cwd(), "build.blaze.ts");
+    const buildScriptMtsPath = path.resolve(process.cwd(), "build.blaze.mts");
     const buildScriptJsPath = path.resolve(process.cwd(), "build.blaze.js");
+    let buildScriptPath: string;
 
     if (existsSync(buildScriptTsPath)) {
         await import(buildScriptTsPath, {
@@ -31,21 +32,32 @@ async function loadBuildScript() {
                 type: "module"
             }
         });
+
+        buildScriptPath = buildScriptTsPath;
+    } else if (existsSync(buildScriptMtsPath)) {
+        await import(buildScriptMtsPath, {
+            with: {
+                type: "module"
+            }
+        });
+
+        buildScriptPath = buildScriptMtsPath;
     } else if (existsSync(buildScriptJsPath)) {
         await import(buildScriptJsPath, {
             with: {
                 type: "module"
             }
         });
+
+        buildScriptPath = buildScriptJsPath;
     } else {
         throw new Error(
-            "No build script found. Please create a build.blaze.{ts,js} file."
+            "No build script found. Please create a build.blaze.{ts,mts,js} file."
         );
     }
 
-    const buildScriptStats = await lstat(
-        buildScriptTsPath || buildScriptJsPath
-    );
+    const buildScriptStats = await lstat(buildScriptPath);
+
     buildScriptLastModifiedTime = buildScriptStats.mtimeMs;
 }
 
@@ -54,10 +66,15 @@ async function loadSettingsScript() {
         process.cwd(),
         "settings.blaze.ts"
     );
+    const settingsScriptMtsPath = path.resolve(
+        process.cwd(),
+        "settings.blaze.mts"
+    );
     const settingsScriptJsPath = path.resolve(
         process.cwd(),
         "settings.blaze.js"
     );
+    let settingsScriptPath: string;
 
     if (existsSync(settingsScriptTsPath)) {
         await import(settingsScriptTsPath, {
@@ -65,21 +82,31 @@ async function loadSettingsScript() {
                 type: "module"
             }
         });
+
+        settingsScriptPath = settingsScriptTsPath;
+    } else if (existsSync(settingsScriptMtsPath)) {
+        await import(settingsScriptMtsPath, {
+            with: {
+                type: "module"
+            }
+        });
+
+        settingsScriptPath = settingsScriptMtsPath;
     } else if (existsSync(settingsScriptJsPath)) {
         await import(settingsScriptJsPath, {
             with: {
                 type: "module"
             }
         });
+
+        settingsScriptPath = settingsScriptJsPath;
     } else {
         throw new Error(
-            "No settings script found. Please create a settings.blaze.{ts,js} file."
+            "No settings script found. Please create a settings.blaze.{ts,mts,js} file."
         );
     }
 
-    const settingsScriptStats = await lstat(
-        settingsScriptTsPath || settingsScriptJsPath
-    );
+    const settingsScriptStats = await lstat(settingsScriptPath);
 
     settingsScriptLastModifiedTime = settingsScriptStats.mtimeMs;
 }
@@ -191,7 +218,7 @@ function detectPackageManager() {
         return pm;
     }
 
-    const packageManagers = ["bun", "pnpm", "yarn", "npm"];
+    const packageManagers = ["pnpm", "yarn", "npm", "bun"];
     const PATH = process.env.PATH?.split(path.delimiter) ?? [];
 
     for (const pm of packageManagers) {
@@ -208,33 +235,64 @@ function detectPackageManager() {
 }
 
 async function createNewProject() {
-    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating a new BlazeBuild project...")}`);
+    using rl = createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: false
+    });
 
-    process.stdout.write("Enter project name: ");
+    console.log(
+        `${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating a new BlazeBuild project...")}`
+    );
     let name = "";
 
-    for await (const line of console) {
+    for (;;) {
+        process.stdout.write("Enter project name: ");
+        const line = await rl.question("Enter project name: ");
+
         name = line.trim();
 
         if (name === "") {
             console.error("Project name cannot be empty.");
-            process.stdout.write("Enter project name: ");
             continue;
         }
 
         break;
     }
 
-    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating directory: ${chalk.cyan(name)}")}`);
+    console.log(
+        `${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating directory: ${chalk.cyan(name)}")}`
+    );
     await mkdir(name);
     chdir(name);
 
-    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating project files...")}`);
+    console.log(
+        `${chalk.blue("==>")} ${chalk.whiteBright.bold("Creating project files...")}`
+    );
+
+    const templateDir = path.resolve(__dirname, "../../../templates");
+    const blazewTemplate = path.resolve(templateDir, "blazew.txt");
+    const blazewPs1Template = path.resolve(
+        templateDir,
+        "../../../templates/blazew.ps1.template"
+    );
+    const buildBlazeScriptTemplate = path.resolve(
+        templateDir,
+        "../../../templates/build.blaze.mts.template"
+    );
+    const packageJsonTemplate = path.resolve(
+        templateDir,
+        "../../../templates/package.json.template"
+    );
+    const settingsBlazeScriptTemplate = path.resolve(
+        templateDir,
+        "../../../templates/settings.blaze.mts.template"
+    );
 
     await writeFile("package.json", packageJsonTemplate, "utf8");
-    await writeFile("build.blaze.ts", buildBlazeScriptTemplate, "utf8");
-    await writeFile("settings.blaze.ts", settingsBlazeScriptTemplate, "utf8");
-    await writeFile("blazew", blazewScriptTemplate, "utf8");
+    await writeFile("build.blaze.mts", buildBlazeScriptTemplate, "utf8");
+    await writeFile("settings.blaze.mts", settingsBlazeScriptTemplate, "utf8");
+    await writeFile("blazew", blazewTemplate, "utf8");
     await writeFile("blazew.ps1", blazewPs1Template, "utf8");
 
     await chmod("blazew", 0o755);
@@ -243,7 +301,7 @@ async function createNewProject() {
     await mkdir("blaze/wrapper", { recursive: true });
     await writeFile(
         "blaze/wrapper/blaze_wrapper.properties",
-        `node.version=${process.versions.node}\nbun.version=${process.versions.bun}\n`,
+        `node.version=${process.versions.node}\n`,
         "utf8"
     );
 
@@ -254,7 +312,9 @@ async function createNewProject() {
         "utf8"
     );
 
-    console.log(`${chalk.blue("==>")} ${chalk.whiteBright.bold("Installing initial dependencies...")}`);
+    console.log(
+        `${chalk.blue("==>")} ${chalk.whiteBright.bold("Installing initial dependencies...")}`
+    );
 
     const pm = detectPackageManager();
 
@@ -269,14 +329,7 @@ async function createNewProject() {
         process.exit(1);
     }
 
-    const result = await $`${pm} install`;
-
-    if (result.exitCode !== 0) {
-        console.error(`Failed to install dependencies.`);
-
-        process.exit(1);
-    }
-
+    await x(`${pm} install`);
     console.log(chalk.green("Project created successfully!"));
     chdir("..");
 }
@@ -302,6 +355,99 @@ async function main() {
         configurable: false,
         enumerable: false
     });
+
+    if (existsSync("build_src")) {
+        const pm = detectPackageManager();
+
+        if (!pm) {
+            console.error(
+                `No package manager found. Please install one of the following: npm, yarn, pnpm, or bun.`
+            );
+            console.error(
+                `Alternatively, you can set the BLAZE_PACKAGE_MANAGER environment variable to the path of your package manager.`
+            );
+
+            process.exit(1);
+        }
+
+        console.log(
+            `${chalk.blue("==>")} ${chalk.whiteBright.bold("Building build_src...")}`
+        );
+
+        execSync(`${pm} run build`, {
+            cwd: path.join(process.cwd(), "build_src"),
+            stdio: "inherit"
+        });
+
+        console.log(
+            `${chalk.blue("==>")} ${chalk.whiteBright.bold("Built build_src")}`
+        );
+    }
+
+    if (existsSync("package.json")) {
+        const {
+            default: { _moduleAliases }
+        } = await import(path.resolve(process.cwd(), "package.json"), {
+            with: { type: "json" }
+        });
+
+        function resolveFilename(name: string) {
+            for (const alias in _moduleAliases) {
+                if (name.startsWith(alias)) {
+                    const ret = path.resolve(
+                        process.cwd(),
+                        _moduleAliases[alias as keyof typeof _moduleAliases],
+                        name.slice(alias.length + (name !== alias ? 1 : 0)) +
+                            ("." +
+                                ("isBun" in process && process.isBun
+                                    ? "ts"
+                                    : "js"))
+                    );
+
+                    return ret;
+                }
+            }
+
+            return null;
+        }
+
+        if (typeof Module.registerHooks !== "undefined") {
+            Module.registerHooks({
+                resolve: (specifier, context, nextResolve) => {
+                    const resolved = resolveFilename(specifier);
+                    return nextResolve(resolved ?? specifier, context);
+                }
+            });
+        } else {
+            const originalResolveFilename = (
+                Module as unknown as Record<string, unknown>
+            )._resolveFilename as (
+                request: unknown,
+                parent: unknown,
+                isMain: unknown,
+                options: unknown
+            ) => unknown;
+            Object.defineProperty(Module, "_resolveFilename", {
+                value: (
+                    request: unknown,
+                    parent: unknown,
+                    isMain: unknown,
+                    options: unknown
+                ) => {
+                    const resolved = resolveFilename(`${request}`);
+                    return (
+                        resolved ??
+                        originalResolveFilename(
+                            request,
+                            parent,
+                            isMain,
+                            options
+                        )
+                    );
+                }
+            });
+        }
+    }
 
     await loadSettingsScript();
     await loadBuildScript();

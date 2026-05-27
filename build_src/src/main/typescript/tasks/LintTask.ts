@@ -5,9 +5,9 @@ import {
     TaskDependencyGenerator,
     TaskInputGenerator,
     files,
+    x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { $ } from "bun";
 import path from "path";
 
 @Task({
@@ -17,7 +17,7 @@ import path from "path";
 class LintTask extends AbstractTask {
     @TaskAction
     protected override async run() {
-        await $`bun x eslint "${process.cwd()}/src"`.then();
+        await x(`bun x eslint "${process.cwd()}/src"`);
     }
 
     @TaskInputGenerator

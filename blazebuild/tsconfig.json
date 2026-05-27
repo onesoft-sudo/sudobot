@@ -3,15 +3,17 @@
         // Enable latest features
         "lib": ["ESNext", "DOM"],
         "target": "ESNext",
-        "module": "ESNext",
+        "module": "NodeNext",
         "moduleDetection": "force",
-        "moduleResolution": "bundler",
+        "moduleResolution": "nodenext",
         "resolveJsonModule": true,
+        "rewriteRelativeImportExtensions": true,
+        "allowImportingTsExtensions": true,
+        "declaration": true,
 
         // Bundler mode
-        "allowImportingTsExtensions": false,
         "verbatimModuleSyntax": true,
-        "noEmit": true,
+        "outDir": "build",
 
         // Best practices
         "strict": true,

@@ -1,5 +1,5 @@
-import type { Awaitable } from "../types/Awaitable";
-import type TaskContext from "./TaskContext";
+import type { Awaitable } from "../types/Awaitable.ts";
+import type TaskContext from "./TaskContext.ts";
 
 export const TaskOptionSymbol = "__taskoptions";
 export const PrivateTaskOptionsSymbol = "__privateTaskOptions";

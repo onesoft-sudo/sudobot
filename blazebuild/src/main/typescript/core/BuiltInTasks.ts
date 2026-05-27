@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import type BlazeBuild from "./BlazeBuild";
+import type BlazeBuild from "./BlazeBuild.ts";
 
 class BuiltInTasks {
     private static blaze: BlazeBuild;

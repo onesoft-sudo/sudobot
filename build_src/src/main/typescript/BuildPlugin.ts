@@ -42,4 +42,4 @@ class BuildPlugin extends BlazePlugin {
     }
 }
 
-export default BuildPlugin;
+export { BuildPlugin };

@@ -1,8 +1,8 @@
-import type TaskManager from "../services/TaskManager";
+import type TaskManager from "../services/TaskManager.ts";
 import TaskControl, {
     type TaskFunction,
     type TaskOptions
-} from "./TaskControl";
+} from "./TaskControl.ts";
 
 class TaskBuilder {
     private readonly taskManager: TaskManager;

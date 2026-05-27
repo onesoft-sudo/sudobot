@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { LogLevel } from "./LogLevel";
+import { LogLevel } from "./LogLevel.ts";
 
 export class Logger {
     public constructor() {

@@ -2,13 +2,13 @@ import chalk from "chalk";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
-import packageJson from "../../../../package.json";
-import Logger from "../log/Logger";
-import BlazePlugin from "../plugins/BlazePlugin";
-import CacheManager from "../services/CacheManager";
-import ProjectManager from "../services/ProjectManager";
-import TaskManager from "../services/TaskManager";
-import type AbstractTask from "../tasks/AbstractTask";
+import packageJson from "../../../../package.json" with { type: "json" };
+import Logger from "../log/Logger.ts";
+import BlazePlugin from "../plugins/BlazePlugin.ts";
+import CacheManager from "../services/CacheManager.ts";
+import ProjectManager from "../services/ProjectManager.ts";
+import TaskManager from "../services/TaskManager.ts";
+import type AbstractTask from "../tasks/AbstractTask.ts";
 
 export type BlazeOptions = {
     help?: boolean;
