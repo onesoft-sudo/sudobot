@@ -75,7 +75,7 @@ function Inject(id?: string) {
 
             Reflect.defineMetadata(
                 INJECT_SYMBOL_FIELD,
-                { type: propertyType, id } satisfies InjectionData,
+                { type: id ? undefined : propertyType, id } satisfies InjectionData,
                 target,
                 safeKey
             );

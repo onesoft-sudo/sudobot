@@ -19,7 +19,7 @@
 
 import type Application from "@framework/app/Application";
 import { emoji } from "@framework/utils/emoji";
-import type { GuildMember } from "discord.js";
+import type { Guild, GuildMember, Snowflake } from "discord.js";
 import {
     type ChatInputCommandInteraction,
     type ContextMenuCommandInteraction,
@@ -32,6 +32,7 @@ import CommandContextType from "./CommandContextType";
 import type InteractionContext from "./InteractionContext";
 import type LegacyContext from "./LegacyContext";
 import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
+import { If } from "@framework/types/Utils";
 
 export type ContextReplyOptions = InteractionReplyOptions | InteractionEditReplyOptions | MessageCreateOptions | string;
 
@@ -61,7 +62,7 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
     }
 
     public get member() {
-        return this.commandMessage.member;
+        return this.commandMessage.member as If<G, GuildMember, GuildMember | null>;
     }
 
     public get user() {
@@ -69,7 +70,7 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
     }
 
     public get guild() {
-        return this.commandMessage.guild;
+        return this.commandMessage.guild as If<G, Guild, Guild | null>;
     }
 
     public get channel() {
@@ -77,7 +78,7 @@ abstract class Context<T extends CommandContextType = CommandContextType, G exte
     }
 
     public get guildId() {
-        return this.commandMessage.guildId;
+        return this.commandMessage.guildId as If<G, Snowflake, Snowflake | null>;
     }
 
     public get channelId() {

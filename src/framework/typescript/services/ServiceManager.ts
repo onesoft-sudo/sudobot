@@ -51,6 +51,8 @@ class ServiceManager {
         services: readonly string[],
         aliases: Readonly<Record<string, string>> = {}
     ) {
+        const serviceClassSet = new Set<[string, new (application: Application) => Service]>();
+
         for (const service of services) {
             this.logger.debug("Loading service: ", service);
 
@@ -68,7 +70,12 @@ class ServiceManager {
                     DefaultExport<new (application: Application) => Service>
                 >(servicePath);
 
-            await this.loadInstance(service, ServiceClass);
+            this.loadInstance(service, ServiceClass);
+            serviceClassSet.add([service, ServiceClass]);
+        }
+
+        for (const [service, ServiceClass] of serviceClassSet) {
+            await this.postLoadInstance(service, ServiceClass);
         }
     }
 
@@ -81,17 +88,38 @@ class ServiceManager {
 
         for (const [service, serviceClass] of services) {
             this.logger.debug("Loading service: ", service);
-            await this.loadInstance(service, serviceClass);
+            this.loadInstance(service, serviceClass);
+        }
+
+        for (const [service, serviceClass] of services) {
+            await this.postLoadInstance(service, serviceClass);
         }
     }
 
-    protected async loadInstance(
+    protected async postLoadInstance(
         service: string,
         serviceClass: new (application: Application) => Service
     ) {
-        const serviceInstance = this.application.container.get(serviceClass, {
-            constructorArgs: [this.application]
-        });
+        const serviceInstance = this.services.get(serviceClass);
+
+        if (!serviceInstance) {
+            throw new TypeError("Service instance does not exist");
+        }
+
+        this.application.container.resolveObject(serviceInstance);
+        await serviceInstance.boot?.();
+        this.logger.debug(
+            "Loaded service: ",
+            service,
+            " (" + serviceClass.name + ")"
+        );
+    }
+
+    protected loadInstance(
+        _service: string,
+        serviceClass: new (application: Application) => Service
+    ) {
+        const serviceInstance = this.application.container.createInstance(serviceClass, [this.application]);
 
         if (!(serviceInstance instanceof Service)) {
             throw new TypeError(
@@ -111,12 +139,6 @@ class ServiceManager {
         });
 
         registerGatewayEventListeners(this.application.client, serviceInstance);
-        await serviceInstance.boot?.();
-        this.logger.debug(
-            "Loaded service: ",
-            service,
-            " (" + serviceClass.name + ")"
-        );
     }
 
     public get<T extends Service>(service: ConstructorOf<T>): T;

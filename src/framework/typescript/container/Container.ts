@@ -100,7 +100,7 @@ class Container {
         ) as T;
     }
 
-    private createInstance<T>(constructorFn: ConstructorOf<T>, args: unknown[]): T {
+    public createInstance<T>(constructorFn: ConstructorOf<T>, args: unknown[]): T {
         const propertiesToResolve = Reflect.getMetadata(INJECT_SYMBOL_LIST, constructorFn) as Set<string> | undefined;
 
         if (propertiesToResolve?.has("constructor")) {
@@ -128,7 +128,7 @@ class Container {
     }
 
     public resolveObject<T extends object>(object: T): T {
-        const propertiesToResolve = Reflect.getMetadata(INJECT_SYMBOL_LIST, object) ?? [];
+        const propertiesToResolve = Reflect.getMetadata(INJECT_SYMBOL_LIST, object) ?? new Set();
 
         for (const property of propertiesToResolve) {
             const details: InjectionData | undefined = Reflect.getMetadata(INJECT_SYMBOL_FIELD, object, property);
@@ -145,7 +145,7 @@ class Container {
             const targetObject = this.get((details.type ?? details.id) as ConstructorOf<object> | string);
 
             Object.defineProperty(object, property, {
-                value: targetObject
+                value: targetObject,
             });
         }
 
