@@ -5,9 +5,9 @@ import {
     TaskDependencyGenerator,
     TaskInputGenerator,
     files,
+    x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
-import { spawnSync } from 'child_process';
 
 @Task({
     description: "Runs the tests",
@@ -21,15 +21,7 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        const { status } = spawnSync("node_modules/.bin/vitest --run", {
-            stdio: 'inherit',
-            env: process.env,
-            shell: true,
-        });
-
-        if (status !== 0) {
-            throw new Error(`vitest exited with code ${status}`);
-        }
+        await x("vitest --run");
     }
 
     @TaskDependencyGenerator
