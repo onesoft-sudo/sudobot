@@ -4,8 +4,9 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BlazeDir = Join-Path $ScriptDir ".blazebuild"
 $BlazeSrcDir = Join-Path $ScriptDir "blazebuild"
 $NodeModulesDir = Join-Path $ScriptDir "node_modules"
-$BlazeEntry = Join-Path $ScriptDir "node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
+$BlazeEntry = Join-Path $ScriptDir "node_modules/@onesoftnet/blazebuild/build/main/typescript/main.js"
 $BlazeNodeModulesDir = Join-Path $ScriptDir "blazebuild/node_modules"
+$BlazeFinalBuildDir = Join-Path $ScriptDir "blazebuild/build"
 
 $Arch = switch ((Get-CimInstance Win32_Processor).Architecture) {
     9 { "x64" }
@@ -195,6 +196,21 @@ if (-not (Test-Path $BlazeNodeModulesDir)) {
     }
 
     Debug-Log "Blazebuild dependencies installed successfully."
+}
+
+if (-not (Test-Path $BlazeFinalBuildDir)) {
+    Write-Host "Building blazebuild..."
+
+    cd "blazebuild"
+    & $PackageManager run build
+    cd ".."
+
+    if (!$?) {
+        Write-Error "Failed to build blazebuild"
+        exit 1
+    }
+
+    Debug-Log "Blazebuild built successfully."
 }
 
 $Process = Start-Process -FilePath $NODE_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
