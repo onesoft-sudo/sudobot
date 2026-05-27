@@ -374,10 +374,12 @@ async function main() {
             `${chalk.blue("==>")} ${chalk.whiteBright.bold("Building build_src...")}`
         );
 
-        execSync(`${pm} install -D`, {
-            cwd: path.join(process.cwd(), "build_src"),
-            stdio: "inherit"
-        });
+        if (!existsSync("build_src/node_modules")) {
+            execSync(`${pm} install -D`, {
+                cwd: path.join(process.cwd(), "build_src"),
+                stdio: "inherit"
+            });
+        }
 
         execSync(`${pm} run build`, {
             cwd: path.join(process.cwd(), "build_src"),
@@ -400,7 +402,7 @@ async function main() {
             for (const alias in _moduleAliases) {
                 if (name.startsWith(alias)) {
                     const ret = path.resolve(
-                        process.cwd(),
+                        "file://" + process.cwd(),
                         _moduleAliases[alias as keyof typeof _moduleAliases],
                         name.slice(alias.length + (name !== alias ? 1 : 0)) +
                             ("." +

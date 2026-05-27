@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "incremental": true,
+
         // Enable latest features
         "lib": ["ESNext", "DOM"],
         "target": "ES2022",

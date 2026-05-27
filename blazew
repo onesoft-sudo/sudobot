@@ -171,14 +171,14 @@ pm=""
 
 if command -v pnpm >/dev/null; then
     pm="pnpm"
-elif command -v yarn >/dev/null; then
-    pm="yarn"
 elif command -v npm >/dev/null; then
     pm="npm"
 elif command -v bun >/dev/null; then
     pm="bun"
+elif command -v yarn >/dev/null; then
+    pm="yarn"
 else
-    print_error "no package manager found (pnpm, yarn, npm, bun)"
+    print_error "no package manager found (pnpm, npm, bun, yarn)"
     exit 1
 fi
 
