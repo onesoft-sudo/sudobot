@@ -32,7 +32,7 @@ import CommandContextType from "./CommandContextType";
 import type InteractionContext from "./InteractionContext";
 import type LegacyContext from "./LegacyContext";
 import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
-import { If } from "@framework/types/Utils";
+import type { If } from "@framework/types/Utils";
 
 export type ContextReplyOptions = InteractionReplyOptions | InteractionEditReplyOptions | MessageCreateOptions | string;
 
