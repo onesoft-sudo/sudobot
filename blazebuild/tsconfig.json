@@ -10,6 +10,7 @@
         "rewriteRelativeImportExtensions": true,
         "allowImportingTsExtensions": true,
         "declaration": true,
+        "types": ["node"],
 
         // Bundler mode
         "verbatimModuleSyntax": true,
