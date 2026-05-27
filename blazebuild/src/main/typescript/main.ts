@@ -65,7 +65,9 @@ async function loadSettingsScript() {
         );
     }
 
-    await import(new URL("file://" + path.resolve(settingsScriptPath)).toString());
+    await import(
+        new URL("file://" + path.resolve(settingsScriptPath)).toString()
+    );
     const settingsScriptStats = await lstat(settingsScriptPath);
     settingsScriptLastModifiedTime = settingsScriptStats.mtimeMs;
 }
@@ -358,23 +360,22 @@ async function main() {
         function resolveFilename(name: string) {
             for (const alias in _moduleAliases) {
                 if (name.startsWith(alias)) {
-                    const ret =
-                        "." +
-                        path.sep +
-                        path.join(
-                            _moduleAliases[
-                                alias as keyof typeof _moduleAliases
-                            ],
-                            name.slice(
-                                alias.length + (name !== alias ? 1 : 0)
-                            ) +
-                                ("." +
-                                    ("isBun" in process && process.isBun
-                                        ? "ts"
-                                        : "js"))
-                        );
+                    const base = path.join(
+                        _moduleAliases[alias as keyof typeof _moduleAliases],
+                        name.slice(alias.length + (name !== alias ? 1 : 0)) +
+                            ("." +
+                                ("isBun" in process && process.isBun
+                                    ? "ts"
+                                    : "js"))
+                    );
 
-                    return ret;
+                    if (process.platform === "win32") {
+                        return new URL(
+                            "file://" + path.resolve(base)
+                        ).toString();
+                    }
+
+                    return path.resolve(base);
                 }
             }
 
