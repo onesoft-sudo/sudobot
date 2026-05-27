@@ -1,10 +1,17 @@
-import { exec } from "child_process";
+import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { glob } from "glob";
 import path from "path";
 
 export const x = async (command: string) => {
-    const proc = exec(`${command}`);
+    const proc = spawn(command, {
+        stdio: "inherit",
+        shell: true,
+        env: {
+            ...process.env,
+            PATH: `${path.join("node_modules", ".bin")}${path.delimiter}${process.env.PATH}`
+        }
+    });
 
     await new Promise((resolve, reject) => {
         proc.once("error", reject);
