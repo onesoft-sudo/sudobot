@@ -394,7 +394,7 @@ async function main() {
     if (existsSync("package.json")) {
         const {
             default: { _moduleAliases }
-        } = await import(path.resolve(process.cwd(), "package.json"), {
+        } = await import(String("package.json"), {
             with: { type: "json" }
         });
 
