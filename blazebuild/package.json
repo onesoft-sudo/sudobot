@@ -35,6 +35,6 @@
         "blazebuild": "./build/main/typescript/main.js"
     },
     "scripts": {
-        "build": "tsc && node -e 'const fs = require(\"fs\"); const path = require(\"path\"); fs.rmSync(\"build.next\", { recursive: true, force: true }); fs.renameSync(path.resolve(\"build/src\"), \"build.next\"); fs.rmSync(\"build\", { recursive: true }); fs.renameSync(\"build.next\", \"build\");'"
+        "build": "tsc && node -e \"const fs = require('fs'); const path = require('path'); fs.rmSync('build.next', { recursive: true, force: true }); fs.renameSync(path.resolve('build/src'), 'build.next'); fs.rmSync('build', { recursive: true }); fs.renameSync('build.next', 'build');\""
     }
 }
