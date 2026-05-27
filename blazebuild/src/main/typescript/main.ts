@@ -4,7 +4,7 @@ import "reflect-metadata";
 
 import chalk from "chalk";
 import { existsSync } from "fs";
-import { lstat, writeFile } from "fs/promises";
+import { lstat, readFile, writeFile } from "fs/promises";
 import path, { basename } from "path";
 import { parseArgs } from "util";
 import BlazeBuild from "./core/BlazeBuild.ts";
@@ -20,6 +20,10 @@ import Module from "module";
 let buildScriptLastModifiedTime = 0;
 let settingsScriptLastModifiedTime = 0;
 
+if (process.env.BLAZEW_INTERNAL_ARGV0) {
+    process.chdir(path.dirname(process.env.BLAZEW_INTERNAL_ARGV0));
+}
+
 async function loadBuildScript() {
     const buildScriptTsPath = "build.blaze.ts";
     const buildScriptMtsPath = "build.blaze.mts";
@@ -27,28 +31,10 @@ async function loadBuildScript() {
     let buildScriptPath: string;
 
     if (existsSync(buildScriptTsPath)) {
-        await import(buildScriptTsPath, {
-            with: {
-                type: "module"
-            }
-        });
-
         buildScriptPath = buildScriptTsPath;
     } else if (existsSync(buildScriptMtsPath)) {
-        await import(String(buildScriptMtsPath), {
-            with: {
-                type: "module"
-            }
-        });
-
         buildScriptPath = buildScriptMtsPath;
     } else if (existsSync(buildScriptJsPath)) {
-        await import(buildScriptJsPath, {
-            with: {
-                type: "module"
-            }
-        });
-
         buildScriptPath = buildScriptJsPath;
     } else {
         throw new Error(
@@ -56,6 +42,7 @@ async function loadBuildScript() {
         );
     }
 
+    await import(new URL("file://" + path.resolve(buildScriptPath)).toString());
     const buildScriptStats = await lstat(buildScriptPath);
     buildScriptLastModifiedTime = buildScriptStats.mtimeMs;
 }
@@ -67,28 +54,10 @@ async function loadSettingsScript() {
     let settingsScriptPath: string;
 
     if (existsSync(settingsScriptTsPath)) {
-        await import(settingsScriptTsPath, {
-            with: {
-                type: "module"
-            }
-        });
-
         settingsScriptPath = settingsScriptTsPath;
     } else if (existsSync(settingsScriptMtsPath)) {
-        await import(String(settingsScriptMtsPath), {
-            with: {
-                type: "module"
-            }
-        });
-
         settingsScriptPath = settingsScriptMtsPath;
     } else if (existsSync(settingsScriptJsPath)) {
-        await import(settingsScriptJsPath, {
-            with: {
-                type: "module"
-            }
-        });
-
         settingsScriptPath = settingsScriptJsPath;
     } else {
         throw new Error(
@@ -96,6 +65,7 @@ async function loadSettingsScript() {
         );
     }
 
+    await import(new URL("file://" + path.resolve(settingsScriptPath)).toString());
     const settingsScriptStats = await lstat(settingsScriptPath);
     settingsScriptLastModifiedTime = settingsScriptStats.mtimeMs;
 }
@@ -381,11 +351,9 @@ async function main() {
     }
 
     if (existsSync("package.json")) {
-        const {
-            default: { _moduleAliases }
-        } = await import(String("package.json"), {
-            with: { type: "json" }
-        });
+        const { _moduleAliases } = JSON.parse(
+            await readFile("package.json", "utf8")
+        );
 
         function resolveFilename(name: string) {
             for (const alias in _moduleAliases) {
