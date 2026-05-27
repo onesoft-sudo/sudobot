@@ -20,7 +20,6 @@
 import CommandAbortedError from "@framework/commands/CommandAbortedError";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
-import RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
 import APIErrors from "@framework/errors/APIErrors";
 import JobState from "@framework/queues/JobState";
 import Service from "@framework/services/Service";
@@ -51,6 +50,7 @@ import { LogEventType } from "@schemas/defs/LoggingSchema";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
+    APIEmbed,
     Attachment,
     Awaitable,
     CategoryChannel,
@@ -58,12 +58,12 @@ import {
     Collection,
     Colors,
     DiscordAPIError,
+    EmbedBuilder,
     Guild,
     GuildMember,
     GuildTextBasedChannel,
     Message,
     MessageCreateOptions,
-    MessageFlags,
     MessagePayload,
     PartialMessage,
     PermissionFlagsBits,
@@ -72,7 +72,6 @@ import {
     RoleResolvable,
     Snowflake,
     TextBasedChannel,
-    TextDisplayBuilder,
     User,
     bold,
     italic,
@@ -239,9 +238,7 @@ class InfractionManagerService extends Service {
     private async notify(
         user: User,
         infraction: Infraction,
-        transformNotificationEmbed?: (
-            richEmbed: RichEmbedBuilder
-        ) => RichEmbedBuilder,
+        transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed,
         _troll = this.isTrollInfractionType(infraction.type)
     ) {
         const guild = this.application
@@ -256,33 +253,37 @@ class InfractionManagerService extends Service {
 
         const title =
             infraction.type === InfractionType.Role
-                ? `Your **role(s) have been changed** in ${guild.name}`
+                ? `Your role(s) have been changed in ${guild.name}`
                 : infraction.type === InfractionType.BulkDeleteMessage
-                  ? `Your messages were **cleared** in ${guild.name}`
+                  ? `Your messages were cleared in ${guild.name}`
                   : infraction.type === InfractionType.ReactionClear
-                    ? `Your reactions were **cleared** in ${guild.name}`
+                    ? `Your reactions were cleared in ${guild.name}`
                     : infraction.type === InfractionType.ModeratorMessage
-                      ? `You have received a **moderator message** in ${guild.name}`
-                      : `You have been **${actionDoneName}** in ${guild.name}`;
+                      ? `You have received a moderator message in ${guild.name}`
+                      : `You have been ${actionDoneName} in ${guild.name}`;
 
-        const iconURL = guild.iconURL();
+        const iconURL = guild.iconURL() ?? undefined;
 
-        const richEmbed = new RichEmbedBuilder()
-            .setAuthorName(title)
-            .setIconURL(iconURL)
-            .setAccentColor(
+        const embed = {
+            author: {
+                name: title,
+                icon_url: iconURL
+            },
+            color:
                 actionDoneName === "bean" || actionDoneName.startsWith("un")
                     ? Colors.Green
-                    : Colors.Red
-            )
-            .addField({
-                name: "Reason",
-                value: infraction.reason ?? "No reason provided"
-            })
-            .setTimestamp();
+                    : Colors.Red,
+            fields: [
+                {
+                    name: "Reason",
+                    value: infraction.reason ?? "No reason provided"
+                }
+            ],
+            timestamp: new Date().toISOString()
+        } satisfies APIEmbed;
 
         if (infraction.expiresAt) {
-            richEmbed.addField({
+            embed.fields.push({
                 name: "Duration",
                 value: formatDistanceToNowStrict(infraction.expiresAt)
             });
@@ -294,23 +295,22 @@ class InfractionManagerService extends Service {
         );
 
         if (config?.infractions?.send_ids_to_user) {
-            richEmbed.addField({
+            embed.fields.push({
                 name: "Infraction ID",
                 value: infraction.id.toString()
             });
         }
 
         const transformed = transformNotificationEmbed
-            ? transformNotificationEmbed(richEmbed)
-            : richEmbed;
+            ? transformNotificationEmbed(embed)
+            : embed;
         const attachmentStoragePath = systemPrefix("storage/attachments", true);
 
         return this.sendDirectMessage(
             user,
             infraction.guildId,
             {
-                flags: [MessageFlags.IsComponentsV2],
-                components: [transformed],
+                embeds: [transformed],
                 files:
                     infraction.type === InfractionType.Bean || _troll
                         ? infraction.attachments
@@ -653,15 +653,14 @@ class InfractionManagerService extends Service {
                     user,
                     infraction.guildId,
                     {
-                        flags: MessageFlags.IsComponentsV2,
-                        components: [
-                            new RichEmbedBuilder()
-                                .setTitle(
-                                    `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been **updated** in ${guild.name}`
-                                )
-                                .setIconURL(guild.iconURL())
-                                .setAccentColor(Colors.Red)
-                                .addField({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setAuthor({
+                                    name: `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been updated in ${guild.name}`,
+                                    iconURL: guild.iconURL() ?? undefined
+                                })
+                                .setColor(Colors.Red)
+                                .addFields({
                                     name: "New Reason",
                                     value: reason
                                 })
@@ -892,15 +891,14 @@ class InfractionManagerService extends Service {
                     user,
                     infraction.guildId,
                     {
-                        flags: MessageFlags.IsComponentsV2,
-                        components: [
-                            new RichEmbedBuilder()
-                                .setTitle(
-                                    `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been updated in ${guild.name}`
-                                )
-                                .setIconURL(guild.iconURL())
-                                .setAccentColor(Colors.Red)
-                                .addField({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setAuthor({
+                                    name: `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been updated in ${guild.name}`,
+                                    iconURL: guild.iconURL() ?? undefined
+                                })
+                                .setColor(Colors.Red)
+                                .addFields({
                                     name: "New Duration",
                                     value: duration?.toString() ?? "Indefinite"
                                 })
@@ -1096,7 +1094,7 @@ class InfractionManagerService extends Service {
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, user, moderator)
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -1156,7 +1154,7 @@ class InfractionManagerService extends Service {
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, user, moderator)
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -1233,7 +1231,7 @@ class InfractionManagerService extends Service {
                 ? this.createOverviewEmbed(infraction, user, moderator, {
                       duration: payload.duration
                   })
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -1374,7 +1372,7 @@ class InfractionManagerService extends Service {
             : undefined;
 
         if (overviewEmbed && immediateUnban) {
-            overviewEmbed.addField({
+            overviewEmbed.fields.push({
                 name: "Ban Type",
                 value: "Soft-ban"
             });
@@ -1384,7 +1382,7 @@ class InfractionManagerService extends Service {
             status: "success",
             infraction,
             overviewEmbed: overviewEmbed as E extends true
-                ? RichEmbedBuilder
+                ? APIEmbed
                 : undefined
         };
     }
@@ -1490,7 +1488,7 @@ class InfractionManagerService extends Service {
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, user, moderator)
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -1569,7 +1567,7 @@ class InfractionManagerService extends Service {
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, member.user, moderator)
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -1843,7 +1841,7 @@ class InfractionManagerService extends Service {
                 ? this.createOverviewEmbed(infraction, member.user, moderator, {
                       duration
                   })
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -2052,14 +2050,14 @@ class InfractionManagerService extends Service {
                       ),
                       embed => {
                           if (!roleRestoreSuccess) {
-                              embed.addField({
+                              embed.fields.push({
                                   name: "Role Restoration",
                                   value: "Failed to restore roles"
                               });
                           }
                       }
                   )
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -2240,7 +2238,7 @@ class InfractionManagerService extends Service {
                 .slice(2) +
             (roles.length > 8 ? " **+ " + (roles.length - 8) + " more**" : "");
 
-        overviewEmbed?.addField({
+        overviewEmbed?.fields.push({
             name: `${mode === "give" ? "Added" : "Removed"} Roles`,
             value: summaryOfRoles
         });
@@ -2267,7 +2265,7 @@ class InfractionManagerService extends Service {
             status: "success",
             infraction,
             overviewEmbed: overviewEmbed as E extends true
-                ? RichEmbedBuilder
+                ? APIEmbed
                 : undefined
         };
     }
@@ -2610,7 +2608,7 @@ class InfractionManagerService extends Service {
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, member.user, moderator)
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -2670,9 +2668,7 @@ class InfractionManagerService extends Service {
                           member.user,
                           moderator
                       )
-                    : undefined) as E extends true
-                    ? RichEmbedBuilder
-                    : undefined
+                    : undefined) as E extends true ? APIEmbed : undefined
             };
         } catch {
             return {
@@ -2736,7 +2732,7 @@ class InfractionManagerService extends Service {
                 ? this.createOverviewEmbed(infraction, user, moderator, {
                       includeNotificationStatusInEmbed: false
                   })
-                : undefined) as E extends true ? RichEmbedBuilder : undefined
+                : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -2805,26 +2801,25 @@ class InfractionManagerService extends Service {
 
         const actionDoneName = this.actionDoneNames[infraction.type];
 
-        return new RichEmbedBuilder()
-            .setTitle(`Infraction #${infraction.id}`)
-            .setAuthorName(user.username)
-            .setIconURL(user.displayAvatarURL())
-            .addTextDisplayComponents(
-                new TextDisplayBuilder().setContent(
-                    infraction.type === InfractionType.Role
-                        ? `Roles for ${bold(user.username)} have been updated.`
-                        : `${bold(user.username)} has been ${actionDoneName}.`
-                )
-            )
-            .addFields(...fields)
-            .setTimestamp()
-            .setAccentColor(
+        return {
+            title: `Infraction #${infraction.id}`,
+            author: {
+                name: user.username,
+                icon_url: user.displayAvatarURL()
+            },
+            description:
+                infraction.type === InfractionType.Role
+                    ? `Roles for ${bold(user.username)} have been updated.`
+                    : `${bold(user.username)} has been ${actionDoneName}.`,
+            fields,
+            timestamp: new Date().toISOString(),
+            color:
                 actionDoneName.startsWith("un") ||
-                    infraction.type === InfractionType.Bean ||
-                    infraction.type === InfractionType.Shot
+                infraction.type === InfractionType.Bean ||
+                infraction.type === InfractionType.Shot
                     ? Colors.Green
                     : Colors.Red
-            );
+        } satisfies APIEmbed;
     }
 
     public async createUserMassBan(payload: CreateUserMassBanPayload) {
@@ -3383,9 +3378,7 @@ type CommonOptions<E extends boolean> = {
     reason?: string;
     guildId: Snowflake;
     generateOverviewEmbed?: E;
-    transformNotificationEmbed?: (
-        richEmbed: RichEmbedBuilder
-    ) => RichEmbedBuilder;
+    transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed;
     notify?: boolean;
     attachments?: Array<Attachment | string>;
 };
@@ -3509,7 +3502,7 @@ type InfractionCreateResult<E extends boolean = false> =
     | {
           status: "success";
           infraction: Infraction;
-          overviewEmbed: E extends true ? RichEmbedBuilder : undefined;
+          overviewEmbed: E extends true ? APIEmbed : undefined;
       }
     | {
           status: "failed";

@@ -1,4 +1,3 @@
-import { markdownInvisibleSpace } from "@framework/utils/markdown";
 import type { APIContainerComponent } from "discord.js";
 import {
     ContainerBuilder,
@@ -216,7 +215,7 @@ class RichEmbedBuilder extends ContainerBuilder {
         return {
             ...json,
             components
-        };
+        } as typeof json;
     }
 }
 
