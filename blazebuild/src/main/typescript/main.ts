@@ -374,6 +374,11 @@ async function main() {
             `${chalk.blue("==>")} ${chalk.whiteBright.bold("Building build_src...")}`
         );
 
+        execSync(`${pm} install -D`, {
+            cwd: path.join(process.cwd(), "build_src"),
+            stdio: "inherit"
+        });
+
         execSync(`${pm} run build`, {
             cwd: path.join(process.cwd(), "build_src"),
             stdio: "inherit"
