@@ -401,8 +401,8 @@ async function main() {
         function resolveFilename(name: string) {
             for (const alias in _moduleAliases) {
                 if (name.startsWith(alias)) {
-                    const ret = path.resolve(
-                        "file://" + process.cwd(),
+                    const ret = "file://" + path.resolve(
+                        process.cwd(),
                         _moduleAliases[alias as keyof typeof _moduleAliases],
                         name.slice(alias.length + (name !== alias ? 1 : 0)) +
                             ("." +

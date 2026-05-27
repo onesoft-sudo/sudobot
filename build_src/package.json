@@ -1,7 +1,8 @@
 {
     "private": true,
     "devDependencies": {
-        "@types/node": "^20.12.7"
+        "@types/node": "^20.12.7",
+        "typescript": "^6"
     },
     "scripts": {
         "build": "tsc"
