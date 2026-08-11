@@ -21,11 +21,17 @@ import type { ZodType, z } from "zod";
 
 class Environment {
     public static isProduction(): boolean {
-        return process.env.NODE_ENV === "production" || process.env.NODE_ENV === "prod";
+        return (
+            process.env.NODE_ENV === "production" ||
+            process.env.NODE_ENV === "prod"
+        );
     }
 
     public static isDevelopment(): boolean {
-        return process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev";
+        return (
+            process.env.NODE_ENV === "development" ||
+            process.env.NODE_ENV === "dev"
+        );
     }
 
     public static isTest(): boolean {
@@ -41,7 +47,8 @@ class Environment {
     }
 
     public static parseVariables<T extends ZodType>(schema: T): z.infer<T> {
-        return schema.parse(this.variables());
+        const vars = this.variables();
+        return schema.parse(vars);
     }
 }
 

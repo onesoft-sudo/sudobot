@@ -18,8 +18,8 @@
  */
 
 import "reflect-metadata";
+import "./loadenv.js";
 
-import dotenv from "dotenv";
 import { Module } from "module";
 import path from "path";
 
@@ -31,7 +31,7 @@ function resolveFilename(name: string) {
         if (name.startsWith(alias)) {
             const resolved = path.join(
                 import.meta.dirname,
-                "../../../",
+                "../../../../",
                 isTypeScript ? "." : "..",
                 _moduleAliases[alias],
                 name.replace(alias, "")
@@ -45,21 +45,21 @@ function resolveFilename(name: string) {
 }
 
 if (!("__preloaded" in global)) {
-    if (isTypeScript) {
+    (global as { isBundle?: boolean }).isBundle ??= false;
+
+    if (isTypeScript || global.isBundle) {
         _moduleAliases = (
-            await import("../../../package.json", {
+            await import("../../../../package.json", {
                 with: { type: "json" }
             })
         ).default._moduleAliases;
     } else {
         _moduleAliases = (
-            await import(String("../../../../package.json"), {
+            await import(String("../../../../../package.json"), {
                 with: { type: "json" }
             })
         ).default._moduleAliases;
     }
-
-    (global as { isBundle?: boolean }).isBundle ??= false;
 
     if (typeof Module.registerHooks === "function") {
         Module.registerHooks({
@@ -92,11 +92,6 @@ if (!("__preloaded" in global)) {
             }
         });
     }
-
-    dotenv.config({
-        path: isBundle ? path.join(process.cwd(), ".env") : undefined,
-        quiet: true
-    });
 
     Object.defineProperty(global, "__preloaded", { value: true });
 }

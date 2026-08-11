@@ -17,11 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-Object.defineProperty(global, "isBundle", { value: true });
+import "./prebundle.js";
+
+import "./loadenv.js";
+
+import "./preload.js";
 
 import Resource from "@framework/resources/Resource.js";
 import { BUNDLE_DATA_SYMBOL } from "@framework/utils/bundle.js";
-import "./preload.js";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This file will only be created when a bundler is executed
@@ -33,7 +36,7 @@ import {
     resources,
     rules,
     services
-} from "./imports.gen.js";
+} from "../imports.gen.js";
 
 Object.defineProperty(global, BUNDLE_DATA_SYMBOL, {
     value: {
@@ -51,4 +54,4 @@ for (const [id, data] of Object.entries(resources)) {
     Resource.registerResource(id, data);
 }
 
-void import("./main.js").then();
+void import("../main.js").then();

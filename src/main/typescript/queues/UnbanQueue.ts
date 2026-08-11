@@ -20,8 +20,8 @@
 import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
 import JobState from "@framework/queues/JobState.js";
 import { safeUserFetch } from "@framework/utils/fetch.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import type InfractionManagerService from "@main/services/InfractionManagerService.js";
-import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService.js";
 import type { Snowflake } from "discord.js";
 
 type UnbanQueuePayload = {
@@ -49,7 +49,7 @@ class UnbanQueue extends AbstractQueuedJob<UnbanQueuePayload> {
         }
 
         await this.application
-            .service<InfractionManagerService>(SERVICE_INFRACTION_MANAGER)
+            .service<InfractionManagerService>(ServiceID.INFRACTION_MANAGER)
             .createUnban({
                 guildId: guild.id,
                 moderator: this.application.client.user!,

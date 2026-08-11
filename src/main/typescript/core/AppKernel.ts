@@ -32,17 +32,14 @@ import type { Events } from "@framework/types/ClientEvents.js";
 import type { DefaultExport } from "@framework/types/Utils.js";
 import { getBundleData } from "@framework/utils/bundle.js";
 import Application from "@main/core/Application.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import Database from "@main/database/Database.js";
 import { getEnv } from "@main/env/env.js";
 import type Rule from "@main/moderation/Rule.js";
 import type CommandManagerService from "@main/services/CommandManagerService.js";
-import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService.js";
 import type PermissionManagerService from "@main/services/PermissionManagerService.js";
-import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService.js";
 import type QueueManagerService from "@main/services/QueueManagerService.js";
-import { SERVICE_QUEUE_MANAGER } from "@main/services/QueueManagerService.js";
 import type RuleModerationService from "@main/services/RuleModerationService.js";
-import {SERVICE_RULE_MODERATION} from "@main/services/RuleModerationService.js";
 import type { RuleType } from "@schemas/all.js";
 import type { ClientOptions } from "discord.js";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
@@ -72,7 +69,7 @@ class AppKernel extends Kernel {
         "@services/InfractionManagerService",
         "@services/ModerationActionService",
         "@services/AwayFromKeyboardService",
-        "@services/RuleModerationService",
+        "@services/RuleModerationService"
     ];
 
     public readonly eventListenersDirectory: string = path.join(
@@ -83,8 +80,14 @@ class AppKernel extends Kernel {
         import.meta.dirname,
         "../commands"
     );
-    public readonly queuesDirectory: string = path.join(import.meta.dirname, "../queues");
-    public readonly rulesDirectory: string = path.join(import.meta.dirname, "../rules");
+    public readonly queuesDirectory: string = path.join(
+        import.meta.dirname,
+        "../queues"
+    );
+    public readonly rulesDirectory: string = path.join(
+        import.meta.dirname,
+        "../rules"
+    );
 
     public readonly shards?: number[];
     public readonly shardCount?: number;
@@ -255,7 +258,7 @@ class AppKernel extends Kernel {
             await queue.onAppBoot?.();
 
             application
-                .service<QueueManagerService>(SERVICE_QUEUE_MANAGER)
+                .service<QueueManagerService>(ServiceID.QUEUE_MANAGER)
                 .register(queue);
 
             application.logger.debug(
@@ -280,7 +283,10 @@ class AppKernel extends Kernel {
 
         await application.classLoader.loadClassesRecursive<
             DefaultExport<
-                new (application: Application, queueManager: QueueManager) => AbstractQueuedJob<object>
+                new (
+                    application: Application,
+                    queueManager: QueueManager
+                ) => AbstractQueuedJob<object>
             >
         >(this.queuesDirectory, {
             preLoad: filepath => {
@@ -298,9 +304,7 @@ class AppKernel extends Kernel {
     private async loadRules(application: Application): Promise<void> {
         const onLoad = async (
             filepath: string,
-            ruleClass: new (
-                application: Application,
-            ) => Rule<RuleType, unknown>
+            ruleClass: new (application: Application) => Rule<RuleType, unknown>
         ) => {
             const rule = application.container.get(ruleClass, {
                 constructorArgs: [application]
@@ -309,7 +313,7 @@ class AppKernel extends Kernel {
             await rule.onAppBoot?.();
 
             application
-                .service<RuleModerationService>(SERVICE_RULE_MODERATION)
+                .service<RuleModerationService>(ServiceID.RULE_MODERATION)
                 .register(rule);
 
             application.logger.debug(
@@ -351,11 +355,11 @@ class AppKernel extends Kernel {
 
     private async loadCommands(application: Application): Promise<void> {
         const commandManagerService = application.serviceManager.services.get(
-            SERVICE_COMMAND_MANAGER
+            ServiceID.COMMAND_MANAGER
         ) as CommandManagerService | undefined;
         const permissionManagerService =
             application.serviceManager.services.get(
-                SERVICE_PERMISSION_MANAGER
+                ServiceID.PERMISSION_MANAGER
             ) as PermissionManagerService | undefined;
 
         const onLoad = async (

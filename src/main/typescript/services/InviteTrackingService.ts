@@ -20,6 +20,7 @@
 import { GatewayEventListener } from "@framework/events/GatewayEventListener.js";
 import Service from "@framework/services/Service.js";
 import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import {
     Collection,
     GuildMember,
@@ -29,10 +30,8 @@ import {
     type ReadonlyCollection
 } from "discord.js";
 
-export const SERVICE_INVITE_TRACKING = "inviteTrackingService" as const;
-
 class InviteTrackingService extends Service implements HasEventListeners {
-    public override readonly name: string = SERVICE_INVITE_TRACKING;
+    public override readonly name: string = ServiceID.INVITE_TRACKING;
 
     private readonly _invites = new Collection<
         `${Snowflake}::${string}`,
@@ -74,9 +73,7 @@ class InviteTrackingService extends Service implements HasEventListeners {
             }
         }
 
-        this.logger.info(
-            `Synchronized ${this._invites.size} invites`
-        );
+        this.logger.info(`Synchronized ${this._invites.size} invites`);
     }
 
     @GatewayEventListener("inviteCreate")

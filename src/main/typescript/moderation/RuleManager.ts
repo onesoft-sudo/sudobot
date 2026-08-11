@@ -1,5 +1,14 @@
+import { xor } from "@framework/utils/logic.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 import type Application from "@main/core/Application.js";
+import type ModerationActionService from "@main/services/ModerationActionService.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { assert } from "@main/utils/utils.js";
+import type {
+    ModerationActionType,
+    RuleDefinition,
+    RuleType
+} from "@schemas/all.js";
 import type {
     APIEmbed,
     EmbedField,
@@ -7,18 +16,11 @@ import type {
     GuildTextBasedChannel,
     Message
 } from "discord.js";
-import {
-    Collection
-} from "discord.js";
+import { Collection } from "discord.js";
 import MessageRule from "./MessageRule.js";
+import ProfileMessageRule from "./ProfileMessageRule.js";
 import ProfileRule from "./ProfileRule.js";
 import type Rule from "./Rule.js";
-import ProfileMessageRule from "./ProfileMessageRule.js";
-import type { ModerationActionType, RuleDefinition, RuleType } from "@schemas/all.js";
-import { xor } from "@framework/utils/logic.js";
-import { SERVICE_MODERATION_ACTION } from "@main/services/ModerationActionService.js";
-import type ModerationActionService from "@main/services/ModerationActionService.js";
-import { requireNonNull } from "@framework/utils/utils.js";
 
 class RuleManager {
     protected readonly application: Application;
@@ -109,7 +111,9 @@ class RuleManager {
 
             if (actions.length) {
                 await this.application
-                    .service<ModerationActionService>(SERVICE_MODERATION_ACTION)
+                    .service<ModerationActionService>(
+                        ServiceID.MODERATION_ACTION
+                    )
                     .takeActions(
                         guild,
                         requireNonNull(
@@ -123,7 +127,8 @@ class RuleManager {
                                 !context.message?.channel?.isTextBased() ||
                                 context.message?.channel?.isDMBased()
                                     ? undefined
-                                    : context.message?.channel as GuildTextBasedChannel,
+                                    : (context.message
+                                          ?.channel as GuildTextBasedChannel),
                             message: context.message
                         }
                     );

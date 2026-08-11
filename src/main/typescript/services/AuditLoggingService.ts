@@ -17,6 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable @typescript-eslint/unbound-method */
+
 import { Inject } from "@framework/container/Inject.js";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener.js";
 import Service from "@framework/services/Service.js";
@@ -24,6 +26,7 @@ import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds.js";
 import { fetchChannel } from "@framework/utils/entities.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
 import { Colors } from "@main/constants/Colors.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { RuleExecResult } from "@main/moderation/RuleManager.js";
 import {
     LogEventArgs,
@@ -53,14 +56,9 @@ import {
     LoggingExclusionType
 } from "@main/schemas/LoggingSchema.js";
 import type ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
-import {
-    ConfigurationType,
-    SERVICE_CONFIGURATION_MANAGER
-} from "@main/services/ConfigurationManagerService.js";
+import { ConfigurationType } from "@main/services/ConfigurationManagerService.js";
 import type InviteTrackingService from "@main/services/InviteTrackingService.js";
-import { SERVICE_INVITE_TRACKING } from "@main/services/InviteTrackingService.js";
 import type ModerationActionService from "@main/services/ModerationActionService.js";
-import { SERVICE_MODERATION_ACTION } from "@main/services/ModerationActionService.js";
 import { chunkedString } from "@main/utils/utils.js";
 import { RuleDefinition } from "@schemas/defs/RuleSchema.js";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -103,12 +101,8 @@ type WebhookInfo =
           attempts: number;
       };
 
-/* eslint-disable @typescript-eslint/unbound-method */
-
-export const SERVICE_AUDIT_LOGGING = "auditLoggingService" as const;
-
 class AuditLoggingService extends Service {
-    public override readonly name: string = SERVICE_AUDIT_LOGGING;
+    public override readonly name: string = ServiceID.AUDIT_LOGGING;
 
     private readonly webhooks = new LRUCache<
         `${Snowflake}::${Snowflake}`,
@@ -168,7 +162,7 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberVoiceChannelLeave]: this.logMemberVoiceChannelLeave
     };
 
-    @Inject(SERVICE_CONFIGURATION_MANAGER)
+    @Inject(ServiceID.CONFIGURATION_MANAGER)
     private readonly configurationManagerService!: ConfigurationManagerService;
 
     @GatewayEventListener("channelDelete")
@@ -653,7 +647,7 @@ class AuditLoggingService extends Service {
                                 name: "Actions Taken",
                                 value: this.application
                                     .service<ModerationActionService>(
-                                        SERVICE_MODERATION_ACTION
+                                        ServiceID.MODERATION_ACTION
                                     )
                                     .summarizeActions(rule.actions),
                                 inline: true
@@ -1400,7 +1394,7 @@ class AuditLoggingService extends Service {
         ];
 
         const invite = await this.application
-            .service<InviteTrackingService>(SERVICE_INVITE_TRACKING)
+            .service<InviteTrackingService>(ServiceID.INVITE_TRACKING)
             .findInviteForMember(member);
 
         if (invite) {
@@ -1700,7 +1694,9 @@ class AuditLoggingService extends Service {
             fields.push({
                 name: "Actions Taken",
                 value: this.application
-                    .service<ModerationActionService>(SERVICE_MODERATION_ACTION)
+                    .service<ModerationActionService>(
+                        ServiceID.MODERATION_ACTION
+                    )
                     .summarizeActions(actionsTaken)
             });
         }
@@ -2441,7 +2437,7 @@ class AuditLoggingService extends Service {
                                         ? "None"
                                         : this.application
                                               .service<ModerationActionService>(
-                                                  SERVICE_MODERATION_ACTION
+                                                  ServiceID.MODERATION_ACTION
                                               )
                                               .summarizeActions(actions),
 

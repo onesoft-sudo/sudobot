@@ -18,6 +18,7 @@
  */
 
 import { fetchGuild } from "@framework/utils/entities.js";
+import { getEnv } from "@main/env/env.js";
 import axios, { type AxiosRequestConfig } from "axios";
 import {
     ChannelType,
@@ -83,12 +84,7 @@ export function wait(time: number) {
 }
 
 export function systemPrefix(pathLike: string) {
-    const directoryOrFile = path.resolve(
-        process.env.SUDOBOT_PREFIX ?? import.meta.dirname,
-        process.env.SUDOBOT_PREFIX ? "" : "../../../..",
-        pathLike
-    );
-
+    const directoryOrFile = path.resolve(getEnv().SUDOBOT_PREFIX, pathLike);
     return directoryOrFile;
 }
 

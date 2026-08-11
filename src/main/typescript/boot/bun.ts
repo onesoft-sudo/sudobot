@@ -17,4 +17,4 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./index.js";
+import "../index.js";

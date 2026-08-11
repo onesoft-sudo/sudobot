@@ -21,7 +21,7 @@ import { Inject } from "@framework/container/Inject.js";
 import Duration from "@framework/datetime/Duration.js";
 import Service from "@framework/services/Service.js";
 import type { Infraction } from "@main/models/Infraction.js";
-import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { ModerationActionType } from "@schemas/defs/ModerationActionSchema.js";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -51,12 +51,10 @@ type TakeActionPayload = {
     message?: Message;
 };
 
-export const SERVICE_MODERATION_ACTION = "moderationActionService" as const;
-
 class ModerationActionService extends Service {
-    public override readonly name: string = SERVICE_MODERATION_ACTION;
+    public override readonly name: string = ServiceID.MODERATION_ACTION;
 
-    @Inject(SERVICE_INFRACTION_MANAGER)
+    @Inject(ServiceID.INFRACTION_MANAGER)
     private readonly infractionManagerService!: InfractionManagerService;
 
     public async takeActions(

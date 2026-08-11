@@ -30,6 +30,7 @@ import { fetchMember, fetchUser } from "@framework/utils/entities.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
 import { also, suppressErrorNoReturn } from "@framework/utils/utils.js";
 import Application from "@main/core/Application.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import {
     Infraction,
     InfractionCreatePayload,
@@ -44,7 +45,6 @@ import RoleQueue from "@main/queues/RoleQueue.js";
 import UnbanQueue from "@main/queues/UnbanQueue.js";
 import UnmuteQueue from "@main/queues/UnmuteQueue.js";
 import type AuditLoggingService from "@main/services/AuditLoggingService.js";
-import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService.js";
 import { systemPrefix } from "@main/utils/utils.js";
 import { GuildConfigurationType } from "@schemas/all.js";
 import { LogEventType } from "@schemas/defs/LoggingSchema.js";
@@ -87,10 +87,8 @@ import ConfigurationManagerService, {
 } from "./ConfigurationManagerService.js";
 import QueueManagerService from "./QueueManagerService.js";
 
-export const SERVICE_INFRACTION_MANAGER = "infractionManager" as const;
-
 class InfractionManagerService extends Service {
-    public override readonly name: string = SERVICE_INFRACTION_MANAGER;
+    public override readonly name: string = ServiceID.INFRACTION_MANAGER;
 
     declare protected readonly application: Application;
 
@@ -140,7 +138,7 @@ class InfractionManagerService extends Service {
     @Inject()
     private readonly queueService!: QueueManagerService;
 
-    @Inject(SERVICE_AUDIT_LOGGING)
+    @Inject(ServiceID.AUDIT_LOGGING)
     private readonly auditLoggingService!: AuditLoggingService;
 
     private createError<E extends boolean>(result: InfractionCreateResult<E>) {

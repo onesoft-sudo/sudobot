@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./preload.js";
+import "./boot/preload.js";
 
 import { Logger } from "@framework/log/Logger.js";
 import { setEnv } from "@main/env/env.js";

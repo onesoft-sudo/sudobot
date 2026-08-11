@@ -30,7 +30,13 @@ export const EnvironmentVariableSchema = z.object({
     SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
     SUDOBOT_DATABASE_URL: z.string(),
     SUDOBOT_VALKEY_URL: z.string(),
-    SUDOBOT_PREFIX: z.string().prefault(path.join(homedir(), ".sudobot"))
+    SUDOBOT_PREFIX: z
+        .string()
+        .prefault(
+            "isBundle" in global && global.isBundle
+                ? path.join(homedir(), ".sudobot")
+                : path.join(import.meta.dirname, "../../../../")
+        )
 });
 
 export type EnvironmentVariableType = z.infer<typeof EnvironmentVariableSchema>;

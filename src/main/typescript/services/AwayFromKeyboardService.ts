@@ -21,27 +21,19 @@ import Service from "@framework/services/Service.js";
 import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
 import { Colors } from "@main/constants/Colors.js";
 import type Application from "@main/core/Application.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import type { AFKEntry } from "@main/models/AFKEntry.js";
 import { afkEntries } from "@main/models/AFKEntry.js";
 import { formatDistanceToNowStrict } from "date-fns";
-import type {
-    Message,
-    Snowflake} from "discord.js";
-import {
-    Collection,
-    escapeMarkdown,
-    messageLink,
-    time
-} from "discord.js";
+import type { Message, Snowflake } from "discord.js";
+import { Collection, escapeMarkdown, messageLink, time } from "discord.js";
 import { and, eq } from "drizzle-orm";
 import { LRUCache } from "lru-cache";
-
-export const SERVICE_AWAY_FROM_KEYBOARD = "awayFromKeyboardService" as const;
 
 const SYMBOL_NO_ENTRY = Symbol("NO_ENTRY");
 
 class AwayFromKeyboardService extends Service implements HasEventListeners {
-    public override readonly name: string = SERVICE_AWAY_FROM_KEYBOARD;
+    public override readonly name: string = ServiceID.AUDIT_LOGGING;
     declare protected readonly application: Application;
 
     protected readonly guildCache = new Collection<

@@ -2,8 +2,8 @@
     "name": "@onesoftnet/sudobot-schemas",
     "version": "2.0.0",
     "license": "LGPL-3.0-or-later",
-    "main": "./js/index.js",
-    "type": "commonjs",
+    "module": "./js/index.js",
+    "type": "module",
     "private": false,
     "publishConfig": {
         "access": "public"
@@ -33,7 +33,7 @@
     ],
     "homepage": "https://github.com/onesoft-sudo/sudobot",
     "exports": {
-        "default": "./js/index.js"
+        "import": "./js/index.js"
     },
     "types": "js/index.d.ts",
     "files": [

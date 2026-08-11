@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./preload.js";
+import "./boot/preload.js";
 
 import packageJSON from "@root/package.json" with { type: "json" };
 import path from "path";

@@ -6,26 +6,21 @@ import RuleManager, {
     RuleConstructor,
     RuleExecResult
 } from "@main/moderation/RuleManager.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { RuleType } from "@schemas/all.js";
 import { Message } from "discord.js";
 import type ConfigurationManagerService from "./ConfigurationManagerService.js";
-import {
-    ConfigurationType,
-    SERVICE_CONFIGURATION_MANAGER
-} from "./ConfigurationManagerService.js";
+import { ConfigurationType } from "./ConfigurationManagerService.js";
 import type ModerationActionService from "./ModerationActionService.js";
-import { SERVICE_MODERATION_ACTION } from "./ModerationActionService.js";
-
-export const SERVICE_RULE_MODERATION = "ruleModerationService";
 
 class RuleModerationService extends Service {
-    public override readonly name: string = SERVICE_RULE_MODERATION;
+    public override readonly name: string = ServiceID.RULE_MODERATION;
     protected readonly ruleManager: RuleManager;
 
-    @Inject(SERVICE_CONFIGURATION_MANAGER)
+    @Inject(ServiceID.CONFIGURATION_MANAGER)
     protected readonly configurationManagerService!: ConfigurationManagerService;
 
-    @Inject(SERVICE_MODERATION_ACTION)
+    @Inject(ServiceID.MODERATION_ACTION)
     protected readonly moderationActionService!: ModerationActionService;
 
     public constructor(application: Application) {

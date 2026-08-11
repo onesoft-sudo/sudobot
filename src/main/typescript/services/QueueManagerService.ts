@@ -24,15 +24,14 @@ import type { QueueCreateOptions } from "@framework/queues/QueueManager.js";
 import QueueManager from "@framework/queues/QueueManager.js";
 import Service from "@framework/services/Service.js";
 import type Application from "@main/core/Application.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import PgJobDatabaseDriver from "@main/database/PgJobDatabaseDriver.js";
 import { queuedJobs } from "@main/models/QueuedJob.js";
 import { inArray, isNotNull } from "drizzle-orm";
 
-export const SERVICE_QUEUE_MANAGER = "queueManagerService";
-
 class QueueManagerService extends Service {
     declare public readonly application: Application;
-    public override readonly name: string = SERVICE_QUEUE_MANAGER;
+    public override readonly name: string = ServiceID.QUEUE_MANAGER;
 
     protected readonly queueManager: QueueManager;
 

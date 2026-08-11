@@ -134,6 +134,7 @@
     "js/ts.experimental.useTsgo": true,
     "js/ts.tsdk.path": "node_modules/typescript/lib",
     "js/ts.preferences.importModuleSpecifier": "non-relative",
+    "js/ts.preferences.importModuleSpecifierEnding": "js",
     "editor.rulers": [80],
     "editor.formatOnPaste": false
 }

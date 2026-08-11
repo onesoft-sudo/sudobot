@@ -29,25 +29,41 @@ import Application from "@main/core/Application.js";
 import SystemAdminPermission from "@main/permissions/SystemAdminPermission.js";
 import LayeredPermissionManager from "@main/security/LayeredPermissionManager.js";
 import LeveledPermissionManager from "@main/security/LeveledPermissionManager.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { GuildConfigurationType } from "@schemas/all.js";
-import { Awaitable, Collection, ReadonlyCollection, type Snowflake } from "discord.js";
-import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService.js";
+import {
+    Awaitable,
+    Collection,
+    ReadonlyCollection,
+    type Snowflake
+} from "discord.js";
+import ConfigurationManagerService, {
+    ConfigurationType
+} from "./ConfigurationManagerService.js";
 
-export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
+type PermissionModeString = NonNullable<
+    GuildConfigurationType["permissions"]
+>["mode"];
 
-type PermissionModeString = NonNullable<GuildConfigurationType["permissions"]>["mode"];
+class PermissionManagerService
+    extends Service
+    implements PermissionManagerServiceInterface
+{
+    public override readonly name = ServiceID.PERMISSION_MANAGER;
+    public readonly permissionObjects: ReadonlyCollection<string, Permission> =
+        new Collection(
+            [SystemAdminPermission].map(c => {
+                const object = Permission.resolve(this.application, c);
+                return [object.name, object];
+            })
+        );
+    public readonly systemAdminPermission: SystemPermissionResolvable =
+        SystemAdminPermission;
 
-class PermissionManagerService extends Service implements PermissionManagerServiceInterface {
-    public override readonly name = SERVICE_PERMISSION_MANAGER;
-    public readonly permissionObjects: ReadonlyCollection<string, Permission> = new Collection(
-        [SystemAdminPermission].map(c => {
-            const object = Permission.resolve(this.application, c);
-            return [object.name, object];
-        })
-    );
-    public readonly systemAdminPermission: SystemPermissionResolvable = SystemAdminPermission;
-
-    private readonly permissionManagerRecord: Record<PermissionModeString, AbstractPermissionManager>;
+    private readonly permissionManagerRecord: Record<
+        PermissionModeString,
+        AbstractPermissionManager
+    >;
 
     public constructor(application: Application) {
         super(application);
@@ -55,24 +71,46 @@ class PermissionManagerService extends Service implements PermissionManagerServi
     }
 
     public override boot(): Awaitable<void> {
-        Permission.globalBypassPermissions.add(SystemAdminPermission.getInstance(this.application));
+        Permission.globalBypassPermissions.add(
+            SystemAdminPermission.getInstance(this.application)
+        );
     }
 
-    protected createManagers(application: Application): typeof this.permissionManagerRecord {
+    protected createManagers(
+        application: Application
+    ): typeof this.permissionManagerRecord {
         const permissionObjects = [...this.permissionObjects.values()];
 
         return {
-            discord: new DiscordPermissionManager(application, permissionObjects, this.systemAdminPermission),
-            leveled: new LeveledPermissionManager(application, permissionObjects, this.systemAdminPermission),
-            layered: new LayeredPermissionManager(application, permissionObjects, this.systemAdminPermission),
-            selinux: new SELinuxPermissionManager(application, permissionObjects, this.systemAdminPermission)
+            discord: new DiscordPermissionManager(
+                application,
+                permissionObjects,
+                this.systemAdminPermission
+            ),
+            leveled: new LeveledPermissionManager(
+                application,
+                permissionObjects,
+                this.systemAdminPermission
+            ),
+            layered: new LayeredPermissionManager(
+                application,
+                permissionObjects,
+                this.systemAdminPermission
+            ),
+            selinux: new SELinuxPermissionManager(
+                application,
+                permissionObjects,
+                this.systemAdminPermission
+            )
         };
     }
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
 
-    public async getPermissionManager(guildId?: Snowflake): Promise<AbstractPermissionManager> {
+    public async getPermissionManager(
+        guildId?: Snowflake
+    ): Promise<AbstractPermissionManager> {
         const { permissions } = await this.configurationManagerService.get(
             guildId ? ConfigurationType.Guild : ConfigurationType.DirectMessage,
             guildId ?? "0"
@@ -90,7 +128,10 @@ class PermissionManagerService extends Service implements PermissionManagerServi
             return this.permissionManagerRecord.discord;
         }
 
-        return this.permissionManagerRecord[mode] || this.permissionManagerRecord.discord;
+        return (
+            this.permissionManagerRecord[mode] ||
+            this.permissionManagerRecord.discord
+        );
     }
 }
 

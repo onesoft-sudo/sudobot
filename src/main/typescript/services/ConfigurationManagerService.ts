@@ -22,6 +22,7 @@ import Service from "@framework/services/Service.js";
 import { BUG } from "@framework/utils/devflow.js";
 import { isInShards } from "@framework/utils/shard.js";
 import { isSnowflake } from "@framework/utils/utils.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { systemPrefix } from "@main/utils/utils.js";
 import {
     GuildConfigurationDefaultValue,
@@ -35,15 +36,13 @@ import { type Awaitable, type Snowflake } from "discord.js";
 import { readdir } from "fs/promises";
 import { LRUCache } from "lru-cache";
 
-export const SERVICE_CONFIGURATION_MANAGER = "configurationManagerService";
-
 export enum ConfigurationType {
     DirectMessage = "d",
     Guild = "g"
 }
 
 class ConfigurationManagerService extends Service {
-    public override readonly name: string = SERVICE_CONFIGURATION_MANAGER;
+    public override readonly name: string = ServiceID.CONFIGURATION_MANAGER;
 
     public static readonly CONFIG_BY_ID_DIR = systemPrefix("config/by-id");
     public static readonly CONFIG_SYSTEM_FILE =

@@ -23,6 +23,7 @@ import { emoji } from "@framework/utils/emoji.js";
 import { fetchChannel, fetchMessage } from "@framework/utils/entities.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
 import { noOperation } from "@framework/utils/utils.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import { chunkedString, systemPrefix } from "@main/utils/utils.js";
 import packageJSON from "@root/package.json" with { type: "json" };
 import axios from "axios";
@@ -42,13 +43,11 @@ import path from "path";
 import { setTimeout } from "timers/promises";
 import ConfigurationManagerService from "./ConfigurationManagerService.js";
 
-export const SERVICE_STARTUP_MANAGER = "startupManagerService" as const;
-
 const { ERROR_WEBHOOK_URL } = process.env;
 const { version } = packageJSON;
 
 class StartupManagerService extends Service {
-    public override readonly name: string = SERVICE_STARTUP_MANAGER;
+    public override readonly name: string = ServiceID.STARTUP_MANAGER;
 
     private async printBanner() {
         figlet.parseFont("customBig", figletBigFont);

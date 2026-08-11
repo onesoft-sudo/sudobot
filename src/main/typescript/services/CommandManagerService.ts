@@ -26,6 +26,7 @@ import Service from "@framework/services/Service.js";
 import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
 import { isDevelopmentMode } from "@framework/utils/utils.js";
 import { getEnv } from "@main/env/env.js";
+import { ServiceID } from "@main/core/ServiceID.js";
 import {
     calculateShardId,
     ChatInputCommandInteraction,
@@ -37,10 +38,8 @@ import ConfigurationManagerService, {
     ConfigurationType
 } from "./ConfigurationManagerService.js";
 
-export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
-
 class CommandManagerService extends Service implements HasEventListeners {
-    public override readonly name: string = SERVICE_COMMAND_MANAGER;
+    public override readonly name: string = ServiceID.COMMAND_MANAGER;
     public readonly commands = new Collection<string, Command>();
 
     @Inject()
