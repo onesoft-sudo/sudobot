@@ -2,6 +2,7 @@
 #
 # gensea -- create a single executable application
 #
+# TODO: Migrate from Bun to Node.js SEA
 
 dir=`dirname "$0"`
 dir=`readlink -f "${dir}/.."`
