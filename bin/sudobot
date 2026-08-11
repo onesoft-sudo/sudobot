@@ -61,7 +61,7 @@ if [ "$interpreter" = "bun" ]; then
         arg="--env-file=/etc/sudobot/env"
     fi
 
-    exec bun run $arg "$script_root/src/main/typescript/main.ts" "$@"
+    exec bun run $arg "$script_root/src/main/typescript/index.ts" "$@"
 else
-    exec node --env-file-if-exists=/etc/sudobot/env -- "$script_root/build/out/main/typescript/main.js" "$@"
+    exec node --env-file-if-exists=/etc/sudobot/env -- "$script_root/build/out/main/typescript/index.js" "$@"
 fi

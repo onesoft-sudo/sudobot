@@ -25,9 +25,7 @@ import { isDiscordAPIError } from "@framework/utils/errors.js";
 import { noOperation } from "@framework/utils/utils.js";
 import { ServiceID } from "@main/core/ServiceID.js";
 import { chunkedString, systemPrefix } from "@main/utils/utils.js";
-import packageJSON from "@root/package.json" with { type: "json" };
 import axios from "axios";
-import chalk from "chalk";
 import {
     ActivityType,
     Colors,
@@ -36,41 +34,17 @@ import {
     type APIEmbed,
     type Snowflake
 } from "discord.js";
-import figlet from "figlet";
-import figletBigFont from "figlet/importable-fonts/Big.js";
 import { mkdir, rm } from "fs/promises";
 import path from "path";
 import { setTimeout } from "timers/promises";
 import ConfigurationManagerService from "./ConfigurationManagerService.js";
 
 const { ERROR_WEBHOOK_URL } = process.env;
-const { version } = packageJSON;
 
 class StartupManagerService extends Service {
     public override readonly name: string = ServiceID.STARTUP_MANAGER;
 
-    private async printBanner() {
-        figlet.parseFont("customBig", figletBigFont);
-
-        console.info();
-        console.info(
-            chalk.blueBright(
-                (await figlet.text("SudoBot", { font: "customBig" })).replace(
-                    /\s+$/,
-                    ""
-                )
-            )
-        );
-        console.info();
-        console.info(`      Version ${chalk.green(version)} -- booting up`);
-        console.info();
-    }
-
-    public override async preboot(): Promise<void> {
-        if (this.application.shardCount === 1) {
-            await this.printBanner();
-        }
-
+    public override preboot(): void {
         axios.defaults.headers.common["Accept-Encoding"] = "gzip";
     }
 

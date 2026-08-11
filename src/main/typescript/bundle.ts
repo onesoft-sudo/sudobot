@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./prebundle.js";
+import "./boot/prebundle.js";
 
-import "./loadenv.js";
+import "./boot/loadenv.js";
 
-import "./preload.js";
+import "./boot/preload.js";
 
 import Resource from "@framework/resources/Resource.js";
 import { BUNDLE_DATA_SYMBOL } from "@framework/utils/bundle.js";
@@ -36,7 +36,9 @@ import {
     resources,
     rules,
     services
-} from "../imports.gen.js";
+} from "./imports.gen.js";
+
+global.isBundle ??= true;
 
 Object.defineProperty(global, BUNDLE_DATA_SYMBOL, {
     value: {
@@ -54,4 +56,4 @@ for (const [id, data] of Object.entries(resources)) {
     Resource.registerResource(id, data);
 }
 
-void import("../main.js").then();
+void import("./main.js").then();

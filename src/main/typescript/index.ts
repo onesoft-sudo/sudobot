@@ -18,4 +18,5 @@
  */
 
 import "./boot/preload.js";
+
 void import("./main.js").then();

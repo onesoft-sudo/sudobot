@@ -16,70 +16,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-
-import "./boot/preload.js";
-
 import packageJSON from "@root/package.json" with { type: "json" };
 import path from "path";
 
-import { Logger } from "@framework/log/Logger.js";
-import Resource from "@framework/resources/Resource.js";
 import { isDevelopmentMode } from "@framework/utils/utils.js";
-import AppKernel from "@main/core/AppKernel.js";
-import Application from "@main/core/Application.js";
-import { setEnv } from "@main/env/env.js";
-import type { DotenvParseOutput } from "dotenv";
+import MasterProcessManager from "@main/sharding/MasterProcessManager.js";
+import ShardProcessManager from "@main/sharding/ShardProcessManager.js";
 import { parseArgs, type ParseArgsConfig } from "util";
 
 const { _meta, version } = packageJSON;
-const logger = new Logger("Main", true);
 const argv0 = process.env.SUDOBOT_WRAPPER
     ? "sudobot"
     : path.basename(process.argv[1]);
-
-async function loadEnvironmentData() {
-    if (process.send) {
-        await new Promise<void>((resolve, reject) => {
-            process.once("message", message => {
-                const messageData =
-                    message && typeof message === "object"
-                        ? (message as {
-                              type: string;
-                              data?: unknown;
-                          })
-                        : null;
-
-                if (messageData?.type === "SECRETS") {
-                    const data = messageData?.data as DotenvParseOutput;
-
-                    if (!data) {
-                        process.send?.({ type: "SECRETS_ACK" });
-                        resolve();
-                        return;
-                    }
-
-                    setEnv({
-                        ...process.env,
-                        ...data
-                    });
-
-                    for (const key in data) {
-                        process.env[key] = data[key];
-                    }
-
-                    logger.success("Successfully loaded environment data");
-                    process.send?.({ type: "SECRETS_ACK" });
-                    resolve();
-                    return;
-                }
-
-                reject(new Error("Invalid IPC message received"));
-            });
-
-            process.send?.({ type: "READY" });
-        });
-    }
-}
 
 function usage() {
     console.info("Usage:");
@@ -99,6 +47,10 @@ function usage() {
     console.info(
         "                            When the --shard option is used."
     );
+    console.info(
+        "  -M, --master              Become the master process, and spawn shards"
+    );
+    console.info("                            as needed.");
     console.info(
         "  -U, --update=[MODE]       Update application commands. MODE can be"
     );
@@ -146,9 +98,14 @@ const parseArgsOptions = {
         version: {
             short: "v",
             type: "boolean"
+        },
+        master: {
+            short: "M",
+            type: "boolean"
         }
     }
 } satisfies ParseArgsConfig;
+
 let values: ReturnType<typeof parseArgs<typeof parseArgsOptions>>["values"];
 
 try {
@@ -202,7 +159,14 @@ async function main() {
 
     const shards = new Set<number>();
 
-    if (values.shard) {
+    if (values.shard?.length) {
+        if (values.master) {
+            console.error(
+                `${argv0}: Cannot use --shard (-S) with --master (-M)`
+            );
+            process.exit(1);
+        }
+
         for (const shard of values.shard) {
             if (!shard || Number.isNaN(+shard)) {
                 console.error(`${argv0}: Invalid shard ID: ${shard}`);
@@ -224,7 +188,17 @@ async function main() {
         }
     }
 
-    if ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount)) {
+    if (values.master && shardCount === undefined) {
+        console.error(
+            `${argv0}: Please use --shardcount (-S) with --master (-M)`
+        );
+        process.exit(1);
+    }
+
+    if (
+        !values.master &&
+        ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount))
+    ) {
         console.error(
             `${argv0}: Please use both --shard (-s) and --shardcount (-S) together`
         );
@@ -242,31 +216,13 @@ async function main() {
         process.exit(1);
     }
 
-    Application.setupGlobals();
-    Resource.registerResourcePaths(
-        path.resolve(import.meta.dirname, "../resources")
-    );
-    await loadEnvironmentData();
-
-    const rootDirectoryPath = path.resolve(import.meta.dirname);
-    const projectRootDirectoryPath = path.resolve(
-        import.meta.dirname,
-        "../../.."
-    );
-    const application = new Application({
-        rootDirectoryPath,
-        projectRootDirectoryPath,
-        version: process.env.SUDOBOT_VERSION ?? version,
-        shards: shards.size === 0 ? undefined : Array.from(shards),
-        shardCount: shards.size === 0 ? undefined : shardCount
-    });
-
-    await application.run(
-        new AppKernel({
-            shards: shards.size === 0 ? undefined : Array.from(shards),
-            shardCount: shards.size === 0 ? undefined : shardCount
-        })
-    );
+    if (values.master) {
+        const masterProcessManager = new MasterProcessManager(process.argv);
+        await masterProcessManager.start(shardCount);
+    } else {
+        const shardProcessManager = new ShardProcessManager();
+        await shardProcessManager.start(shards, shardCount);
+    }
 }
 
 export default main();
