@@ -19,8 +19,8 @@
 
 import type { GuildBasedChannel, GuildMember, Role, Snowflake, User } from "discord.js";
 import { isSnowflake } from "../utils/utils";
-import Argument from "./Argument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
+import Argument from "./Argument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
 abstract class EntityArgument<E extends User | GuildMember | GuildBasedChannel | Role | null> extends Argument<E> {
     protected abstract readonly mentionStart: string[];

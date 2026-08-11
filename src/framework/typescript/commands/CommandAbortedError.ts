@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Command from "./Command";
+import type Command from "./Command.js";
 
 class CommandAbortedError extends Error {
     public readonly command?: Command;

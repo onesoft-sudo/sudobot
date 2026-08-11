@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import Job from "@framework/queues/Job";
-import type JobDatabaseDriver from "@framework/queues/JobDatabaseDriver";
-import JobState from "@framework/queues/JobState";
+import type Application from "@framework/app/Application.js";
+import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import Job from "@framework/queues/Job.js";
+import type JobDatabaseDriver from "@framework/queues/JobDatabaseDriver.js";
+import JobState from "@framework/queues/JobState.js";
 import { Collection } from "discord.js";
 
 class QueueManager {

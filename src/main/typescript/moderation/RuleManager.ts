@@ -1,5 +1,5 @@
-import type Application from "@main/core/Application";
-import { assert } from "@main/utils/utils";
+import type Application from "@main/core/Application.js";
+import { assert } from "@main/utils/utils.js";
 import type {
     APIEmbed,
     EmbedField,
@@ -10,15 +10,15 @@ import type {
 import {
     Collection
 } from "discord.js";
-import MessageRule from "./MessageRule";
-import ProfileRule from "./ProfileRule";
-import type Rule from "./Rule";
-import ProfileMessageRule from "./ProfileMessageRule";
-import type { ModerationActionType, RuleDefinition, RuleType } from "@schemas/all";
-import { xor } from "@framework/utils/logic";
-import { SERVICE_MODERATION_ACTION } from "@main/services/ModerationActionService";
-import type ModerationActionService from "@main/services/ModerationActionService";
-import { requireNonNull } from "@framework/utils/utils";
+import MessageRule from "./MessageRule.js";
+import ProfileRule from "./ProfileRule.js";
+import type Rule from "./Rule.js";
+import ProfileMessageRule from "./ProfileMessageRule.js";
+import type { ModerationActionType, RuleDefinition, RuleType } from "@schemas/all.js";
+import { xor } from "@framework/utils/logic.js";
+import { SERVICE_MODERATION_ACTION } from "@main/services/ModerationActionService.js";
+import type ModerationActionService from "@main/services/ModerationActionService.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 
 class RuleManager {
     protected readonly application: Application;

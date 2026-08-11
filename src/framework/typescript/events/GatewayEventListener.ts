@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { AnyFunction } from "@framework/types/Utils";
+import type { AnyFunction } from "@framework/types/Utils.js";
 import type { Client } from "discord.js";
 import type { ClientEvents } from "../types/ClientEvents";
 

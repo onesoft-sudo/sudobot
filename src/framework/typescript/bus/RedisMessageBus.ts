@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { promiseWithResolvers } from "@framework/polyfills/Promise";
+import { promiseWithResolvers } from "@framework/polyfills/Promise.js";
 import { decode, encode } from "@msgpack/msgpack";
 import type { Awaitable } from "discord.js";
 import EventEmitter from "events";
@@ -26,7 +26,7 @@ import { Redis } from "ioredis";
 import MessageBus, {
     type MessageBusRequest,
     type MessageDetails
-} from "./MessageBus";
+} from "./MessageBus.js";
 
 class RedisMessageBus extends MessageBus {
     private readonly subscriber: Redis;

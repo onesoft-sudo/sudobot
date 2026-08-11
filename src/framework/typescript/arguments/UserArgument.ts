@@ -21,10 +21,10 @@ import { type Awaitable, type ChatInputCommandInteraction, type User } from "dis
 import Application from "../app/Application";
 import type { If } from "../types/Utils";
 import { fetchUser } from "../utils/entities";
-import EntityArgument from "./EntityArgument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import { isDiscordAPIError } from "@framework/utils/errors";
-import APIErrors from "@framework/errors/APIErrors";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
+import APIErrors from "@framework/errors/APIErrors.js";
 
 class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User, User | null>> {
     public static readonly defaultErrors = {

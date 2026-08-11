@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchGuild } from "@framework/utils/entities";
+import { fetchGuild } from "@framework/utils/entities.js";
 import axios, { type AxiosRequestConfig } from "axios";
 import {
     type GuildBasedChannel,
@@ -78,7 +78,7 @@ export function wait(time: number) {
 
 export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
-        process.env.SUDOBOT_PREFIX ?? __dirname,
+        process.env.SUDOBOT_PREFIX ?? import.meta.dirname,
         process.env.SUDOBOT_PREFIX ? "" : "../../../..",
         pathLike
     );

@@ -18,9 +18,9 @@
  */
 
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import Argument from "./Argument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import LegacyContext from "@framework/commands/LegacyContext";
+import Argument from "./Argument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import LegacyContext from "@framework/commands/LegacyContext.js";
 import assert from "assert";
 
 class RestStringArgument extends Argument<string> {

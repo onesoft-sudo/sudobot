@@ -18,7 +18,7 @@
  */
 
 import { z } from "zod";
-import { SnowflakeSchema } from "./SnowflakeSchema";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
 
 export enum LogEventType {
     MessageDelete = "message_delete",

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { PolicyModuleTokenType } from "./PolicyModuleTokenType";
+import type { PolicyModuleTokenType } from "./PolicyModuleTokenType.js";
 
 export type Location = readonly [index: number, line: number, column: number];
 

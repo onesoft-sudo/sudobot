@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Location, Range } from "./PolicyModuleParserTypes";
+import type { Location, Range } from "./PolicyModuleParserTypes.js";
 
 class PolicyModuleParserError extends SyntaxError {
     public readonly location: Range;

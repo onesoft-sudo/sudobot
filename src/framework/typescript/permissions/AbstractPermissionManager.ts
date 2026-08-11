@@ -20,9 +20,9 @@
 import type { APIInteractionGuildMember, Awaitable, GuildBasedChannel, PermissionResolvable, Role } from "discord.js";
 import { Collection, PermissionsBitField, User } from "discord.js";
 import type { GuildMember } from "discord.js";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable";
-import Permission from "./Permission";
-import type Application from "@framework/app/Application";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable.js";
+import Permission from "./Permission.js";
+import type Application from "@framework/app/Application.js";
 
 export type GetPermissionsResult = {
     discordPermissions: bigint;

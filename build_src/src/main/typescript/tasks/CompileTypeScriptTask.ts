@@ -9,6 +9,7 @@ import {
     x,
     type Awaitable
 } from "@onesoftnet/blazebuild";
+import { rename, rm, symlink } from "fs/promises";
 import path from "path";
 
 @Task({
@@ -30,9 +31,25 @@ class CompileTypeScriptTask extends AbstractTask {
             );
         }
 
-        await x(`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`);
-        await x(`rm -rf ${buildOutputDirectory}/out`);
-        await x(`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`);
+        await rename(
+            path.join(buildOutputDirectory, "out/src"),
+            path.join(buildOutputDirectory, "out.tmp")
+        );
+
+        await rm(path.join(buildOutputDirectory, "out"), {
+            recursive: true,
+            force: true
+        });
+
+        await rename(
+            path.join(buildOutputDirectory, "out.tmp"),
+            path.join(buildOutputDirectory, "out")
+        );
+
+        await symlink(
+            path.join(process.cwd(), "package.json"),
+            path.join(buildOutputDirectory, "package.json")
+        );
     }
 
     @TaskInputGenerator

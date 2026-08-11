@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Duration from "@framework/datetime/Duration";
-import type { RuleExecResult } from "@main/moderation/RuleManager";
-import type { LogEventType } from "@schemas/defs/LoggingSchema";
-import type { ModerationActionType } from "@schemas/defs/ModerationActionSchema";
-import type { RuleDefinition } from "@schemas/defs/RuleSchema";
+import type Duration from "@framework/datetime/Duration.js";
+import type { RuleExecResult } from "@main/moderation/RuleManager.js";
+import type { LogEventType } from "@schemas/defs/LoggingSchema.js";
+import type { ModerationActionType } from "@schemas/defs/ModerationActionSchema.js";
+import type { RuleDefinition } from "@schemas/defs/RuleSchema.js";
 import type {
     Guild,
     GuildBasedChannel,
@@ -112,9 +112,6 @@ export type LogEventArgs = {
     ];
     [LogEventType.GuildVerificationSuccess]: [
         payload: LogGuildVerificationSuccessPayload
-    ];
-    [LogEventType.GuildVerificationNotEnoughInfo]: [
-        payload: LogGuildVerificationNotEnoughInfoPayload
     ];
     [LogEventType.GuildVerificationNotEnoughInfo]: [
         payload: LogGuildVerificationNotEnoughInfoPayload
@@ -300,4 +297,4 @@ export type LogMemberBanRemovePayload = Omit<
     infractionId?: number;
 };
 
-export * from "@schemas/defs/LoggingSchema";
+export * from "@schemas/defs/LoggingSchema.js";

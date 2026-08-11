@@ -18,18 +18,18 @@
  */
 
 import { type GuildBasedChannel, GuildMember, Role, User, type Snowflake } from "discord.js";
-import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema";
-import PolicyModuleError from "./PolicyModuleError";
-import { Logger } from "@framework/log/Logger";
+import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema.js";
+import PolicyModuleError from "./PolicyModuleError.js";
+import { Logger } from "@framework/log/Logger.js";
 import { performance } from "perf_hooks";
 import { readFile } from "fs/promises";
 import { writeFile } from "fs/promises";
-import { CacheSchema, type AVCType } from "./AVCSchema";
+import { CacheSchema, type AVCType } from "./AVCSchema.js";
 import { LRUCache } from "lru-cache";
-import { systemPrefix } from "@main/utils/utils";
+import { systemPrefix } from "@main/utils/utils.js";
 import path from "path";
-import { createRegex, regexTest } from "@framework/utils/re2";
-import MessagePackEncoder from "./MessagePackEncoder";
+import { createRegex, regexTest } from "@framework/utils/re2.js";
+import MessagePackEncoder from "./MessagePackEncoder.js";
 
 type CacheEntry = {
     avc: AVCType;

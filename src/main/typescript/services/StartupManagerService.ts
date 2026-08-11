@@ -17,23 +17,30 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Service from "@framework/services/Service";
-import FileSystem from "@framework/polyfills/FileSystem";
-import chalk from "chalk";
-import figlet from "figlet";
-import figletBigFont from "figlet/importable-fonts/Big.js";
+import FileSystem from "@framework/polyfills/FileSystem.js";
+import Service from "@framework/services/Service.js";
+import { emoji } from "@framework/utils/emoji.js";
+import { fetchChannel, fetchMessage } from "@framework/utils/entities.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
+import { noOperation } from "@framework/utils/utils.js";
+import { chunkedString, systemPrefix } from "@main/utils/utils.js";
 import { version } from "@root/package.json";
 import axios from "axios";
-import { chunkedString, systemPrefix } from "@main/utils/utils";
-import path from "path";
-import { Colors, ActivityType, type Snowflake, escapeCodeBlock, WebhookClient, type APIEmbed } from "discord.js";
+import chalk from "chalk";
+import {
+    ActivityType,
+    Colors,
+    escapeCodeBlock,
+    WebhookClient,
+    type APIEmbed,
+    type Snowflake
+} from "discord.js";
+import figlet from "figlet";
+import figletBigFont from "figlet/importable-fonts/Big.js";
 import { rm } from "fs/promises";
-import { fetchChannel, fetchMessage } from "@framework/utils/entities";
-import { emoji } from "@framework/utils/emoji";
+import path from "path";
 import { setTimeout } from "timers/promises";
-import { isDiscordAPIError } from "@framework/utils/errors";
-import { noOperation } from "@framework/utils/utils";
-import ConfigurationManagerService from "./ConfigurationManagerService";
+import ConfigurationManagerService from "./ConfigurationManagerService.js";
 
 export const SERVICE_STARTUP_MANAGER = "startupManagerService" as const;
 
@@ -48,9 +55,10 @@ class StartupManagerService extends Service {
         console.info();
         console.info(
             chalk.blueBright(
-                (
-                    await figlet.text("SudoBot", { font: "customBig" })
-                ).replace(/\s+$/, "")
+                (await figlet.text("SudoBot", { font: "customBig" })).replace(
+                    /\s+$/,
+                    ""
+                )
             )
         );
         console.info();
@@ -67,22 +75,28 @@ class StartupManagerService extends Service {
     }
 
     public async onReady() {
-        const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
+        const restartJsonFile = path.join(
+            systemPrefix("tmp", true),
+            "restart.json"
+        );
 
         if (await FileSystem.exists(restartJsonFile)) {
-            this.application.logger.info("Found restart.json file: ", restartJsonFile);
+            this.application.logger.info(
+                "Found restart.json file: ",
+                restartJsonFile
+            );
 
             respond: try {
-                const { guildId, messageId, channelId, time, metadata } = (await FileSystem.readFileContents(
-                    restartJsonFile,
-                    { json: true }
-                )) as {
-                    guildId?: string;
-                    messageId?: string;
-                    channelId?: string;
-                    time: number;
-                    metadata: unknown;
-                };
+                const { guildId, messageId, channelId, time, metadata } =
+                    (await FileSystem.readFileContents(restartJsonFile, {
+                        json: true
+                    })) as {
+                        guildId?: string;
+                        messageId?: string;
+                        channelId?: string;
+                        time: number;
+                        metadata: unknown;
+                    };
 
                 if (!guildId || !channelId || !messageId) {
                     break respond;
@@ -112,7 +126,9 @@ class StartupManagerService extends Service {
                             {
                                 author: {
                                     name: "System Update",
-                                    icon_url: this.application.client.user?.displayAvatarURL() ?? undefined
+                                    icon_url:
+                                        this.application.client.user?.displayAvatarURL() ??
+                                        undefined
                                 },
                                 color: Colors.Green,
                                 description: `${emoji(this.application, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
@@ -120,8 +136,7 @@ class StartupManagerService extends Service {
                             }
                         ]
                     });
-                }
-                else {
+                } else {
                     await message.edit({
                         embeds: [
                             {
@@ -141,7 +156,9 @@ class StartupManagerService extends Service {
             rm(restartJsonFile).catch(this.application.logger.error);
         }
 
-        const { presence } = this.application.service(ConfigurationManagerService).systemConfig;
+        const { presence } = this.application.service(
+            ConfigurationManagerService
+        ).systemConfig;
 
         this.application.client.user?.setPresence({
             activities: [
@@ -155,10 +172,21 @@ class StartupManagerService extends Service {
         });
     }
 
-    public requestRestart({ channelId, guildId, message, messageId, waitFor, key, metadata }: RestartOptions = {}) {
+    public requestRestart({
+        channelId,
+        guildId,
+        message,
+        messageId,
+        waitFor,
+        key,
+        metadata
+    }: RestartOptions = {}) {
         setTimeout(waitFor)
             .then(async () => {
-                const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
+                const restartJsonFile = path.join(
+                    systemPrefix("tmp", true),
+                    "restart.json"
+                );
 
                 await FileSystem.writeFileContents(
                     restartJsonFile,
@@ -173,13 +201,20 @@ class StartupManagerService extends Service {
                     })
                 );
 
-                this.application.logger.info("Restart requested. Shutting down...");
+                this.application.logger.info(
+                    "Restart requested. Shutting down..."
+                );
 
                 if (message) {
-                    this.application.logger.info(`Broadcasted Message: ${message}`);
+                    this.application.logger.info(
+                        `Broadcasted Message: ${message}`
+                    );
                 }
 
-                process.exit(this.application.service(ConfigurationManagerService).systemConfig.restart_exit_code);
+                process.exit(
+                    this.application.service(ConfigurationManagerService)
+                        .systemConfig.restart_exit_code
+                );
             })
             .catch(this.application.logger.error);
 
@@ -210,11 +245,13 @@ class StartupManagerService extends Service {
                 embeds.push({
                     color: 0xf14a60,
                     description: "```" + escapeCodeBlock(chunks[i]) + "```",
-                    timestamp: i === chunks.length - 1 ? new Date().toISOString() : undefined
+                    timestamp:
+                        i === chunks.length - 1
+                            ? new Date().toISOString()
+                            : undefined
                 });
             }
-        }
-        else {
+        } else {
             embeds[0].timestamp = new Date().toISOString();
         }
 
@@ -240,7 +277,9 @@ class StartupManagerService extends Service {
                           this.errorToString(reason)
                         : reason instanceof Error
                           ? this.errorToString(reason)
-                          : typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
+                          : typeof reason === "string" ||
+                              typeof (reason as string | undefined)
+                                  ?.toString === "function"
                             ? escapeCodeBlock(
                                   (reason as string | undefined)?.toString
                                       ? (reason as string).toString()
@@ -257,7 +296,8 @@ class StartupManagerService extends Service {
             process.removeAllListeners("uncaughtException");
             this.application.logger.error(error);
             this.sendErrorLog(
-                error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
+                error.stack ??
+                    `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
             )
                 .catch(noOperation)
                 .finally(() => process.exit(-1));

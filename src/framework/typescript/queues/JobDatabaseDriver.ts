@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type Job from "@framework/queues/Job";
-import type JobDescriptor from "@framework/queues/JobDescriptor";
-import type QueueManager from "@framework/queues/QueueManager";
+import type Application from "@framework/app/Application.js";
+import type Job from "@framework/queues/Job.js";
+import type JobDescriptor from "@framework/queues/JobDescriptor.js";
+import type QueueManager from "@framework/queues/QueueManager.js";
 
 abstract class JobDatabaseDriver {
     protected readonly application: Application;

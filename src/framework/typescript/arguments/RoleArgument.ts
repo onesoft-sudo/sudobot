@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchRole } from "@framework/utils/entities";
-import { isSnowflake } from "@framework/utils/utils";
+import { fetchRole } from "@framework/utils/entities.js";
+import { isSnowflake } from "@framework/utils/utils.js";
 import type { Awaitable, ChatInputCommandInteraction, Role } from "discord.js";
 import type { If } from "../types/Utils";
-import EntityArgument from "./EntityArgument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import APIErrors from "@framework/errors/APIErrors";
-import { isDiscordAPIError } from "@framework/utils/errors";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import APIErrors from "@framework/errors/APIErrors.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
 
 class RoleArgument<E extends boolean = false> extends EntityArgument<If<E, Role, Role | null>> {
     public static readonly defaultErrors = {

@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type Command from "@framework/commands/Command";
-import type EventListener from "@framework/events/EventListener";
-import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import type QueueManager from "@framework/queues/QueueManager";
-import type Service from "@framework/services/Service";
-import type { Events } from "@framework/types/ClientEvents";
-import type Rule from "@main/moderation/Rule";
-import type { RuleType } from "@schemas/all";
+import type Application from "@framework/app/Application.js";
+import type Command from "@framework/commands/Command.js";
+import type EventListener from "@framework/events/EventListener.js";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import type QueueManager from "@framework/queues/QueueManager.js";
+import type Service from "@framework/services/Service.js";
+import type { Events } from "@framework/types/ClientEvents.js";
+import type Rule from "@main/moderation/Rule.js";
+import type { RuleType } from "@schemas/all.js";
 
 export const BUNDLE_DATA_SYMBOL = Symbol("BundleData");
 export type BundleData = {

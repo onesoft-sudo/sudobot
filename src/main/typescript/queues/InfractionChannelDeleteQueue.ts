@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import JobState from "@framework/queues/JobState";
-import { fetchChannel } from "@framework/utils/entities";
+import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import JobState from "@framework/queues/JobState.js";
+import { fetchChannel } from "@framework/utils/entities.js";
 import ConfigurationManagerService, {
     ConfigurationType
-} from "@main/services/ConfigurationManagerService";
+} from "@main/services/ConfigurationManagerService.js";
 import type { Snowflake } from "discord.js";
 
 type InfractionChannelDeleteQueuePayload = {

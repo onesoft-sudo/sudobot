@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
+import type Application from "@framework/app/Application.js";
 import type { Awaitable, Client } from "discord.js";
 
 abstract class Kernel {

@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type BlockStatementNode from "./BlockStatementNode";
-import Node from "./Node";
+import type BlockStatementNode from "./BlockStatementNode.js";
+import Node from "./Node.js";
 import type { Range } from "../PolicyModuleParserTypes";
-import type ModuleBlockPropertyNode from "./ModuleBlockPropertyNode";
+import type ModuleBlockPropertyNode from "./ModuleBlockPropertyNode.js";
 
 class ModuleBlockStatementNode extends Node {
     public readonly block: BlockStatementNode<ModuleBlockPropertyNode>;

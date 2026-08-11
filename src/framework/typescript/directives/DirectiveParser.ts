@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Directive from "@framework/directives/Directive";
-import DirectiveParseError from "@framework/directives/DirectiveParseError";
-import type { Class } from "@framework/types/Utils";
-import { isAlpha } from "@framework/utils/string";
+import type Directive from "@framework/directives/Directive.js";
+import DirectiveParseError from "@framework/directives/DirectiveParseError.js";
+import type { Class } from "@framework/types/Utils.js";
+import { isAlpha } from "@framework/utils/string.js";
 import JSON5 from "json5";
 
 class DirectiveParser {

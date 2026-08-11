@@ -18,9 +18,9 @@
  */
 
 import type { GuildMember, User, Awaitable } from "discord.js";
-import AbstractImplicitPermissionManager from "./AbstractImplicitPermissionManager";
-import type { GetPermissionsResult } from "./AbstractPermissionManager";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable";
+import AbstractImplicitPermissionManager from "./AbstractImplicitPermissionManager.js";
+import type { GetPermissionsResult } from "./AbstractPermissionManager.js";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "./PermissionResolvable.js";
 
 class DiscordPermissionManager extends AbstractImplicitPermissionManager {
     public override async getPermissions(

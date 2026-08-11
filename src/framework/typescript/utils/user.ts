@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { application, client } from "@framework/utils/helpers";
+import { application, client } from "@framework/utils/helpers.js";
 import type { GuildMember, User } from "discord.js";
 import { time, TimestampStyles, UserFlags } from "discord.js";
-import { emoji, findEmoji } from "./emoji";
+import { emoji, findEmoji } from "./emoji.js";
 
 const map: Record<string, [string, string]> = {
     BugHunterLevel1: ["bughunter", "Bughunter Level 1"],

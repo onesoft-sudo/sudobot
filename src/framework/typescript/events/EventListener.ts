@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type { ArgsOfEventListener, Events } from "@framework/types/ClientEvents";
+import type Application from "@framework/app/Application.js";
+import type { ArgsOfEventListener, Events } from "@framework/types/ClientEvents.js";
 import type { Awaitable } from "discord.js";
 
 abstract class EventListener<T extends Events> {

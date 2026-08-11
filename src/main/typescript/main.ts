@@ -17,17 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./preload";
+import "./preload.js";
 
+import { _meta, version } from "@root/package.json";
 import path from "path";
-import { _meta, version } from "../../../package.json";
 
-import { Logger } from "@framework/log/Logger";
-import Resource from "@framework/resources/Resource";
-import { isDevelopmentMode } from "@framework/utils/utils";
-import AppKernel from "@main/core/AppKernel";
-import Application from "@main/core/Application";
-import { setEnv } from "@main/env/env";
+import { Logger } from "@framework/log/Logger.js";
+import Resource from "@framework/resources/Resource.js";
+import { isDevelopmentMode } from "@framework/utils/utils.js";
+import AppKernel from "@main/core/AppKernel.js";
+import Application from "@main/core/Application.js";
+import { setEnv } from "@main/env/env.js";
 import type { DotenvParseOutput } from "dotenv";
 import { parseArgs, type ParseArgsConfig } from "util";
 
@@ -172,8 +172,8 @@ try {
 
             default:
                 console.error(`${argv0}: error: ${error.message}`);
-     
-              break;
+
+                break;
         }
     } else {
         throw error;
@@ -242,11 +242,11 @@ async function main() {
     }
 
     Application.setupGlobals();
-    Resource.registerResourcePaths(path.resolve(__dirname, "../resources"));
+    Resource.registerResourcePaths(path.resolve(import.meta.dirname, "../resources"));
     await loadEnvironmentData();
 
-    const rootDirectoryPath = path.resolve(__dirname);
-    const projectRootDirectoryPath = path.resolve(__dirname, "../../..");
+    const rootDirectoryPath = path.resolve(import.meta.dirname);
+    const projectRootDirectoryPath = path.resolve(import.meta.dirname, "../../..");
     const application = new Application({
         rootDirectoryPath,
         projectRootDirectoryPath,

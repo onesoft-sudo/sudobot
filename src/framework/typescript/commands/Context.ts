@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import { emoji } from "@framework/utils/emoji";
+import type Application from "@framework/app/Application.js";
+import { emoji } from "@framework/utils/emoji.js";
 import type { Guild, GuildMember, Snowflake } from "discord.js";
 import {
     type ChatInputCommandInteraction,
@@ -28,11 +28,11 @@ import {
     Message,
     type MessageCreateOptions
 } from "discord.js";
-import CommandContextType from "./CommandContextType";
-import type InteractionContext from "./InteractionContext";
-import type LegacyContext from "./LegacyContext";
-import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
-import type { If } from "@framework/types/Utils";
+import CommandContextType from "./CommandContextType.js";
+import type InteractionContext from "./InteractionContext.js";
+import type LegacyContext from "./LegacyContext.js";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder.js";
+import type { If } from "@framework/types/Utils.js";
 
 export type ContextReplyOptions = InteractionReplyOptions | InteractionEditReplyOptions | MessageCreateOptions | string;
 

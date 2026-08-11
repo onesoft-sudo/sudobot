@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchChannel } from "@framework/utils/entities";
-import { isSnowflake } from "@framework/utils/utils";
+import { fetchChannel } from "@framework/utils/entities.js";
+import { isSnowflake } from "@framework/utils/utils.js";
 import { type Awaitable, type ChatInputCommandInteraction, type GuildBasedChannel } from "discord.js";
 import type { If } from "../types/Utils";
-import EntityArgument from "./EntityArgument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import APIErrors from "@framework/errors/APIErrors";
-import { isDiscordAPIError } from "@framework/utils/errors";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import APIErrors from "@framework/errors/APIErrors.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
 
 class ChannelArgument<E extends boolean = false> extends EntityArgument<
     If<E, GuildBasedChannel, GuildBasedChannel | null>

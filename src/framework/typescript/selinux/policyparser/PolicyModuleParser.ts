@@ -17,19 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AllowDenyStatementNode from "./ast/AllowDenyStatementNode";
-import BinaryExpressionNode from "./ast/BinaryExpressionNode";
-import BlockStatementNode from "./ast/BlockStatementNode";
-import LiteralNode, { LiteralKind } from "./ast/LiteralNode";
-import ModuleBlockPropertyNode from "./ast/ModuleBlockPropertyNode";
-import ModuleBlockStatementNode from "./ast/ModuleBlockStatementNode";
-import type Node from "./ast/Node";
-import PolicyModuleParserError from "./PolicyModuleParserError";
-import type { Token } from "./PolicyModuleParserTypes";
-import { PolicyModuleTokenType } from "./PolicyModuleTokenType";
-import RootNode from "./ast/RootNode";
-import RequireBlockStatementNode from "./ast/RequireBlockStatementNode";
-import RequireTypeStatementNode from "./ast/RequireTypeStatementNode";
+import AllowDenyStatementNode from "./ast/AllowDenyStatementNode.js";
+import BinaryExpressionNode from "./ast/BinaryExpressionNode.js";
+import BlockStatementNode from "./ast/BlockStatementNode.js";
+import LiteralNode, { LiteralKind } from "./ast/LiteralNode.js";
+import ModuleBlockPropertyNode from "./ast/ModuleBlockPropertyNode.js";
+import ModuleBlockStatementNode from "./ast/ModuleBlockStatementNode.js";
+import type Node from "./ast/Node.js";
+import PolicyModuleParserError from "./PolicyModuleParserError.js";
+import type { Token } from "./PolicyModuleParserTypes.js";
+import { PolicyModuleTokenType } from "./PolicyModuleTokenType.js";
+import RootNode from "./ast/RootNode.js";
+import RequireBlockStatementNode from "./ast/RequireBlockStatementNode.js";
+import RequireTypeStatementNode from "./ast/RequireTypeStatementNode.js";
 
 class PolicyModuleParser {
     private static SIMPLE_TOKENS = {

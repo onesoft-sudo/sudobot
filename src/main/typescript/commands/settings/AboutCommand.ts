@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command from "@framework/commands/Command";
-import type Context from "@framework/commands/Context";
-import { getEnv } from "@main/env/env";
-import metadata from "@root/package.json";
+import Command from "@framework/commands/Command.js";
+import type Context from "@framework/commands/Context.js";
+import { getEnv } from "@main/env/env.js";
+import metadata from "@root/package.json" with { type: "json" };
 import {
     ActionRowBuilder,
     ButtonBuilder,

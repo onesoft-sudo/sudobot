@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Service from "@framework/services/Service";
-import type { HasEventListeners } from "@framework/types/HasEventListeners";
-import { Colors } from "@main/constants/Colors";
-import type Application from "@main/core/Application";
-import type { AFKEntry } from "@main/models/AFKEntry";
-import { afkEntries } from "@main/models/AFKEntry";
+import Service from "@framework/services/Service.js";
+import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
+import { Colors } from "@main/constants/Colors.js";
+import type Application from "@main/core/Application.js";
+import type { AFKEntry } from "@main/models/AFKEntry.js";
+import { afkEntries } from "@main/models/AFKEntry.js";
 import { formatDistanceToNowStrict } from "date-fns";
 import type {
     Message,

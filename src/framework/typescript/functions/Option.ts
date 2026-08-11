@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import EmptyOptionError from "./EmptyOptionError";
+import EmptyOptionError from "./EmptyOptionError.js";
 
 class Option<in out T> {
     private readonly value?: T;

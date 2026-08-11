@@ -17,15 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command from "@framework/commands/Command";
-import CommandContextType from "@framework/commands/CommandContextType";
-import InteractionContext from "@framework/commands/InteractionContext";
-import LegacyContext from "@framework/commands/LegacyContext";
-import { Inject } from "@framework/container/Inject";
-import Service from "@framework/services/Service";
-import type { HasEventListeners } from "@framework/types/HasEventListeners";
-import { isDevelopmentMode } from "@framework/utils/utils";
-import { getEnv } from "@main/env/env";
+import Command from "@framework/commands/Command.js";
+import CommandContextType from "@framework/commands/CommandContextType.js";
+import InteractionContext from "@framework/commands/InteractionContext.js";
+import LegacyContext from "@framework/commands/LegacyContext.js";
+import { Inject } from "@framework/container/Inject.js";
+import Service from "@framework/services/Service.js";
+import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
+import { isDevelopmentMode } from "@framework/utils/utils.js";
+import { getEnv } from "@main/env/env.js";
 import {
     calculateShardId,
     ChatInputCommandInteraction,
@@ -35,7 +35,7 @@ import {
 } from "discord.js";
 import ConfigurationManagerService, {
     ConfigurationType
-} from "./ConfigurationManagerService";
+} from "./ConfigurationManagerService.js";
 
 export const SERVICE_COMMAND_MANAGER = "commandManagerService" as const;
 

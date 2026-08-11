@@ -18,7 +18,7 @@
  */
 
 import { z } from "zod";
-import { SnowflakeSchema } from "./SnowflakeSchema";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
 
 const CommonOptions = {
     reason: z.string().optional(),

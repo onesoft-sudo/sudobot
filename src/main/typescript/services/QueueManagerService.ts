@@ -17,15 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import type { QueueClass } from "@framework/queues/AbstractQueuedJob";
-import type Job from "@framework/queues/Job";
-import type { QueueCreateOptions } from "@framework/queues/QueueManager";
-import QueueManager from "@framework/queues/QueueManager";
-import Service from "@framework/services/Service";
-import type Application from "@main/core/Application";
-import PgJobDatabaseDriver from "@main/database/PgJobDatabaseDriver";
-import { queuedJobs } from "@main/models/QueuedJob";
+import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import type { QueueClass } from "@framework/queues/AbstractQueuedJob.js";
+import type Job from "@framework/queues/Job.js";
+import type { QueueCreateOptions } from "@framework/queues/QueueManager.js";
+import QueueManager from "@framework/queues/QueueManager.js";
+import Service from "@framework/services/Service.js";
+import type Application from "@main/core/Application.js";
+import PgJobDatabaseDriver from "@main/database/PgJobDatabaseDriver.js";
+import { queuedJobs } from "@main/models/QueuedJob.js";
 import { inArray, isNotNull } from "drizzle-orm";
 
 export const SERVICE_QUEUE_MANAGER = "queueManagerService";

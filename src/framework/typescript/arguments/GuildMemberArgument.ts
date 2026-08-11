@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchMember } from "@framework/utils/entities";
+import { fetchMember } from "@framework/utils/entities.js";
 import type { Awaitable, ChatInputCommandInteraction, GuildMember } from "discord.js";
 import type { If } from "../types/Utils";
-import EntityArgument from "./EntityArgument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import APIErrors from "@framework/errors/APIErrors";
-import { isDiscordAPIError } from "@framework/utils/errors";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import APIErrors from "@framework/errors/APIErrors.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
 
 class GuildMemberArgument<E extends boolean = false> extends EntityArgument<If<E, GuildMember, GuildMember | null>> {
     public static readonly defaultErrors = {

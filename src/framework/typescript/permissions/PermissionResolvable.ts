@@ -18,7 +18,7 @@
  */
 
 import type { PermissionsString } from "discord.js";
-import type Permission from "./Permission";
+import type Permission from "./Permission.js";
 
 export type SystemPermissionResolvable = Permission | typeof Permission;
 export type SimplePermissionResolvable = PermissionsString | bigint | SystemPermissionResolvable;

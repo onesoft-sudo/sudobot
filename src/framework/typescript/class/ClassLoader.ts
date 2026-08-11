@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { effectiveExtension } from "@framework/utils/utils";
+import { effectiveExtension } from "@framework/utils/utils.js";
 import type { Awaitable } from "discord.js";
 import { lstat } from "fs/promises";
 import { readdir } from "fs/promises";
@@ -30,7 +30,7 @@ export type ClassLoadOptions<T, R> = {
 };
 
 class ClassLoader {
-    private static readonly SRC_ROOT_DIR = path.resolve(__dirname, "../../..");
+    private static readonly SRC_ROOT_DIR = path.resolve(import.meta.dirname, "../../..");
 
     public async loadClass<T, R = T>(file: string, options?: ClassLoadOptions<T, R>): Promise<R> {
         if (file[0] !== "/") {

@@ -18,8 +18,8 @@
  */
 
 import { z } from "zod";
-import { ModerationActionSchema } from "./ModerationActionSchema";
-import { SnowflakeSchema } from "./SnowflakeSchema";
+import { ModerationActionSchema } from "./ModerationActionSchema.js";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
 
 const hasStringArrayData = {
     data: z.array(z.string()).default([])

@@ -1,8 +1,8 @@
-import { normalize } from "@framework/utils/string";
-import type { ProfileMessageRulePayload } from "@main/moderation/ProfileMessageRule";
-import ProfileMessageRule from "@main/moderation/ProfileMessageRule";
-import type { RuleContext } from "@main/moderation/Rule";
-import type { RuleDefinitionByType } from "@schemas/all";
+import { normalize } from "@framework/utils/string.js";
+import type { ProfileMessageRulePayload } from "@main/moderation/ProfileMessageRule.js";
+import ProfileMessageRule from "@main/moderation/ProfileMessageRule.js";
+import type { RuleContext } from "@main/moderation/Rule.js";
+import type { RuleDefinitionByType } from "@schemas/all.js";
 import type { Awaitable } from "discord.js";
 
 class WordRule extends ProfileMessageRule<"word_filter"> {

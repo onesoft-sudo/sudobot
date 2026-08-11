@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
+import AbstractPermissionManager, { type GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager.js";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
 import { User, type GuildBasedChannel, type Role, GuildMember, PermissionsBitField } from "discord.js";
-import PolicyManagerAVC from "./PolicyManagerAVC";
+import PolicyManagerAVC from "./PolicyManagerAVC.js";
 import { LRUCache } from "lru-cache";
-import Permission from "@framework/permissions/Permission";
+import Permission from "@framework/permissions/Permission.js";
 
 class SELinuxPermissionManager extends AbstractPermissionManager {
     protected readonly policyManager = new PolicyManagerAVC();

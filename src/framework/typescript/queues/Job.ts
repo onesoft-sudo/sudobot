@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import JobState from "@framework/queues/JobState";
-import type QueueManager from "@framework/queues/QueueManager";
+import JobState from "@framework/queues/JobState.js";
+import type QueueManager from "@framework/queues/QueueManager.js";
 
 class Job<T extends object> {
     public readonly createdAt: Date;

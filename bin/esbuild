@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+import { build } from "esbuild";
+import { mkdir } from "fs/promises";
+import path from "path";
+import config from "../esbuild.config.ts";
+
+process.chdir(path.join(import.meta.dirname, ".."));
+await mkdir("build/out", { recursive: true });
+
+export default build({
+    ...config,
+    logLevel: "verbose"
+});

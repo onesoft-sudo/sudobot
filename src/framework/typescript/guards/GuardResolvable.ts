@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Command from "@framework/commands/Command";
-import type Guard from "./Guard";
-import type Application from "@framework/app/Application";
+import type Command from "@framework/commands/Command.js";
+import type Guard from "./Guard.js";
+import type Application from "@framework/app/Application.js";
 
 export type GuardResolvable<T extends Command = Command> = Guard<T> | (new (application: Application) => Guard<T>);

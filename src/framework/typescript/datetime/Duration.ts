@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BehavesLikePrimitive } from "@framework/contracts/BehavesLikePrimitive";
-import { JSONSerializable } from "@framework/contracts/JSONSerializable";
-import DurationParseError from "@framework/datetime/DurationParseError";
-import { Override } from "@framework/decorators/Override";
-import { isAlpha, isDigit } from "@framework/utils/string";
+import { BehavesLikePrimitive } from "@framework/contracts/BehavesLikePrimitive.js";
+import { JSONSerializable } from "@framework/contracts/JSONSerializable.js";
+import DurationParseError from "@framework/datetime/DurationParseError.js";
+import { Override } from "@framework/decorators/Override.js";
+import { isAlpha, isDigit } from "@framework/utils/string.js";
 import { formatDuration } from "date-fns";
 import { TimestampStylesString, time } from "discord.js";
 

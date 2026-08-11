@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Snowflake } from "./utils/Snowflake";
+import type { Snowflake } from "./utils/Snowflake.js";
 
 export const APIEndpoints = {
     Login: "/login",

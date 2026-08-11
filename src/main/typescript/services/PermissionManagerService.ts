@@ -17,21 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
-import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager";
-import Permission from "@framework/permissions/Permission";
-import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import { SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager";
-import Service from "@framework/services/Service";
-import Application from "@main/core/Application";
-import SystemAdminPermission from "@main/permissions/SystemAdminPermission";
-import LayeredPermissionManager from "@main/security/LayeredPermissionManager";
-import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
-import { GuildConfigurationType } from "@schemas/all";
+import { Inject } from "@framework/container/Inject.js";
+import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager.js";
+import DiscordPermissionManager from "@framework/permissions/DiscordPermissionManager.js";
+import Permission from "@framework/permissions/Permission.js";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import { SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
+import SELinuxPermissionManager from "@framework/selinux/SELinuxPermissionManager.js";
+import Service from "@framework/services/Service.js";
+import Application from "@main/core/Application.js";
+import SystemAdminPermission from "@main/permissions/SystemAdminPermission.js";
+import LayeredPermissionManager from "@main/security/LayeredPermissionManager.js";
+import LeveledPermissionManager from "@main/security/LeveledPermissionManager.js";
+import { GuildConfigurationType } from "@schemas/all.js";
 import { Awaitable, Collection, ReadonlyCollection, type Snowflake } from "discord.js";
-import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService";
+import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService.js";
 
 export const SERVICE_PERMISSION_MANAGER = "permissionManagerService" as const;
 

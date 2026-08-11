@@ -17,15 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { AnyFunction } from "@framework/types/Utils";
-import DependencyResolveError from "./DependencyResolveError";
+import type { AnyFunction } from "@framework/types/Utils.js";
+import DependencyResolveError from "./DependencyResolveError.js";
 import {
     INJECT_SYMBOL_CONSTRUCT,
     INJECT_SYMBOL_FIELD,
     INJECT_SYMBOL_LIST,
     INJECT_SYMBOL_METHOD,
     type InjectionData
-} from "./Inject";
+} from "./Inject.js";
 
 export type ConstructorOf<T> = new (...args: never[]) => T;
 export type AbstractConstructorOf<T> = abstract new (...args: never[]) => T;

@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type MessageBus from "@framework/bus/MessageBus";
-import ClassLoader from "@framework/class/ClassLoader";
-import Container, { type ConstructorOf } from "@framework/container/Container";
-import type Kernel from "@framework/core/Kernel";
-import { Logger } from "@framework/log/Logger";
-import type Service from "@framework/services/Service";
-import ServiceManager from "@framework/services/ServiceManager";
+import type MessageBus from "@framework/bus/MessageBus.js";
+import ClassLoader from "@framework/class/ClassLoader.js";
+import Container, { type ConstructorOf } from "@framework/container/Container.js";
+import type Kernel from "@framework/core/Kernel.js";
+import { Logger } from "@framework/log/Logger.js";
+import type Service from "@framework/services/Service.js";
+import ServiceManager from "@framework/services/ServiceManager.js";
 import type { Client } from "discord.js";
 
 export type ApplicationOptions = {

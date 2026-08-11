@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import JobState from "@framework/queues/JobState";
-import { safeUserFetch } from "@framework/utils/fetch";
-import type InfractionManagerService from "@main/services/InfractionManagerService";
-import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService";
+import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import JobState from "@framework/queues/JobState.js";
+import { safeUserFetch } from "@framework/utils/fetch.js";
+import type InfractionManagerService from "@main/services/InfractionManagerService.js";
+import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService.js";
 import type { Snowflake } from "discord.js";
 
 type UnbanQueuePayload = {

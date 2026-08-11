@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@framework/app/Application.js";
 import { existsSync } from "fs";
 import { mkdir } from "fs/promises";
 import { dirname, join } from "path";

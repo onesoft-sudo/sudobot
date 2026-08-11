@@ -1,5 +1,6 @@
 import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
+import importPlugin from "eslint-plugin-import";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import LocalPlugin from "./src/eslint/typescript/LocalPlugin";
@@ -25,7 +26,8 @@ export default defineConfig([
         },
         plugins: {
             "@stylistic": stylistic,
-            "@local": LocalPlugin
+            "@local": LocalPlugin,
+            "@import": importPlugin
         },
         rules: {
             indent: "off",
@@ -75,7 +77,8 @@ export default defineConfig([
                     varsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_"
                 }
-            ]
+            ],
+            "@import/extensions": ["error", "always", { js: "always" }]
         },
         files: ["src/**/*.ts"],
         ignores: [

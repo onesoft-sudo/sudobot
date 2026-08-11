@@ -17,33 +17,33 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import BaseApplication from "@framework/app/Application";
-import ClassLoader from "@framework/class/ClassLoader";
-import type Command from "@framework/commands/Command";
-import Kernel from "@framework/core/Kernel";
-import AbstractDatabase from "@framework/database/AbstractDatabase";
-import type EventListener from "@framework/events/EventListener";
-import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener";
-import { Logger } from "@framework/log/Logger";
-import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import type QueueManager from "@framework/queues/QueueManager";
-import type { Events } from "@framework/types/ClientEvents";
-import type { DefaultExport } from "@framework/types/Utils";
-import { getBundleData } from "@framework/utils/bundle";
-import Application from "@main/core/Application";
-import Database from "@main/database/Database";
-import { getEnv } from "@main/env/env";
-import type Rule from "@main/moderation/Rule";
-import type CommandManagerService from "@main/services/CommandManagerService";
-import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService";
-import type PermissionManagerService from "@main/services/PermissionManagerService";
-import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService";
-import type QueueManagerService from "@main/services/QueueManagerService";
-import { SERVICE_QUEUE_MANAGER } from "@main/services/QueueManagerService";
-import type RuleModerationService from "@main/services/RuleModerationService";
-import {SERVICE_RULE_MODERATION} from "@main/services/RuleModerationService";
-import type { RuleType } from "@schemas/all";
+import BaseApplication from "@framework/app/Application.js";
+import ClassLoader from "@framework/class/ClassLoader.js";
+import type Command from "@framework/commands/Command.js";
+import Kernel from "@framework/core/Kernel.js";
+import AbstractDatabase from "@framework/database/AbstractDatabase.js";
+import type EventListener from "@framework/events/EventListener.js";
+import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener.js";
+import { Logger } from "@framework/log/Logger.js";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import type AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import type QueueManager from "@framework/queues/QueueManager.js";
+import type { Events } from "@framework/types/ClientEvents.js";
+import type { DefaultExport } from "@framework/types/Utils.js";
+import { getBundleData } from "@framework/utils/bundle.js";
+import Application from "@main/core/Application.js";
+import Database from "@main/database/Database.js";
+import { getEnv } from "@main/env/env.js";
+import type Rule from "@main/moderation/Rule.js";
+import type CommandManagerService from "@main/services/CommandManagerService.js";
+import { SERVICE_COMMAND_MANAGER } from "@main/services/CommandManagerService.js";
+import type PermissionManagerService from "@main/services/PermissionManagerService.js";
+import { SERVICE_PERMISSION_MANAGER } from "@main/services/PermissionManagerService.js";
+import type QueueManagerService from "@main/services/QueueManagerService.js";
+import { SERVICE_QUEUE_MANAGER } from "@main/services/QueueManagerService.js";
+import type RuleModerationService from "@main/services/RuleModerationService.js";
+import {SERVICE_RULE_MODERATION} from "@main/services/RuleModerationService.js";
+import type { RuleType } from "@schemas/all.js";
 import type { ClientOptions } from "discord.js";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
@@ -57,8 +57,8 @@ class AppKernel extends Kernel {
     public readonly logger = Logger.getLogger(AppKernel);
 
     public readonly aliases: Readonly<Record<string, string>> = {
-        services: path.resolve(__dirname, "../services"),
-        automod: path.resolve(__dirname, "../automod")
+        services: path.resolve(import.meta.dirname, "../services"),
+        automod: path.resolve(import.meta.dirname, "../automod")
     };
 
     public readonly services: readonly string[] = [
@@ -76,15 +76,15 @@ class AppKernel extends Kernel {
     ];
 
     public readonly eventListenersDirectory: string = path.join(
-        __dirname,
+        import.meta.dirname,
         "../events"
     );
     public readonly commandsDirectory: string = path.join(
-        __dirname,
+        import.meta.dirname,
         "../commands"
     );
-    public readonly queuesDirectory: string = path.join(__dirname, "../queues");
-    public readonly rulesDirectory: string = path.join(__dirname, "../rules");
+    public readonly queuesDirectory: string = path.join(import.meta.dirname, "../queues");
+    public readonly rulesDirectory: string = path.join(import.meta.dirname, "../rules");
 
     public readonly shards?: number[];
     public readonly shardCount?: number;

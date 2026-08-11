@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@framework/app/Application.js";
 
 export const isDevelopmentMode = () =>
     process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev";

@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type Command from "@framework/commands/Command";
-import type Context from "@framework/commands/Context";
-import Singleton from "@framework/objects/Singleton";
+import type Application from "@framework/app/Application.js";
+import type Command from "@framework/commands/Command.js";
+import type Context from "@framework/commands/Context.js";
+import Singleton from "@framework/objects/Singleton.js";
 import type { Awaitable } from "discord.js";
-import { GuardStatusCode } from "./GuardStatusCode";
-import type { GuardResolvable } from "./GuardResolvable";
+import { GuardStatusCode } from "./GuardStatusCode.js";
+import type { GuardResolvable } from "./GuardResolvable.js";
 
 abstract class Guard<in T extends Command = Command> extends Singleton {
     protected readonly application: Application;

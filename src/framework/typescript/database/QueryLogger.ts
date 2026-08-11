@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Logger } from "@framework/log/Logger";
+import { Logger } from "@framework/log/Logger.js";
 import chalk from "chalk";
 import type { Logger as DrizzleLogger } from "drizzle-orm";
 

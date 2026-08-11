@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import Service from "@framework/services/Service";
-import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds";
-import { fetchChannel } from "@framework/utils/entities";
-import { isDiscordAPIError } from "@framework/utils/errors";
-import { Colors } from "@main/constants/Colors";
-import { RuleExecResult } from "@main/moderation/RuleManager";
+import { Inject } from "@framework/container/Inject.js";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener.js";
+import Service from "@framework/services/Service.js";
+import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds.js";
+import { fetchChannel } from "@framework/utils/entities.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
+import { Colors } from "@main/constants/Colors.js";
+import { RuleExecResult } from "@main/moderation/RuleManager.js";
 import {
     LogEventArgs,
     LogEventType,
@@ -51,22 +51,18 @@ import {
     LogRaidAlertPayload,
     LogUserNoteAddPayload,
     LoggingExclusionType
-} from "@main/schemas/LoggingSchema";
-import type ConfigurationManagerService from "@main/services/ConfigurationManagerService";
+} from "@main/schemas/LoggingSchema.js";
+import type ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
 import {
     ConfigurationType,
     SERVICE_CONFIGURATION_MANAGER
-} from "@main/services/ConfigurationManagerService";
-import type InviteTrackingService from "@main/services/InviteTrackingService";
-import {
-    SERVICE_INVITE_TRACKING
-} from "@main/services/InviteTrackingService";
-import type ModerationActionService from "@main/services/ModerationActionService";
-import {
-    SERVICE_MODERATION_ACTION
-} from "@main/services/ModerationActionService";
-import { chunkedString } from "@main/utils/utils";
-import { RuleDefinition } from "@schemas/defs/RuleSchema";
+} from "@main/services/ConfigurationManagerService.js";
+import type InviteTrackingService from "@main/services/InviteTrackingService.js";
+import { SERVICE_INVITE_TRACKING } from "@main/services/InviteTrackingService.js";
+import type ModerationActionService from "@main/services/ModerationActionService.js";
+import { SERVICE_MODERATION_ACTION } from "@main/services/ModerationActionService.js";
+import { chunkedString } from "@main/utils/utils.js";
+import { RuleDefinition } from "@schemas/defs/RuleSchema.js";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
@@ -612,7 +608,6 @@ class AuditLoggingService extends Service {
             : attributes;
     }
 
-
     private async logMessageRuleModeration(
         type: "profile" | "message",
         messageOrMember: Message | GuildMember,
@@ -657,7 +652,9 @@ class AuditLoggingService extends Service {
                             {
                                 name: "Actions Taken",
                                 value: this.application
-                                    .service<ModerationActionService>(SERVICE_MODERATION_ACTION)
+                                    .service<ModerationActionService>(
+                                        SERVICE_MODERATION_ACTION
+                                    )
                                     .summarizeActions(rule.actions),
                                 inline: true
                             },

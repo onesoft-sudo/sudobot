@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type LegacyContext from "@framework/commands/LegacyContext";
-import type { ArgumentDefinition, ArgumentRules } from "./ArgumentSchema";
-import type InteractionContext from "@framework/commands/InteractionContext";
-import type Application from "@framework/app/Application";
-import { requireNonNull } from "@framework/utils/utils";
+import type LegacyContext from "@framework/commands/LegacyContext.js";
+import type { ArgumentDefinition, ArgumentRules } from "./ArgumentSchema.js";
+import type InteractionContext from "@framework/commands/InteractionContext.js";
+import type Application from "@framework/app/Application.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import { ArgumentErrorType, InvalidArgumentError } from "./InvalidArgumentError";
-import type Context from "@framework/commands/Context";
+import { ArgumentErrorType, InvalidArgumentError } from "./InvalidArgumentError.js";
+import type Context from "@framework/commands/Context.js";
 
 export type ArgumentCreateOptions =
     | {

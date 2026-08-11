@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import Duration from "@framework/datetime/Duration";
-import Service from "@framework/services/Service";
-import type { Infraction } from "@main/models/Infraction";
-import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService";
-import { ModerationActionType } from "@schemas/defs/ModerationActionSchema";
+import { Inject } from "@framework/container/Inject.js";
+import Duration from "@framework/datetime/Duration.js";
+import Service from "@framework/services/Service.js";
+import type { Infraction } from "@main/models/Infraction.js";
+import { SERVICE_INFRACTION_MANAGER } from "@main/services/InfractionManagerService.js";
+import { ModerationActionType } from "@schemas/defs/ModerationActionSchema.js";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     Guild,
@@ -34,7 +34,7 @@ import {
     italic,
     roleMention
 } from "discord.js";
-import type InfractionManagerService from "./InfractionManagerService";
+import type InfractionManagerService from "./InfractionManagerService.js";
 
 type MemberOnlyAction = Extract<
     ModerationActionType,

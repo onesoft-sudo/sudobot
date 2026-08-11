@@ -18,8 +18,8 @@
  */
 
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import { ArgumentErrorType } from "./InvalidArgumentError";
-import NumberArgument from "./NumberArgument";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import NumberArgument from "./NumberArgument.js";
 
 class IntegerArgument extends NumberArgument {
     public override postValidate(): boolean {

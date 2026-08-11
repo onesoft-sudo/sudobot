@@ -18,9 +18,9 @@
  */
 
 import type { GuildMember, GuildBasedChannel, Awaitable, Role } from "discord.js";
-import type { GetPermissionsResult } from "./AbstractPermissionManager";
-import AbstractPermissionManager from "./AbstractPermissionManager";
-import type { RawPermissionResolvable } from "./PermissionResolvable";
+import type { GetPermissionsResult } from "./AbstractPermissionManager.js";
+import AbstractPermissionManager from "./AbstractPermissionManager.js";
+import type { RawPermissionResolvable } from "./PermissionResolvable.js";
 
 abstract class AbstractImplicitPermissionManager extends AbstractPermissionManager {
     public override getPermissionsOnChannel(

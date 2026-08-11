@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Command from "@framework/commands/Command";
-import type Argument from "./Argument";
+import type Command from "@framework/commands/Command.js";
+import type Argument from "./Argument.js";
 
 export type ArgumentTypes<D extends readonly { name: string; type: object }[]> = {
     [K in D[number] as K["name"]]: K["type"] extends typeof Argument<infer T> ? T : never;

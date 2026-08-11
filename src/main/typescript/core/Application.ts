@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ApplicationOptions } from "@framework/app/Application";
-import BaseApplication from "@framework/app/Application";
-import type MessageBus from "@framework/bus/MessageBus";
-import RedisMessageBus from "@framework/bus/RedisMessageBus";
-import Database from "@main/database/Database";
-import { getEnv } from "@main/env/env";
+import type { ApplicationOptions } from "@framework/app/Application.js";
+import BaseApplication from "@framework/app/Application.js";
+import type MessageBus from "@framework/bus/MessageBus.js";
+import RedisMessageBus from "@framework/bus/RedisMessageBus.js";
+import Database from "@main/database/Database.js";
+import { getEnv } from "@main/env/env.js";
 
 class Application extends BaseApplication {
     public readonly database = new Database(this, {

@@ -1,5 +1,5 @@
-import type Application from "@main/core/Application";
-import type { RuleDefinitionByType, RuleType } from "@schemas/all";
+import type Application from "@main/core/Application.js";
+import type { RuleDefinitionByType, RuleType } from "@schemas/all.js";
 import type { APIEmbed, Awaitable, EmbedField } from "discord.js";
 
 abstract class Rule<T extends RuleType, O> {

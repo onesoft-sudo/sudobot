@@ -18,8 +18,8 @@
  */
 
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import Argument from "./Argument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
+import Argument from "./Argument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
 class StringArgument extends Argument<string> {
     public override toString(): string {

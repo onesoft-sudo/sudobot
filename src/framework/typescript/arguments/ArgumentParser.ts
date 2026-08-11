@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type { ArgumentDefinition, ArgumentOverload, ArgumentSchema } from "./ArgumentSchema";
-import type InteractionContext from "@framework/commands/InteractionContext";
-import type LegacyContext from "@framework/commands/LegacyContext";
-import ArgumentParseError from "./ArgumentParseError";
-import { InvalidArgumentError } from "./InvalidArgumentError";
+import type Application from "@framework/app/Application.js";
+import type { ArgumentDefinition, ArgumentOverload, ArgumentSchema } from "./ArgumentSchema.js";
+import type InteractionContext from "@framework/commands/InteractionContext.js";
+import type LegacyContext from "@framework/commands/LegacyContext.js";
+import ArgumentParseError from "./ArgumentParseError.js";
+import { InvalidArgumentError } from "./InvalidArgumentError.js";
 
 type ParserContext = {
     args: readonly string[];

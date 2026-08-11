@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import Permission from "@framework/permissions/Permission";
-import ConfigurationManagerService from "@main/services/ConfigurationManagerService";
+import { Inject } from "@framework/container/Inject.js";
+import Permission from "@framework/permissions/Permission.js";
+import ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
 import type { APIUser, User } from "discord.js";
 
 class SystemAdminPermission extends Permission {

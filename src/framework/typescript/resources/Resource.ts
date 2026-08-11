@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Override } from "@framework/decorators/Override";
-import { hasBundleData } from "@framework/utils/bundle";
+import { Override } from "@framework/decorators/Override.js";
+import { hasBundleData } from "@framework/utils/bundle.js";
 import { readFile } from "fs/promises";
 import path from "path";
 
@@ -28,7 +28,7 @@ class Resource<T = unknown> {
 
     static {
         if (!hasBundleData()) {
-            this.resourcePaths.push(path.join(__dirname, "../../resources"));
+            this.resourcePaths.push(path.join(import.meta.dirname, "../../resources"));
         }
     }
 

@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import OutcomeError from "./OutcomeError";
-import { OutcomeState } from "./OutcomeState";
+import OutcomeError from "./OutcomeError.js";
+import { OutcomeState } from "./OutcomeState.js";
 
 class Outcome<T, E> {
     public readonly state: OutcomeState;

@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./APIEndpoints";
-export * from "./APIErrorCode";
-export * from "./models/Guild";
-export * from "./models/User";
-export * from "./responses/AuthResponse";
-export * from "./responses/GetGuildConfigurationResponse";
-export * from "./responses/SetGuildConfigurationResponse";
-export * from "./utils/Snowflake";
+export * from "./APIEndpoints.js";
+export * from "./APIErrorCode.js";
+export * from "./models/Guild.js";
+export * from "./models/User.js";
+export * from "./responses/AuthResponse.js";
+export * from "./responses/GetGuildConfigurationResponse.js";
+export * from "./responses/SetGuildConfigurationResponse.js";
+export * from "./utils/Snowflake.js";
 
 export const API_VERSION = 1;

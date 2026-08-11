@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
+import Application from "@framework/app/Application.js";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";
 import { promisify } from "util";
-import { prefixedPath } from "./filesystem";
+import { prefixedPath } from "./filesystem.js";
 
 export const finished = promisify(stream.finished);
 

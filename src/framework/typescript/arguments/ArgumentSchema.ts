@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { OptionalRecord } from "@framework/types/OptionalRecord";
-import type Argument from "./Argument";
+import type { OptionalRecord } from "@framework/types/OptionalRecord.js";
+import type Argument from "./Argument.js";
 
 export type ArgumentRuleData<T> =
     | T

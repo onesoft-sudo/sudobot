@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AbstractDatabase from "@framework/database/AbstractDatabase";
-import * as InfractionModels from "@main/models/Infraction";
-import * as MuteRecordModels from "@main/models/MuteRecord";
-import * as PermissionLevelModels from "@main/models/PermissionLevel";
-import * as PermissionProfileModels from "@main/models/PermissionProfile";
-import * as QueuedJobModels from "@main/models/QueuedJob";
-import * as AFKEntryModels from "@main/models/AFKEntry";
+import AbstractDatabase from "@framework/database/AbstractDatabase.js";
+import * as InfractionModels from "@main/models/Infraction.js";
+import * as MuteRecordModels from "@main/models/MuteRecord.js";
+import * as PermissionLevelModels from "@main/models/PermissionLevel.js";
+import * as PermissionProfileModels from "@main/models/PermissionProfile.js";
+import * as QueuedJobModels from "@main/models/QueuedJob.js";
+import * as AFKEntryModels from "@main/models/AFKEntry.js";
 
 const models = {
     ...InfractionModels,

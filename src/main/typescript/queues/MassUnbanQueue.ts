@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import JobState from "@framework/queues/JobState";
-import type Application from "@main/core/Application";
-import type { InfractionCreatePayload } from "@main/models/Infraction";
-import { infractions, InfractionType } from "@main/models/Infraction";
-import AuditLoggingService from "@main/services/AuditLoggingService";
-import { LogEventType } from "@schemas/defs/LoggingSchema";
+import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import JobState from "@framework/queues/JobState.js";
+import type Application from "@main/core/Application.js";
+import type { InfractionCreatePayload } from "@main/models/Infraction.js";
+import { infractions, InfractionType } from "@main/models/Infraction.js";
+import AuditLoggingService from "@main/services/AuditLoggingService.js";
+import { LogEventType } from "@schemas/defs/LoggingSchema.js";
 import type { Snowflake } from "discord.js";
 
 type MassUnbanQueuePayload = {

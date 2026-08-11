@@ -97,4 +97,4 @@ export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
     return { embed };
 }
 
-export { channelInfo, guildInfo, messageInfo, userInfo } from "@framework/utils/embeds";
+export { channelInfo, guildInfo, messageInfo, userInfo } from "@framework/utils/embeds.js";

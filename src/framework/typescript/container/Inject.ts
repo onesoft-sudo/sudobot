@@ -35,19 +35,34 @@ export type InjectionData =
       };
 
 function Inject(id?: string) {
-    return (target: object, key: PropertyKey | undefined, extra?: number | ClassFieldDecoratorContext) => {
-        const safeKey = (typeof key === "number" ? key.toString() : key) as string;
-        const injectProperties: Set<PropertyKey> = Reflect.getMetadata(INJECT_SYMBOL_LIST, target) ?? new Set();
+    return (
+        target: object,
+        key: PropertyKey | undefined,
+        extra?: number | ClassFieldDecoratorContext
+    ) => {
+        const safeKey = (
+            typeof key === "number" ? key.toString() : key
+        ) as string;
+        const injectProperties: Set<PropertyKey> =
+            Reflect.getMetadata(INJECT_SYMBOL_LIST, target) ?? new Set();
 
         if (typeof extra === "number") {
             const isConstructor = key === undefined;
-            const paramTypes: object[] = Reflect.getMetadata("design:paramtypes", target, safeKey) ?? [];
+            const paramTypes: object[] =
+                Reflect.getMetadata("design:paramtypes", target, safeKey) ?? [];
             const methodInjectData: Map<number, InjectionData> =
-                Reflect.getMetadata(isConstructor ? INJECT_SYMBOL_CONSTRUCT : INJECT_SYMBOL_METHOD, target, safeKey) ??
-                new Map();
+                Reflect.getMetadata(
+                    isConstructor
+                        ? INJECT_SYMBOL_CONSTRUCT
+                        : INJECT_SYMBOL_METHOD,
+                    target,
+                    safeKey
+                ) ?? new Map();
 
             if (!paramTypes[extra] && !id) {
-                throw new TypeError("Dependency injection metadata could not determined automatically");
+                throw new TypeError(
+                    "Dependency injection metadata could not be determined automatically"
+                );
             }
 
             methodInjectData.set(extra, {
@@ -65,23 +80,30 @@ function Inject(id?: string) {
             if (!key) {
                 injectProperties.add("constructor");
             }
-        }
-        else if (key) {
-            const propertyType = Reflect.getMetadata("design:type", target, safeKey);
+        } else if (key) {
+            const propertyType = Reflect.getMetadata(
+                "design:type",
+                target,
+                safeKey
+            );
 
             if (!propertyType && !id) {
-                throw new TypeError("Dependency injection metadata could not determined automatically");
+                throw new TypeError(
+                    "Dependency injection metadata could not be determined automatically"
+                );
             }
 
             Reflect.defineMetadata(
                 INJECT_SYMBOL_FIELD,
-                { type: id ? undefined : propertyType, id } satisfies InjectionData,
+                {
+                    type: id ? undefined : propertyType,
+                    id
+                } satisfies InjectionData,
                 target,
                 safeKey
             );
             injectProperties.add(key);
-        }
-        else {
+        } else {
             throw new TypeError("Inject() used in an invalid context");
         }
 

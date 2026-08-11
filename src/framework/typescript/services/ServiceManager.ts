@@ -17,15 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type { ConstructorOf } from "@framework/container/Container";
-import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener";
-import { Logger } from "@framework/log/Logger";
-import type { DefaultExport } from "@framework/types/Utils";
-import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle";
-import { requireNonNull } from "@framework/utils/utils";
+import type Application from "@framework/app/Application.js";
+import type { ConstructorOf } from "@framework/container/Container.js";
+import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener.js";
+import { Logger } from "@framework/log/Logger.js";
+import type { DefaultExport } from "@framework/types/Utils.js";
+import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 import { Collection } from "discord.js";
-import Service from "./Service";
+import Service from "./Service.js";
 
 class ServiceManager {
     public readonly application: Application;

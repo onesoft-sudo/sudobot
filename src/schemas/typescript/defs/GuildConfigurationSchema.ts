@@ -18,9 +18,9 @@
  */
 
 import z from "zod";
-import { LoggingSchema } from "./LoggingSchema";
-import { SnowflakeSchema } from "./SnowflakeSchema";
-import { RuleSchema } from "./RuleSchema";
+import { LoggingSchema } from "./LoggingSchema.js";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
+import { RuleSchema } from "./RuleSchema.js";
 
 export const GuildConfigurationSchema = z.object({
     commands: z

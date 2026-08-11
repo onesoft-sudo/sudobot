@@ -22,10 +22,10 @@ import {
     type Message,
     type MessageCreateOptions
 } from "discord.js";
-import CommandContextType from "./CommandContextType";
-import Context, { type ContextReplyOptions } from "./Context";
-import type Application from "@framework/app/Application";
-import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
+import CommandContextType from "./CommandContextType.js";
+import Context, { type ContextReplyOptions } from "./Context.js";
+import type Application from "@framework/app/Application.js";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder.js";
 
 class LegacyContext extends Context<CommandContextType.Legacy> {
     public override readonly type = CommandContextType.Legacy;

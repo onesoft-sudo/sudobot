@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Condition from "@framework/concurrent/Condition";
+import type Condition from "@framework/concurrent/Condition.js";
 import { promiseWithResolvers } from "../polyfills/Promise";
 
 type SemaphoreOptions = {

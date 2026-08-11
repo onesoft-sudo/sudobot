@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
+import type Application from "@framework/app/Application.js";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import QueryLogger from "./QueryLogger";
+import QueryLogger from "./QueryLogger.js";
 
 export type DatabaseOptions = {
     url: string;

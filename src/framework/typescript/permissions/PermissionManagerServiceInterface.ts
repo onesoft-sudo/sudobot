@@ -18,7 +18,7 @@
  */
 
 import type { Awaitable, Snowflake } from "discord.js";
-import type AbstractPermissionManager from "./AbstractPermissionManager";
+import type AbstractPermissionManager from "./AbstractPermissionManager.js";
 
 interface PermissionManagerServiceInterface {
     getPermissionManager(guildId?: Snowflake): Awaitable<AbstractPermissionManager>;

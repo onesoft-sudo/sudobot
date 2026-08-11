@@ -17,36 +17,36 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import CommandAbortedError from "@framework/commands/CommandAbortedError";
-import { Inject } from "@framework/container/Inject";
-import Duration from "@framework/datetime/Duration";
-import APIErrors from "@framework/errors/APIErrors";
-import JobState from "@framework/queues/JobState";
-import Service from "@framework/services/Service";
-import { downloadFile } from "@framework/utils/download";
-import { userInfo } from "@framework/utils/embed";
-import { emoji } from "@framework/utils/emoji";
-import { fetchMember, fetchUser } from "@framework/utils/entities";
-import { isDiscordAPIError } from "@framework/utils/errors";
-import { also, suppressErrorNoReturn } from "@framework/utils/utils";
-import Application from "@main/core/Application";
+import CommandAbortedError from "@framework/commands/CommandAbortedError.js";
+import { Inject } from "@framework/container/Inject.js";
+import Duration from "@framework/datetime/Duration.js";
+import APIErrors from "@framework/errors/APIErrors.js";
+import JobState from "@framework/queues/JobState.js";
+import Service from "@framework/services/Service.js";
+import { downloadFile } from "@framework/utils/download.js";
+import { userInfo } from "@framework/utils/embed.js";
+import { emoji } from "@framework/utils/emoji.js";
+import { fetchMember, fetchUser } from "@framework/utils/entities.js";
+import { isDiscordAPIError } from "@framework/utils/errors.js";
+import { also, suppressErrorNoReturn } from "@framework/utils/utils.js";
+import Application from "@main/core/Application.js";
 import {
     Infraction,
     InfractionCreatePayload,
     InfractionDeliveryStatus,
     InfractionType,
     infractions
-} from "@main/models/Infraction";
-import { muteRecords } from "@main/models/MuteRecord";
-import InfractionChannelDeleteQueue from "@main/queues/InfractionChannelDeleteQueue";
-import MassUnbanQueue from "@main/queues/MassUnbanQueue";
-import RoleQueue from "@main/queues/RoleQueue";
-import UnbanQueue from "@main/queues/UnbanQueue";
-import UnmuteQueue from "@main/queues/UnmuteQueue";
-import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { systemPrefix } from "@main/utils/utils";
-import { GuildConfigurationType } from "@schemas/all";
-import { LogEventType } from "@schemas/defs/LoggingSchema";
+} from "@main/models/Infraction.js";
+import { muteRecords } from "@main/models/MuteRecord.js";
+import InfractionChannelDeleteQueue from "@main/queues/InfractionChannelDeleteQueue.js";
+import MassUnbanQueue from "@main/queues/MassUnbanQueue.js";
+import RoleQueue from "@main/queues/RoleQueue.js";
+import UnbanQueue from "@main/queues/UnbanQueue.js";
+import UnmuteQueue from "@main/queues/UnmuteQueue.js";
+import type AuditLoggingService from "@main/services/AuditLoggingService.js";
+import { systemPrefix } from "@main/utils/utils.js";
+import { GuildConfigurationType } from "@schemas/all.js";
+import { LogEventType } from "@schemas/defs/LoggingSchema.js";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
@@ -83,9 +83,9 @@ import { unlink } from "fs/promises";
 import path, { basename } from "path";
 import ConfigurationManagerService, {
     ConfigurationType
-} from "./ConfigurationManagerService";
-import QueueManagerService from "./QueueManagerService";
-import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService";
+} from "./ConfigurationManagerService.js";
+import QueueManagerService from "./QueueManagerService.js";
+import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService.js";
 
 export const SERVICE_INFRACTION_MANAGER = "infractionManager" as const;
 

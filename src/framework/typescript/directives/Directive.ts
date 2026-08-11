@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type DirectiveParser from "@framework/directives/DirectiveParser";
+import type DirectiveParser from "@framework/directives/DirectiveParser.js";
 import type { Awaitable } from "discord.js";
 
 export type ParserState = {

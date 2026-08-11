@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Job from "@framework/queues/Job";
-import JobDatabaseDriver from "@framework/queues/JobDatabaseDriver";
-import type JobDescriptor from "@framework/queues/JobDescriptor";
-import type Application from "@main/core/Application";
-import { queuedJobs } from "@main/models/QueuedJob";
+import type Job from "@framework/queues/Job.js";
+import JobDatabaseDriver from "@framework/queues/JobDatabaseDriver.js";
+import type JobDescriptor from "@framework/queues/JobDescriptor.js";
+import type Application from "@main/core/Application.js";
+import { queuedJobs } from "@main/models/QueuedJob.js";
 import { eq } from "drizzle-orm";
 
 class PgJobDatabaseDriver extends JobDatabaseDriver {

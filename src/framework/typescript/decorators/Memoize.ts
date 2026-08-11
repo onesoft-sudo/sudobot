@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { AnyFunction } from "@framework/types/Utils";
+import type { AnyFunction } from "@framework/types/Utils.js";
 
 const memoizedStateSymbol = Symbol("MemoizedState");
 

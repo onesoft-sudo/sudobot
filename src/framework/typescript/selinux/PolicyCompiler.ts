@@ -18,19 +18,19 @@
  */
 
 import { readFile } from "fs/promises";
-import PolicyModuleParser from "./policyparser/PolicyModuleParser";
-import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema";
-import ModuleBlockStatementNode from "./policyparser/ast/ModuleBlockStatementNode";
-import PoilcyModuleCompilationError from "./PoilcyModuleCompilationError";
-import type LiteralNode from "./policyparser/ast/LiteralNode";
-import { LiteralKind } from "./policyparser/ast/LiteralNode";
-import type RootNode from "./policyparser/ast/RootNode";
-import RequireBlockStatementNode from "./policyparser/ast/RequireBlockStatementNode";
-import RequireTypeStatementNode from "./policyparser/ast/RequireTypeStatementNode";
-import AllowDenyStatementNode from "./policyparser/ast/AllowDenyStatementNode";
+import PolicyModuleParser from "./policyparser/PolicyModuleParser.js";
+import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema.js";
+import ModuleBlockStatementNode from "./policyparser/ast/ModuleBlockStatementNode.js";
+import PoilcyModuleCompilationError from "./PoilcyModuleCompilationError.js";
+import type LiteralNode from "./policyparser/ast/LiteralNode.js";
+import { LiteralKind } from "./policyparser/ast/LiteralNode.js";
+import type RootNode from "./policyparser/ast/RootNode.js";
+import RequireBlockStatementNode from "./policyparser/ast/RequireBlockStatementNode.js";
+import RequireTypeStatementNode from "./policyparser/ast/RequireTypeStatementNode.js";
+import AllowDenyStatementNode from "./policyparser/ast/AllowDenyStatementNode.js";
 import { PermissionFlagsBits } from "discord.js";
-import type Node from "./policyparser/ast/Node";
-import MessagePackEncoder from "./MessagePackEncoder";
+import type Node from "./policyparser/ast/Node.js";
+import MessagePackEncoder from "./MessagePackEncoder.js";
 
 class PolicyCompiler {
     private readonly policyModuleParser = new PolicyModuleParser();

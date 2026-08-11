@@ -17,19 +17,22 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import ArgumentParser from "@framework/arguments/ArgumentParser";
-import { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
-import { Memoize } from "@framework/decorators/Memoize";
-import Guard from "@framework/guards/Guard";
-import type { GuardResolvable } from "@framework/guards/GuardResolvable";
-import Permission from "@framework/permissions/Permission";
-import PermissionDeniedError from "@framework/permissions/PermissionDeniedError";
-import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import type { PermissionResolvable, RawPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import { ArrayOrSingle } from "@framework/types/Utils";
+import type Application from "@framework/app/Application.js";
+import ArgumentParser from "@framework/arguments/ArgumentParser.js";
+import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
+import { Memoize } from "@framework/decorators/Memoize.js";
+import Guard from "@framework/guards/Guard.js";
+import type { GuardResolvable } from "@framework/guards/GuardResolvable.js";
+import Permission from "@framework/permissions/Permission.js";
+import PermissionDeniedError from "@framework/permissions/PermissionDeniedError.js";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import type {
+    PermissionResolvable,
+    RawPermissionResolvable
+} from "@framework/permissions/PermissionResolvable.js";
+import type { ArrayOrSingle } from "@framework/types/Utils.js";
 import {
-    APIInteractionGuildMember,
+    type APIInteractionGuildMember,
     ApplicationCommandType,
     type Awaitable,
     Client,
@@ -39,16 +42,16 @@ import {
     InteractionContextType,
     PermissionsBitField,
     SlashCommandBuilder,
-    SlashCommandOptionsOnlyBuilder,
-    SlashCommandSubcommandsOnlyBuilder,
+    type SlashCommandOptionsOnlyBuilder,
+    type SlashCommandSubcommandsOnlyBuilder,
     User
 } from "discord.js";
-import CommandAbortedError from "./CommandAbortedError";
-import CommandContextType from "./CommandContextType";
-import { CommandMode } from "./CommandMode";
-import type Context from "./Context";
-import InteractionContext from "./InteractionContext";
-import LegacyContext from "./LegacyContext";
+import CommandAbortedError from "./CommandAbortedError.js";
+import CommandContextType from "./CommandContextType.js";
+import { CommandMode } from "./CommandMode.js";
+import type Context from "./Context.js";
+import InteractionContext from "./InteractionContext.js";
+import LegacyContext from "./LegacyContext.js";
 
 abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
@@ -81,20 +84,30 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      *
      * @type {C[]}
      */
-    public readonly contexts: C[] = [CommandContextType.Legacy, CommandContextType.Interactive] as C[];
+    public readonly contexts: C[] = [
+        CommandContextType.Legacy,
+        CommandContextType.Interactive
+    ] as C[];
 
     /**
      * List of supported interaction types, where this command can run.
      */
-    public readonly interactionTypes: Array<Exclude<ApplicationCommandType, ApplicationCommandType.PrimaryEntryPoint>> =
-        [ApplicationCommandType.ChatInput];
+    public readonly interactionTypes: Array<
+        Exclude<
+            ApplicationCommandType,
+            ApplicationCommandType.PrimaryEntryPoint
+        >
+    > = [ApplicationCommandType.ChatInput];
 
     /**
      * List of supported modes, in which this command can run.
      *
      * @type {CommandMode[]}
      */
-    public readonly modes: CommandMode[] = [CommandMode.Direct, CommandMode.Guild];
+    public readonly modes: CommandMode[] = [
+        CommandMode.Direct,
+        CommandMode.Guild
+    ];
 
     /**
      * List of permissions required to run this command.
@@ -172,7 +185,10 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      */
     protected readonly permissionManagerService: PermissionManagerServiceInterface;
 
-    public constructor(application: Application, permissionManagerService: PermissionManagerServiceInterface) {
+    public constructor(
+        application: Application,
+        permissionManagerService: PermissionManagerServiceInterface
+    ) {
         this.application = application;
         this.client = application.client;
         this.permissionManagerService = permissionManagerService;
@@ -212,19 +228,31 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             return;
         }
 
-        const permissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
-        const systemPermissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
-        const permanentPermissions: [Set<RawPermissionResolvable>, Set<Permission>] = [new Set(), new Set()];
+        const permissions: [Set<RawPermissionResolvable>, Set<Permission>] = [
+            new Set(),
+            new Set()
+        ];
+        const systemPermissions: [
+            Set<RawPermissionResolvable>,
+            Set<Permission>
+        ] = [new Set(), new Set()];
+        const permanentPermissions: [
+            Set<RawPermissionResolvable>,
+            Set<Permission>
+        ] = [new Set(), new Set()];
         const permissionArray =
-            typeof this.permissions === "object" && Symbol.iterator in this.permissions
+            typeof this.permissions === "object" &&
+            Symbol.iterator in this.permissions
                 ? this.permissions
                 : [this.permissions];
         const systemPermissionArray =
-            typeof this.systemPermissions === "object" && Symbol.iterator in this.systemPermissions
+            typeof this.systemPermissions === "object" &&
+            Symbol.iterator in this.systemPermissions
                 ? this.systemPermissions
                 : [this.systemPermissions];
         const permanentPermissionArray =
-            typeof this.permanentPermissions === "object" && Symbol.iterator in this.permanentPermissions
+            typeof this.permanentPermissions === "object" &&
+            Symbol.iterator in this.permanentPermissions
                 ? this.permanentPermissions
                 : [this.permanentPermissions];
 
@@ -270,7 +298,10 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             permanentPermissions[0].add(permission);
         }
 
-        this.cachedPermissions = [PermissionsBitField.resolve(Array.from(permissions[0])), Array.from(permissions[1])];
+        this.cachedPermissions = [
+            PermissionsBitField.resolve(Array.from(permissions[0])),
+            Array.from(permissions[1])
+        ];
         this.cachedSystemPermissions = [
             PermissionsBitField.resolve(Array.from(systemPermissions[0])),
             Array.from(systemPermissions[1])
@@ -287,25 +318,32 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         member: GuildMember | APIInteractionGuildMember | User,
         cache: [RawPermissionResolvable, Permission[]]
     ) {
-        const needsPermisions = Array.isArray(cache[0]) ? cache[0].length > 0 : !!cache[0];
+        const needsPermisions = Array.isArray(cache[0])
+            ? cache[0].length > 0
+            : !!cache[0];
 
         if ((member instanceof User || !context.inGuild()) && needsPermisions) {
             return cache[0];
         }
 
         if (!(member instanceof User) && needsPermisions) {
-            const permissionManager = await this.permissionManagerService.getPermissionManager(
-                context.guild?.id || "0"
-            );
+            const permissionManager =
+                await this.permissionManagerService.getPermissionManager(
+                    context.guild?.id || "0"
+                );
 
-            if (member instanceof GuildMember && !(await permissionManager.hasPermissions(member, cache[0]))) {
+            if (
+                member instanceof GuildMember &&
+                !(await permissionManager.hasPermissions(member, cache[0]))
+            ) {
                 return cache[0];
             }
         }
 
         for (const permission of cache[1]) {
             if (
-                (member instanceof GuildMember && !(await permission.hasMember(member))) ||
+                (member instanceof GuildMember &&
+                    !(await permission.hasMember(member))) ||
                 (member instanceof User && !(await permission.hasUser(member)))
             ) {
                 return permission;
@@ -333,15 +371,15 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         );
 
         if (missingPermissions || missingPermanentPermissions) {
-            throw new PermissionDeniedError((missingPermissions || missingPermanentPermissions)!);
+            throw new PermissionDeniedError(
+                (missingPermissions || missingPermanentPermissions)!
+            );
         }
 
-        let systemPermissions: PermissionResolvable | null = context.me?.permissions.has(
-            this.cachedSystemPermissions[0],
-            true
-        )
-            ? null
-            : this.cachedSystemPermissions[0];
+        let systemPermissions: PermissionResolvable | null =
+            context.me?.permissions.has(this.cachedSystemPermissions[0], true)
+                ? null
+                : this.cachedSystemPermissions[0];
 
         if (!systemPermissions) {
             for (const permission of this.cachedSystemPermissions[1]) {
@@ -364,12 +402,17 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         const failedGuard = await Guard.runGuards(this, context, this.guards);
 
         if (failedGuard) {
-            throw new PermissionDeniedError([], "You aren't permitted to use this command.");
+            throw new PermissionDeniedError(
+                [],
+                "You aren't permitted to use this command."
+            );
         }
     }
 
     private checkPreconditions(context: Context): Awaitable<void> {
-        const requiredMode = context.inGuild() ? CommandMode.Guild : CommandMode.Direct;
+        const requiredMode = context.inGuild()
+            ? CommandMode.Guild
+            : CommandMode.Direct;
 
         if (!this.modes.includes(requiredMode)) {
             throw new CommandAbortedError(
@@ -393,14 +436,19 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         const contexts = [];
 
         if (this.modes.includes(CommandMode.Direct)) {
-            contexts.push(InteractionContextType.BotDM, InteractionContextType.PrivateChannel);
+            contexts.push(
+                InteractionContextType.BotDM,
+                InteractionContextType.PrivateChannel
+            );
         }
 
         if (this.modes.includes(CommandMode.Guild)) {
             contexts.push(InteractionContextType.Guild);
         }
 
-        const permissions = new PermissionsBitField(this.cachedPermissions[0]).add(this.cachedPermanentPermissions[0]);
+        const permissions = new PermissionsBitField(
+            this.cachedPermissions[0]
+        ).add(this.cachedPermanentPermissions[0]);
 
         return { contexts, permissions };
     }
@@ -482,25 +530,34 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             await this.checkPermissions(context);
             await this.checkGuards(context);
         } catch (error) {
-            if (error instanceof PermissionDeniedError || error instanceof CommandAbortedError) {
-                context.error(error.message).catch(this.application.logger.error);
+            if (
+                error instanceof PermissionDeniedError ||
+                error instanceof CommandAbortedError
+            ) {
+                context
+                    .error(error.message)
+                    .catch(this.application.logger.error);
                 return;
-            }
-            else {
+            } else {
                 throw error;
             }
         }
 
         const result = this.argumentSchema
-            ? await this.argumentParser.parse(context as LegacyContext | InteractionContext, this.argumentSchema)
+            ? await this.argumentParser.parse(
+                  context as LegacyContext | InteractionContext,
+                  this.argumentSchema
+              )
             : undefined;
 
         if (result?.errors?.length) {
             if (result.errors.length === 1 || !this.argumentSchema) {
-                context.error(result?.errors[0]).catch(this.application.logger.error);
-            }
-            else {
-                let str = "No overloads of this command could be used with the given arguments:\n";
+                context
+                    .error(result?.errors[0])
+                    .catch(this.application.logger.error);
+            } else {
+                let str =
+                    "No overloads of this command could be used with the given arguments:\n";
 
                 for (let i = 0; i < result.errors.length; i++) {
                     str += `\n${i + 1}. ${inlineCode(this.argumentParser.overloadSignatureToString(this.argumentSchema.overloads[i]))} gave the following error:\n  ${result.errors[i]}`;

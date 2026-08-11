@@ -19,14 +19,14 @@
 
 "use strict";
 
-const path = require("path");
-const { existsSync } = require("fs");
-const { exit } = require("process");
-const { execSync } = require("child_process");
-const { writeFile } = require("fs/promises");
-const { parseArgs } = require("util");
+import { execSync } from "child_process";
+import { existsSync } from "fs";
+import { writeFile } from "fs/promises";
+import { basename, join } from "path";
+import { exit } from "process";
+import { parseArgs } from "util";
 
-const ME = path.basename(process.argv[1]);
+const ME = basename(process.argv[1]);
 
 function print(...args) {
     console.log(`${ME}: ${args.join(" ")}`);
@@ -37,9 +37,14 @@ function perror(...args) {
 }
 
 function findInPath(executable) {
-    for (const segment of process.env.PATH?.split(process.platform === "win32" ? ";" : ":") ?? []) {
-        const executablePath = path.join(segment, executable + (process.platform === "win32" ? ".exe" : ""));
-        
+    for (const segment of process.env.PATH?.split(
+        process.platform === "win32" ? ";" : ":"
+    ) ?? []) {
+        const executablePath = join(
+            segment,
+            executable + (process.platform === "win32" ? ".exe" : "")
+        );
+
         if (existsSync(executablePath)) {
             return executablePath;
         }
@@ -63,8 +68,7 @@ function checkForGit() {
 function getGitLog(gitPath) {
     try {
         return execSync(gitPath + " --no-pager log", { encoding: "utf8" });
-    }
-    catch {
+    } catch {
         perror("command `git --no-pager log' failed");
         exit(1);
     }
@@ -80,10 +84,14 @@ function parseGitLog(gitLog) {
             continue;
         }
 
-        const [, hash] = lines[i++].split(' ');
+        const [, hash] = lines[i++].split(" ");
         const headerProps = {};
 
-        while (i < lines.length && lines[i].trim() !== "" && !/^\s/.test(lines[i])) {
+        while (
+            i < lines.length &&
+            lines[i].trim() !== "" &&
+            !/^\s/.test(lines[i])
+        ) {
             const colonIndex = lines[i].indexOf(":");
             const name = lines[i].slice(0, colonIndex).toLowerCase();
             const value = lines[i].slice(colonIndex + 1).trim();
@@ -99,15 +107,22 @@ function parseGitLog(gitLog) {
             if (!lineToPush) {
                 continue;
             }
-            
+
             messageLines.push(lineToPush);
         }
 
         let mindex = messageLines.length - 1;
         const footerProps = {};
-        const validFooterProps = ["signed-off-by", "co-authored-by", "on-behalf-of"];
-        
-        while (mindex >= 1 && /^[A-Za-z0-9-]+: /.test(messageLines.at(mindex))) {
+        const validFooterProps = [
+            "signed-off-by",
+            "co-authored-by",
+            "on-behalf-of"
+        ];
+
+        while (
+            mindex >= 1 &&
+            /^[A-Za-z0-9-]+: /.test(messageLines.at(mindex))
+        ) {
             const messageLine = messageLines[mindex--];
             const colonIndex = messageLine.indexOf(":");
             const name = messageLine.slice(0, colonIndex).toLowerCase();
@@ -115,7 +130,7 @@ function parseGitLog(gitLog) {
             if (!validFooterProps.includes(name)) {
                 continue;
             }
-            
+
             const value = messageLine.slice(colonIndex + 1).trim();
 
             if (name in footerProps && !Array.isArray(footerProps[name])) {
@@ -124,8 +139,7 @@ function parseGitLog(gitLog) {
 
             if (Array.isArray(footerProps[name])) {
                 footerProps[name].push(value);
-            }
-            else {
+            } else {
                 footerProps[name] = value;
             }
 
@@ -133,7 +147,7 @@ function parseGitLog(gitLog) {
         }
 
         const message = messageLines.join("\n");
-        
+
         commits.push({
             hash,
             message,
@@ -151,11 +165,11 @@ function parseGitLog(gitLog) {
 
 function generateChangelog(commits) {
     let output = "";
- 
+
     const grouppedCommitsByDate = {};
-    
+
     for (const commit of commits) {
-        const key = `${commit.createdAt.getUTCDate().toString().padStart(2, 0)}-${commit.createdAt.getUTCMonth().toString().padStart(2, '0')}-${commit.createdAt.getUTCFullYear()}::${Array.isArray(commit.author) ? commit.author.join(':') : commit.author}`;
+        const key = `${commit.createdAt.getUTCDate().toString().padStart(2, 0)}-${commit.createdAt.getUTCMonth().toString().padStart(2, "0")}-${commit.createdAt.getUTCFullYear()}::${Array.isArray(commit.author) ? commit.author.join(":") : commit.author}`;
         grouppedCommitsByDate[key] ??= [];
         grouppedCommitsByDate[key].push(commit);
     }
@@ -171,7 +185,7 @@ function generateChangelog(commits) {
             output += `        ${commit.message.replaceAll("\n", "\n        ")}\n\n`;
         }
     }
-    
+
     return output.trim();
 }
 
@@ -194,8 +208,12 @@ function printHelp() {
 
 function printVersion() {
     console.log("Copyright (C) 2024 OSN, Inc.");
-    console.log("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.");
-    console.log("This is free software: you are free to change and redistribute it.");
+    console.log(
+        "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."
+    );
+    console.log(
+        "This is free software: you are free to change and redistribute it."
+    );
     console.log("There is NO WARRANTY, to the extent permitted by law.");
     console.log();
     console.log("Written by Ar Rakin.");
@@ -212,7 +230,7 @@ async function main() {
             options: {
                 help: {
                     type: "boolean",
-                    alias: 'h'
+                    alias: "h"
                 },
                 version: {
                     type: "boolean",
@@ -227,8 +245,7 @@ async function main() {
                 }
             }
         }).values;
-    }
-    catch (error) {
+    } catch (error) {
         perror(`${error?.message ?? error}`);
         exit(1);
     }
@@ -244,32 +261,38 @@ async function main() {
     }
 
     if (!options.output && options["no-overwrite"]) {
-        perror("option `--no-overwrite' without `--output` does not make sense");
+        perror(
+            "option `--no-overwrite' without `--output` does not make sense"
+        );
         exit(1);
     }
-    
-    if (options.output && options["no-overwrite"] && existsSync(options.output)) {
+
+    if (
+        options.output &&
+        options["no-overwrite"] &&
+        existsSync(options.output)
+    ) {
         perror(`${options.output}: cannot write changelog: File exists`);
         exit(1);
     }
-    
+
     const gitPath = checkForGit();
     const gitLog = getGitLog(gitPath);
     const commits = parseGitLog(gitLog);
     const changelog = generateChangelog(commits);
 
-    if (options.output) {        
+    if (options.output) {
         try {
             await writeFile(options.output, changelog);
-        }
-        catch (error) {
-            perror(`${options.output}: failed to write changelog: ${error?.message ?? error}`);
+        } catch (error) {
+            perror(
+                `${options.output}: failed to write changelog: ${error?.message ?? error}`
+            );
             exit(1);
         }
 
         print(`wrote generated changelog to ${options.output}`);
-    }
-    else {
+    } else {
         console.log(changelog);
     }
 }

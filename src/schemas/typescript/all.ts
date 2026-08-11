@@ -19,10 +19,10 @@
 
 export const SCHEMA_VERSION = 2;
 
-export * from "./defs/EnvironmentVariableSchema";
-export * from "./defs/GuildConfigurationSchema";
-export * from "./defs/LoggingSchema";
-export * from "./defs/RuleSchema";
-export * from "./defs/ModerationActionSchema";
-export * from "./defs/SnowflakeSchema";
-export * from "./defs/SystemConfigurationSchema";
+export * from "./defs/EnvironmentVariableSchema.js";
+export * from "./defs/GuildConfigurationSchema.js";
+export * from "./defs/LoggingSchema.js";
+export * from "./defs/RuleSchema.js";
+export * from "./defs/ModerationActionSchema.js";
+export * from "./defs/SnowflakeSchema.js";
+export * from "./defs/SystemConfigurationSchema.js";

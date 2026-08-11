@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SnowflakeSchema } from "./SnowflakeSchema";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
 import z from "zod";
 
 export const SystemConfigurationSchema = z.object({

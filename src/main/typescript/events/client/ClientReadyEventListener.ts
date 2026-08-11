@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import EventListener from "@framework/events/EventListener";
-import { Logger } from "@framework/log/Logger";
-import { Events } from "@framework/types/ClientEvents";
-import Database from "@main/database/Database";
-import CommandManagerService from "@main/services/CommandManagerService";
-import ConfigurationManagerService from "@main/services/ConfigurationManagerService";
-import QueueManagerService from "@main/services/QueueManagerService";
+import { Inject } from "@framework/container/Inject.js";
+import EventListener from "@framework/events/EventListener.js";
+import { Logger } from "@framework/log/Logger.js";
+import { Events } from "@framework/types/ClientEvents.js";
+import Database from "@main/database/Database.js";
+import CommandManagerService from "@main/services/CommandManagerService.js";
+import ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
+import QueueManagerService from "@main/services/QueueManagerService.js";
 import { ActivityType, type Client } from "discord.js";
 import { sql } from "drizzle-orm";
 

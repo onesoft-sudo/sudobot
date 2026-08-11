@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import EventListener from "@framework/events/EventListener";
-import { Events } from "@framework/types/ClientEvents";
-import CommandManagerService from "@main/services/CommandManagerService";
+import { Inject } from "@framework/container/Inject.js";
+import EventListener from "@framework/events/EventListener.js";
+import { Events } from "@framework/types/ClientEvents.js";
+import CommandManagerService from "@main/services/CommandManagerService.js";
 import { Awaitable, Interaction } from "discord.js";
 
 class InteractionCreateEventListener extends EventListener<Events.InteractionCreate> {

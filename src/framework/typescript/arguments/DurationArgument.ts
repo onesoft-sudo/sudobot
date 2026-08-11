@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Duration from "@framework/datetime/Duration";
-import DurationParseError from "@framework/datetime/DurationParseError";
+import Duration from "@framework/datetime/Duration.js";
+import DurationParseError from "@framework/datetime/DurationParseError.js";
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import Argument from "./Argument";
-import { ArgumentErrorType } from "./InvalidArgumentError";
+import Argument from "./Argument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
 class DurationArgument extends Argument<Duration> {
     public static readonly defaultErrors = {

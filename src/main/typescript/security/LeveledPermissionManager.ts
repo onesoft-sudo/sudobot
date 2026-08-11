@@ -18,17 +18,17 @@
  */
 
 import { LRUCache } from "lru-cache";
-import AbstractImplicitPermissionManager from "@framework/permissions/AbstractImplicitPermissionManager";
-import type Application from "@main/core/Application";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
+import AbstractImplicitPermissionManager from "@framework/permissions/AbstractImplicitPermissionManager.js";
+import type Application from "@main/core/Application.js";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
+import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager.js";
 import type { User } from "discord.js";
 import { type Snowflake } from "discord.js";
 import { PermissionsBitField } from "discord.js";
 import { GuildMember } from "discord.js";
 import { and, eq, or, sql } from "drizzle-orm";
-import { permissionLevels } from "@main/models/PermissionLevel";
-import Permission from "@framework/permissions/Permission";
+import { permissionLevels } from "@main/models/PermissionLevel.js";
+import Permission from "@framework/permissions/Permission.js";
 
 export type GetLeveledPermissionsResult = GetPermissionsResult & {
     level: number;

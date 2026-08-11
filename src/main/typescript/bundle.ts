@@ -19,13 +19,21 @@
 
 Object.defineProperty(global, "isBundle", { value: true });
 
-import "./preload";
-import { BUNDLE_DATA_SYMBOL } from "@framework/utils/bundle";
-import Resource from "@framework/resources/Resource";
+import Resource from "@framework/resources/Resource.js";
+import { BUNDLE_DATA_SYMBOL } from "@framework/utils/bundle.js";
+import "./preload.js";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This file will only be created when a bundler is executed
-import { classes, services, commands, events, queues, rules, resources } from "./imports.gen";
+import {
+    classes,
+    commands,
+    events,
+    queues,
+    resources,
+    rules,
+    services
+} from "./imports.gen.js";
 
 Object.defineProperty(global, BUNDLE_DATA_SYMBOL, {
     value: {
@@ -43,4 +51,4 @@ for (const [id, data] of Object.entries(resources)) {
     Resource.registerResource(id, data);
 }
 
-import "./main";
+import "./main.js";

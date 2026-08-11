@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Context from "@framework/commands/Context";
-import type { ContextReplyOptions } from "@framework/commands/Context";
-import WizardButtonBuilder from "@framework/widgets/WizardButtonBuilder";
-import type WizardManager from "@framework/widgets/WizardManager";
+import type Context from "@framework/commands/Context.js";
+import type { ContextReplyOptions } from "@framework/commands/Context.js";
+import WizardButtonBuilder from "@framework/widgets/WizardButtonBuilder.js";
+import type WizardManager from "@framework/widgets/WizardManager.js";
 import type { ButtonInteraction } from "discord.js";
 import {
     ActionRowBuilder,

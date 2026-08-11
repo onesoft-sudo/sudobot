@@ -18,7 +18,7 @@
  */
 
 import type { Range } from "../PolicyModuleParserTypes";
-import Node from "./Node";
+import Node from "./Node.js";
 
 class RequireTypeStatementNode extends Node {
     public readonly identifier: string;

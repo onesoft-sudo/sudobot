@@ -1,20 +1,20 @@
-import { Inject } from "@framework/container/Inject";
-import Service from "@framework/services/Service";
-import Application from "@main/core/Application";
-import Rule from "@main/moderation/Rule";
+import { Inject } from "@framework/container/Inject.js";
+import Service from "@framework/services/Service.js";
+import Application from "@main/core/Application.js";
+import Rule from "@main/moderation/Rule.js";
 import RuleManager, {
     RuleConstructor,
     RuleExecResult
-} from "@main/moderation/RuleManager";
-import { RuleType } from "@schemas/all";
+} from "@main/moderation/RuleManager.js";
+import { RuleType } from "@schemas/all.js";
 import { Message } from "discord.js";
-import type ConfigurationManagerService from "./ConfigurationManagerService";
+import type ConfigurationManagerService from "./ConfigurationManagerService.js";
 import {
     ConfigurationType,
     SERVICE_CONFIGURATION_MANAGER
-} from "./ConfigurationManagerService";
-import type ModerationActionService from "./ModerationActionService";
-import { SERVICE_MODERATION_ACTION } from "./ModerationActionService";
+} from "./ConfigurationManagerService.js";
+import type ModerationActionService from "./ModerationActionService.js";
+import { SERVICE_MODERATION_ACTION } from "./ModerationActionService.js";
 
 export const SERVICE_RULE_MODERATION = "ruleModerationService";
 

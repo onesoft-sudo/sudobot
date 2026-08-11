@@ -41,7 +41,7 @@ for path in $paths; do
         printf "Found file: %s\n" "${filepath}"
         base=`basename "${filepath}" | cut -d. -f1`
         dirname=`dirname "${filepath}"`
-        buf_imports="${buf_imports}import ${base} from \"./${dirname}/${base}\";${nl}"
+        buf_imports="${buf_imports}import ${base} from \"./${dirname}/${base}.js\";${nl}"
         buf_exports="${buf_exports}    ${base},${nl}"
 
         if test "$path" = "services"; then

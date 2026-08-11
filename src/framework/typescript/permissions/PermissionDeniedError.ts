@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { PermissionResolvable } from "./PermissionResolvable";
+import type { PermissionResolvable } from "./PermissionResolvable.js";
 
 class PermissionDeniedError extends Error {
     public constructor(

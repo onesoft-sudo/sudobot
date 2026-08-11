@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Node from "./policyparser/ast/Node";
+import type Node from "./policyparser/ast/Node.js";
 
 class PoilcyModuleCompilationError extends Error {
     public readonly node: Node | null;

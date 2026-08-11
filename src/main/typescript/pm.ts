@@ -17,27 +17,31 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./preload";
+import "./preload.js";
 
-import { Logger } from "@framework/log/Logger";
-import { setEnv } from "@main/env/env";
-import { systemPrefix } from "@main/utils/utils";
+import { Logger } from "@framework/log/Logger.js";
+import { setEnv } from "@main/env/env.js";
+import { systemPrefix } from "@main/utils/utils.js";
+import { version } from "@root/package.json";
 import axios from "axios";
+import chalk from "chalk";
 import { fork } from "child_process";
 import * as crypto from "crypto";
 import type { DotenvParseOutput } from "dotenv";
 import { parse } from "dotenv";
+import figlet from "figlet";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { MlKem768 } from "mlkem";
-import { createInterface } from "readline/promises";
-import chalk from "chalk";
 import path from "path";
-import figlet from "figlet";
-import { version } from "@root/package.json";
+import { createInterface } from "readline/promises";
 
 const logger = new Logger("PM", true);
-const encryptedEnvFilePath = path.join(__dirname, __filename.endsWith(".js") ? ".." : "", "../../../.env.encrypted");
+const encryptedEnvFilePath = path.join(
+    import.meta.dirname,
+    __filename.endsWith(".js") ? ".." : "",
+    "../../../.env.encrypted"
+);
 
 async function fetchCredentials(url: string, key: string) {
     if (!url.startsWith("https://") && !url.startsWith("http://localhost:")) {
@@ -66,14 +70,21 @@ async function fetchCredentials(url: string, key: string) {
             }
         );
 
-        if (response.data?.privateKey && typeof response.data?.privateKey === "string") {
+        if (
+            response.data?.privateKey &&
+            typeof response.data?.privateKey === "string"
+        ) {
             logger.success(
-                "Successfully authenticated with the credentials server (Method: " + (is2FACode ? "2FA" : "Key") + ")"
+                "Successfully authenticated with the credentials server (Method: " +
+                    (is2FACode ? "2FA" : "Key") +
+                    ")"
             );
 
             /* The response contains all data in hex format.
                    Therefore first decode it to a buffer. */
-            const privateKey = new Uint8Array(Buffer.from(response.data.privateKey, "hex"));
+            const privateKey = new Uint8Array(
+                Buffer.from(response.data.privateKey, "hex")
+            );
 
             /* The encrypted data is in the following format:
                    - First 4 bytes: The size of the IV (ivSize)
@@ -83,17 +94,31 @@ async function fetchCredentials(url: string, key: string) {
                    - Next (authTagSize) bytes: The auth tag
                    - Next (cipherTextSize) bytes: The encrypted data
                    - Remaining bytes: Encrypted data */
-            const encryptedData = Buffer.from(await readFile(encryptedEnvFilePath, "binary"), "binary");
+            const encryptedData = Buffer.from(
+                await readFile(encryptedEnvFilePath, "binary"),
+                "binary"
+            );
 
-            if (encryptedData.length < 16 || encryptedData.readUInt32BE(0) !== 0x7c83) {
+            if (
+                encryptedData.length < 16 ||
+                encryptedData.readUInt32BE(0) !== 0x7c83
+            ) {
                 throw new Error("Invalid encrypted data received");
             }
 
             const ivSize = encryptedData.readUInt32BE(4);
             const authTagSize = encryptedData.readUInt32BE(8);
             const cipherTextSize = encryptedData.readUInt32BE(12);
-            const iv = Uint8Array.prototype.slice.call(encryptedData, 16, 16 + ivSize);
-            const authTag = Uint8Array.prototype.slice.call(encryptedData, 16 + ivSize, 16 + ivSize + authTagSize);
+            const iv = Uint8Array.prototype.slice.call(
+                encryptedData,
+                16,
+                16 + ivSize
+            );
+            const authTag = Uint8Array.prototype.slice.call(
+                encryptedData,
+                16 + ivSize,
+                16 + ivSize + authTagSize
+            );
             const cipherText = Uint8Array.prototype.slice.call(
                 encryptedData,
                 16 + ivSize + authTagSize,
@@ -105,10 +130,19 @@ async function fetchCredentials(url: string, key: string) {
             );
 
             const mlkem = new MlKem768();
-            const decryptedSharedSecret = await mlkem.decap(cipherText, privateKey);
-            const decipher = crypto.createDecipheriv("aes-256-gcm", decryptedSharedSecret, iv);
+            const decryptedSharedSecret = await mlkem.decap(
+                cipherText,
+                privateKey
+            );
+            const decipher = crypto.createDecipheriv(
+                "aes-256-gcm",
+                decryptedSharedSecret,
+                iv
+            );
             decipher.setAuthTag(authTag);
-            const decryptedTextData = decipher.update(encryptedEnv, undefined, "utf8") + decipher.final("utf8");
+            const decryptedTextData =
+                decipher.update(encryptedEnv, undefined, "utf8") +
+                decipher.final("utf8");
 
             logger.success("Successfully decrypted the environment data");
 
@@ -125,33 +159,36 @@ async function fetchCredentials(url: string, key: string) {
                 }
 
                 return data;
-            }
-            catch (error) {
+            } catch (error) {
                 logger.error(
-                    "Failed to parse decrypted data: " + (error instanceof Error ? error.message : `${error}`)
+                    "Failed to parse decrypted data: " +
+                        (error instanceof Error ? error.message : `${error}`)
                 );
                 return null;
             }
-        }
-        else {
+        } else {
             throw new Error("Invalid response received");
         }
-    }
-    catch (error) {
+    } catch (error) {
         logger.error(`${error instanceof Error ? error.message : `${error}`}`);
         return null;
     }
 }
 
 async function promptForCode() {
-    const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
+    const restartJsonFile = path.join(
+        systemPrefix("tmp", true),
+        "restart.json"
+    );
     let restartKey = null;
 
     if (existsSync(restartJsonFile)) {
         logger.info("Found restart.json file: ", restartJsonFile);
 
         try {
-            const { key } = JSON.parse(await readFile(restartJsonFile, { encoding: "utf-8" }));
+            const { key } = JSON.parse(
+                await readFile(restartJsonFile, { encoding: "utf-8" })
+            );
             restartKey = key;
         } catch (error) {
             logger.error(error);
@@ -168,21 +205,26 @@ async function promptForCode() {
         );
         key = await readline.question("Enter the one-time 2FA code: ");
         readline.close();
-    }
-    else if (restartKey) {
+    } else if (restartKey) {
         logger.info("Accepted 2FA code during last restart command");
-    }
-    else {
+    } else {
         logger.info("Accepted 2FA code from command-line arguments");
     }
 
     return key;
 }
 
-function createChild(data: DotenvParseOutput | null, signal?: AbortSignal, argv: string[] = []) {
+function createChild(
+    data: DotenvParseOutput | null,
+    signal?: AbortSignal,
+    argv: string[] = []
+) {
     return new Promise<void>(resolve => {
         const child = fork(
-            path.resolve(__dirname, "main" + (__filename.endsWith(".ts") ? ".ts" : ".js")),
+            path.resolve(
+                import.meta.dirname,
+                "main" + (__filename.endsWith(".ts") ? ".ts" : ".js")
+            ),
             [...argv, ...process.argv.slice(2)],
             {
                 stdio: "inherit",
@@ -223,7 +265,9 @@ function createChild(data: DotenvParseOutput | null, signal?: AbortSignal, argv:
                     : null;
 
             if (messageData?.type === "SECRETS_ACK") {
-                logger.info(`${child.pid}: Child process acknowledged secret data`);
+                logger.info(
+                    `${child.pid}: Child process acknowledged secret data`
+                );
                 return;
             }
 
@@ -275,7 +319,9 @@ async function createShard(
         ]);
 
         if (Date.now() - lastRestart <= 30000 && restarts >= 10) {
-            logger.error(`Shard ${shardId}: 10 restarts in 30 seconds -- aborting now`);
+            logger.error(
+                `Shard ${shardId}: 10 restarts in 30 seconds -- aborting now`
+            );
             return false;
         }
 
@@ -297,14 +343,17 @@ async function main() {
             logger.fatal("Kernel boot aborted");
             process.exit(-1);
         }
-    }
-    else if (existsSync(encryptedEnvFilePath)) {
-        logger.warn("Encrypted environment file found, but no 2FA URL provided. Ignoring...");
+    } else if (existsSync(encryptedEnvFilePath)) {
+        logger.warn(
+            "Encrypted environment file found, but no 2FA URL provided. Ignoring..."
+        );
     }
 
     if (process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT) {
         console.info();
-        console.info(chalk.blueBright((await figlet.text("SudoBot")).replace(/\s+$/, "")));
+        console.info(
+            chalk.blueBright((await figlet.text("SudoBot")).replace(/\s+$/, ""))
+        );
         console.info();
         console.info(`      Version ${chalk.green(version)} -- booting up`);
         console.info();
@@ -318,12 +367,20 @@ async function main() {
     const exitStatus: { exited: boolean }[] = [];
 
     for (;;) {
-        if (process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT) {
+        if (
+            process.env.SUDOBOT_SHARD_COUNT &&
+            +process.env.SUDOBOT_SHARD_COUNT
+        ) {
             const count = +process.env.SUDOBOT_SHARD_COUNT;
             const abortController = new AbortController();
 
             for (let i = 0; i < count; i++) {
-                const promise = createShard(result, i, count, abortController.signal);
+                const promise = createShard(
+                    result,
+                    i,
+                    count,
+                    abortController.signal
+                );
                 exitStatus[i] = { exited: false };
                 promises[i] = promise.then(result => {
                     logger.error(`Shard #${i} errored`);
@@ -345,7 +402,12 @@ async function main() {
                         continue;
                     }
 
-                    const promise = createShard(result, i, count, abortController.signal);
+                    const promise = createShard(
+                        result,
+                        i,
+                        count,
+                        abortController.signal
+                    );
                     exitStatus[i] = { exited: false };
                     promises[i] = promise.then(result => {
                         logger.error(`Shard #${i} errored`);
@@ -359,8 +421,7 @@ async function main() {
                     });
                 }
             }
-        }
-        else {
+        } else {
             await createChild(result);
         }
 

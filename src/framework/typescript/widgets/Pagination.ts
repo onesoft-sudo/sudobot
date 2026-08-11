@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
-import { findEmoji } from "@framework/utils/emoji";
+import Application from "@framework/app/Application.js";
+import { findEmoji } from "@framework/utils/emoji.js";
 import type {
     Awaitable,
     Client,

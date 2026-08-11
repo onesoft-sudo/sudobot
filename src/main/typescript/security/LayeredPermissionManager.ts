@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@main/core/Application";
-import AbstractImplicitPermissionManager from "@framework/permissions/AbstractImplicitPermissionManager";
-import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
+import type Application from "@main/core/Application.js";
+import AbstractImplicitPermissionManager from "@framework/permissions/AbstractImplicitPermissionManager.js";
+import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager.js";
+import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
 import type { Snowflake, User } from "discord.js";
 import { GuildMember, PermissionsBitField } from "discord.js";
 import { LRUCache } from "lru-cache";
-import { permissionProfiles } from "@main/models/PermissionProfile";
+import { permissionProfiles } from "@main/models/PermissionProfile.js";
 import { and, eq, or, sql } from "drizzle-orm";
-import Permission from "@framework/permissions/Permission";
+import Permission from "@framework/permissions/Permission.js";
 
 type LayeredPermissionCache = Omit<GetPermissionsResult, "discordPermissions"> & {
     profiles: Set<string> | null;

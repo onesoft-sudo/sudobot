@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Node from "./Node";
+import Node from "./Node.js";
 import type { Range } from "../PolicyModuleParserTypes";
 
 class BlockStatementNode<T extends Node = Node> extends Node {

@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Environment from "@framework/env/Environment";
-import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/all";
+import Environment from "@framework/env/Environment.js";
+import { EnvironmentVariableSchema, type EnvironmentVariableType } from "@schemas/all.js";
 
 let envData: EnvironmentVariableType | undefined;
 

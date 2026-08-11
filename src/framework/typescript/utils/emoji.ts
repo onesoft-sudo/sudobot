@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import { getEnv } from "@main/env/env";
-import type ConfigurationManagerService from "@main/services/ConfigurationManagerService";
+import type Application from "@framework/app/Application.js";
+import { getEnv } from "@main/env/env.js";
+import type ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
 import type { ApplicationEmoji, GuildEmoji } from "discord.js";
 
 export function emoji(application: Application, name: string) {

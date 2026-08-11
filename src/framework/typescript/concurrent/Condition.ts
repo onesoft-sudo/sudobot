@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { promiseWithResolvers } from "@framework/polyfills/Promise";
+import { promiseWithResolvers } from "@framework/polyfills/Promise.js";
 
 class Condition {
     private readonly resolvers: Array<() => void> = [];

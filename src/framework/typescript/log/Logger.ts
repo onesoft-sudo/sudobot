@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@framework/app/Application";
-import { isDevelopmentMode } from "@framework/utils/utils";
+import Application from "@framework/app/Application.js";
+import { isDevelopmentMode } from "@framework/utils/utils.js";
 import chalk from "chalk";
 
 export enum LogLevel {

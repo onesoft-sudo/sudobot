@@ -1,8 +1,10 @@
-require("dotenv/config");
+import "dotenv/config";
 
 async function main() {
     const { drizzle } = await import(String("drizzle-orm/node-postgres"));
-    const { migrate } = await import(String("drizzle-orm/node-postgres/migrator"));
+    const { migrate } = await import(
+        String("drizzle-orm/node-postgres/migrator")
+    );
     const { default: PG } = await import(String("pg"));
 
     const pool = new PG.Pool({

@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import Service from "@framework/services/Service";
-import type { HasEventListeners } from "@framework/types/HasEventListeners";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener.js";
+import Service from "@framework/services/Service.js";
+import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
 import {
     Collection,
     GuildMember,

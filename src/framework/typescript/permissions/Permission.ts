@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type { ConstructorOf } from "@framework/container/Container";
-import Singleton from "@framework/objects/Singleton";
+import type Application from "@framework/app/Application.js";
+import type { ConstructorOf } from "@framework/container/Container.js";
+import Singleton from "@framework/objects/Singleton.js";
 import type { APIInteractionGuildMember, APIUser, Awaitable, GuildMember} from "discord.js";
 import { User } from "discord.js";
-import type { SystemPermissionResolvable } from "./PermissionResolvable";
-import { requireNonNull } from "@framework/utils/utils";
+import type { SystemPermissionResolvable } from "./PermissionResolvable.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 
 abstract class Permission extends Singleton {
     public abstract readonly name: string;

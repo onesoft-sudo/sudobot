@@ -24,7 +24,9 @@ const breakBeforeControlRule = ESLintUtils.RuleCreator.withoutDocs({
         const source = context.sourceCode;
 
         function check(node: TSESTree.Node, keyword: string) {
-            const keywordToken = source.getTokenBefore(node, { filter: token => token.value === keyword });
+            const keywordToken = source.getTokenBefore(node, {
+                filter: token => token.value === keyword
+            });
 
             if (!keywordToken) {
                 return;
@@ -42,9 +44,15 @@ const breakBeforeControlRule = ESLintUtils.RuleCreator.withoutDocs({
                 return;
             }
 
-            const between = source.text.slice(prevKeywordToken.range[1], keywordToken.range[0]);
+            const between = source.text.slice(
+                prevKeywordToken.range[1],
+                keywordToken.range[0]
+            );
             const betweenBrace =
-                source.text.slice(prevBraceToken.range[1], prevKeywordToken.range[0]).split("\n").at(-1) || "";
+                source.text
+                    .slice(prevBraceToken.range[1], prevKeywordToken.range[0])
+                    .split("\n")
+                    .at(-1) || "";
 
             if (!between.includes("\n")) {
                 context.report({

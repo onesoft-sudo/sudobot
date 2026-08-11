@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Inject } from "@framework/container/Inject";
-import EventListener from "@framework/events/EventListener";
-import { Logger } from "@framework/log/Logger";
-import { Events } from "@framework/types/ClientEvents";
+import { Inject } from "@framework/container/Inject.js";
+import EventListener from "@framework/events/EventListener.js";
+import { Logger } from "@framework/log/Logger.js";
+import { Events } from "@framework/types/ClientEvents.js";
 import type { Awaitable } from "discord.js";
 
 class ShardReadyEventListener extends EventListener<Events.ShardReady> {

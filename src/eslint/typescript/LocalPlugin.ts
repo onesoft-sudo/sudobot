@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import breakBeforeControlRule from "./rules/BreakBeforeControlRule";
+import breakBeforeControlRule from "./rules/BreakBeforeControlRule.js";
 import { version } from "../../../package.json";
 import type { Rule } from "eslint";
 

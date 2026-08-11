@@ -2,8 +2,8 @@
     "compilerOptions": {
         "incremental": true,
         "target": "ES2023",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "lib": ["ES2023", "Decorators", "DOM"],
         "types": ["node", "bun"],
         "resolveJsonModule": true,
@@ -12,7 +12,7 @@
         "importHelpers": true,
         "newLine": "lf",
         "noEmitHelpers": true,
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
@@ -22,7 +22,6 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove",
         "sourceMap": true,
         "alwaysStrict": true,
         "paths": {
@@ -36,7 +35,7 @@
             "*": ["./*"]
         }
     },
-    "include": ["src/**/*.ts", "build.blaze.mts", "settings.blaze.mts"],
+    "include": ["src/**/*.ts"],
     "exclude": [
         "./backup",
         "./tmp",

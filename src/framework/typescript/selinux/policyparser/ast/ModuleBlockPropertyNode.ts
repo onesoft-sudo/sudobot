@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type LiteralNode from "./LiteralNode";
-import Node from "./Node";
+import type LiteralNode from "./LiteralNode.js";
+import Node from "./Node.js";
 import type { Range } from "../PolicyModuleParserTypes";
 
 class ModuleBlockPropertyNode extends Node {

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { DiscordAPIErrorMessage } from "@framework/errors/DiscordAPIErrorMessage";
+import { DiscordAPIErrorMessage } from "@framework/errors/DiscordAPIErrorMessage.js";
 
 class APIErrors {
     public static translateToMessage(code: number, overrides?: Record<number, string>) {

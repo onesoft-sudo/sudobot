@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Application from "@framework/app/Application";
-import type JobState from "@framework/queues/JobState";
-import type QueueManager from "@framework/queues/QueueManager";
+import type Application from "@framework/app/Application.js";
+import type JobState from "@framework/queues/JobState.js";
+import type QueueManager from "@framework/queues/QueueManager.js";
 import type { Awaitable } from "discord.js";
 
 abstract class AbstractQueuedJob<T extends object> {

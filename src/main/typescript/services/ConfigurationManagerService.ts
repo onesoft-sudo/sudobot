@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import FileSystem from "@framework/polyfills/FileSystem";
-import Service from "@framework/services/Service";
-import { BUG } from "@framework/utils/devflow";
-import { isInShards } from "@framework/utils/shard";
-import { isSnowflake } from "@framework/utils/utils";
-import { systemPrefix } from "@main/utils/utils";
+import FileSystem from "@framework/polyfills/FileSystem.js";
+import Service from "@framework/services/Service.js";
+import { BUG } from "@framework/utils/devflow.js";
+import { isInShards } from "@framework/utils/shard.js";
+import { isSnowflake } from "@framework/utils/utils.js";
+import { systemPrefix } from "@main/utils/utils.js";
 import {
     GuildConfigurationDefaultValue,
     GuildConfigurationSchema,
@@ -30,7 +30,7 @@ import {
     SystemConfigurationSchema,
     type GuildConfigurationType,
     type SystemConfigurationType
-} from "@schemas/all";
+} from "@schemas/all.js";
 import { type Awaitable, type Snowflake } from "discord.js";
 import { readdir } from "fs/promises";
 import { LRUCache } from "lru-cache";

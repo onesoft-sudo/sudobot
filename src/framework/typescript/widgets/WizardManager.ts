@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { HasApplication } from "@framework/types/HasApplication";
-import type Wizard from "@framework/widgets/Wizard";
+import { HasApplication } from "@framework/types/HasApplication.js";
+import type Wizard from "@framework/widgets/Wizard.js";
 
 class WizardManager extends HasApplication {
     private readonly wizards: Map<string, Wizard> = new Map();

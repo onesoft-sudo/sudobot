@@ -25,11 +25,11 @@ import {
     type InteractionReplyOptions,
     type Message
 } from "discord.js";
-import CommandContextType from "./CommandContextType";
-import Context, { type ContextReplyOptions } from "./Context";
-import { requireNonNull } from "@framework/utils/utils";
-import type Application from "@framework/app/Application";
-import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder";
+import CommandContextType from "./CommandContextType.js";
+import Context, { type ContextReplyOptions } from "./Context.js";
+import { requireNonNull } from "@framework/utils/utils.js";
+import type Application from "@framework/app/Application.js";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder.js";
 
 class InteractionContext extends Context<CommandContextType.Interactive> {
     public override readonly type = CommandContextType.Interactive;

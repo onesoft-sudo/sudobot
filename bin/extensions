@@ -19,19 +19,28 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-require("module-alias/register");
-require("dotenv/config");
+import "dotenv/config";
+import "module-alias/register";
 
-const chalk = require("chalk");
-const { spawnSync } = require("child_process");
-const { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync, rmSync } = require("fs");
-const { readFile, symlink, unlink } = require("fs/promises");
-const path = require("path");
-const { chdir, cwd } = require("process");
-const { z } = require("zod");
-const semver = require("semver");
+import chalk from "chalk";
+import { spawnSync } from "child_process";
+import {
+    existsSync,
+    lstatSync,
+    readdirSync,
+    readFileSync,
+    rmSync,
+    writeFileSync
+} from "fs";
+import { readFile, symlink, unlink } from "fs/promises";
+import path from "path";
+import { chdir, cwd } from "process";
+import semver from "semver";
+import { z } from "zod";
 
-const extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.resolve(__dirname, "../extensions");
+const extensionsPath =
+    process.env.EXTENSIONS_DIRECTORY ??
+    path.resolve(import.meta.dirname, "../extensions");
 
 function error(...args) {
     console.error(...args);
@@ -91,15 +100,22 @@ function readMeta(extensionName, extensionDirectory) {
     const metadataFile = path.join(extensionDirectory, "extension.json");
 
     if (!existsSync(metadataFile)) {
-        error(`Extension ${extensionName} does not have a "extension.json" file!`);
+        error(
+            `Extension ${extensionName} does not have a "extension.json" file!`
+        );
     }
 
-    const metadata = JSON.parse(readFileSync(metadataFile, { encoding: "utf-8" }));
+    const metadata = JSON.parse(
+        readFileSync(metadataFile, { encoding: "utf-8" })
+    );
 
     try {
         return extensionMetadataSchema.parse(metadata);
     } catch (e) {
-        error(`Extension ${extensionName} has an invalid "extension.json" file!`, e);
+        error(
+            `Extension ${extensionName} has an invalid "extension.json" file!`,
+            e
+        );
     }
 }
 
@@ -131,7 +147,9 @@ async function writeCacheIndex() {
         const extensionPath = path.join(extensionDirectory, main);
 
         const imported = await require(extensionPath);
-        const { default: ExtensionClass } = imported.__esModule ? imported : { default: imported };
+        const { default: ExtensionClass } = imported.__esModule
+            ? imported
+            : { default: imported };
         const extension = new ExtensionClass(this.client);
         let commandPaths = await extension.commands();
         let eventPaths = await extension.events();
@@ -141,7 +159,7 @@ async function writeCacheIndex() {
             const directory = path.join(
                 ...(process.env.EXTENSIONS_DIRECTORY
                     ? [process.env.EXTENSIONS_DIRECTORY]
-                    : [__dirname, "../extensions"]),
+                    : [import.meta.dirname, "../extensions"]),
                 extensionName,
                 commands
             );
@@ -155,7 +173,7 @@ async function writeCacheIndex() {
             const directory = path.join(
                 ...(process.env.EXTENSIONS_DIRECTORY
                     ? [process.env.EXTENSIONS_DIRECTORY]
-                    : [__dirname, "../extensions"]),
+                    : [import.meta.dirname, "../extensions"]),
                 extensionName,
                 events
             );
@@ -169,7 +187,7 @@ async function writeCacheIndex() {
             const directory = path.join(
                 ...(process.env.EXTENSIONS_DIRECTORY
                     ? [process.env.EXTENSIONS_DIRECTORY]
-                    : [__dirname, "../extensions"]),
+                    : [import.meta.dirname, "../extensions"]),
                 extensionName,
                 services
             );
@@ -267,7 +285,7 @@ async function buildExtensions() {
 
             actionLog("RELINK", extensionName);
             spawnSyncCatchExit(
-                `npm install --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`,
+                `npm install --save ${path.relative(cwd(), path.resolve(import.meta.dirname, ".."))}`,
                 {
                     encoding: "utf-8",
                     shell: true,
@@ -291,7 +309,10 @@ async function buildExtensions() {
         const { build_command } = readMeta(extensionName, extensionDirectory);
 
         if (!build_command) {
-            console.log(chalk.cyan.bold("INFO "), "This extension doesn't require building.");
+            console.log(
+                chalk.cyan.bold("INFO "),
+                "This extension doesn't require building."
+            );
             continue;
         }
 
@@ -312,7 +333,7 @@ async function buildExtensions() {
 }
 
 async function writeExtensionIndex() {
-    const extensionsPath = path.resolve(__dirname, "../extensions");
+    const extensionsPath = path.resolve(import.meta.dirname, "../extensions");
     const extensionsOutputRecord = {};
     const extensions = readdirSync(extensionsPath);
 
@@ -327,7 +348,9 @@ async function writeExtensionIndex() {
         console.log("Found extension: ", extensionName);
 
         const packageJsonPath = path.join(extensionDirectory, "package.json");
-        const packageJson = JSON.parse(await readFile(packageJsonPath, { encoding: "utf-8" }));
+        const packageJson = JSON.parse(
+            await readFile(packageJsonPath, { encoding: "utf-8" })
+        );
 
         const {
             main_directory = "./build",
@@ -344,11 +367,19 @@ async function writeExtensionIndex() {
             readmeFileName
         } = readMeta(extensionName, extensionDirectory) ?? {};
 
-        const commandPaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, commands));
-        const eventPaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, events));
-        const servicePaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, services));
+        const commandPaths = getRecuriveJavaScriptFiles(
+            path.join(extensionDirectory, commands)
+        );
+        const eventPaths = getRecuriveJavaScriptFiles(
+            path.join(extensionDirectory, events)
+        );
+        const servicePaths = getRecuriveJavaScriptFiles(
+            path.join(extensionDirectory, services)
+        );
 
-        const tarballs = readdirSync(path.resolve(extensionsPath, ".extbuilds", extensionName));
+        const tarballs = readdirSync(
+            path.resolve(extensionsPath, ".extbuilds", extensionName)
+        );
 
         tarballs.sort((a, b) => {
             const vA = path
@@ -390,7 +421,12 @@ async function writeExtensionIndex() {
 
         const tarballList = tarballs.map(file => {
             const basename = path.basename(file);
-            const filePath = path.join(extensionsPath, ".extbuilds", extensionName, basename);
+            const filePath = path.join(
+                extensionsPath,
+                ".extbuilds",
+                extensionName,
+                basename
+            );
             const { stdout } = spawnSync(`sha512sum`, [filePath], {
                 encoding: "utf-8"
             });
@@ -402,7 +438,9 @@ async function writeExtensionIndex() {
                     "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" +
                     path.join("/.extbuilds/", extensionName, basename),
                 basename,
-                version: basename.replace(`${extensionName}-`, "").replace(/\.tar\.gz$/gi, ""),
+                version: basename
+                    .replace(`${extensionName}-`, "")
+                    .replace(/\.tar\.gz$/gi, ""),
                 checksum,
                 size,
                 createdAt: birthtime
@@ -438,7 +476,10 @@ async function writeExtensionIndex() {
                 typeof packageJson.repository === "string"
                     ? packageJson.repository
                     : packageJson.repository?.url,
-            issues: typeof packageJson.bugs === "string" ? packageJson.bugs : packageJson.bugs?.url,
+            issues:
+                typeof packageJson.bugs === "string"
+                    ? packageJson.bugs
+                    : packageJson.bugs?.url,
             lastUpdated: new Date(),
             readmeFileName: readmeFileName,
             readmeFileURL: `https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/${extensionName}/${readmeFileName}`,
@@ -475,7 +516,10 @@ if (
 
     rmSync(indexFile);
     console.log("Removed cached index file: ", indexFile);
-} else if (process.argv.includes("--cache") || process.argv.includes("--index")) {
+} else if (
+    process.argv.includes("--cache") ||
+    process.argv.includes("--index")
+) {
     console.time("Finished in");
     console.log("Creating cache index for all the installed extensions");
     writeCacheIndex()
@@ -491,7 +535,9 @@ if (
         process.exit(-1);
     });
 } else if (process.argv.includes("--mkindex")) {
-    console.log("Creating index for all the available extensions in the extensions/ directory");
+    console.log(
+        "Creating index for all the available extensions in the extensions/ directory"
+    );
 
     writeExtensionIndex().catch(e => {
         console.log(e);
@@ -499,14 +545,20 @@ if (
     });
 } else {
     console.log("Usage:");
-    console.log("  node extensions.js <options>\n");
+    console.log("  node %s <options>\n", process.argv[1]);
     console.log("Options:");
-    console.log("  --build [--tsc]    |  Builds all the installed extensions, if needed.");
-    console.log("                     |  The `--tsc` flag will only run the typescript compiler.");
+    console.log(
+        "  --build [--tsc]    |  Builds all the installed extensions, if needed."
+    );
+    console.log(
+        "                     |  The `--tsc` flag will only run the typescript compiler."
+    );
     console.log(
         "  --cache            |  Creates cache indexes for installed extensions, to improve the startup time."
     );
-    console.log("  --clean            |  Clears all installed extension cache.");
+    console.log(
+        "  --clean            |  Clears all installed extension cache."
+    );
     console.log(
         "  --mkindex          |  Creates indexes for all the available extensions, in the extensions/ top level directory."
     );

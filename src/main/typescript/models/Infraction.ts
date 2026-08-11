@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { pgEnum } from "@framework/database/Enum";
+import { pgEnum } from "@framework/database/Enum.js";
 import { sql } from "drizzle-orm";
 import { integer, json, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
