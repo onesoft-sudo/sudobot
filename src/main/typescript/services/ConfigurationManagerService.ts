@@ -45,10 +45,7 @@ export enum ConfigurationType {
 class ConfigurationManagerService extends Service {
     public override readonly name: string = SERVICE_CONFIGURATION_MANAGER;
 
-    public static readonly CONFIG_BY_ID_DIR = systemPrefix(
-        "config/by-id",
-        true
-    );
+    public static readonly CONFIG_BY_ID_DIR = systemPrefix("config/by-id");
     public static readonly CONFIG_SYSTEM_FILE =
         systemPrefix("config/system.json");
 
@@ -149,7 +146,7 @@ class ConfigurationManagerService extends Service {
             const isOwnedByShard = isInShards(
                 this.application.shards,
                 this.application.shardCount,
-                id,
+                id
             );
 
             if (!isOwnedByShard) {
@@ -196,7 +193,7 @@ class ConfigurationManagerService extends Service {
                 const isOwnedByShard = isInShards(
                     this.application.shards,
                     this.application.shardCount,
-                    id,
+                    id
                 );
 
                 if (!isOwnedByShard) {

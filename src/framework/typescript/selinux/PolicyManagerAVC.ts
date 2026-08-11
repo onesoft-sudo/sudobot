@@ -17,19 +17,27 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { type GuildBasedChannel, GuildMember, Role, User, type Snowflake } from "discord.js";
-import { PolicyModuleSchema, type PolicyModuleType } from "./PolicyModuleSchema.js";
-import PolicyModuleError from "./PolicyModuleError.js";
 import { Logger } from "@framework/log/Logger.js";
-import { performance } from "perf_hooks";
-import { readFile } from "fs/promises";
-import { writeFile } from "fs/promises";
-import { CacheSchema, type AVCType } from "./AVCSchema.js";
-import { LRUCache } from "lru-cache";
-import { systemPrefix } from "@main/utils/utils.js";
-import path from "path";
 import { createRegex, regexTest } from "@framework/utils/re2.js";
+import { systemPrefix } from "@main/utils/utils.js";
+import {
+    GuildMember,
+    Role,
+    User,
+    type GuildBasedChannel,
+    type Snowflake
+} from "discord.js";
+import { readFile, writeFile } from "fs/promises";
+import { LRUCache } from "lru-cache";
+import path from "path";
+import { performance } from "perf_hooks";
+import { CacheSchema, type AVCType } from "./AVCSchema.js";
 import MessagePackEncoder from "./MessagePackEncoder.js";
+import PolicyModuleError from "./PolicyModuleError.js";
+import {
+    PolicyModuleSchema,
+    type PolicyModuleType
+} from "./PolicyModuleSchema.js";
 
 type CacheEntry = {
     avc: AVCType;
@@ -38,7 +46,7 @@ type CacheEntry = {
 
 class PolicyManagerAVC {
     public static readonly POLICY_VERSION = 1;
-    public static readonly AVC_CACHE_DIR = systemPrefix("cache/avc", true);
+    public static readonly AVC_CACHE_DIR = systemPrefix("cache/avc");
     protected readonly encoder = new MessagePackEncoder();
 
     protected readonly cache = new LRUCache<Snowflake, CacheEntry>({
@@ -61,8 +69,7 @@ class PolicyManagerAVC {
             if (cache) {
                 return cache;
             }
-        }
-        catch (error) {
+        } catch (error) {
             this.logger.error(error);
         }
 
@@ -97,11 +104,17 @@ class PolicyManagerAVC {
     }
 
     public storeGuild(guildId: Snowflake) {
-        return this.storeAVC(guildId, path.join(PolicyManagerAVC.AVC_CACHE_DIR, `${guildId}.avc`));
+        return this.storeAVC(
+            guildId,
+            path.join(PolicyManagerAVC.AVC_CACHE_DIR, `${guildId}.avc`)
+        );
     }
 
     public loadGuild(guildId: Snowflake) {
-        return this.loadAVC(guildId, path.join(PolicyManagerAVC.AVC_CACHE_DIR, `${guildId}.avc`));
+        return this.loadAVC(
+            guildId,
+            path.join(PolicyManagerAVC.AVC_CACHE_DIR, `${guildId}.avc`)
+        );
     }
 
     public async loadModule(guildId: Snowflake, module: PolicyModuleType) {
@@ -109,20 +122,27 @@ class PolicyManagerAVC {
         cache.modules.set(module.policy_module.name, module);
     }
 
-    public async loadModuleFromFile(guildId: Snowflake, filepath: string): Promise<void> {
+    public async loadModuleFromFile(
+        guildId: Snowflake,
+        filepath: string
+    ): Promise<void> {
         const data = await readFile(filepath);
 
         try {
             const parsed = this.encoder.decode(data);
             const final = PolicyModuleSchema.parse(parsed);
             await this.loadModule(guildId, final);
-        }
-        catch (error) {
-            throw new PolicyModuleError("Invalid policy module file: " + filepath, { cause: error });
+        } catch (error) {
+            throw new PolicyModuleError(
+                "Invalid policy module file: " + filepath,
+                { cause: error }
+            );
         }
     }
 
-    public async getLoadedModules(guildId: Snowflake): Promise<ReadonlyMap<string, PolicyModuleType>> {
+    public async getLoadedModules(
+        guildId: Snowflake
+    ): Promise<ReadonlyMap<string, PolicyModuleType>> {
         const cache = await this.cacheGuild(guildId);
         return cache.modules;
     }
@@ -137,14 +157,21 @@ class PolicyManagerAVC {
         await writeFile(filepath, encoded);
     }
 
-    public async loadAVC(guildId: Snowflake, filepath: string): Promise<CacheEntry> {
+    public async loadAVC(
+        guildId: Snowflake,
+        filepath: string
+    ): Promise<CacheEntry> {
         const data = await readFile(filepath);
 
         try {
-            const { avc, modules } = CacheSchema.parse(this.encoder.decode(data));
+            const { avc, modules } = CacheSchema.parse(
+                this.encoder.decode(data)
+            );
 
             if (avc.details.version > PolicyManagerAVC.POLICY_VERSION) {
-                throw new PolicyModuleError("Unsupported policy version: " + avc.details.version);
+                throw new PolicyModuleError(
+                    "Unsupported policy version: " + avc.details.version
+                );
             }
 
             this.cache.set(guildId, {
@@ -156,9 +183,10 @@ class PolicyManagerAVC {
                 modules,
                 avc
             };
-        }
-        catch (error) {
-            throw new PolicyModuleError("Invalid AVC cache file: " + filepath, { cause: error });
+        } catch (error) {
+            throw new PolicyModuleError("Invalid AVC cache file: " + filepath, {
+                cause: error
+            });
         }
     }
 
@@ -174,12 +202,22 @@ class PolicyManagerAVC {
         cache.avc.denyTypes.clear();
 
         for (const module of cache.modules.values()) {
-            for (let mapTypeIndex = 0; mapTypeIndex < module.map_types.length; mapTypeIndex++) {
+            for (
+                let mapTypeIndex = 0;
+                mapTypeIndex < module.map_types.length;
+                mapTypeIndex++
+            ) {
                 const mapTypeString = module.map_types[mapTypeIndex];
-                const typeId = cache.avc.mapTypeIds.get(mapTypeString) ?? cache.avc.nextTypeId++;
-                const existingMapTypeId = cache.avc.mapTypeIds.get(mapTypeString);
+                const typeId =
+                    cache.avc.mapTypeIds.get(mapTypeString) ??
+                    cache.avc.nextTypeId++;
+                const existingMapTypeId =
+                    cache.avc.mapTypeIds.get(mapTypeString);
 
-                if (existingMapTypeId !== undefined && cache.avc.mapTypes.get(existingMapTypeId) !== mapTypeString) {
+                if (
+                    existingMapTypeId !== undefined &&
+                    cache.avc.mapTypes.get(existingMapTypeId) !== mapTypeString
+                ) {
                     throw new PolicyModuleError(
                         `Conflicting type definitions in policy module: ${module.policy_module.name}: Existing '${cache.avc.mapTypes.get(existingMapTypeId)}', new '${mapTypeString}' [@${existingMapTypeId}]`
                     );
@@ -188,37 +226,57 @@ class PolicyManagerAVC {
                 cache.avc.mapTypeIds.set(mapTypeString, typeId);
                 cache.avc.mapTypes.set(typeId, mapTypeString);
 
-                const localExistingDenyTypeValue = cache.avc.denyTypes.get(typeId) ?? 0n;
-                const localExistingAllowTypeValue = cache.avc.allowTypes.get(typeId) ?? 0n;
-                const localDenyTypeValue = localExistingDenyTypeValue | BigInt(module.deny_types[mapTypeIndex] || 0);
+                const localExistingDenyTypeValue =
+                    cache.avc.denyTypes.get(typeId) ?? 0n;
+                const localExistingAllowTypeValue =
+                    cache.avc.allowTypes.get(typeId) ?? 0n;
+                const localDenyTypeValue =
+                    localExistingDenyTypeValue |
+                    BigInt(module.deny_types[mapTypeIndex] || 0);
                 const localAllowTypeValue =
-                    (localExistingAllowTypeValue | BigInt(module.allow_types[mapTypeIndex] || 0)) & ~localDenyTypeValue;
+                    (localExistingAllowTypeValue |
+                        BigInt(module.allow_types[mapTypeIndex] || 0)) &
+                    ~localDenyTypeValue;
 
                 cache.avc.denyTypes.set(typeId, localDenyTypeValue);
                 cache.avc.allowTypes.set(typeId, localAllowTypeValue);
             }
 
             for (const sourceMapTypeIndexString in module.deny_types_on_targets) {
-                const sourceMapTypeString = module.map_types[sourceMapTypeIndexString];
-                const sourceTypeId = cache.avc.mapTypeIds.get(sourceMapTypeString);
+                const sourceMapTypeString =
+                    module.map_types[sourceMapTypeIndexString];
+                const sourceTypeId =
+                    cache.avc.mapTypeIds.get(sourceMapTypeString);
 
                 if (sourceTypeId === undefined) {
-                    throw new PolicyModuleError(`Invalid source type index: ${sourceMapTypeIndexString}`);
+                    throw new PolicyModuleError(
+                        `Invalid source type index: ${sourceMapTypeIndexString}`
+                    );
                 }
 
-                for (const targetMapTypeIndexString in module.deny_types_on_targets[sourceMapTypeIndexString]) {
-                    const targetMapTypeString = module.map_types[targetMapTypeIndexString];
-                    const targetTypeId = cache.avc.mapTypeIds.get(targetMapTypeString);
+                for (const targetMapTypeIndexString in module
+                    .deny_types_on_targets[sourceMapTypeIndexString]) {
+                    const targetMapTypeString =
+                        module.map_types[targetMapTypeIndexString];
+                    const targetTypeId =
+                        cache.avc.mapTypeIds.get(targetMapTypeString);
 
                     if (targetTypeId === undefined) {
-                        throw new PolicyModuleError(`Invalid target type index: ${targetMapTypeIndexString}`);
+                        throw new PolicyModuleError(
+                            `Invalid target type index: ${targetMapTypeIndexString}`
+                        );
                     }
 
                     const targetDenyTypeValue =
-                        module.deny_types_on_targets[sourceMapTypeIndexString]?.[targetMapTypeIndexString] ?? 0n;
-                    const key = (BigInt(sourceTypeId) << 32n) | BigInt(targetTypeId);
-                    const existingTargetDenyTypeValue = cache.avc.denyTypesOnTargets.get(key);
-                    const localExistingDenyTypeValue = cache.avc.denyTypes.get(sourceTypeId) ?? 0n;
+                        module.deny_types_on_targets[
+                            sourceMapTypeIndexString
+                        ]?.[targetMapTypeIndexString] ?? 0n;
+                    const key =
+                        (BigInt(sourceTypeId) << 32n) | BigInt(targetTypeId);
+                    const existingTargetDenyTypeValue =
+                        cache.avc.denyTypesOnTargets.get(key);
+                    const localExistingDenyTypeValue =
+                        cache.avc.denyTypes.get(sourceTypeId) ?? 0n;
 
                     cache.avc.denyTypesOnTargets.set(
                         key,
@@ -230,35 +288,54 @@ class PolicyManagerAVC {
             }
 
             for (const sourceMapTypeIndexString in module.allow_types_on_targets) {
-                const sourceMapTypeString = module.map_types[sourceMapTypeIndexString];
-                const sourceTypeId = cache.avc.mapTypeIds.get(sourceMapTypeString);
+                const sourceMapTypeString =
+                    module.map_types[sourceMapTypeIndexString];
+                const sourceTypeId =
+                    cache.avc.mapTypeIds.get(sourceMapTypeString);
 
                 if (sourceTypeId === undefined) {
-                    throw new PolicyModuleError(`Invalid source type index: ${sourceMapTypeIndexString}`);
+                    throw new PolicyModuleError(
+                        `Invalid source type index: ${sourceMapTypeIndexString}`
+                    );
                 }
 
-                for (const targetMapTypeIndexString in module.allow_types_on_targets[sourceMapTypeIndexString]) {
-                    const targetMapTypeString = module.map_types[targetMapTypeIndexString];
-                    const targetTypeId = cache.avc.mapTypeIds.get(targetMapTypeString);
+                for (const targetMapTypeIndexString in module
+                    .allow_types_on_targets[sourceMapTypeIndexString]) {
+                    const targetMapTypeString =
+                        module.map_types[targetMapTypeIndexString];
+                    const targetTypeId =
+                        cache.avc.mapTypeIds.get(targetMapTypeString);
 
                     if (targetTypeId === undefined) {
-                        throw new PolicyModuleError(`Invalid target type index: ${targetMapTypeIndexString}`);
+                        throw new PolicyModuleError(
+                            `Invalid target type index: ${targetMapTypeIndexString}`
+                        );
                     }
 
                     const targetAllowTypeValue =
-                        module.allow_types_on_targets[sourceMapTypeIndexString]?.[targetMapTypeIndexString] ?? 0n;
-                    const key = (BigInt(sourceTypeId) << 32n) | BigInt(targetTypeId);
-                    const existingTargetAllowTypeValue = cache.avc.allowTypesOnTargets.get(key) ?? 0n;
-                    const localExistingAllowTypeValue = cache.avc.allowTypes.get(sourceTypeId) ?? 0n;
-                    const existingTargetDenyTypeValue = cache.avc.denyTypesOnTargets.get(key) ?? 0n;
-                    const localExistingDenyTypeValue = cache.avc.denyTypes.get(sourceTypeId) ?? 0n;
+                        module.allow_types_on_targets[
+                            sourceMapTypeIndexString
+                        ]?.[targetMapTypeIndexString] ?? 0n;
+                    const key =
+                        (BigInt(sourceTypeId) << 32n) | BigInt(targetTypeId);
+                    const existingTargetAllowTypeValue =
+                        cache.avc.allowTypesOnTargets.get(key) ?? 0n;
+                    const localExistingAllowTypeValue =
+                        cache.avc.allowTypes.get(sourceTypeId) ?? 0n;
+                    const existingTargetDenyTypeValue =
+                        cache.avc.denyTypesOnTargets.get(key) ?? 0n;
+                    const localExistingDenyTypeValue =
+                        cache.avc.denyTypes.get(sourceTypeId) ?? 0n;
 
                     cache.avc.allowTypesOnTargets.set(
                         key,
                         ((existingTargetAllowTypeValue ?? 0n) |
                             localExistingAllowTypeValue |
                             BigInt(targetAllowTypeValue)) &
-                            ~(existingTargetDenyTypeValue | localExistingDenyTypeValue)
+                            ~(
+                                existingTargetDenyTypeValue |
+                                localExistingDenyTypeValue
+                            )
                     );
                 }
             }
@@ -271,19 +348,27 @@ class PolicyManagerAVC {
             }
 
             if (module.type_labeling?.memberPatterns?.length) {
-                cache.avc.typeLabelPatterns.memberPatterns.push(...module.type_labeling.memberPatterns);
+                cache.avc.typeLabelPatterns.memberPatterns.push(
+                    ...module.type_labeling.memberPatterns
+                );
             }
         }
 
         const end = performance.now();
         const time = (end - start) / 1000;
 
-        this.logger.debug(`AVC policy store compiled in ${time.toFixed(2)} seconds`);
+        this.logger.debug(
+            `AVC policy store compiled in ${time.toFixed(2)} seconds`
+        );
     }
 
-    public async getPermissionsOf(guildId: Snowflake, type: string | number): Promise<bigint> {
+    public async getPermissionsOf(
+        guildId: Snowflake,
+        type: string | number
+    ): Promise<bigint> {
         const cache = await this.cacheGuild(guildId);
-        const typeId = typeof type === "string" ? cache.avc.mapTypeIds.get(type) : type;
+        const typeId =
+            typeof type === "string" ? cache.avc.mapTypeIds.get(type) : type;
 
         if (typeId === undefined) {
             return 0n;
@@ -298,27 +383,43 @@ class PolicyManagerAVC {
         targetType: string | number
     ): Promise<bigint> {
         const cache = await this.cacheGuild(guildId);
-        const typeId = typeof type === "string" ? cache.avc.mapTypeIds.get(type) : type;
+        const typeId =
+            typeof type === "string" ? cache.avc.mapTypeIds.get(type) : type;
 
         if (typeId === undefined) {
             return 0n;
         }
 
-        const targetTypeId = typeof targetType === "string" ? cache.avc.mapTypeIds.get(targetType) : targetType;
+        const targetTypeId =
+            typeof targetType === "string"
+                ? cache.avc.mapTypeIds.get(targetType)
+                : targetType;
 
         if (targetTypeId === undefined) {
             return 0n;
         }
 
-        return cache.avc.allowTypesOnTargets.get((BigInt(typeId) << 32n) | BigInt(targetTypeId)) ?? 0n;
+        return (
+            cache.avc.allowTypesOnTargets.get(
+                (BigInt(typeId) << 32n) | BigInt(targetTypeId)
+            ) ?? 0n
+        );
     }
 
-    public async relabelEntities(guildId: Snowflake, entities: Iterable<GuildMember | GuildBasedChannel | Role>) {
+    public async relabelEntities(
+        guildId: Snowflake,
+        entities: Iterable<GuildMember | GuildBasedChannel | Role>
+    ) {
         const cache = await this.cacheGuild(guildId);
         let count = 0;
 
         for (const entity of entities) {
-            const type = entity instanceof GuildMember ? "members" : entity instanceof Role ? "roles" : "channels";
+            const type =
+                entity instanceof GuildMember
+                    ? "members"
+                    : entity instanceof Role
+                      ? "roles"
+                      : "channels";
             const typePrefix = this.getTypePrefixOf(entity);
             const patterns = cache.avc.typeLabelPatterns[type];
 
@@ -347,14 +448,14 @@ class PolicyManagerAVC {
                     case "name":
                         if ("name" in entity) {
                             value = entity.name;
-                        }
-                        else if ("nickname" in entity && entity.nickname) {
+                        } else if ("nickname" in entity && entity.nickname) {
                             value = entity.nickname;
-                        }
-                        else if ("displayName" in entity && entity.displayName) {
+                        } else if (
+                            "displayName" in entity &&
+                            entity.displayName
+                        ) {
                             value = entity.displayName;
-                        }
-                        else if ("user" in entity) {
+                        } else if ("user" in entity) {
                             value = entity.user.username;
                         }
 
@@ -388,17 +489,27 @@ class PolicyManagerAVC {
                     continue;
                 }
 
-                cache.avc.entityContexts.set(`${typePrefix}:${entity.id}`, context);
+                cache.avc.entityContexts.set(
+                    `${typePrefix}:${entity.id}`,
+                    context
+                );
                 count++;
             }
 
             if (entity instanceof GuildMember) {
-                for (const { context, excludedRoles, requiredRoles } of cache.avc.typeLabelPatterns.memberPatterns) {
-                    if (excludedRoles?.length && excludedRoles.every(r => entity.roles.cache.has(r))) {
+                for (const { context, excludedRoles, requiredRoles } of cache
+                    .avc.typeLabelPatterns.memberPatterns) {
+                    if (
+                        excludedRoles?.length &&
+                        excludedRoles.every(r => entity.roles.cache.has(r))
+                    ) {
                         continue;
                     }
 
-                    if (requiredRoles?.length && !requiredRoles.every(r => entity.roles.cache.has(r))) {
+                    if (
+                        requiredRoles?.length &&
+                        !requiredRoles.every(r => entity.roles.cache.has(r))
+                    ) {
                         continue;
                     }
 
@@ -406,7 +517,10 @@ class PolicyManagerAVC {
                         continue;
                     }
 
-                    cache.avc.entityContexts.set(`${typePrefix}:${entity.id}`, context);
+                    cache.avc.entityContexts.set(
+                        `${typePrefix}:${entity.id}`,
+                        context
+                    );
                     count++;
                 }
             }
@@ -416,12 +530,25 @@ class PolicyManagerAVC {
     }
 
     public getTypePrefixOf(entity: GuildMember | GuildBasedChannel | Role) {
-        return entity instanceof User ? "u" : entity instanceof GuildMember ? "m" : entity instanceof Role ? "r" : "c";
+        return entity instanceof User
+            ? "u"
+            : entity instanceof GuildMember
+              ? "m"
+              : entity instanceof Role
+                ? "r"
+                : "c";
     }
 
-    public async getContextOf(guildId: Snowflake, entity: GuildMember | GuildBasedChannel | Role) {
+    public async getContextOf(
+        guildId: Snowflake,
+        entity: GuildMember | GuildBasedChannel | Role
+    ) {
         const cache = await this.cacheGuild(guildId);
-        return cache.avc.entityContexts.get(`${this.getTypePrefixOf(entity)}:${entity.id}`) ?? 0;
+        return (
+            cache.avc.entityContexts.get(
+                `${this.getTypePrefixOf(entity)}:${entity.id}`
+            ) ?? 0
+        );
     }
 }
 

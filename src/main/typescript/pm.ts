@@ -176,10 +176,7 @@ async function fetchCredentials(url: string, key: string) {
 }
 
 async function promptForCode() {
-    const restartJsonFile = path.join(
-        systemPrefix("tmp", true),
-        "restart.json"
-    );
+    const restartJsonFile = path.join(systemPrefix("tmp"), "restart.json");
     let restartKey = null;
 
     if (existsSync(restartJsonFile)) {

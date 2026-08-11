@@ -17,6 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { homedir } from "node:os";
+import path from "node:path";
 import { z } from "zod";
 import { SnowflakeSchema } from "./SnowflakeSchema.js";
 
@@ -28,6 +30,7 @@ export const EnvironmentVariableSchema = z.object({
     SUDOBOT_MODIFICATIONS_PUBLIC_URL: z.url().optional(),
     SUDOBOT_DATABASE_URL: z.string(),
     SUDOBOT_VALKEY_URL: z.string(),
+    SUDOBOT_PREFIX: z.string().prefault(path.join(homedir(), ".sudobot"))
 });
 
 export type EnvironmentVariableType = z.infer<typeof EnvironmentVariableSchema>;

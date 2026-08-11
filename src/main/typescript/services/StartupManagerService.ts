@@ -37,7 +37,7 @@ import {
 } from "discord.js";
 import figlet from "figlet";
 import figletBigFont from "figlet/importable-fonts/Big.js";
-import { rm } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import path from "path";
 import { setTimeout } from "timers/promises";
 import ConfigurationManagerService from "./ConfigurationManagerService.js";
@@ -75,11 +75,19 @@ class StartupManagerService extends Service {
         axios.defaults.headers.common["Accept-Encoding"] = "gzip";
     }
 
+    public override async boot(): Promise<void> {
+        await mkdir(systemPrefix("tmp"), { recursive: true });
+        await mkdir(systemPrefix("config/by-id"), { recursive: true });
+        await mkdir(systemPrefix("storage/attachments"), {
+            recursive: true
+        });
+        await mkdir(systemPrefix("installed_extensions"), {
+            recursive: true
+        });
+    }
+
     public async onReady() {
-        const restartJsonFile = path.join(
-            systemPrefix("tmp", true),
-            "restart.json"
-        );
+        const restartJsonFile = path.join(systemPrefix("tmp"), "restart.json");
 
         if (await FileSystem.exists(restartJsonFile)) {
             this.application.logger.info(
@@ -185,7 +193,7 @@ class StartupManagerService extends Service {
         setTimeout(waitFor)
             .then(async () => {
                 const restartJsonFile = path.join(
-                    systemPrefix("tmp", true),
+                    systemPrefix("tmp"),
                     "restart.json"
                 );
 

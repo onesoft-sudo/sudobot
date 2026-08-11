@@ -44,6 +44,7 @@ import RoleQueue from "@main/queues/RoleQueue.js";
 import UnbanQueue from "@main/queues/UnbanQueue.js";
 import UnmuteQueue from "@main/queues/UnmuteQueue.js";
 import type AuditLoggingService from "@main/services/AuditLoggingService.js";
+import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService.js";
 import { systemPrefix } from "@main/utils/utils.js";
 import { GuildConfigurationType } from "@schemas/all.js";
 import { LogEventType } from "@schemas/defs/LoggingSchema.js";
@@ -85,7 +86,6 @@ import ConfigurationManagerService, {
     ConfigurationType
 } from "./ConfigurationManagerService.js";
 import QueueManagerService from "./QueueManagerService.js";
-import { SERVICE_AUDIT_LOGGING } from "@main/services/AuditLoggingService.js";
 
 export const SERVICE_INFRACTION_MANAGER = "infractionManager" as const;
 
@@ -304,7 +304,7 @@ class InfractionManagerService extends Service {
         const transformed = transformNotificationEmbed
             ? transformNotificationEmbed(embed)
             : embed;
-        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+        const attachmentStoragePath = systemPrefix("storage/attachments");
 
         return this.sendDirectMessage(
             user,
@@ -464,7 +464,7 @@ class InfractionManagerService extends Service {
                 await downloadFile({
                     url: attachmentFileURL,
                     name: attachmentFileName,
-                    path: systemPrefix("storage/attachments", true)
+                    path: systemPrefix("storage/attachments")
                 });
             }
 
@@ -917,7 +917,7 @@ class InfractionManagerService extends Service {
     }
 
     public getLocalAttachmentPath(attachment: string) {
-        const storagePath = systemPrefix("storage/attachments", true);
+        const storagePath = systemPrefix("storage/attachments");
         return path.join(storagePath, attachment);
     }
 
@@ -956,7 +956,7 @@ class InfractionManagerService extends Service {
     }
 
     private async deleteAttachments(attachments: string[]) {
-        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+        const attachmentStoragePath = systemPrefix("storage/attachments");
 
         for (const file of attachments) {
             const filePath = path.join(attachmentStoragePath, file);
@@ -987,7 +987,7 @@ class InfractionManagerService extends Service {
             return 0;
         }
 
-        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+        const attachmentStoragePath = systemPrefix("storage/attachments");
 
         for (const infraction of returnedInfractions) {
             if (
