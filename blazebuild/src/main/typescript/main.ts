@@ -9,11 +9,11 @@ import path, { basename } from "path";
 import { parseArgs } from "util";
 import BlazeBuild from "./core/BlazeBuild.ts";
 
+import { execSync } from "child_process";
 import { chmod, mkdir } from "fs/promises";
 import { chdir } from "process";
-import { x } from "./utils/helpers.ts";
 import { createInterface } from "readline/promises";
-import { execSync } from "child_process";
+import { x } from "./utils/helpers.ts";
 
 import Module from "module";
 
@@ -317,7 +317,7 @@ async function main() {
         enumerable: false
     });
 
-    if (existsSync("build_src")) {
+    if (existsSync("build_src") && !existsSync("build_src/build")) {
         const pm = detectPackageManager();
 
         if (!pm) {
@@ -336,7 +336,7 @@ async function main() {
         );
 
         if (!existsSync("build_src/node_modules")) {
-            execSync(`${pm} install -D`, {
+            execSync(`${pm} install`, {
                 cwd: path.join(process.cwd(), "build_src"),
                 stdio: "inherit"
             });

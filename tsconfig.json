@@ -36,7 +36,7 @@
             "*": ["./*"]
         }
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "build.blaze.mts", "settings.blaze.mts"],
     "exclude": [
         "./backup",
         "./tmp",
