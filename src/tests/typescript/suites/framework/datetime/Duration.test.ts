@@ -206,7 +206,7 @@ describe("Duration", () => {
         it("should correctly interpret a Duration object as number when used in arithmetic expressions", () => {
             expect(
                 // @ts-expect-error Arithmetic expression error
-                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+                 
                 Duration.fromMilliseconds(1) + 1
             ).toBe(2);
         });

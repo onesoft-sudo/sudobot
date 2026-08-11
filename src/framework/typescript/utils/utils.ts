@@ -82,3 +82,5 @@ export function assertNotNull<T>(
         throw new Error(`Assertion failed: ${message}`);
     }
 }
+
+export const isTypeScript = import.meta.filename.endsWith(".ts");

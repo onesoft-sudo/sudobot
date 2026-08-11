@@ -17,13 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Awaitable } from "discord.js";
 import type { Stats } from "fs";
-import { close, closeSync, constants, createReadStream, existsSync, lstatSync, realpathSync } from "fs";
+import {
+    close,
+    closeSync,
+    constants,
+    createReadStream,
+    existsSync,
+    lstatSync,
+    realpathSync
+} from "fs";
 import type { CreateReadStreamOptions, FileHandle } from "fs/promises";
 import { lstat, open, realpath, rm } from "fs/promises";
 import { basename, resolve } from "path";
-import FileSystem from "../polyfills/FileSystem";
-import type { Awaitable } from "discord.js";
+import FileSystem from "../polyfills/FileSystem.js";
 
 export type FileResolvable = string | File;
 
@@ -52,7 +60,10 @@ export class File implements Disposable, AsyncDisposable {
     public constructor(resolvable: FileResolvable);
 
     public constructor(resolvable: string | FileResolvable) {
-        this.path = typeof resolvable === "string" ? resolve(resolvable) : resolvable.path;
+        this.path =
+            typeof resolvable === "string"
+                ? resolve(resolvable)
+                : resolvable.path;
     }
 
     public get state() {
@@ -90,7 +101,9 @@ export class File implements Disposable, AsyncDisposable {
     public readContents(buffer?: false): Promise<string>;
     public readContents(buffer: true): Promise<Buffer>;
 
-    public async readContents(buffer: boolean = false): Promise<string | Buffer> {
+    public async readContents(
+        buffer: boolean = false
+    ): Promise<string | Buffer> {
         if (this.cache.handle) {
             return this.cache.handle.readFile({
                 encoding: buffer ? null : "utf8"
@@ -110,7 +123,9 @@ export class File implements Disposable, AsyncDisposable {
             ) as T;
         }
 
-        return FileSystem.readFileContents(this.path, { json: true }) as Promise<T>;
+        return FileSystem.readFileContents(this.path, {
+            json: true
+        }) as Promise<T>;
     }
 
     public writeContents(contents: string): Promise<void> {
@@ -167,7 +182,10 @@ export class File implements Disposable, AsyncDisposable {
         return this.cache[name] as NonNullable<Cache[K]>;
     }
 
-    public static async open(resolvable: FileResolvable, stat = false): Promise<File> {
+    public static async open(
+        resolvable: FileResolvable,
+        stat = false
+    ): Promise<File> {
         const file = File.of(resolvable);
         await file.passive(stat);
         return file;
@@ -222,11 +240,17 @@ export class File implements Disposable, AsyncDisposable {
     }
 
     public async preCompute() {
-        await Promise.all([this.runStat(), this.checkExists(), this.checkRealpath()]);
+        await Promise.all([
+            this.runStat(),
+            this.checkExists(),
+            this.checkRealpath()
+        ]);
         return this;
     }
 
-    public async readLines(): Promise<Iterable<string> | AsyncIterable<string>> {
+    public async readLines(): Promise<
+        Iterable<string> | AsyncIterable<string>
+    > {
         if (this.cache.handle) {
             return this.cache.handle?.readLines();
         }

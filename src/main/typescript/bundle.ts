@@ -51,4 +51,4 @@ for (const [id, data] of Object.entries(resources)) {
     Resource.registerResource(id, data);
 }
 
-import "./main.js";
+void import("./main.js").then();

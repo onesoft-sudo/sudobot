@@ -42,13 +42,13 @@
     "scripts": {
         "prepare": "node bin/prepare",
         "migrate": "drizzle-kit migrate",
-        "start": "node build/out/main/typescript/main.js",
+        "start": "node build/out/main/typescript/index.js",
         "start:bun": "bun src/main/typescript/bun.ts",
         "start:docker": "sh ./docker/start-container.sh",
-        "start:blazew": "node build/out/main/typescript/main.js",
+        "start:blazew": "node build/out/main/typescript/index.js",
         "dev": "bun run src/main/typescript/pm.ts",
         "dev:single": "bun run src/main/typescript/bun.ts",
-        "dev:node": "node src/main/typescript/main.ts",
+        "dev:node": "node src/main/typescript/index.ts",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "format": "prettier -w src && eslint src --fix",
@@ -61,6 +61,7 @@
     },
     "dependencies": {
         "@msgpack/msgpack": "3.1.3",
+        "@rollup/plugin-json": "^6.1.0",
         "ascii-table3": "^1.0.3",
         "axios": "1.19.0",
         "chalk": "6.0.0",
@@ -73,7 +74,6 @@
         "json5": "2.2.3",
         "lru-cache": "11.5.2",
         "mlkem": "2.7.0",
-        "module-alias": "2.3.4",
         "pg": "8.23.0",
         "re2js": "2.8.6",
         "reflect-metadata": "0.2.2",
@@ -91,6 +91,8 @@
         "@onesoftnet/blazebuild": "latest",
         "@onesoftnet/override": "^1.0.3",
         "@onesoftnet/pm2-config": "^0.0.7",
+        "@rollup/plugin-alias": "^6.0.0",
+        "@rollup/plugin-typescript": "^12.3.0",
         "@stylistic/eslint-plugin": "5.10.0",
         "@types/bun": "1.3.14",
         "@types/module-alias": "^2.0.4",
@@ -107,6 +109,7 @@
         "eslint-plugin-import": "^2.32.0",
         "husky": "9.1.7",
         "prettier": "3.9.6",
+        "rollup": "^4.62.4",
         "typedoc": "0.28.20",
         "typedoc-plugin-rename-defaults": "^0.7.3",
         "typedoc-theme-hierarchy": "6.0.0",
@@ -114,5 +117,14 @@
         "typescript-eslint": "8.67.0",
         "unplugin-swc": "^1.5.10",
         "vitest": "4.1.10"
+    },
+    "_moduleAliases": {
+        "@buildSrc": "build_src/build/main/typescript",
+        "@sudobot": "build/out",
+        "@framework": "build/out/framework/typescript",
+        "@main": "build/out/main/typescript",
+        "@api": "build/out/api/typescript",
+        "@schemas": "build/out/schemas/typescript",
+        "@root": "."
     }
 }

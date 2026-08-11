@@ -20,10 +20,78 @@
 import "reflect-metadata";
 
 import dotenv from "dotenv";
+import { Module } from "module";
 import path from "path";
 
+let _moduleAliases: Record<string, string> = {};
+const isTypeScript = import.meta.filename.endsWith(".ts");
+
+function resolveFilename(name: string) {
+    for (const alias in _moduleAliases) {
+        if (name.startsWith(alias)) {
+            const resolved = path.join(
+                import.meta.dirname,
+                "../../../",
+                isTypeScript ? "." : "..",
+                _moduleAliases[alias],
+                name.replace(alias, "")
+            );
+
+            return resolved;
+        }
+    }
+
+    return null;
+}
+
 if (!("__preloaded" in global)) {
+    if (isTypeScript) {
+        _moduleAliases = (
+            await import("../../../package.json", {
+                with: { type: "json" }
+            })
+        ).default._moduleAliases;
+    } else {
+        _moduleAliases = (
+            await import(String("../../../../package.json"), {
+                with: { type: "json" }
+            })
+        ).default._moduleAliases;
+    }
+
     (global as { isBundle?: boolean }).isBundle ??= false;
+
+    if (typeof Module.registerHooks === "function") {
+        Module.registerHooks({
+            resolve: (specifier, context, nextResolve) => {
+                const resolved = resolveFilename(specifier);
+                return nextResolve(resolved ?? specifier, context);
+            }
+        });
+    } else {
+        const originalResolveFilename = (
+            Module.Module as unknown as Record<string, unknown>
+        )._resolveFilename as (
+            request: unknown,
+            parent: unknown,
+            isMain: unknown,
+            options: unknown
+        ) => unknown;
+        Object.defineProperty(Module.Module, "_resolveFilename", {
+            value: (
+                request: unknown,
+                parent: unknown,
+                isMain: unknown,
+                options: unknown
+            ) => {
+                const resolved = resolveFilename(`${request}`);
+                return (
+                    resolved ??
+                    originalResolveFilename(request, parent, isMain, options)
+                );
+            }
+        });
+    }
 
     dotenv.config({
         path: isBundle ? path.join(process.cwd(), ".env") : undefined,

@@ -18,7 +18,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import { promiseWithResolvers } from "../polyfills/Promise";
+import { promiseWithResolvers } from "../polyfills/Promise.js";
 
 type MutexOptions = {
     ignoreExtraneousUnlocks?: boolean;

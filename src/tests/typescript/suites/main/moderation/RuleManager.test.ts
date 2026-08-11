@@ -70,7 +70,7 @@ describe("RuleManager", () => {
             }
         }
 
-        const manager = createManager(application, [WordFilterRule as unknown as RuleConstructor<RuleType, unknown>]);
+        const manager = createManager(application, [WordFilterRule]);
 
         const message1 = createMessage(client);
         Object.defineProperty(message1, "content", { value: "Clean message." });
@@ -125,7 +125,7 @@ describe("RuleManager", () => {
             }
         }
 
-        const manager = createManager(application, [WordFilterRule as unknown as RuleConstructor<RuleType, unknown>]);
+        const manager = createManager(application, [WordFilterRule]);
 
         const message2 = createMessage(client);
         Object.defineProperty(message2, "content", {

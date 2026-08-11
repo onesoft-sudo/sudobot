@@ -22,7 +22,10 @@ import type { ConstructorOf } from "@framework/container/Container.js";
 import { registerGatewayEventListeners } from "@framework/events/GatewayEventListener.js";
 import { Logger } from "@framework/log/Logger.js";
 import type { DefaultExport } from "@framework/types/Utils.js";
-import { BUNDLE_DATA_SYMBOL, type BundleData } from "@framework/utils/bundle.js";
+import {
+    BUNDLE_DATA_SYMBOL,
+    type BundleData
+} from "@framework/utils/bundle.js";
 import { requireNonNull } from "@framework/utils/utils.js";
 import { Collection } from "discord.js";
 import Service from "./Service.js";
@@ -51,7 +54,9 @@ class ServiceManager {
         services: readonly string[],
         aliases: Readonly<Record<string, string>> = {}
     ) {
-        const serviceClassSet = new Set<[string, new (application: Application) => Service]>();
+        const serviceClassSet = new Set<
+            [string, new (application: Application) => Service]
+        >();
 
         for (const service of services) {
             this.logger.debug("Loading service: ", service);
@@ -70,7 +75,7 @@ class ServiceManager {
                     DefaultExport<new (application: Application) => Service>
                 >(servicePath);
 
-            this.loadInstance(service, ServiceClass);
+            await this.loadInstance(service, ServiceClass);
             serviceClassSet.add([service, ServiceClass]);
         }
 
@@ -88,7 +93,7 @@ class ServiceManager {
 
         for (const [service, serviceClass] of services) {
             this.logger.debug("Loading service: ", service);
-            this.loadInstance(service, serviceClass);
+            await this.loadInstance(service, serviceClass);
         }
 
         for (const [service, serviceClass] of services) {
@@ -115,11 +120,14 @@ class ServiceManager {
         );
     }
 
-    protected loadInstance(
+    protected async loadInstance(
         _service: string,
         serviceClass: new (application: Application) => Service
     ) {
-        const serviceInstance = this.application.container.createInstance(serviceClass, [this.application]);
+        const serviceInstance = this.application.container.createInstance(
+            serviceClass,
+            [this.application]
+        );
 
         if (!(serviceInstance instanceof Service)) {
             throw new TypeError(
@@ -129,6 +137,7 @@ class ServiceManager {
             );
         }
 
+        await serviceInstance.preboot?.();
         this.services.set(serviceInstance.name, serviceInstance);
         this.services.set(serviceClass, serviceInstance);
         this.application.container.register({

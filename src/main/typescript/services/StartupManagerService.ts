@@ -24,7 +24,7 @@ import { fetchChannel, fetchMessage } from "@framework/utils/entities.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
 import { noOperation } from "@framework/utils/utils.js";
 import { chunkedString, systemPrefix } from "@main/utils/utils.js";
-import { version } from "@root/package.json";
+import packageJSON from "@root/package.json" with { type: "json" };
 import axios from "axios";
 import chalk from "chalk";
 import {
@@ -45,6 +45,7 @@ import ConfigurationManagerService from "./ConfigurationManagerService.js";
 export const SERVICE_STARTUP_MANAGER = "startupManagerService" as const;
 
 const { ERROR_WEBHOOK_URL } = process.env;
+const { version } = packageJSON;
 
 class StartupManagerService extends Service {
     public override readonly name: string = SERVICE_STARTUP_MANAGER;
@@ -66,7 +67,7 @@ class StartupManagerService extends Service {
         console.info();
     }
 
-    public override async boot(): Promise<void> {
+    public override async preboot(): Promise<void> {
         if (this.application.shardCount === 1) {
             await this.printBanner();
         }

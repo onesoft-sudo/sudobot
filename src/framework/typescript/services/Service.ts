@@ -35,6 +35,7 @@ abstract class Service {
     }
 
     public boot?(): Awaitable<void>;
+    public preboot?(): Awaitable<void>;
 }
 
 export default Service;

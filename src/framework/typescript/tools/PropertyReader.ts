@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { FileResolvable } from "../io/File";
-import { File } from "../io/File";
-import PropertySyntaxError from "./PropertySyntaxError.js";
 import type { z, ZodType } from "zod";
+import type { FileResolvable } from "../io/File";
+import { File } from "../io/File.js";
+import PropertySyntaxError from "./PropertySyntaxError.js";
 
 type Schema = ZodType;
 
@@ -42,33 +42,54 @@ class PropertyReader {
             const [key, value] = trimmed.split("=");
 
             if (value === undefined) {
-                throw new PropertySyntaxError(`Invalid property syntax:\n\t${line}`);
+                throw new PropertySyntaxError(
+                    `Invalid property syntax:\n\t${line}`
+                );
             }
 
             let finalValue = value.trim();
-            const startingQuote = finalValue.startsWith('"') ? '"' : finalValue.startsWith("'") ? "'" : "";
-            const endingQuote = finalValue.endsWith('"') ? '"' : finalValue.endsWith("'") ? "'" : "";
+            const startingQuote = finalValue.startsWith('"')
+                ? '"'
+                : finalValue.startsWith("'")
+                  ? "'"
+                  : "";
+            const endingQuote = finalValue.endsWith('"')
+                ? '"'
+                : finalValue.endsWith("'")
+                  ? "'"
+                  : "";
 
             if (startingQuote !== "" && !finalValue.endsWith(startingQuote)) {
-                throw new PropertySyntaxError(`Unterminated string:\n\t${line}`);
+                throw new PropertySyntaxError(
+                    `Unterminated string:\n\t${line}`
+                );
             }
 
             if (endingQuote !== "" && !finalValue.startsWith(endingQuote)) {
-                throw new PropertySyntaxError(`Invalid string start:\n\t${line}`);
+                throw new PropertySyntaxError(
+                    `Invalid string start:\n\t${line}`
+                );
             }
 
-            if (startingQuote !== "" && endingQuote !== "" && startingQuote !== endingQuote) {
+            if (
+                startingQuote !== "" &&
+                endingQuote !== "" &&
+                startingQuote !== endingQuote
+            ) {
                 throw new PropertySyntaxError(`Mismatched quotes:\n\t${line}`);
             }
 
-            finalValue = startingQuote !== "" ? finalValue.slice(1, -1) : finalValue;
+            finalValue =
+                startingQuote !== "" ? finalValue.slice(1, -1) : finalValue;
             plainProperties[key.trim()] = finalValue;
         }
 
         return plainProperties;
     }
 
-    public async read<T extends Schema | undefined = undefined>(schema?: T): Promise<Properties<T>> {
+    public async read<T extends Schema | undefined = undefined>(
+        schema?: T
+    ): Promise<Properties<T>> {
         const plainProperties = await this.readPlain();
         const properties: Record<string, unknown> = {};
 
@@ -77,7 +98,9 @@ class PropertyReader {
             this.set(properties, key, this.parseValue(value));
         }
 
-        return (schema ? schema.parse(properties) : properties) as Properties<T>;
+        return (
+            schema ? schema.parse(properties) : properties
+        ) as Properties<T>;
     }
 
     private set(object: object, key: string, value: unknown) {
@@ -110,7 +133,13 @@ class PropertyReader {
         }
 
         if (/^(0(x|o|b))?[0-9A-Fa-f]+$/.test(value)) {
-            const base = value.startsWith("0x") ? 16 : value.startsWith("0o") ? 8 : value.startsWith("0b") ? 2 : 10;
+            const base = value.startsWith("0x")
+                ? 16
+                : value.startsWith("0o")
+                  ? 8
+                  : value.startsWith("0b")
+                    ? 2
+                    : 10;
 
             const number = parseInt(base === 10 ? value : value.slice(2), base);
 
@@ -125,8 +154,7 @@ class PropertyReader {
     }
 }
 
-export type Properties<T extends Schema | undefined = undefined> = T extends Schema
-    ? z.infer<T>
-    : Record<string, unknown>;
+export type Properties<T extends Schema | undefined = undefined> =
+    T extends Schema ? z.infer<T> : Record<string, unknown>;
 
 export default PropertyReader;

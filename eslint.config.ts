@@ -7,27 +7,30 @@ import LocalPlugin from "./src/eslint/typescript/LocalPlugin";
 
 declare let __dirname: string;
 
+const common = {
+    extends: [
+        eslint.configs.recommended,
+        ...tseslint.configs.recommended,
+        ...tseslint.configs.recommendedTypeChecked
+    ],
+    languageOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        parserOptions: {
+            project: true,
+            tsconfigRootDir: __dirname,
+            ecmaVersion: "latest",
+            sourceType: "module"
+        }
+    }
+};
+
 export default defineConfig([
     {
-        extends: [
-            eslint.configs.recommended,
-            ...tseslint.configs.recommended,
-            ...tseslint.configs.recommendedTypeChecked
-        ],
-        languageOptions: {
-            ecmaVersion: "latest",
-            sourceType: "module",
-            parserOptions: {
-                project: true,
-                tsconfigRootDir: __dirname,
-                ecmaVersion: "latest",
-                sourceType: "module"
-            }
-        },
+        ...common,
         plugins: {
             "@stylistic": stylistic,
-            "@local": LocalPlugin,
-            "@import": importPlugin
+            "@local": LocalPlugin
         },
         rules: {
             indent: "off",
@@ -77,8 +80,7 @@ export default defineConfig([
                     varsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_"
                 }
-            ],
-            "@import/extensions": ["error", "always", { js: "always" }]
+            ]
         },
         files: ["src/**/*.ts"],
         ignores: [
@@ -88,6 +90,33 @@ export default defineConfig([
             "**/docs",
             "**/*.bak",
             "**/tests",
+            "*.blaze.ts",
+            "build",
+            "**/imports.gen.ts"
+        ]
+    },
+    {
+        ...common,
+        plugins: {
+            "@import": importPlugin
+        },
+        rules: {
+            "@import/extensions": ["error", "always", { js: "ignorePackages" }]
+        },
+        files: [
+            "src/main/*.ts",
+            "src/api/*.ts",
+            "src/schemas/*.ts",
+            "src/eslint/*.ts",
+            "src/framework/*.ts"
+        ],
+        ignores: [
+            "**/*.js",
+            "**/node_modules",
+            "**/extensions",
+            "**/docs",
+            "**/*.bak",
+            "src/tests/**",
             "*.blaze.ts",
             "build",
             "**/imports.gen.ts"

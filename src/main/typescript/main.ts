@@ -19,7 +19,7 @@
 
 import "./preload.js";
 
-import { _meta, version } from "@root/package.json";
+import packageJSON from "@root/package.json" with { type: "json" };
 import path from "path";
 
 import { Logger } from "@framework/log/Logger.js";
@@ -31,6 +31,7 @@ import { setEnv } from "@main/env/env.js";
 import type { DotenvParseOutput } from "dotenv";
 import { parseArgs, type ParseArgsConfig } from "util";
 
+const { _meta, version } = packageJSON;
 const logger = new Logger("Main", true);
 const argv0 = process.env.SUDOBOT_WRAPPER
     ? "sudobot"
@@ -242,11 +243,16 @@ async function main() {
     }
 
     Application.setupGlobals();
-    Resource.registerResourcePaths(path.resolve(import.meta.dirname, "../resources"));
+    Resource.registerResourcePaths(
+        path.resolve(import.meta.dirname, "../resources")
+    );
     await loadEnvironmentData();
 
     const rootDirectoryPath = path.resolve(import.meta.dirname);
-    const projectRootDirectoryPath = path.resolve(import.meta.dirname, "../../..");
+    const projectRootDirectoryPath = path.resolve(
+        import.meta.dirname,
+        "../../.."
+    );
     const application = new Application({
         rootDirectoryPath,
         projectRootDirectoryPath,
