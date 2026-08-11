@@ -33,7 +33,7 @@ class RedisMessageBus extends MessageBus {
     private readonly publisher: Redis;
 
     private readonly emitter = new EventEmitter();
-    private _nextRequestId: number = 0;
+    private nextRequestId: number = 0;
     private readonly responseControls = new Map<
         number,
         { callback: (data: unknown) => void; timeout: Timer }
@@ -129,7 +129,7 @@ class RedisMessageBus extends MessageBus {
         toBusId: string,
         data: unknown
     ): Promise<T> {
-        const id = this._nextRequestId++;
+        const id = this.nextRequestId++;
         const { promise, resolve, reject } = promiseWithResolvers<T>();
 
         this.responseControls.set(id, {
@@ -170,6 +170,7 @@ class RedisMessageBus extends MessageBus {
 
             if (control) {
                 clearTimeout(control.timeout);
+                this.responseControls.delete(data.requestId);
                 control.callback(data.payload);
             }
         }
