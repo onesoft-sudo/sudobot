@@ -17,12 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import breakBeforeControlRule from "./rules/BreakBeforeControlRule.js";
-import { version } from "../../../package.json";
 import type { Rule } from "eslint";
+import { version } from "../../../package.json";
+import breakBeforeControlRule from "./rules/BreakBeforeControlRule.js";
+import localFileImportExtensionRule from "./rules/LocalFileImportExtensionRule.js";
 
 const rules = {
-    "break-before-control": breakBeforeControlRule
+    "break-before-control": breakBeforeControlRule,
+    "local-file-import-extension": localFileImportExtensionRule
 } as unknown as Record<string, Rule.RuleModule>;
 
 const LocalPlugin = {

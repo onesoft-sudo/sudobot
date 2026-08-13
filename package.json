@@ -103,7 +103,6 @@
         "discord-api-types": "0.38.53",
         "drizzle-kit": "0.31.10",
         "eslint": "10.8.1",
-        "eslint-plugin-import": "^2.32.0",
         "husky": "9.1.7",
         "prettier": "3.9.6",
         "typedoc": "0.28.20",
@@ -111,7 +110,8 @@
         "typedoc-theme-hierarchy": "6.0.0",
         "typescript": "npm:@typescript/typescript6@6.0.2",
         "typescript-eslint": "8.67.0",
-        "unplugin-swc": "^1.5.10",
+        "unplugin-swc": "^1.5.11",
+        "vite": "^8.2.1",
         "vitest": "4.1.10"
     },
     "_moduleAliases": {

@@ -1,33 +1,29 @@
 import eslint from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
-import importPlugin from "eslint-plugin-import";
 import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import LocalPlugin from "./src/eslint/typescript/LocalPlugin";
+import tsconfig from "./tsconfig.json" with { type: "json" };
 
 declare let __dirname: string;
 
-const common = {
-    extends: [
-        eslint.configs.recommended,
-        ...tseslint.configs.recommended,
-        ...tseslint.configs.recommendedTypeChecked
-    ],
-    languageOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        parserOptions: {
-            project: true,
-            tsconfigRootDir: __dirname,
-            ecmaVersion: "latest",
-            sourceType: "module"
-        }
-    }
-};
-
 export default defineConfig([
     {
-        ...common,
+        extends: [
+            eslint.configs.recommended,
+            ...tseslint.configs.recommended,
+            ...tseslint.configs.recommendedTypeChecked
+        ],
+        languageOptions: {
+            ecmaVersion: "latest",
+            sourceType: "module",
+            parserOptions: {
+                project: true,
+                tsconfigRootDir: __dirname,
+                ecmaVersion: "latest",
+                sourceType: "module"
+            }
+        },
         plugins: {
             "@stylistic": stylistic,
             "@local": LocalPlugin
@@ -96,19 +92,27 @@ export default defineConfig([
         ]
     },
     {
-        ...common,
         plugins: {
-            "@import": importPlugin
+            "@local": LocalPlugin
         },
         rules: {
-            "@import/extensions": ["error", "always", { js: "ignorePackages" }]
+            "@local/local-file-import-extension": [
+                "error",
+                {
+                    importAliases: Object.getOwnPropertyNames(
+                        tsconfig.compilerOptions.paths
+                    )
+                        .map(alias => alias.split("/")[0])
+                        .filter(alias => alias !== "*")
+                }
+            ]
         },
         files: [
-            "src/main/*.ts",
-            "src/api/*.ts",
-            "src/schemas/*.ts",
-            "src/eslint/*.ts",
-            "src/framework/*.ts"
+            "src/main/**/*.ts",
+            "src/api/**/*.ts",
+            "src/schemas/**/*.ts",
+            "src/eslint/**/*.ts",
+            "src/framework/**/*.ts"
         ],
         ignores: [
             "**/*.js",
