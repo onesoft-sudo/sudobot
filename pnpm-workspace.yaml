@@ -1,9 +1,3 @@
-onlyBuiltDependencies:
-  - "@heroui/shared-utils"
-  - "@swc/core"
-  - bcrypt
-  - esbuild
-  - msgpackr-extract
-  - re2
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
