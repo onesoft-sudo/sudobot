@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { describe, it, expect } from "vitest";
-import Singleton from "@framework/objects/Singleton";
+import Singleton from "@framework/objects/Singleton.js";
+import { describe, expect, it } from "vitest";
 
 describe("Singleton", () => {
     it("creates instances correctly", () => {

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Mutex from "@framework/concurrent/Mutex";
+import Mutex from "@framework/concurrent/Mutex.js";
 import { setTimeout } from "timers/promises";
 import { describe, expect, it } from "vitest";
 

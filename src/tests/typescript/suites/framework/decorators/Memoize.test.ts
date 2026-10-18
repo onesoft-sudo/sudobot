@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Memoize } from "@framework/decorators/Memoize.js";
 import { describe, expect, it } from "vitest";
-import { Memoize } from "@framework/decorators/Memoize";
 
 describe("Memoize", () => {
     it("memoizes functions as expected", () => {

@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Container from "@framework/container/Container.js";
+import { Inject } from "@framework/container/Inject.js";
 import { describe, expect, it, vi } from "vitest";
-import Container from "@framework/container/Container";
-import { Inject } from "@framework/container/Inject";
 
 describe("Container", () => {
     it("can register factories and create basic objects", () => {

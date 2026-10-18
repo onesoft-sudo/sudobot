@@ -17,19 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import PolicyModuleParser from "@framework/selinux/policyparser/PolicyModuleParser.js";
+import type { Range } from "@framework/selinux/policyparser/PolicyModuleParserTypes.js";
+import { PolicyModuleTokenType } from "@framework/selinux/policyparser/PolicyModuleTokenType.js";
+import AllowDenyStatementNode from "@framework/selinux/policyparser/ast/AllowDenyStatementNode.js";
+import BlockStatementNode from "@framework/selinux/policyparser/ast/BlockStatementNode.js";
+import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/ast/LiteralNode.js";
+import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ast/ModuleBlockPropertyNode.js";
+import ModuleBlockStatementNode from "@framework/selinux/policyparser/ast/ModuleBlockStatementNode.js";
+import type Node from "@framework/selinux/policyparser/ast/Node.js";
+import RequireBlockStatementNode from "@framework/selinux/policyparser/ast/RequireBlockStatementNode.js";
+import RequireTypeStatementNode from "@framework/selinux/policyparser/ast/RequireTypeStatementNode.js";
+import RootNode from "@framework/selinux/policyparser/ast/RootNode.js";
 import { beforeEach, describe, expect, it } from "vitest";
-import PolicyModuleParser from "@framework/selinux/policyparser/PolicyModuleParser";
-import { PolicyModuleTokenType } from "@framework/selinux/policyparser/PolicyModuleTokenType";
-import type { Range } from "@framework/selinux/policyparser/PolicyModuleParserTypes";
-import RootNode from "@framework/selinux/policyparser/ast/RootNode";
-import AllowDenyStatementNode from "@framework/selinux/policyparser/ast/AllowDenyStatementNode";
-import type Node from "@framework/selinux/policyparser/ast/Node";
-import ModuleBlockStatementNode from "@framework/selinux/policyparser/ast/ModuleBlockStatementNode";
-import BlockStatementNode from "@framework/selinux/policyparser/ast/BlockStatementNode";
-import ModuleBlockPropertyNode from "@framework/selinux/policyparser/ast/ModuleBlockPropertyNode";
-import LiteralNode, { LiteralKind } from "@framework/selinux/policyparser/ast/LiteralNode";
-import RequireBlockStatementNode from "@framework/selinux/policyparser/ast/RequireBlockStatementNode";
-import RequireTypeStatementNode from "@framework/selinux/policyparser/ast/RequireTypeStatementNode";
 
 const RANGE_TRUNCATED: Range = { start: [0, 1, 1], end: [0, 1, 1] };
 
@@ -187,7 +187,7 @@ describe("PolicyModuleParser", () => {
                 new RootNode(
                     [
                         new AllowDenyStatementNode("allow", "moderator_t", "*", ["BanMembers"], RANGE_TRUNCATED),
-                        new AllowDenyStatementNode("deny", "moderator_t", "*", ["AttachFiles"], RANGE_TRUNCATED),
+                        new AllowDenyStatementNode("deny", "moderator_t", "*", ["AttachFiles"], RANGE_TRUNCATED)
                     ],
                     RANGE_TRUNCATED
                 )
@@ -211,23 +211,14 @@ describe("PolicyModuleParser", () => {
                         new RequireBlockStatementNode(
                             new BlockStatementNode(
                                 [
-                                    new RequireTypeStatementNode(
-                                        "unconfined_t",
-                                        RANGE_TRUNCATED
-                                    ),
-                                    new RequireTypeStatementNode(
-                                        "user_t",
-                                        RANGE_TRUNCATED
-                                    ),
-                                    new RequireTypeStatementNode(
-                                        "moderator_t",
-                                        RANGE_TRUNCATED
-                                    ),
+                                    new RequireTypeStatementNode("unconfined_t", RANGE_TRUNCATED),
+                                    new RequireTypeStatementNode("user_t", RANGE_TRUNCATED),
+                                    new RequireTypeStatementNode("moderator_t", RANGE_TRUNCATED)
                                 ],
                                 RANGE_TRUNCATED
                             ),
                             RANGE_TRUNCATED
-                        ),
+                        )
                     ],
                     RANGE_TRUNCATED
                 )
@@ -260,14 +251,18 @@ describe("PolicyModuleParser", () => {
                                     ),
                                     new ModuleBlockPropertyNode(
                                         "author",
-                                        new LiteralNode(LiteralKind.String, "Ar Rakin <rakinar2@sudobot.org>", RANGE_TRUNCATED),
+                                        new LiteralNode(
+                                            LiteralKind.String,
+                                            "Ar Rakin <rakinar2@sudobot.org>",
+                                            RANGE_TRUNCATED
+                                        ),
                                         RANGE_TRUNCATED
                                     ),
                                     new ModuleBlockPropertyNode(
                                         "version",
                                         new LiteralNode(LiteralKind.Integer, "1000", RANGE_TRUNCATED),
                                         RANGE_TRUNCATED
-                                    ),
+                                    )
                                 ],
                                 RANGE_TRUNCATED
                             ),

@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Condition from "@framework/concurrent/Condition";
-import Semaphore from "@framework/concurrent/Semaphore";
+import Condition from "@framework/concurrent/Condition.js";
+import Semaphore from "@framework/concurrent/Semaphore.js";
 import { setTimeout } from "timers/promises";
 import { describe, expect, it, vi } from "vitest";
 

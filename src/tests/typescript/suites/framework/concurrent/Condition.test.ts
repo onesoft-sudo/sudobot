@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Condition from "@framework/concurrent/Condition";
+import Condition from "@framework/concurrent/Condition.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Condition", () => {

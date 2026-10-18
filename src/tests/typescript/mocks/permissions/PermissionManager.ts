@@ -17,10 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager";
-import AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
-import type { RawPermissionResolvable, SystemPermissionResolvable } from "@framework/permissions/PermissionResolvable";
-import type { Awaitable, GuildMember, Role, GuildBasedChannel, User } from "discord.js";
+import type { GetPermissionsResult } from "@framework/permissions/AbstractPermissionManager.js";
+import AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager.js";
+import type {
+    RawPermissionResolvable,
+    SystemPermissionResolvable
+} from "@framework/permissions/PermissionResolvable.js";
+import type { Awaitable, GuildBasedChannel, GuildMember, Role, User } from "discord.js";
 
 class PermissionManager extends AbstractPermissionManager {
     public override hasPermissions(
@@ -38,16 +41,11 @@ class PermissionManager extends AbstractPermissionManager {
         return super.getPermissions(member, systemPermissions);
     }
 
-    public override getPermissionsOnChannel(
-        member: GuildMember
-    ): Awaitable<GetPermissionsResult> {
+    public override getPermissionsOnChannel(member: GuildMember): Awaitable<GetPermissionsResult> {
         return this.getPermissions(member);
     }
 
-    public override getPermissionsOnRole(
-        _member: GuildMember,
-        _targetRole: Role
-    ): Awaitable<GetPermissionsResult> {
+    public override getPermissionsOnRole(_member: GuildMember, _targetRole: Role): Awaitable<GetPermissionsResult> {
         throw new Error("Method not implemented.");
     }
 

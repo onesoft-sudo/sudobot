@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@tests/mocks/core/Application";
-import Command from "@framework/commands/Command";
-import LegacyContext from "@framework/commands/LegacyContext";
-import Guard from "@framework/guards/Guard";
-import { GuardStatusCode } from "@framework/guards/GuardStatusCode";
-import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import { BeforeEach, TestCase } from "@tests/core/Test";
-import { TestSuite } from "@tests/core/TestSuite";
-import { createClient, createMessage } from "@tests/mocks/discord";
-import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService";
+import Command from "@framework/commands/Command.js";
+import LegacyContext from "@framework/commands/LegacyContext.js";
+import Guard from "@framework/guards/Guard.js";
+import { GuardStatusCode } from "@framework/guards/GuardStatusCode.js";
+import PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import { BeforeEach, TestCase } from "@tests/core/Test.js";
+import { TestSuite } from "@tests/core/TestSuite.js";
+import Application from "@tests/mocks/core/Application.js";
+import { createClient, createMessage } from "@tests/mocks/discord.js";
+import PermissionManagerService from "@tests/mocks/permissions/PermissionManagerService.js";
 import { Client } from "discord.js";
 import { TestContext, vi } from "vitest";
 
@@ -50,9 +50,7 @@ class GuardTest {
             value: this.client
         });
 
-        this.permissionManagerService = new PermissionManagerService(
-            this.application
-        );
+        this.permissionManagerService = new PermissionManagerService(this.application);
     }
 
     @TestCase
@@ -71,14 +69,7 @@ class GuardTest {
             public override execute = vi.fn();
         })(this.application, this.permissionManagerService);
 
-        const context = new LegacyContext(
-            this.application,
-            createMessage(this.client),
-            "name",
-            "name",
-            [],
-            []
-        );
+        const context = new LegacyContext(this.application, createMessage(this.client), "name", "name", [], []);
         const error = vi.fn().mockImplementation(async () => {});
         context.error = error;
         await command.run(context);
@@ -94,11 +85,7 @@ class GuardTest {
 
         await command.run(context);
 
-        expect(command.execute).toHaveBeenCalledExactlyOnceWith(
-            context,
-            {},
-            {}
-        );
+        expect(command.execute).toHaveBeenCalledExactlyOnceWith(context, {}, {});
         expect(error).not.toBeCalled();
         expect(check).toHaveBeenCalledExactlyOnceWith(command, context);
     }

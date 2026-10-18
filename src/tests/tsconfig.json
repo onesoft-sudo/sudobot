@@ -21,14 +21,13 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove",
         "paths": {
-            "@main/*": ["../main/typescript/*"],
-            "@framework/*": ["../framework/typescript/*"],
-            "@api/*": ["../api/typescript/*"],
-            "@schemas/*": ["../schemas/typescript/*"],
+            "@main/*": ["./../main/typescript/*"],
+            "@framework/*": ["./../framework/typescript/*"],
+            "@api/*": ["./../api/typescript/*"],
+            "@schemas/*": ["./../schemas/typescript/*"],
             "@tests/*": ["./typescript/*"],
-            "@root/*": ["../../*"],
+            "@root/*": ["./../../*"],
             "*": ["./*"]
         }
     },

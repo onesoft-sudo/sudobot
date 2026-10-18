@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
-import PolicyCompiler from "@framework/selinux/PolicyCompiler";
-import { preformat } from "@framework/utils/string";
+import PoilcyModuleCompilationError from "@framework/selinux/PoilcyModuleCompilationError.js";
+import PolicyCompiler from "@framework/selinux/PolicyCompiler.js";
+import { preformat } from "@framework/utils/string.js";
 import { PermissionFlagsBits } from "discord.js";
-import PoilcyModuleCompilationError from "@framework/selinux/PoilcyModuleCompilationError";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("PolicyCompiler", () => {
     let compiler: PolicyCompiler;

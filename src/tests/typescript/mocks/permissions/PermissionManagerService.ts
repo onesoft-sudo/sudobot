@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
-import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface";
-import Service from "@framework/services/Service";
-import type { Snowflake, Awaitable } from "discord.js";
-import PermissionManager from "./PermissionManager";
+import type AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager.js";
+import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
+import Service from "@framework/services/Service.js";
+import type { Awaitable, Snowflake } from "discord.js";
+import PermissionManager from "./PermissionManager.js";
 
 class PermissionManagerService extends Service implements PermissionManagerServiceInterface {
     public override name = "permissionManagerService";

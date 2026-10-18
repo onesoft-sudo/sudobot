@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BeforeEach, TestCase } from "@tests/core/Test";
-import { TestContext, TestSuite } from "@tests/core/TestSuite";
-import ArgumentParser from "@framework/arguments/ArgumentParser";
-import StringArgument from "@framework/arguments/StringArgument";
-import IntegerArgument from "@framework/arguments/IntegerArgument";
-import Application from "@tests/mocks/core/Application";
-import LegacyContext from "@framework/commands/LegacyContext";
-import { createClient, createMessage } from "@tests/mocks/discord";
+import ArgumentParser from "@framework/arguments/ArgumentParser.js";
+import IntegerArgument from "@framework/arguments/IntegerArgument.js";
+import NumberArgument from "@framework/arguments/NumberArgument.js";
+import StringArgument from "@framework/arguments/StringArgument.js";
+import LegacyContext from "@framework/commands/LegacyContext.js";
+import { BeforeEach, TestCase } from "@tests/core/Test.js";
+import { TestContext, TestSuite } from "@tests/core/TestSuite.js";
+import Application from "@tests/mocks/core/Application.js";
+import { createClient, createMessage } from "@tests/mocks/discord.js";
 import { Client } from "discord.js";
-import NumberArgument from "@framework/arguments/NumberArgument";
 
 @TestSuite
 class ArgumentParserTest {

@@ -17,7 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@tests/mocks/core/Application";
 import {
     also,
     escapeRegex,
@@ -26,7 +25,8 @@ import {
     notIn,
     requireNonNull,
     suppressErrorNoReturn
-} from "@framework/utils/utils";
+} from "@framework/utils/utils.js";
+import Application from "@tests/mocks/core/Application.js";
 import { describe, expect, it, vi } from "vitest";
 
 describe("utils", () => {

@@ -17,26 +17,24 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@main/core/Application";
-import MessageRule from "@main/moderation/MessageRule";
-import type { RuleContext } from "@main/moderation/Rule";
-import type { RuleConstructor } from "@main/moderation/RuleManager";
-import RuleManager from "@main/moderation/RuleManager";
-import type { RuleDefinitionByType, RuleType } from "@schemas/all";
-import { RuleSchema } from "@schemas/all";
-import { createMessage } from "@tests/mocks/discord";
+import Application from "@main/core/Application.js";
+import MessageRule from "@main/moderation/MessageRule.js";
+import type { RuleContext } from "@main/moderation/Rule.js";
+import type { RuleConstructor } from "@main/moderation/RuleManager.js";
+import RuleManager from "@main/moderation/RuleManager.js";
+import type { RuleDefinitionByType, RuleType } from "@schemas/all.js";
+import { RuleSchema } from "@schemas/all.js";
+import { createMessage } from "@tests/mocks/discord.js";
 import type { Awaitable, Message } from "discord.js";
 import { Client } from "discord.js";
 import { beforeEach, describe, it, test } from "vitest";
 
-function createManager(
-    application: Application,
-    rules: RuleConstructor<RuleType, unknown>[]
-) {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+function createManager(application: Application, rules: Function[]) {
     const manager = new RuleManager(application);
 
     for (const rule of rules) {
-        manager.register(rule);
+        manager.register(rule as RuleConstructor<RuleType, unknown>);
     }
 
     return manager;
@@ -64,9 +62,7 @@ describe("RuleManager", () => {
                 message: Message<boolean>,
                 { definition }: RuleContext<"word_filter">
             ): Awaitable<boolean> {
-                return !definition.words.some(word =>
-                    message.content.includes(word)
-                );
+                return !definition.words.some(word => message.content.includes(word));
             }
         }
 
@@ -119,9 +115,7 @@ describe("RuleManager", () => {
                 message: Message<boolean>,
                 { definition }: RuleContext<"word_filter">
             ): Awaitable<boolean> {
-                return !definition.words.some(word =>
-                    message.content.includes(word)
-                );
+                return !definition.words.some(word => message.content.includes(word));
             }
         }
 
@@ -141,9 +135,7 @@ describe("RuleManager", () => {
                             words: ["badword"],
                             actions: [],
                             mode: "invert"
-                        } satisfies Partial<
-                            RuleDefinitionByType<"word_filter">
-                        >)
+                        } satisfies Partial<RuleDefinitionByType<"word_filter">>)
                     ],
                     message: message2
                 })
@@ -158,9 +150,7 @@ describe("RuleManager", () => {
                             type: "word_filter",
                             words: ["badword"],
                             actions: []
-                        } satisfies Partial<
-                            RuleDefinitionByType<"word_filter">
-                        >)
+                        } satisfies Partial<RuleDefinitionByType<"word_filter">>)
                     ],
                     message: message2
                 })

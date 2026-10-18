@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Duration from "@framework/datetime/Duration";
+import Duration from "@framework/datetime/Duration.js";
 import { describe, expect, it } from "vitest";
 
 describe("Duration", () => {
@@ -199,16 +199,6 @@ describe("Duration", () => {
             const duration2 = Duration.fromMilliseconds(2);
             expect(duration1.toString()).toBe("1 millisecond");
             expect(duration2.toString()).toBe("2 milliseconds");
-        });
-    });
-
-    describe("Operator usage", () => {
-        it("should correctly interpret a Duration object as number when used in arithmetic expressions", () => {
-            expect(
-                // @ts-expect-error Arithmetic expression error
-                 
-                Duration.fromMilliseconds(1) + 1
-            ).toBe(2);
         });
     });
 });

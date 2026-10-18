@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC";
-import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema";
-import { createClient, createMember } from "@tests/mocks/discord";
+import PolicyManagerAVC from "@framework/selinux/PolicyManagerAVC.js";
+import type { PolicyModuleType } from "@framework/selinux/PolicyModuleSchema.js";
+import { createClient, createMember } from "@tests/mocks/discord.js";
 import { PermissionFlagsBits } from "discord.js";
 import type { Mock } from "vitest";
 import { beforeEach, describe, it, vi } from "vitest";
@@ -35,10 +35,7 @@ vi.mock("fs/promises", () => {
     };
 });
 
-const makePolicy = <T extends Partial<PolicyModuleType>>(
-    name: string,
-    payload: T
-) => {
+const makePolicy = <T extends Partial<PolicyModuleType>>(name: string, payload: T) => {
     return {
         policy_module: {
             name,
@@ -66,14 +63,10 @@ describe("PolicyManagerAVC", () => {
 
         await policyManager.loadModule("1", policy);
 
-        expect([
-            ...(await policyManager.getLoadedModules("1")).entries()
-        ]).toStrictEqual([["base", policy]]);
+        expect([...(await policyManager.getLoadedModules("1")).entries()]).toStrictEqual([["base", policy]]);
     });
 
-    it("can allow/deny permissions from the loaded policies", async ({
-        expect
-    }) => {
+    it("can allow/deny permissions from the loaded policies", async ({ expect }) => {
         const policy1: PolicyModuleType = makePolicy("base", {
             map_types: ["unlabeled_t", "user_t", "moderator_t"],
             allow_types: [
@@ -98,8 +91,7 @@ describe("PolicyManagerAVC", () => {
             allow_types: [
                 PermissionFlagsBits.KickMembers,
                 0n,
-                PermissionFlagsBits.BanMembers |
-                    PermissionFlagsBits.ChangeNickname
+                PermissionFlagsBits.BanMembers | PermissionFlagsBits.ChangeNickname
             ],
             map_types: ["unlabeled_t", "user_t", "moderator_t"],
             deny_types: [],
@@ -121,29 +113,15 @@ describe("PolicyManagerAVC", () => {
         await policyManager.loadModule(guildId, policy2);
         await policyManager.buildStore(guildId);
 
-        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(
-            PermissionFlagsBits.AttachFiles
-        );
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(
+        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.AttachFiles);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers
         );
-        expect(
-            await policyManager.getPermissionsOf(guildId, "moderator_t")
-        ).toBe(
+        expect(await policyManager.getPermissionsOf(guildId, "moderator_t")).toBe(
             PermissionFlagsBits.BanMembers | PermissionFlagsBits.ChangeNickname
         );
-        expect(
-            await policyManager.getPermissionsOfWithTarget(
-                guildId,
-                "moderator_t",
-                "user_t"
-            )
-        ).toBe(
-            PermissionFlagsBits.BanMembers |
-                PermissionFlagsBits.KickMembers |
-                PermissionFlagsBits.ModerateMembers
+        expect(await policyManager.getPermissionsOfWithTarget(guildId, "moderator_t", "user_t")).toBe(
+            PermissionFlagsBits.BanMembers | PermissionFlagsBits.KickMembers | PermissionFlagsBits.ModerateMembers
         );
     });
 
@@ -179,12 +157,8 @@ describe("PolicyManagerAVC", () => {
         await policyManager.loadModule(guildId, policy);
         await policyManager.buildStore(guildId);
 
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(0n);
-        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(
-            PermissionFlagsBits.SendMessages
-        );
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
+        expect(await policyManager.getPermissionsOf(guildId, "user_t")).toBe(PermissionFlagsBits.SendMessages);
 
         const client = createClient();
         const member1 = createMember(client, "111984877397764898567");
@@ -192,31 +166,16 @@ describe("PolicyManagerAVC", () => {
         const member3 = createMember(client, "141114987322228476464");
         const member4 = createMember(client, "222485767296476474677");
 
-        const count = await policyManager.relabelEntities(guildId, [
-            member1,
-            member2,
-            member3,
-            member4
-        ]);
+        const count = await policyManager.relabelEntities(guildId, [member1, member2, member3, member4]);
 
         expect(count).toBe(3);
-        expect(await policyManager.getContextOf(guildId, member1)).toBe(
-            contexts.indexOf("user_t")
-        );
-        expect(await policyManager.getContextOf(guildId, member2)).toBe(
-            contexts.indexOf("user_t")
-        );
-        expect(await policyManager.getContextOf(guildId, member3)).toBe(
-            contexts.indexOf("unlabeled_t")
-        );
-        expect(await policyManager.getContextOf(guildId, member4)).toBe(
-            contexts.indexOf("test_t")
-        );
+        expect(await policyManager.getContextOf(guildId, member1)).toBe(contexts.indexOf("user_t"));
+        expect(await policyManager.getContextOf(guildId, member2)).toBe(contexts.indexOf("user_t"));
+        expect(await policyManager.getContextOf(guildId, member3)).toBe(contexts.indexOf("unlabeled_t"));
+        expect(await policyManager.getContextOf(guildId, member4)).toBe(contexts.indexOf("test_t"));
     });
 
-    it("reads caches from disk only once on module load", async ({
-        expect
-    }) => {
+    it("reads caches from disk only once on module load", async ({ expect }) => {
         const guildId = "1";
         const { readFileMock } = (await import("fs/promises")) as unknown as {
             readFileMock: Mock<() => never>;
@@ -235,41 +194,20 @@ describe("PolicyManagerAVC", () => {
         await policyManager.loadModule(guildId, policy);
         await policyManager.buildStore(guildId);
 
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(PermissionFlagsBits.BanMembers);
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(PermissionFlagsBits.BanMembers);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(PermissionFlagsBits.BanMembers);
         expect(readFileMock).toHaveBeenCalledOnce();
     });
 
-    it("does not read cache more than once when getting permissions with no modules", async ({
-        expect
-    }) => {
-        vi.mock("fs/promises", () => {
-            const readFileMock = vi.fn(() => {
-                throw new Error("[Mock] File does not exist");
-            });
-
-            return {
-                readFile: readFileMock,
-                readFileMock
-            };
-        });
-
+    it("does not read cache more than once when getting permissions with no modules", async ({ expect }) => {
         const guildId = "1";
         const { readFileMock } = (await import("fs/promises")) as unknown as {
             readFileMock: Mock<() => never>;
         };
         readFileMock.mockClear();
 
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(0n);
-        expect(
-            await policyManager.getPermissionsOf(guildId, "unlabeled_t")
-        ).toBe(0n);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
+        expect(await policyManager.getPermissionsOf(guildId, "unlabeled_t")).toBe(0n);
         expect(readFileMock).toHaveBeenCalledOnce();
     });
 });

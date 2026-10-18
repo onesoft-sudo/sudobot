@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { it, describe, vi } from "vitest";
-import LeveledPermissionManager from "@main/security/LeveledPermissionManager";
-import type { PermissionLevel } from "@main/models/PermissionLevel";
-import Application from "@main/core/Application";
+import Application from "@main/core/Application.js";
+import type { PermissionLevel } from "@main/models/PermissionLevel.js";
+import LeveledPermissionManager from "@main/security/LeveledPermissionManager.js";
+import { createClient, createMember } from "@tests/mocks/discord.js";
 import { Collection, PermissionFlagsBits } from "discord.js";
-import { createClient, createMember } from "@tests/mocks/discord";
+import { describe, it, vi } from "vitest";
 
 function createManager(data: unknown) {
     const app = new Application({ projectRootDirectoryPath: "", rootDirectoryPath: "", version: "1.0.0" });

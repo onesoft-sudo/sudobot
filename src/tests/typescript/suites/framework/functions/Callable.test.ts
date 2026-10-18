@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Callable from "@framework/functions/Callable";
+import Callable from "@framework/functions/Callable.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Callable", () => {

@@ -23,7 +23,7 @@ import {
     INJECT_SYMBOL_FIELD,
     INJECT_SYMBOL_LIST,
     INJECT_SYMBOL_METHOD
-} from "@framework/container/Inject";
+} from "@framework/container/Inject.js";
 import { describe, expect, it } from "vitest";
 
 describe("Inject", () => {

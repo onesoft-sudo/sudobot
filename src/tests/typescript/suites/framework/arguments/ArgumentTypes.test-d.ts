@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema";
-import type { ArgumentsOf } from "@framework/arguments/ArgumentTypes";
-import StringArgument from "@framework/arguments/StringArgument";
-import UserArgument from "@framework/arguments/UserArgument";
-import DurationArgument from "@framework/arguments/DurationArgument";
-import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
-import { describe, it, vi, expectTypeOf } from "vitest";
-import Command from "@framework/commands/Command";
+import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
+import type { ArgumentsOf } from "@framework/arguments/ArgumentTypes.js";
+import DurationArgument from "@framework/arguments/DurationArgument.js";
+import GuildMemberArgument from "@framework/arguments/GuildMemberArgument.js";
+import StringArgument from "@framework/arguments/StringArgument.js";
+import UserArgument from "@framework/arguments/UserArgument.js";
+import Command from "@framework/commands/Command.js";
+import type Duration from "@framework/datetime/Duration.js";
 import type { GuildMember, User } from "discord.js";
-import type Duration from "@framework/datetime/Duration";
+import { describe, expectTypeOf, it, vi } from "vitest";
 
 describe("ArgumentTypes", () => {
     describe("ArgumentsOf<T>", () => {
@@ -69,14 +69,15 @@ describe("ArgumentTypes", () => {
                 } as const satisfies ArgumentSchema;
             }
 
-            const argumentValues = {} as ArgumentsOf<TestCommand>;
+            const argumentValues = {} as unknown as ArgumentsOf<TestCommand>;
+
             type ExpectedType =
                 | {
-                      user: User | null;
+                      user: User;
                       reason: string;
                   }
                 | {
-                      member: GuildMember | null;
+                      member: GuildMember;
                       duration: Duration;
                       reason: string;
                   };

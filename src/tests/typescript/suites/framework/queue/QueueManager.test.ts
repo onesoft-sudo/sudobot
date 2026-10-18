@@ -17,15 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Application from "@tests/mocks/core/Application";
-import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob";
-import Job from "@framework/queues/Job";
-import JobDatabaseDriver from "@framework/queues/JobDatabaseDriver";
-import JobDescriptor from "@framework/queues/JobDescriptor";
-import JobState from "@framework/queues/JobState";
-import QueueManager from "@framework/queues/QueueManager";
-import { BeforeEach, TestCase } from "@tests/core/Test";
-import { TestSuite } from "@tests/core/TestSuite";
+import AbstractQueuedJob from "@framework/queues/AbstractQueuedJob.js";
+import Job from "@framework/queues/Job.js";
+import JobDatabaseDriver from "@framework/queues/JobDatabaseDriver.js";
+import JobDescriptor from "@framework/queues/JobDescriptor.js";
+import JobState from "@framework/queues/JobState.js";
+import QueueManager from "@framework/queues/QueueManager.js";
+import { BeforeEach, TestCase } from "@tests/core/Test.js";
+import { TestSuite } from "@tests/core/TestSuite.js";
+import Application from "@tests/mocks/core/Application.js";
 import { Collection } from "discord.js";
 import { setTimeout } from "timers/promises";
 import { TestContext } from "vitest";
@@ -33,9 +33,7 @@ import { TestContext } from "vitest";
 class DummyJobDatabaseDriver extends JobDatabaseDriver {
     private readonly descriptors = new Collection<number, JobDescriptor>();
 
-    public override create(
-        job: Omit<Job<object>, "id">
-    ): Promise<JobDescriptor> {
+    public override create(job: Omit<Job<object>, "id">): Promise<JobDescriptor> {
         const descriptor = {
             id: Math.round(Math.random() * 10000),
             channelId: job.channelId,
@@ -76,10 +74,7 @@ class QueueManagerTest {
 
     @TestCase
     public async itCanQueueJobs({ expect }: TestContext) {
-        const manager = new QueueManager(
-            this.application,
-            DummyJobDatabaseDriver
-        );
+        const manager = new QueueManager(this.application, DummyJobDatabaseDriver);
 
         let executed = false;
 
@@ -87,9 +82,7 @@ class QueueManagerTest {
             name: string;
             age: number;
         }> {
-            public override async execute(
-                data: { name: string; age: number } | null
-            ): Promise<JobState> {
+            public override async execute(data: { name: string; age: number } | null): Promise<JobState> {
                 await Promise.resolve();
                 executed = data?.age === 20 && data?.name === "Test";
                 return JobState.Success;
