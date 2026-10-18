@@ -17,20 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type {
-    GuildBasedChannel,
-    GuildMember,
-    Role,
-    Snowflake,
-    User
-} from "discord.js";
+import type { GuildBasedChannel, GuildMember, Role, Snowflake, User } from "discord.js";
 import { isSnowflake } from "../utils/utils.js";
 import Argument from "./Argument.js";
 import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
-abstract class EntityArgument<
-    E extends User | GuildMember | GuildBasedChannel | Role | null
-> extends Argument<E> {
+abstract class EntityArgument<E extends User | GuildMember | GuildBasedChannel | Role, C = E> extends Argument<C> {
     protected abstract readonly mentionStart: string[];
     protected abstract readonly entityName: string;
 

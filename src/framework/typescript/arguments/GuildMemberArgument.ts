@@ -17,15 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchMember } from "@framework/utils/entities.js";
-import type { Awaitable, ChatInputCommandInteraction, GuildMember } from "discord.js";
-import type { If } from "../types/Utils";
-import EntityArgument from "./EntityArgument.js";
-import { ArgumentErrorType } from "./InvalidArgumentError.js";
 import APIErrors from "@framework/errors/APIErrors.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { GuildMember } from "discord.js";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
-class GuildMemberArgument<E extends boolean = false> extends EntityArgument<If<E, GuildMember, GuildMember | null>> {
+class GuildMemberArgument extends EntityArgument<GuildMember> {
     public static readonly defaultErrors = {
         [ArgumentErrorType.Required]: "You must specify a member to perform this action!",
         [ArgumentErrorType.InvalidType]: "You must specify a valid member to perform this action.",
@@ -34,14 +33,44 @@ class GuildMemberArgument<E extends boolean = false> extends EntityArgument<If<E
     protected override readonly mentionStart: string[] = ["<@!", "<@"];
     protected override readonly entityName: string = "member";
 
-    protected override async resolveFromRawValue(): Promise<If<E, GuildMember, GuildMember | null>> {
+    protected override async resolveFromRawValue(): Promise<GuildMember> {
         if (!this.context.guild) {
-            return null as If<E, GuildMember, GuildMember | null>;
+            return this.error(`Argument '${this.name}': Invalid context`, ArgumentErrorType.EntityNotFound);
         }
 
         try {
-            const member = await fetchMember(this.context.guild, this.toSnowflake());
-            return member as If<E, GuildMember, GuildMember | null>;
+            const id = this.toSnowflake();
+            return this.context.guild.members.cache.get(id) ?? (await this.context.guild.members.fetch(id));
+        } catch (error) {
+            if (isDiscordAPIError(error)) {
+                return this.error(
+                    `Argument '${this.name}': ${APIErrors.translateToMessage(+error.code)}`,
+                    ArgumentErrorType.EntityNotFound
+                );
+            }
+
+            return this.error(`Argument '${this.name}': Unable to fetch member data`, ArgumentErrorType.EntityNotFound);
+        }
+    }
+
+    protected override async resolveFromInteraction(interaction: ChatInputCommandInteraction): Promise<GuildMember> {
+        if (!this.context.guild) {
+            return this.error(`Argument '${this.interactionName}': Invalid context`, ArgumentErrorType.EntityNotFound);
+        }
+
+        const value = interaction.options.getMember(this.interactionName);
+
+        if (!value) {
+            throw new Error("Received null from interaction resolver");
+        }
+
+        if (value instanceof GuildMember) {
+            return value;
+        }
+
+        try {
+            const id = this.toSnowflake();
+            return this.context.guild.members.cache.get(id) ?? (await this.context.guild.members.fetch(id));
         } catch (error) {
             if (isDiscordAPIError(error)) {
                 return this.error(
@@ -55,26 +84,6 @@ class GuildMemberArgument<E extends boolean = false> extends EntityArgument<If<E
                 ArgumentErrorType.EntityNotFound
             );
         }
-    }
-
-    public override postValidate() {
-        if (!this.value) {
-            return this.error(`Argument '${this.interactionName}': Member not found`, ArgumentErrorType.EntityNotFound);
-        }
-
-        return true;
-    }
-
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<If<E, GuildMember, GuildMember | null>> {
-        const value = interaction.options.getMember(this.interactionName);
-
-        if (value === null && !this.definition.isOptional) {
-            return this.error(`Argument '${this.interactionName}' is required!`, ArgumentErrorType.Required);
-        }
-
-        return value as If<E, GuildMember, GuildMember | null>;
     }
 }
 

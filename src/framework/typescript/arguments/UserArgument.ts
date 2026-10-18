@@ -17,42 +17,57 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Application from "@framework/app/Application.js";
 import APIErrors from "@framework/errors/APIErrors.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
-import {
-    type Awaitable,
-    type ChatInputCommandInteraction,
-    type User
-} from "discord.js";
-import Application from "../app/Application.js";
-import type { If } from "../types/Utils";
-import { fetchUser } from "../utils/entities.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { User } from "discord.js";
 import EntityArgument from "./EntityArgument.js";
 import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
-class UserArgument<E extends boolean = false> extends EntityArgument<
-    If<E, User, User | null>
-> {
+class UserArgument extends EntityArgument<User> {
     public static readonly defaultErrors = {
-        [ArgumentErrorType.Required]:
-            "You must specify a user to perform this action!",
-        [ArgumentErrorType.InvalidType]:
-            "You must specify a valid user to perform this action.",
-        [ArgumentErrorType.EntityNotFound]:
-            "The user you specified could not be found."
+        [ArgumentErrorType.Required]: "You must specify a user to perform this action!",
+        [ArgumentErrorType.InvalidType]: "You must specify a valid user to perform this action.",
+        [ArgumentErrorType.EntityNotFound]: "The user you specified could not be found."
     };
     protected override readonly mentionStart: string[] = ["<@!", "<@"];
     protected override readonly entityName: string = "user";
 
-    protected override async resolveFromRawValue(): Promise<
-        If<E, User, User | null>
-    > {
+    protected override async resolveFromRawValue(): Promise<User> {
+        const client = Application.current().client;
+
         try {
-            const user = await fetchUser(
-                Application.current().client,
-                this.toSnowflake()
-            );
-            return user as If<E, User, User | null>;
+            const id = this.toSnowflake();
+            return client.users.cache.get(id) ?? (await client.users.fetch(id));
+        } catch (error) {
+            if (isDiscordAPIError(error)) {
+                return this.error(
+                    `Argument '${this.name}': ${APIErrors.translateToMessage(+error.code)}`,
+                    ArgumentErrorType.EntityNotFound
+                );
+            }
+
+            return this.error(`Argument '${this.name}': Unable to fetch user data`, ArgumentErrorType.EntityNotFound);
+        }
+    }
+
+    protected override async resolveFromInteraction(interaction: ChatInputCommandInteraction): Promise<User> {
+        const value = interaction.options.getUser(this.interactionName);
+
+        if (!value) {
+            throw new Error("Received null from interaction resolver");
+        }
+
+        if (value instanceof User) {
+            return value;
+        }
+
+        const client = Application.current().client;
+
+        try {
+            const id = this.toSnowflake();
+            return client.users.cache.get(id) ?? (await client.users.fetch(id));
         } catch (error) {
             if (isDiscordAPIError(error)) {
                 return this.error(
@@ -66,35 +81,6 @@ class UserArgument<E extends boolean = false> extends EntityArgument<
                 ArgumentErrorType.EntityNotFound
             );
         }
-    }
-
-    public override postValidate() {
-        if (!this.value) {
-            return this.error(
-                `Argument '${this.interactionName}': User not found`,
-                ArgumentErrorType.EntityNotFound
-            );
-        }
-
-        return true;
-    }
-
-    protected override resolveFromInteraction(
-        interaction: ChatInputCommandInteraction
-    ): Awaitable<If<E, User, User | null>> {
-        const value = interaction.options.getUser(
-            this.interactionName,
-            !this.definition.isOptional
-        );
-
-        if (value === null && !this.definition.isOptional) {
-            return this.error(
-                `Argument '${this.interactionName}' is required!`,
-                ArgumentErrorType.Required
-            );
-        }
-
-        return value as If<E, User, User | null>;
     }
 }
 

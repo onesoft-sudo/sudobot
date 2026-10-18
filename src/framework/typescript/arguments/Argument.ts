@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type LegacyContext from "@framework/commands/LegacyContext.js";
-import type { ArgumentDefinition, ArgumentRules } from "./ArgumentSchema.js";
-import type InteractionContext from "@framework/commands/InteractionContext.js";
 import type Application from "@framework/app/Application.js";
+import type Context from "@framework/commands/Context.js";
+import type InteractionContext from "@framework/commands/InteractionContext.js";
+import type LegacyContext from "@framework/commands/LegacyContext.js";
 import { requireNonNull } from "@framework/utils/utils.js";
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import type { ArgumentDefinition, ArgumentRules } from "./ArgumentSchema.js";
 import { ArgumentErrorType, InvalidArgumentError } from "./InvalidArgumentError.js";
-import type Context from "@framework/commands/Context.js";
 
 export type ArgumentCreateOptions =
     | {
@@ -45,6 +45,8 @@ export type ArgumentCreateOptions =
       };
 
 abstract class Argument<T> {
+    public readonly _type!: T;
+
     protected readonly application: Application;
     protected value?: T;
     protected rawValue: string;
@@ -129,21 +131,16 @@ abstract class Argument<T> {
         options: ArgumentCreateOptions,
         rawValue: unknown
     ): Promise<InstanceType<T>> {
-        const instance = new (this as unknown as new (
-            application: Application,
-            context: Context,
-            definition: ArgumentDefinition,
-            typeIndex: number,
-            position: number,
-            rawValue: unknown
-        ) => InstanceType<T>)(
-            options.application,
-            options.context,
-            options.definition,
-            options.typeIndex,
-            options.index,
-            rawValue
-        );
+        const instance = new (
+            this as unknown as new (
+                application: Application,
+                context: Context,
+                definition: ArgumentDefinition,
+                typeIndex: number,
+                position: number,
+                rawValue: unknown
+            ) => InstanceType<T>
+        )(options.application, options.context, options.definition, options.typeIndex, options.index, rawValue);
 
         if (!(await instance.preValidate())) {
             throw new InvalidArgumentError(`Argument '${options.definition.name}': Invalid argument`, {

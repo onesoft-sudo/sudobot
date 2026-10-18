@@ -17,79 +17,90 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { fetchChannel } from "@framework/utils/entities.js";
-import { isSnowflake } from "@framework/utils/utils.js";
-import { type Awaitable, type ChatInputCommandInteraction, type GuildBasedChannel } from "discord.js";
-import type { If } from "../types/Utils";
-import EntityArgument from "./EntityArgument.js";
-import { ArgumentErrorType } from "./InvalidArgumentError.js";
 import APIErrors from "@framework/errors/APIErrors.js";
 import { isDiscordAPIError } from "@framework/utils/errors.js";
+import type { ChatInputCommandInteraction, GuildBasedChannel } from "discord.js";
+import { BaseChannel } from "discord.js";
+import EntityArgument from "./EntityArgument.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
-class ChannelArgument<E extends boolean = false> extends EntityArgument<
-    If<E, GuildBasedChannel, GuildBasedChannel | null>
-> {
+class ChannelArgument extends EntityArgument<GuildBasedChannel> {
     public static readonly defaultErrors = {
         [ArgumentErrorType.Required]: "You must specify a channel to perform this action!",
         [ArgumentErrorType.InvalidType]: "You must specify a valid channel to perform this action.",
         [ArgumentErrorType.EntityNotFound]: "The channel you specified could not be found."
     };
-
     protected override readonly mentionStart: string[] = ["<#"];
     protected override readonly entityName: string = "channel";
 
-    protected override async resolveFromRawValue(): Promise<If<E, GuildBasedChannel, GuildBasedChannel | null>> {
+    protected override async resolveFromRawValue(): Promise<GuildBasedChannel> {
         if (!this.context.guild) {
-            return null as If<E, GuildBasedChannel, GuildBasedChannel | null>;
+            return this.error(`Argument '${this.name}': Invalid context`, ArgumentErrorType.EntityNotFound);
         }
 
-        if ((this.rawValue.startsWith("<#") && this.rawValue.endsWith(">")) || isSnowflake(this.rawValue)) {
-            try {
-                const channel = await fetchChannel(this.context.guild, this.toSnowflake());
-                return channel as If<E, GuildBasedChannel, GuildBasedChannel | null>;
-            } catch (error) {
-                if (isDiscordAPIError(error)) {
-                    return this.error(
-                        `Argument '${this.interactionName}': ${APIErrors.translateToMessage(+error.code)}`,
-                        ArgumentErrorType.EntityNotFound
-                    );
-                }
+        try {
+            const id = this.toSnowflake();
+            const channel = this.context.guild.channels.cache.get(id) ?? (await this.context.guild.channels.fetch(id));
 
+            if (!channel) {
+                return this.error(`Argument '${this.name}': Unknown channel`, ArgumentErrorType.EntityNotFound);
+            }
+
+            return channel;
+        } catch (error) {
+            if (isDiscordAPIError(error)) {
                 return this.error(
-                    `Argument '${this.interactionName}': Unable to fetch channel data`,
+                    `Argument '${this.name}': ${APIErrors.translateToMessage(+error.code)}`,
                     ArgumentErrorType.EntityNotFound
                 );
             }
-        }
 
-        return (this.context.guild.channels.cache.find(channel => channel.name === this.rawValue) ?? null) as If<
-            E,
-            GuildBasedChannel,
-            GuildBasedChannel | null
-        >;
-    }
-
-    public override postValidate() {
-        if (!this.value) {
             return this.error(
-                `Argument '${this.interactionName}': Channel not found`,
+                `Argument '${this.name}': Unable to fetch channel data`,
                 ArgumentErrorType.EntityNotFound
             );
         }
-
-        return true;
     }
 
-    protected override resolveFromInteraction(
+    protected override async resolveFromInteraction(
         interaction: ChatInputCommandInteraction
-    ): Awaitable<If<E, GuildBasedChannel, GuildBasedChannel | null>> {
-        const value = interaction.options.getChannel(this.interactionName, !this.definition.isOptional);
-
-        if (value === null && !this.definition.isOptional) {
-            return this.error(`Argument '${this.interactionName}' is required!`, ArgumentErrorType.Required);
+    ): Promise<GuildBasedChannel> {
+        if (!this.context.guild) {
+            return this.error(`Argument '${this.interactionName}': Invalid context`, ArgumentErrorType.EntityNotFound);
         }
 
-        return value as If<E, GuildBasedChannel, GuildBasedChannel | null>;
+        const value = interaction.options.getChannel(this.interactionName);
+
+        if (!value) {
+            throw new Error("Received null from interaction resolver");
+        }
+
+        if (value instanceof BaseChannel && value.guildId) {
+            return value;
+        }
+
+        try {
+            const id = this.toSnowflake();
+            const channel = this.context.guild.channels.cache.get(id) ?? (await this.context.guild.channels.fetch(id));
+
+            if (!channel) {
+                return this.error(`Argument '${this.name}': Unknown channel`, ArgumentErrorType.EntityNotFound);
+            }
+
+            return channel;
+        } catch (error) {
+            if (isDiscordAPIError(error)) {
+                return this.error(
+                    `Argument '${this.interactionName}': ${APIErrors.translateToMessage(+error.code)}`,
+                    ArgumentErrorType.EntityNotFound
+                );
+            }
+
+            return this.error(
+                `Argument '${this.interactionName}': Unable to fetch channel data`,
+                ArgumentErrorType.EntityNotFound
+            );
+        }
     }
 }
 

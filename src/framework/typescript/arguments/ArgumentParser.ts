@@ -18,10 +18,10 @@
  */
 
 import type Application from "@framework/app/Application.js";
-import type { ArgumentDefinition, ArgumentOverload, ArgumentSchema } from "./ArgumentSchema.js";
 import type InteractionContext from "@framework/commands/InteractionContext.js";
 import type LegacyContext from "@framework/commands/LegacyContext.js";
 import ArgumentParseError from "./ArgumentParseError.js";
+import type { ArgumentDefinition, ArgumentOverload, ArgumentSchema } from "./ArgumentSchema.js";
 import { InvalidArgumentError } from "./InvalidArgumentError.js";
 
 type ParserContext = {
@@ -32,7 +32,6 @@ type ParserContext = {
     isInteractive: boolean;
 };
 
- 
 type ParseStepResult<T extends object = Record<never, never>> = T & {
     error?: string;
 };
@@ -72,12 +71,10 @@ class ArgumentParser {
             }
 
             return { args: result.args, overloadIndex: schema.defaultIndex ?? 0 };
-        }
-        catch (error) {
+        } catch (error) {
             if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
                 errors.push(error.message);
-            }
-            else {
+            } else {
                 throw error;
             }
         }
@@ -117,8 +114,7 @@ class ArgumentParser {
                 }
 
                 return { args: result.args, overloadIndex: i };
-            }
-            catch (error) {
+            } catch (error) {
                 if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {
                     errors.push(error.message);
                     continue;
@@ -178,7 +174,7 @@ class ArgumentParser {
             }
 
             return {
-                error: `Argument '${definition.name}' is required`
+                error: `Argument '${(parserContext.context.isInteractive() ? definition.interactionName : null) ?? definition.name}' is required`
             };
         }
 
@@ -249,8 +245,7 @@ class ArgumentParser {
                 for (const type of def.type) {
                     typeString += `${typeString === "" ? "" : " | "}${type.name}`;
                 }
-            }
-            else {
+            } else {
                 typeString = def.type.name;
             }
 
