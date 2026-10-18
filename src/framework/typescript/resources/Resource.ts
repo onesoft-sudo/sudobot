@@ -90,13 +90,13 @@ class Resource<T = unknown> {
             try {
                 contents = await readFile(
                     path.join(resourcePath, name),
-                    name.endsWith(".txt") || name.endsWith(".json") ? "utf-8" : undefined
+                    name.endsWith(".txt") || name.endsWith(".json") ? "utf-8" : "binary"
                 );
             } catch {
                 continue;
             }
 
-            const resource = new Resource(name, name.endsWith(".json") ? JSON.parse(contents as string) : contents);
+            const resource = new Resource(name, name.endsWith(".json") ? JSON.parse(contents) : contents);
             this.resources.set(name, resource);
             return resource as Resource<T>;
         }

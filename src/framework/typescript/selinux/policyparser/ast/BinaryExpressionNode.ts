@@ -18,7 +18,7 @@
  */
 
 import Node from "./Node.js";
-import type { Range } from "../PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes.js";
 
 class BinaryExpressionNode extends Node {
     public readonly left: Node;

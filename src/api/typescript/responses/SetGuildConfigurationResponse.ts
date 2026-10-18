@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { APIErrorCode } from "../APIErrorCode";
+import type { APIErrorCode } from "../APIErrorCode.js";
 
 export type SetGuildConfigurationResponse =
     | {

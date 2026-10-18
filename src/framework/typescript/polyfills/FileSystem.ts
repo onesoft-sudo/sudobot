@@ -19,7 +19,7 @@
 
 import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
-import type { StringLike } from "../types/StringLike";
+import type { StringLike } from "../types/StringLike.js";
 
 type ReadFileContentOptions<T extends boolean> = {
     json?: T;

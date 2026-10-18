@@ -1,6 +1,6 @@
 CREATE TYPE "public"."infraction_delivery_status" AS ENUM('Success', 'Failed', 'Fallback', 'NotDelivered');--> statement-breakpoint
 CREATE TYPE "public"."infraction_type" AS ENUM('Ban', 'Kick', 'Mute', 'Warning', 'MassBan', 'MassKick', 'Unban', 'Unmute', 'BulkDeleteMessage', 'Timeout', 'TimeoutRemove', 'Bean', 'Note', 'Role', 'Shot', 'ModeratorMessage', 'ReactionClear');--> statement-breakpoint
-CREATE TABLE "infractions" (
+CREATE TABLE IF NOT EXISTS "infractions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"type" "infraction_type" NOT NULL,
 	"user_id" varchar NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE "infractions" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "permission_levels" (
+CREATE TABLE IF NOT EXISTS "permission_levels" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"level" integer NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE "permission_levels" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "permission_profiles" (
+CREATE TABLE IF NOT EXISTS "permission_profiles" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"name" varchar NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE "permission_profiles" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "queued_jobs" (
+CREATE TABLE IF NOT EXISTS "queued_jobs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" varchar,
 	"guild_id" varchar,

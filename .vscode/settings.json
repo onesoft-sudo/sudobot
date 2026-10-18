@@ -135,6 +135,6 @@
     "js/ts.tsdk.path": "node_modules/typescript/lib",
     "js/ts.preferences.importModuleSpecifier": "non-relative",
     "js/ts.preferences.importModuleSpecifierEnding": "js",
-    "editor.rulers": [80],
+    "editor.rulers": [120],
     "editor.formatOnPaste": false
 }

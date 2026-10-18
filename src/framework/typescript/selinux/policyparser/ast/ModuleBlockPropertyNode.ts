@@ -19,7 +19,7 @@
 
 import type LiteralNode from "./LiteralNode.js";
 import Node from "./Node.js";
-import type { Range } from "../PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes.js";
 
 class ModuleBlockPropertyNode extends Node {
     public readonly identifier: string;

@@ -26,8 +26,6 @@ import "./boot/preload.js";
 import Resource from "@framework/resources/Resource.js";
 import { BUNDLE_DATA_SYMBOL } from "@framework/utils/bundle.js";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore This file will only be created when a bundler is executed
 import {
     classes,
     commands,
@@ -36,6 +34,8 @@ import {
     resources,
     rules,
     services
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore This file will only be created when a bundler is executed
 } from "./imports.gen.js";
 
 global.isBundle ??= true;

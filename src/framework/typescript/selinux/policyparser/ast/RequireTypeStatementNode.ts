@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Range } from "../PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes.js";
 import Node from "./Node.js";
 
 class RequireTypeStatementNode extends Node {

@@ -19,17 +19,13 @@
 
 import Application from "@framework/app/Application.js";
 
-export const isDevelopmentMode = () =>
-    process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev";
+export const isDevelopmentMode = () => process.env.NODE_ENV === "development" || process.env.NODE_ENV === "dev";
 
 export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
-export function requireNonNull<T>(
-    value: T | null | undefined,
-    message?: string
-): T {
+export function requireNonNull<T>(value: T | null | undefined, message?: string): T {
     if (value === null || value === undefined) {
         throw new Error(message ?? "Value cannot be null or undefined");
     }
@@ -37,8 +33,7 @@ export function requireNonNull<T>(
     return value;
 }
 
-export const notIn = <T extends object>(obj: T, key: keyof T): boolean =>
-    !(key in obj);
+export const notIn = <T extends object>(obj: T, key: string): boolean => !(key in obj);
 
 export const letValue = <T>(value: T, fn: (value: T) => T): T => {
     return fn(value);
@@ -74,10 +69,7 @@ export function sourceFile(moduleName: string): string {
 
 export const effectiveExtension = process.isBun ? "ts" : "js";
 
-export function assertNotNull<T>(
-    test: T,
-    message: string = "Invalid condition"
-): asserts test is NonNullable<T> {
+export function assertNotNull<T>(test: T, message: string = "Invalid condition"): asserts test is NonNullable<T> {
     if (test === undefined || test === null) {
         throw new Error(`Assertion failed: ${message}`);
     }

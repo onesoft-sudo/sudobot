@@ -19,7 +19,7 @@
 
 import type { AnyFunction } from "@framework/types/Utils.js";
 import type { Client } from "discord.js";
-import type { ClientEvents } from "../types/ClientEvents";
+import type { ClientEvents } from "../types/ClientEvents.js";
 
 export type EventListenerInfo = {
     event: keyof ClientEvents | "raw";

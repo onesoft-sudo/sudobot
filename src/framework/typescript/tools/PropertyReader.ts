@@ -18,7 +18,7 @@
  */
 
 import type { z, ZodType } from "zod";
-import type { FileResolvable } from "../io/File";
+import type { FileResolvable } from "../io/File.js";
 import { File } from "../io/File.js";
 import PropertySyntaxError from "./PropertySyntaxError.js";
 

@@ -1,4 +1,4 @@
-CREATE TABLE "afk_entries" (
+CREATE TABLE IF NOT EXISTS "afk_entries" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"reason" varchar,
 	"user_id" varchar NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE "afk_entries" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "mute_records" (
+CREATE TABLE IF NOT EXISTS "mute_records" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"member_id" varchar NOT NULL,
 	"guild_id" varchar NOT NULL,

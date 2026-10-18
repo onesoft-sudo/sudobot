@@ -41,7 +41,7 @@
     },
     "scripts": {
         "prepare": "node bin/prepare",
-        "migrate": "drizzle-kit migrate",
+        "migrate": "node bin/migrate",
         "start": "node build/out/main/typescript/index.js",
         "start:bun": "bun src/main/typescript/boot/bun.ts",
         "start:docker": "sh ./docker/start-container.sh",

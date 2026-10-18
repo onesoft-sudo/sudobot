@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Range } from "../PolicyModuleParserTypes.js";
 import Node from "./Node.js";
-import type { Range } from "../PolicyModuleParserTypes";
 
 class AllowDenyStatementNode extends Node {
     public readonly type: "allow" | "deny";

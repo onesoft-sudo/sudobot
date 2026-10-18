@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { SerializableToJSON } from "../types/SerializableToJSON";
+import type { SerializableToJSON } from "../types/SerializableToJSON.js";
 
 class FluentSet<T> extends Set<T> implements SerializableToJSON<T[]> {
     public override add(...values: T[]) {

@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { APIErrorCode } from "../APIErrorCode";
-import type { Guild } from "../models/Guild";
-import type { User } from "../models/User";
+import type { APIErrorCode } from "../APIErrorCode.js";
+import type { Guild } from "../models/Guild.js";
+import type { User } from "../models/User.js";
 
 export type AuthResponse =
     | {

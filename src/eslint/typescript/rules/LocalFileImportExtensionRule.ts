@@ -18,29 +18,25 @@
  */
 
 import { ESLintUtils } from "@typescript-eslint/utils";
+import path from "path";
 
 const localFileImportExtensionRule = ESLintUtils.RuleCreator.withoutDocs({
     create(context) {
         return {
             ImportDeclaration(node) {
-                const options = (
-                    context.options as unknown as [{ importAliases?: string[] }]
-                )[0];
+                const options = (context.options as unknown as [{ importAliases?: string[] }])[0];
 
                 const importSource = node.source.value;
 
                 if (
                     !importSource.startsWith("./") &&
                     !importSource.startsWith("../") &&
-                    (!options?.importAliases ||
-                        options?.importAliases?.every(
-                            alias => !importSource.startsWith(alias)
-                        ))
+                    (!options?.importAliases || options?.importAliases?.every(alias => !importSource.startsWith(alias)))
                 ) {
                     return;
                 }
 
-                if (importSource.indexOf(".") === -1) {
+                if (path.basename(importSource).indexOf(".") === -1) {
                     context.report({
                         messageId: "missingFileExtension",
                         node: node.source,
@@ -48,12 +44,7 @@ const localFileImportExtensionRule = ESLintUtils.RuleCreator.withoutDocs({
                             file: importSource
                         },
                         fix: fixer => {
-                            return [
-                                fixer.replaceText(
-                                    node.source,
-                                    `"${importSource.replaceAll("\\", "\\\\")}.js"`
-                                )
-                            ];
+                            return [fixer.replaceText(node.source, `"${importSource.replaceAll("\\", "\\\\")}.js"`)];
                         }
                     });
                 }
@@ -64,8 +55,7 @@ const localFileImportExtensionRule = ESLintUtils.RuleCreator.withoutDocs({
     meta: {
         type: "problem",
         docs: {
-            description:
-                "Require an explicit extension for local module file imports"
+            description: "Require an explicit extension for local module file imports"
         },
         fixable: "whitespace",
         schema: [
@@ -84,8 +74,7 @@ const localFileImportExtensionRule = ESLintUtils.RuleCreator.withoutDocs({
             }
         ],
         messages: {
-            missingFileExtension:
-                "Missing explicit extension for the imported module '{{file}}'."
+            missingFileExtension: "Missing explicit extension for the imported module '{{file}}'."
         }
     }
 });

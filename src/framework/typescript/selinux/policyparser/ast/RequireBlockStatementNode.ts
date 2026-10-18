@@ -19,7 +19,7 @@
 
 import type BlockStatementNode from "./BlockStatementNode.js";
 import Node from "./Node.js";
-import type { Range } from "../PolicyModuleParserTypes";
+import type { Range } from "../PolicyModuleParserTypes.js";
 import type RequireTypeStatementNode from "./RequireTypeStatementNode.js";
 
 class RequireBlockStatementNode extends Node {
