@@ -25,8 +25,6 @@
         "sourceMap": true,
         "alwaysStrict": true,
         "paths": {
-            "@buildSrc/*": ["./build_src/src/main/typescript/*"],
-            "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
             "@api/*": ["./src/api/typescript/*"],
@@ -45,15 +43,11 @@
         "./extensions",
         "./docs",
         "./docs/**/*",
-        "./.blaze",
-        "./blaze",
-        "./blazebuild",
-        "./build_src",
         "./node_modules",
         "./storage",
+        "./src/tests",
         "drizzle.config.ts",
         "commitlint.config.ts",
-        "eslint.config.ts",
-        "./src/tests"
+        "eslint.config.ts"
     ]
 }

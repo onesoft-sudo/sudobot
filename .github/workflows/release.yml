@@ -49,47 +49,47 @@ jobs:
         id: artifacts
         shell: sh
         run: |
-            curl \
-                -L \
-                -H "Accept: application/vnd.github+json" \
-                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts
+          curl \
+              -L \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts | tee artifacts.json
 
       - name: Download build artifacts
         if: ${{ steps.auto_release.outputs.tag != '' }}
         shell: sh
         run: |
-            for platform in ubuntu macos windows; do
-                url=`node -e "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
-                test -z "$url" && echo "No artifact found for: $platform" && exit 1
-                curl -L \
-                    -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                    "$url" \
-                    -o artifact.zip
-                unzip artifact.zip
-                rm -f artifact.zip
-            done
+          for platform in ubuntu macos windows; do
+              url=`node -e "process.stdout.write(require('./artifacts.json').artifacts?.find(a => a.name === 'build-${platform}-latest')?.archive_download_url);"`
+              test -z "$url" && echo "No artifact found for: $platform" && exit 1
+              curl -L \
+                  -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                  "$url" \
+                  -o artifact.zip
+              unzip artifact.zip
+              rm -f artifact.zip
+          done
 
-            mv build-ubuntu-latest build-linux
-            mv build-macos-latest build-darwin
-            mv build-windows-latest build-windows
+          mv build-ubuntu-latest build-linux
+          mv build-macos-latest build-darwin
+          mv build-windows-latest build-windows
 
-            tar -czvf build-linux.tar.gz build-linux/bin/*linux*
-            tar -czvf build-darwin.tar.gz build-darwin/bin/*darwin*
-            zip -r build-windows.zip build-windows/bin/*.exe
+          tar -czvf build-linux.tar.gz build-linux/bin/*linux*
+          tar -czvf build-darwin.tar.gz build-darwin/bin/*darwin*
+          zip -r build-windows.zip build-windows/bin/*.exe
 
-            for file in build-{linux,darwin}/bin/*; do
-                base=`basename "$file"`
-                test -f "$file" || continue
-                tar -czvf "${base}.tar.gz" "${file}"
-            done
+          for file in build-{linux,darwin}/bin/*; do
+              base=`basename "$file"`
+              test -f "$file" || continue
+              tar -czvf "${base}.tar.gz" "${file}"
+          done
 
-            for file in build-windows/bin/*; do
-                base=`basename "$file"`
-                test -f "$file" || continue
-                tar -czvf "${base}.tar.gz" "${file}"
-                zip -r "${base}.zip" "${file}"
-            done
+          for file in build-windows/bin/*; do
+              base=`basename "$file"`
+              test -f "$file" || continue
+              tar -czvf "${base}.tar.gz" "${file}"
+              zip -r "${base}.zip" "${file}"
+          done
 
       - name: Create Release
         id: create_release

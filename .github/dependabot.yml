@@ -9,7 +9,6 @@ updates:
     directories:
       - "/"
       - "/docs"
-      - "/blazebuild"
     schedule:
       interval: "monthly"
     assignees:

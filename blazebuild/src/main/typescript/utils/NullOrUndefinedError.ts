@@ -1,1 +1,0 @@
-export class NullOrUndefinedError extends Error {}

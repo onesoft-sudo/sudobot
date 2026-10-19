@@ -16,10 +16,10 @@ jobs:
         with:
           submodules: "true"
 
-      - name: Use Node.js 24.x
+      - name: Use Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 24.x
+          node-version-file: .node-version
 
       - name: Install tools
         run: |

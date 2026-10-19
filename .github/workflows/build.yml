@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        node-version: [22.x, 23.x, 24.x, 25.x, 26.x]
+        node-version: [24.x, 25.x, 26.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
@@ -23,15 +23,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Use Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11
 
       - name: "Install Dependencies"
         run: pnpm install
@@ -47,7 +42,7 @@ jobs:
 
       - name: Create Linux Distro Packages
         id: linux_package
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '25.x' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '26.x' }}
         run: |
           sudo apt update && sudo apt install -y rpm dpkg-dev;
           sudo hostnamectl set-hostname "github-actions-runner.sudobot.org";
@@ -66,68 +61,44 @@ jobs:
 
       - name: "Build Executables"
         run: |
-            OS=linux
+          OS=linux
 
-            if test "${{ matrix.os }}" = "macos-latest"; then
-                OS=darwin
-            elif test "${{ matrix.os }}" = "windows-latest"; then
-                OS=windows
-            fi
+          if test "${{ matrix.os }}" = "macos-latest"; then
+              OS=darwin
+          elif test "${{ matrix.os }}" = "windows-latest"; then
+              OS=windows
+          fi
 
-            bin/gensea $OS
+          bin/gensea $OS
         shell: sh
 
       - name: Prepare artifacts
-        if: ${{ matrix.node-version == '25.x' }}
+        if: ${{ matrix.node-version == '26.x' }}
         shell: sh
         run: |
-            mkdir -p build-${{ matrix.os }}/bin
+          mkdir -p build-${{ matrix.os }}/bin
 
-            if test "${{ matrix.os }}" = "ubuntu-latest"; then
-                mkdir -p build-${{ matrix.os }}/packages
-                mv -v build/*linux* build-${{ matrix.os }}/bin/
-                mv -v ${{ steps.linux_package.outputs.files }} build-${{ matrix.os }}/packages/
-            elif test "${{ matrix.os }}" = "macos-latest"; then
-                mv -v build/*darwin* build-${{ matrix.os }}/bin/
-            elif test "${{ matrix.os }}" = "windows-latest"; then
-                mv -v build/*.exe build-${{ matrix.os }}/bin/
-            fi
+          if test "${{ matrix.os }}" = "ubuntu-latest"; then
+              mkdir -p build-${{ matrix.os }}/packages
+              mv -v build/*linux* build-${{ matrix.os }}/bin/
+              mv -v ${{ steps.linux_package.outputs.files }} build-${{ matrix.os }}/packages/
+          elif test "${{ matrix.os }}" = "macos-latest"; then
+              mv -v build/*darwin* build-${{ matrix.os }}/bin/
+          elif test "${{ matrix.os }}" = "windows-latest"; then
+              mv -v build/*.exe build-${{ matrix.os }}/bin/
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.node-version == '25.x' }}
+        if: ${{ matrix.node-version == '26.x' }}
         with:
-            name: build-${{ matrix.os }}
-            path: build-${{ matrix.os }}
-            include-hidden-files: true
-            compression-level: 9
+          name: build-${{ matrix.os }}
+          path: build-${{ matrix.os }}
+          include-hidden-files: true
+          compression-level: 9
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: onesoft-sudo/sudobot
-
-  blazebuild:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Set git to use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Build with BlazeBuild
-        run: ./blazew build

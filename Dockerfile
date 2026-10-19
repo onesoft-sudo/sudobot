@@ -1,4 +1,4 @@
-FROM node:25-bookworm AS builder
+FROM node:26-bookworm AS builder
 
 WORKDIR /app
 
@@ -11,19 +11,13 @@ RUN apt-get install git build-essential librsvg2-dev libgif-dev \
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
 COPY src ./src
-COPY blazew ./blazew
-COPY blaze ./blaze
-COPY blazebuild ./blazebuild
-COPY build.blaze.mts ./build.blaze.mts
-COPY settings.blaze.mts ./settings.blaze.mts
-COPY build_src ./build_src
 COPY eslint.config.ts ./eslint.config.ts
 COPY vitest.config.ts ./vitest.config.ts
 COPY bin ./bin
 
-RUN ./blazew build
+RUN pnpm run build
 
-FROM node:25-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 
