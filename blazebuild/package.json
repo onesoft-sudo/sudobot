@@ -1,0 +1,46 @@
+{
+    "name": "@onesoftnet/blazebuild",
+    "version": "4.0.0-alpha.1",
+    "type": "module",
+    "module": "./build/main/typescript/index.js",
+    "description": "A script-based build tool for JavaScript/TypeScript projects",
+    "bin": {
+        "blazebuild": "./build/main/typescript/main.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "check": "tsc --noEmit",
+        "dev": "tsx ./src/main/typescript/main.ts"
+    },
+    "author": {
+        "name": "Ar Rakin",
+        "email": "rakinar2@osndevs.org",
+        "url": "https://virtual-designer.github.io"
+    },
+    "license": "GPL-3.0-or-later",
+    "devDependencies": {
+        "@types/node": "26.6.5",
+        "tsx": "^4.23.15",
+        "typescript": "^7.0.2"
+    },
+    "dependencies": {
+        "chalk": "6.0.1",
+        "glob": "^13.0.6"
+    },
+    "files": [
+        "src",
+        "package.json",
+        "tsconfig.json",
+        "templates"
+    ],
+    "exports": {
+        ".": "./build/main/typescript/index.js"
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./build/main/typescript/index.d.ts"
+            ]
+        }
+    }
+}
