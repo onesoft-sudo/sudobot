@@ -41,9 +41,6 @@ fly.toml
 *.bak
 /backup
 
-# AI model data
-*.traineddata
-
 # Data
 /data
 /installed_extensions
@@ -55,3 +52,5 @@ fly.toml
 
 imports.gen.ts
 /src/main/typescript/commands/settings/TestCommand.ts
+
+.blazebuild

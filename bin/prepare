@@ -1,9 +1,19 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "child_process";
+import { existsSync, rmSync, symlinkSync } from "fs";
+import path from "node:path";
 
 const { status } = spawnSync("husky", [], { stdio: "inherit" });
 
 if (status) {
     console.error("Husky failed with code: ", status);
 }
+
+const link = path.join(process.cwd(), "node_modules/@onesoftnet/blazebuild");
+
+if (existsSync(link)) {
+    rmSync(link, { recursive: true });
+}
+
+symlinkSync(path.join(process.cwd(), "blazebuild"), link, "dir");

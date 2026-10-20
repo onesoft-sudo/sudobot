@@ -17,6 +17,7 @@
         "noImplicitOverride": true,
         "noImplicitThis": true,
         "esModuleInterop": true,
+        "declaration": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "rootDir": "src",

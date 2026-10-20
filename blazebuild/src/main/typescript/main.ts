@@ -1,8 +1,10 @@
 import chalk from "chalk";
 import { basename } from "path";
 import { parseArgs } from "util";
-import { version } from "../../../package.json" with { type: "json" };
-import BlazeBuild from "./core/BlazeBuild.js";
+import pkgjson from "../../../package.json" with { type: "json" };
+import { Build } from "./core/Build.js";
+
+const { version } = pkgjson;
 
 function showHelp() {
     console.log(chalk.blueBright.bold("BlazeBuild - A blazing fast build system for JavaScript and TypeScript."));
@@ -101,8 +103,9 @@ async function main() {
         process.exit(1);
     }
 
-    const blazebuild = new BlazeBuild(options);
-    await blazebuild.execute(positionals);
+    const build = new Build(options);
+    build.setup();
+    await build.execute(positionals);
 }
 
 main().then();
