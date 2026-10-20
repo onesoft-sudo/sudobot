@@ -44,7 +44,10 @@ export class CacheManager {
 
         if (scriptHash !== this.getFileHash(`b:${script}`)) {
             this.fileHashes = new Map();
-            this.setFileHash(`b:${script}`, scriptHash);
+
+            if (scriptHash) {
+                this.setFileHash(`b:${script}`, scriptHash);
+            }
         }
     }
 
@@ -52,7 +55,7 @@ export class CacheManager {
         try {
             return (await lstat(file)).mtimeMs.toString();
         } catch {
-            return "0";
+            return null;
         }
     }
 

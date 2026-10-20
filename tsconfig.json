@@ -24,6 +24,7 @@
         "noImplicitOverride": true,
         "sourceMap": true,
         "alwaysStrict": true,
+        "rootDir": "./src",
         "paths": {
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
@@ -35,19 +36,16 @@
     },
     "include": ["src/**/*.ts"],
     "exclude": [
-        "./backup",
         "./tmp",
-        "./scripts",
-        "./tests",
+        "./bin",
         "./build",
         "./extensions",
         "./docs",
-        "./docs/**/*",
         "./node_modules",
         "./storage",
         "./src/tests",
-        "drizzle.config.ts",
-        "commitlint.config.ts",
-        "eslint.config.ts"
+        "./drizzle.config.ts",
+        "./commitlint.config.ts",
+        "./eslint.config.ts"
     ]
 }

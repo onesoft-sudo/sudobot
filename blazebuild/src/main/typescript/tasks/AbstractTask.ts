@@ -29,5 +29,6 @@ export abstract class AbstractTask {
         return [];
     }
 
+    public precondition?(): Awaitable<boolean>;
     public abstract execute(): Awaitable<TaskStatus>;
 }

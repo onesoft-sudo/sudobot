@@ -5,18 +5,19 @@ import pkgjson from "../../../package.json" with { type: "json" };
 import { Build } from "./core/Build.js";
 
 const { version } = pkgjson;
+const argv0 = process.env.BLAZEW_INTERNAL_ARGV0 ?? basename(process.argv[1]);
 
 function showHelp() {
     console.log(chalk.blueBright.bold("BlazeBuild - A blazing fast build system for JavaScript and TypeScript."));
     console.log();
     console.log(chalk.whiteBright.bold("Usage:"));
-    console.log("  %s [options] <tasks...>", process.env.BLAZEW_INTERNAL_ARGV0 ?? basename(process.argv[1]));
+    console.log("  %s [options] <tasks...>", argv0);
     console.log();
     console.log(chalk.whiteBright.bold("Options:"));
     console.log("  -h, --help     Show this help message");
-    console.log("  -v, --version  Show the version number");
+    console.log("  -V, --version  Show the version number");
     console.log("  -N, --new      Create a new project");
-    console.log("  -G, --graph    Show the dependency graph");
+    console.log("  -v, --verbose  Show detailed messages");
     process.exit(0);
 }
 
@@ -40,13 +41,13 @@ function parseArguments() {
                 },
                 version: {
                     type: "boolean",
-                    short: "v",
+                    short: "V",
                     default: false
                 },
-                graph: {
+                verbose: {
                     type: "boolean",
                     default: false,
-                    short: "G"
+                    short: "v"
                 },
                 new: {
                     type: "boolean",
@@ -75,16 +76,16 @@ function parseArguments() {
         if (error instanceof TypeError && "code" in error) {
             switch (error.code) {
                 case "ERR_PARSE_ARGS_UNKNOWN_OPTION":
-                    console.error(`Unknown option: ${error.message}`);
+                    console.error(`${argv0}: Unknown option: ${error.message}`);
                     break;
                 case "ERR_PARSE_ARGS_UNEXPECTED_POSITIONAL":
-                    console.error(`Unexpected positional argument: ${error.message}`);
+                    console.error(`${argv0}: Unexpected positional argument: ${error.message}`);
                     break;
                 case "ERR_PARSE_ARGS_UNEXPECTED_OPTION":
-                    console.error(`Unexpected option: ${error.message}`);
+                    console.error(`${argv0}: Unexpected option: ${error.message}`);
                     break;
                 default:
-                    console.error(`Unknown error: ${error.message}`);
+                    console.error(`${argv0}: Unknown error: ${error.message}`);
                     break;
             }
         } else {

@@ -8,10 +8,22 @@ export class Logger {
 
     public printTaskExecutionBegin(taskName: string, upToDate: boolean = false) {
         console.info(
-            chalk.white.bold("> ") +
+            chalk.whiteBright.bold("> ") +
                 chalk.blue.bold(`:${this.build.projectManager.project.name}:${taskName}`) +
                 (upToDate ? chalk.green("  UP-TO-DATE") : "")
         );
+    }
+
+    public printMessage(message: string) {
+        console.info(chalk.whiteBright.bold("> ") + chalk.reset(message));
+    }
+
+    public printDebugMessage(message: string) {
+        if (!this.build.options.verbose) {
+            return;
+        }
+
+        this.printMessage(message);
     }
 
     private formatDuration() {
@@ -51,21 +63,23 @@ export class Logger {
             return;
         }
 
-        let str = `${stats.totalTasks} task${stats.totalTasks === 1 ? "" : "s"} total: `;
+        let str = chalk.whiteBright(`${stats.totalTasks} task${stats.totalTasks === 1 ? "" : "s"} total: `);
+        let appended = false;
 
         if (stats.staleTasks) {
             str += chalk.yellow(`${stats.staleTasks} executed`);
+            appended = true;
         }
 
         if (stats.skippedTasks) {
-            str += `${str.at(-1) === " " ? "" : ", "}${chalk.green(`${stats.skippedTasks} up-to-date`)}`;
+            str += `${!appended ? "" : chalk.whiteBright(", ")}${chalk.green(`${stats.skippedTasks} up-to-date`)}`;
         }
 
-        console.info(chalk.reset(str));
+        console.info(str);
     }
 
     public printError(error: Error | string) {
-        console.error(chalk.red.bold("An error has occurred:"));
+        console.error(chalk.whiteBright.bold("> ") + chalk.red.bold("An error has occurred:"));
         console.error(error);
     }
 

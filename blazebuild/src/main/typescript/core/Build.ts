@@ -1,13 +1,14 @@
+import path from "node:path";
 import { CacheManager } from "../cache/CacheManager.js";
 import { Logger } from "../logging/Logger.js";
+import { PluginManager } from "../plugins/PluginManager.js";
 import { ProjectManager } from "../project/ProjectManager.js";
 import { TaskManager } from "../tasks/TaskManager.js";
 
 export type BlazeOptions = {
     help?: boolean;
     version?: boolean;
-    dryrun?: boolean;
-    graph?: boolean;
+    verbose?: boolean;
 };
 
 export class Build {
@@ -17,6 +18,7 @@ export class Build {
     public readonly taskManager: TaskManager;
     public readonly cacheManager: CacheManager;
     public readonly projectManager: ProjectManager;
+    public readonly pluginManager: PluginManager;
     public readonly logger: Logger;
 
     public constructor(options: BlazeOptions) {
@@ -25,6 +27,7 @@ export class Build {
         this.taskManager = new TaskManager(this);
         this.cacheManager = new CacheManager(this);
         this.projectManager = new ProjectManager(this);
+        this.pluginManager = new PluginManager(this);
 
         if (!Build.self) {
             Build.self = this;
@@ -41,6 +44,8 @@ export class Build {
 
     public setup() {
         Object.defineProperty(globalThis, "blaze", { value: this });
+        process.env.PATH =
+            path.join(this.projectManager.getRoot(), "node_modules/.bin") + path.delimiter + process.env.PATH;
 
         let err = false;
 
@@ -77,6 +82,18 @@ export class Build {
     public async execute(taskNames: string[]) {
         await this.cacheManager.loadFromDisk();
         await this.loadBuildScript();
+        await this.taskManager.execute("compileBuildSrc", false);
+        await this.pluginManager.loadBuildSrcPlugin();
+
+        if (!taskNames.length) {
+            const defaultTask = this.projectManager.project.build.defaultTask;
+
+            if (!defaultTask) {
+                this.logger.printErrorAndExit("No default task is available");
+            }
+
+            taskNames = [defaultTask];
+        }
 
         for (const taskName of taskNames) {
             await this.taskManager.execute(taskName);

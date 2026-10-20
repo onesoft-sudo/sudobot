@@ -1,28 +1,34 @@
 import { hash } from "node:crypto";
+import BuildTask from "../builtins/tasks/BuildTask.js";
+import CompileBuildSrcTask from "../builtins/tasks/CompileBuildSrcTask.js";
 import TasksTask from "../builtins/tasks/TasksTask.js";
 import type { Build } from "../core/Build.js";
 import type { AbstractTask } from "./AbstractTask.js";
 import { FreeTask } from "./FreeTask.js";
+import TaskModifier from "./TaskModifier.js";
 import { TaskStatus } from "./TaskStatus.js";
 
-export type TaskIO = {
+export type TaskAttributes = {
     inputs: string[];
     outputs: string[];
     dependencies: string[];
 };
 
+export type TaskConstructor = new (build: Build) => AbstractTask;
+
 export class TaskManager {
+    private static readonly BUILTIN_TASKS = [TasksTask, CompileBuildSrcTask, BuildTask];
+
     private readonly tasks = new Map<string, AbstractTask>();
-    private readonly taskAttributeMap = new Map<string, TaskIO>();
+    private readonly taskAttributeMap = new Map<string, TaskAttributes>();
     private readonly visitedTasks = new Set<string>();
+    private readonly reachedTasks = new Set<string>();
     private readonly executedTasks = new Set<string>();
     private totalTasks = 0;
     private staleTasks = 0;
 
     public constructor(private readonly build: Build) {
-        const builtins = [TasksTask];
-
-        for (const task of builtins) {
+        for (const task of TaskManager.BUILTIN_TASKS) {
             this.register(task);
         }
     }
@@ -39,7 +45,14 @@ export class TaskManager {
         };
     }
 
-    public register(task: new (build: Build) => AbstractTask) {
+    public async findByName(name: string) {
+        const task = this.getTask(name);
+        const taskAttributes = await this.getTaskAttributes(task);
+        return new TaskModifier(taskAttributes);
+    }
+
+    public register(task: TaskConstructor) {
+        this.build.logger.printDebugMessage(`Registering task: ${task.name}`);
         const taskObject = new task(this.build);
         this.tasks.set(taskObject.name, taskObject);
         return taskObject;
@@ -67,7 +80,7 @@ export class TaskManager {
 
         return hash(
             "sha256",
-            `${task.name}-${taskAttributes.dependencies}-${taskAttributes.inputs.join(":")}-${taskAttributes.outputs.join(":")}`
+            `${task.name}-${taskAttributes.dependencies}-${taskAttributes.inputs.toSorted().join(":")}-${taskAttributes.outputs.toSorted().join(":")}`
         );
     }
 
@@ -82,6 +95,8 @@ export class TaskManager {
     }
 
     public async checkStale(task: AbstractTask) {
+        this.reachedTasks.add(task.name);
+
         if (task instanceof FreeTask) {
             return true;
         }
@@ -101,7 +116,6 @@ export class TaskManager {
             const currentHash = await cache.hashFile(file);
 
             if (!fileHash || fileHash !== currentHash) {
-                cache.setFileHash(`i:${file}`, currentHash);
                 return true;
             }
         }
@@ -111,7 +125,7 @@ export class TaskManager {
             const currentHash = await cache.hashFile(file);
 
             if (!fileHash || fileHash !== currentHash) {
-                cache.setFileHash(`o:${file}`, currentHash);
+                console.log("RERUN", task.name, file, fileHash, currentHash);
                 return true;
             }
         }
@@ -133,27 +147,44 @@ export class TaskManager {
 
         for (const file of inputs) {
             const currentHash = await cache.hashFile(file);
-            cache.setFileHash(`i:${file}`, currentHash);
+
+            if (currentHash) {
+                cache.setFileHash(`i:${file}`, currentHash);
+            }
         }
 
         for (const file of outputs) {
             const currentHash = await cache.hashFile(file);
-            cache.setFileHash(`o:${file}`, currentHash);
+
+            if (currentHash) {
+                cache.setFileHash(`o:${file}`, currentHash);
+            }
         }
     }
 
-    public async execute(taskName: string) {
+    public async execute(taskName: string, nonStaleCount = true) {
         const task = this.getTask(taskName);
+        this.reachedTasks.add(taskName);
 
         if (this.visitedTasks.has(taskName)) {
             return;
         }
 
         this.visitedTasks.add(taskName);
-        this.totalTasks++;
 
         if (!(await this.checkStale(task))) {
-            this.build.logger.printTaskExecutionBegin(taskName, true);
+            if (nonStaleCount) {
+                this.totalTasks++;
+                this.build.logger.printTaskExecutionBegin(taskName, true);
+            }
+
+            return;
+        }
+
+        this.totalTasks++;
+
+        if (task.precondition && !(await task.precondition?.())) {
+            this.build.logger.printDebugMessage(`Precondition of task '${task.name}' failed`);
             return;
         }
 
@@ -176,12 +207,26 @@ export class TaskManager {
         }
     }
 
+    public async rehashFilesRecursive(tasks: Iterable<string> = this.visitedTasks, rehashedSet = new Set<string>()) {
+        for (const taskName of tasks) {
+            if (rehashedSet.has(taskName)) {
+                continue;
+            }
+
+            const task = this.getTask(taskName);
+            const dependencies = (await this.getTaskAttributes(task)).dependencies;
+            await this.rehashFiles(task);
+
+            if (dependencies.length) {
+                await this.rehashFilesRecursive(dependencies, rehashedSet);
+            }
+
+            rehashedSet.add(taskName);
+        }
+    }
+
     public async teardown() {
         this.build.cacheManager.clearIOFileHashes();
-
-        for (const taskName of this.visitedTasks) {
-            const task = this.getTask(taskName);
-            await this.rehashFiles(task);
-        }
+        await this.rehashFilesRecursive();
     }
 }

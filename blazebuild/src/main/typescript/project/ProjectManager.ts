@@ -24,6 +24,18 @@ export class ProjectManager {
         return path.join(this.root, ".blazebuild");
     }
 
+    public getBuildSrcDirectoryPath() {
+        return path.join(this.root, "build_src");
+    }
+
+    public getBuildDirectoryPath() {
+        return this.project.structure.buildDirectory;
+    }
+
+    public getSourceDirectoryPath() {
+        return this.project.structure.sourceDirectory;
+    }
+
     public createDefaultProject(): Project {
         return {
             name: path.basename(this.root),
@@ -35,6 +47,9 @@ export class ProjectManager {
                 buildDirectory: path.join(this.root, "build"),
                 sourceDirectory: path.join(this.root, "src"),
                 typescriptConfigurationFile: path.join(this.root, "tsconfig.json")
+            },
+            build: {
+                defaultTask: "build"
             },
             manager: this
         };

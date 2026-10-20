@@ -1,0 +1,11 @@
+{
+    "name": "build_src",
+    "type": "module",
+    "private": true,
+    "devDependencies": {
+        "@types/node": "26.6.5"
+    },
+    "dependencies": {
+        "glob": "^13.0.6"
+    }
+}

@@ -7,6 +7,7 @@ export type Project = {
     author: ProjectAuthor;
     structure: ProjectStructure;
     manager: ProjectManager;
+    build: ProjectBuildConfiguration;
 };
 
 export type ProjectAuthor = {
@@ -20,4 +21,8 @@ export type ProjectStructure = {
     buildDirectory: string;
     buildSourceDirectory?: string;
     typescriptConfigurationFile: string;
+};
+
+export type ProjectBuildConfiguration = {
+    defaultTask?: string;
 };
