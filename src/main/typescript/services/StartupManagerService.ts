@@ -26,14 +26,7 @@ import { noOperation } from "@framework/utils/utils.js";
 import { ServiceID } from "@main/core/ServiceID.js";
 import { chunkedString, systemPrefix } from "@main/utils/utils.js";
 import axios from "axios";
-import {
-    ActivityType,
-    Colors,
-    escapeCodeBlock,
-    WebhookClient,
-    type APIEmbed,
-    type Snowflake
-} from "discord.js";
+import { ActivityType, Colors, escapeCodeBlock, WebhookClient, type APIEmbed, type Snowflake } from "discord.js";
 import { mkdir, rm } from "fs/promises";
 import path from "path";
 import { setTimeout } from "timers/promises";
@@ -57,28 +50,28 @@ class StartupManagerService extends Service {
         await mkdir(systemPrefix("installed_extensions"), {
             recursive: true
         });
+        this.setupErrorHandlers();
     }
 
     public async onReady() {
         const restartJsonFile = path.join(systemPrefix("tmp"), "restart.json");
 
         if (await FileSystem.exists(restartJsonFile)) {
-            this.application.logger.info(
-                "Found restart.json file: ",
-                restartJsonFile
-            );
+            this.application.logger.info("Found restart.json file: ", restartJsonFile);
 
             respond: try {
-                const { guildId, messageId, channelId, time, metadata } =
-                    (await FileSystem.readFileContents(restartJsonFile, {
+                const { guildId, messageId, channelId, time, metadata } = (await FileSystem.readFileContents(
+                    restartJsonFile,
+                    {
                         json: true
-                    })) as {
-                        guildId?: string;
-                        messageId?: string;
-                        channelId?: string;
-                        time: number;
-                        metadata: unknown;
-                    };
+                    }
+                )) as {
+                    guildId?: string;
+                    messageId?: string;
+                    channelId?: string;
+                    time: number;
+                    metadata: unknown;
+                };
 
                 if (!guildId || !channelId || !messageId) {
                     break respond;
@@ -108,9 +101,7 @@ class StartupManagerService extends Service {
                             {
                                 author: {
                                     name: "System Update",
-                                    icon_url:
-                                        this.application.client.user?.displayAvatarURL() ??
-                                        undefined
+                                    icon_url: this.application.client.user?.displayAvatarURL() ?? undefined
                                 },
                                 color: Colors.Green,
                                 description: `${emoji(this.application, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
@@ -138,9 +129,7 @@ class StartupManagerService extends Service {
             rm(restartJsonFile).catch(this.application.logger.error);
         }
 
-        const { presence } = this.application.service(
-            ConfigurationManagerService
-        ).systemConfig;
+        const { presence } = this.application.service(ConfigurationManagerService).systemConfig;
 
         this.application.client.user?.setPresence({
             activities: [
@@ -154,21 +143,10 @@ class StartupManagerService extends Service {
         });
     }
 
-    public requestRestart({
-        channelId,
-        guildId,
-        message,
-        messageId,
-        waitFor,
-        key,
-        metadata
-    }: RestartOptions = {}) {
+    public requestRestart({ channelId, guildId, message, messageId, waitFor, key, metadata }: RestartOptions = {}) {
         setTimeout(waitFor)
             .then(async () => {
-                const restartJsonFile = path.join(
-                    systemPrefix("tmp"),
-                    "restart.json"
-                );
+                const restartJsonFile = path.join(systemPrefix("tmp"), "restart.json");
 
                 await FileSystem.writeFileContents(
                     restartJsonFile,
@@ -183,20 +161,13 @@ class StartupManagerService extends Service {
                     })
                 );
 
-                this.application.logger.info(
-                    "Restart requested. Shutting down..."
-                );
+                this.application.logger.info("Restart requested. Shutting down...");
 
                 if (message) {
-                    this.application.logger.info(
-                        `Broadcasted Message: ${message}`
-                    );
+                    this.application.logger.info(`Broadcasted Message: ${message}`);
                 }
 
-                process.exit(
-                    this.application.service(ConfigurationManagerService)
-                        .systemConfig.restart_exit_code
-                );
+                process.exit(this.application.service(ConfigurationManagerService).systemConfig.restart_exit_code);
             })
             .catch(this.application.logger.error);
 
@@ -227,10 +198,7 @@ class StartupManagerService extends Service {
                 embeds.push({
                     color: 0xf14a60,
                     description: "```" + escapeCodeBlock(chunks[i]) + "```",
-                    timestamp:
-                        i === chunks.length - 1
-                            ? new Date().toISOString()
-                            : undefined
+                    timestamp: i === chunks.length - 1 ? new Date().toISOString() : undefined
                 });
             }
         } else {
@@ -259,9 +227,7 @@ class StartupManagerService extends Service {
                           this.errorToString(reason)
                         : reason instanceof Error
                           ? this.errorToString(reason)
-                          : typeof reason === "string" ||
-                              typeof (reason as string | undefined)
-                                  ?.toString === "function"
+                          : typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
                             ? escapeCodeBlock(
                                   (reason as string | undefined)?.toString
                                       ? (reason as string).toString()
@@ -278,8 +244,7 @@ class StartupManagerService extends Service {
             process.removeAllListeners("uncaughtException");
             this.application.logger.error(error);
             this.sendErrorLog(
-                error.stack ??
-                    `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
+                error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
             )
                 .catch(noOperation)
                 .finally(() => process.exit(-1));
