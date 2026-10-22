@@ -21,8 +21,10 @@ import type { ApplicationOptions } from "@framework/app/Application.js";
 import BaseApplication from "@framework/app/Application.js";
 import type MessageBus from "@framework/bus/MessageBus.js";
 import RedisMessageBus from "@framework/bus/RedisMessageBus.js";
+import type Kernel from "@framework/core/Kernel.js";
 import Database from "@main/database/Database.js";
 import { getEnv } from "@main/env/env.js";
+import { shardBusId } from "@main/utils/shard.js";
 
 class Application extends BaseApplication {
     public readonly database = new Database(this, {
@@ -33,7 +35,16 @@ class Application extends BaseApplication {
 
     public constructor(options: ApplicationOptions) {
         super(options);
-        this.bus = new RedisMessageBus(getEnv().SUDOBOT_VALKEY_URL);
+
+        this.bus = new RedisMessageBus({
+            url: getEnv().SUDOBOT_VALKEY_URL,
+            busIds: this.shards.map(shardId => shardBusId(shardId))
+        });
+    }
+
+    public override async run(kernel: Kernel) {
+        await this.bus.initialize();
+        return super.run(kernel);
     }
 }
 

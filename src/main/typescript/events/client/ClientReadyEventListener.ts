@@ -47,9 +47,7 @@ class ClientReadyEventListener extends EventListener<Events.ClientReady> {
     private readonly queueManagerService!: QueueManagerService;
 
     public override onEvent(client: Client<true>) {
-        this.logger.info(
-            `Logged in successfully as: ${client.user.username} (${client.user.id})`
-        );
+        this.logger.info(`Logged in successfully as: ${client.user.username} (${client.user.id})`);
 
         void this.database.drizzle.execute(sql`SELECT 1;`).then();
         this.commandManagerService.onClientReady().catch(this.logger.error);

@@ -35,10 +35,7 @@ import {
 } from "discord.js";
 import path from "path";
 
-export function pick<T, K extends Array<keyof T>>(
-    object: T,
-    keys: K
-): Pick<T, K extends Array<infer E> ? E : never> {
+export function pick<T, K extends Array<keyof T>>(object: T, keys: K): Pick<T, K extends Array<infer E> ? E : never> {
     if (typeof object === "object" && object !== null) {
         const picked: Partial<T> = {};
 
@@ -70,12 +67,8 @@ export function isTextBasedChannel(
 
 export function developmentMode() {
     return (
-        ["dev", "development"].includes(
-            process.env.NODE_ENV?.toLowerCase() ?? "production"
-        ) ||
-        ["dev", "development"].includes(
-            process.env.SUDO_ENV?.toLowerCase() ?? "production"
-        )
+        ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase() ?? "production") ||
+        ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase() ?? "production")
     );
 }
 
@@ -92,9 +85,7 @@ export function getPermissionNames(permissionsBit: bigint) {
     const result = [];
     const permissions = new PermissionsBitField(permissionsBit);
 
-    for (const permission of Object.keys(
-        PermissionsBitField.Flags
-    ) as (keyof typeof PermissionsBitField.Flags)[]) {
+    for (const permission of Object.keys(PermissionsBitField.Flags) as (keyof typeof PermissionsBitField.Flags)[]) {
         if (permissions.has(PermissionsBitField.Flags[permission])) {
             result.push(permission);
         }
@@ -153,23 +144,15 @@ export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
-export function safeMessageContent(
-    content: string,
-    member: GuildMember,
-    channel?: TextBasedChannel
-) {
+export function safeMessageContent(content: string, member: GuildMember, channel?: TextBasedChannel) {
     return member.permissions.has("MentionEveryone") &&
-        (!channel ||
-            member.permissionsIn(channel as TextChannel).has("MentionEveryone"))
+        (!channel || member.permissionsIn(channel as TextChannel).has("MentionEveryone"))
         ? content
         : content
               .replaceAll(/@everyone/gi, "`@everyone`")
               .replaceAll(/@here/gi, "`@here`")
               .replaceAll(`<@&${member.guild.id}>`, "`@everyone`")
-              .replace(
-                  /<@&(\d+)>/gim,
-                  (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`
-              );
+              .replace(/<@&(\d+)>/gim, (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`);
 }
 
 export function assertUnreachable(_value: never): never {

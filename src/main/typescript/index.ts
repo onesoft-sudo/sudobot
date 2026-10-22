@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import "./boot/loadenv.js";
 import "./boot/preload.js";
 
 void import("./main.js").then();

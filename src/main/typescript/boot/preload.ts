@@ -18,7 +18,6 @@
  */
 
 import "reflect-metadata";
-import "./loadenv.js";
 
 import { Module } from "module";
 import path from "path";
@@ -52,43 +51,34 @@ if (!("__preloaded" in global)) {
             await import("../../../../package.json", {
                 with: { type: "json" }
             })
-        ).default._moduleAliases;
+        ).default._moduleAliases.typescript;
     } else {
         _moduleAliases = (
             await import(String("../../../../../package.json"), {
                 with: { type: "json" }
             })
-        ).default._moduleAliases;
+        ).default._moduleAliases.javascript;
     }
 
     if (typeof Module.registerHooks === "function") {
         Module.registerHooks({
             resolve: (specifier, context, nextResolve) => {
-                const resolved = resolveFilename(specifier);
-                return nextResolve(resolved ?? specifier, context);
+                let resolved = resolveFilename(specifier);
+                resolved ??= specifier;
+                return nextResolve(resolved, context);
             }
         });
     } else {
-        const originalResolveFilename = (
-            Module.Module as unknown as Record<string, unknown>
-        )._resolveFilename as (
+        const originalResolveFilename = (Module.Module as unknown as Record<string, unknown>)._resolveFilename as (
             request: unknown,
             parent: unknown,
             isMain: unknown,
             options: unknown
         ) => unknown;
         Object.defineProperty(Module.Module, "_resolveFilename", {
-            value: (
-                request: unknown,
-                parent: unknown,
-                isMain: unknown,
-                options: unknown
-            ) => {
+            value: (request: unknown, parent: unknown, isMain: unknown, options: unknown) => {
                 const resolved = resolveFilename(`${request}`);
-                return (
-                    resolved ??
-                    originalResolveFilename(request, parent, isMain, options)
-                );
+                return resolved ?? originalResolveFilename(request, parent, isMain, options);
             }
         });
     }

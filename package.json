@@ -43,16 +43,14 @@
         "prepare": "node bin/prepare",
         "migrate": "node bin/migrate",
         "start": "node build/out/main/typescript/index.js",
-        "start:bun": "bun src/main/typescript/boot/bun.ts",
         "start:docker": "sh ./docker/start-container.sh",
         "start:blazew": "node build/out/main/typescript/index.js",
-        "dev": "bun run src/main/typescript/index.ts",
-        "dev:single": "bun run src/main/typescript/boot/bun.ts",
+        "dev": "SWCRC=true node --import @swc-node/register/esm-register --enable-source-maps ./src/main/typescript/index.ts",
         "dev:node": "node src/main/typescript/index.ts",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "format": "prettier -w src && eslint src --fix",
-        "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out && cp -r src/main/resources build/out/main",
+        "build": "tsc && cp -r src/main/resources build/out/main",
         "bundle": "sh bin/genimports src/main/typescript && ncc build src/main/typescript/bundle.ts -o build && rm -rf build/src",
         "sea:linux:x86_64": "pnpm run bundle && sh bin/gensea linux:x86_64",
         "sea:all": "pnpm run bundle && sh bin/gensea all",
@@ -90,6 +88,9 @@
         "@onesoftnet/override": "^1.0.3",
         "@onesoftnet/pm2-config": "^0.0.7",
         "@stylistic/eslint-plugin": "5.10.0",
+        "@swc-node/register": "^1.12.1",
+        "@swc/cli": "^0.8.1",
+        "@swc/core": "^1.16.18",
         "@types/bun": "1.4.3",
         "@types/module-alias": "^2.0.4",
         "@types/node": "26.6.5",
@@ -104,7 +105,6 @@
         "eslint": "10.13.0",
         "husky": "9.1.7",
         "prettier": "3.9.10",
-        "tsx": "^4.23.15",
         "typedoc": "0.28.20",
         "typedoc-plugin-rename-defaults": "^0.7.3",
         "typedoc-theme-hierarchy": "6.0.0",
@@ -115,12 +115,15 @@
         "vitest": "5.0.5"
     },
     "_moduleAliases": {
-        "@buildSrc": "build_src/build/main/typescript",
-        "@sudobot": "build/out",
-        "@framework": "build/out/framework/typescript",
-        "@main": "build/out/main/typescript",
-        "@api": "build/out/api/typescript",
-        "@schemas": "build/out/schemas/typescript",
-        "@root": "."
+        "javascript": {
+            "@buildSrc": "build_src/build/main/typescript",
+            "@sudobot": "build/out",
+            "@framework": "build/out/framework/typescript",
+            "@main": "build/out/main/typescript",
+            "@api": "build/out/api/typescript",
+            "@schemas": "build/out/schemas/typescript",
+            "@root": "."
+        },
+        "typescript": {}
     }
 }

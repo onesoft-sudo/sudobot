@@ -72,22 +72,10 @@ class AppKernel extends Kernel {
         "@services/RuleModerationService"
     ];
 
-    public readonly eventListenersDirectory: string = path.join(
-        import.meta.dirname,
-        "../events"
-    );
-    public readonly commandsDirectory: string = path.join(
-        import.meta.dirname,
-        "../commands"
-    );
-    public readonly queuesDirectory: string = path.join(
-        import.meta.dirname,
-        "../queues"
-    );
-    public readonly rulesDirectory: string = path.join(
-        import.meta.dirname,
-        "../rules"
-    );
+    public readonly eventListenersDirectory: string = path.join(import.meta.dirname, "../events");
+    public readonly commandsDirectory: string = path.join(import.meta.dirname, "../commands");
+    public readonly queuesDirectory: string = path.join(import.meta.dirname, "../queues");
+    public readonly rulesDirectory: string = path.join(import.meta.dirname, "../rules");
 
     public readonly shards?: number[];
     public readonly shardCount?: number;
@@ -189,27 +177,16 @@ class AppKernel extends Kernel {
     private async loadEventListeners(application: Application): Promise<void> {
         const onLoad = async (
             filepath: string,
-            eventListenerClass: new (
-                application: Application
-            ) => EventListener<Events>
+            eventListenerClass: new (application: Application) => EventListener<Events>
         ) => {
-            const eventListener = application.container.get(
-                eventListenerClass,
-                {
-                    constructorArgs: [application]
-                }
-            );
+            const eventListener = application.container.get(eventListenerClass, {
+                constructorArgs: [application]
+            });
 
             registerGatewayEventListeners(application.client, eventListener);
             await eventListener.onAppBoot?.();
-            this.client.on(
-                eventListener.type as never,
-                eventListener.onEvent.bind(eventListener)
-            );
-            application.logger.debug(
-                "Loaded event listener: ",
-                path.basename(filepath).replace(/\..*$/, "")
-            );
+            this.client.on(eventListener.type as never, eventListener.onEvent.bind(eventListener));
+            application.logger.debug("Loaded event listener: ", path.basename(filepath).replace(/\..*$/, ""));
         };
 
         if (isBundle) {
@@ -227,15 +204,10 @@ class AppKernel extends Kernel {
         }
 
         await application.classLoader.loadClassesRecursive<
-            DefaultExport<
-                new (application: Application) => EventListener<Events>
-            >
+            DefaultExport<new (application: Application) => EventListener<Events>>
         >(this.eventListenersDirectory, {
             preLoad: filepath => {
-                application.logger.debug(
-                    "Loading event listener: ",
-                    path.basename(filepath).replace(/\..*$/, "")
-                );
+                application.logger.debug("Loading event listener: ", path.basename(filepath).replace(/\..*$/, ""));
             },
             postLoad: async (filepath, { default: EventListenerClass }) => {
                 await onLoad(filepath, EventListenerClass);
@@ -246,10 +218,7 @@ class AppKernel extends Kernel {
     private async loadQueues(application: Application): Promise<void> {
         const onLoad = async (
             filepath: string,
-            queueClass: new (
-                application: Application,
-                queueManager: QueueManager
-            ) => AbstractQueuedJob<object>
+            queueClass: new (application: Application, queueManager: QueueManager) => AbstractQueuedJob<object>
         ) => {
             const queue = application.container.get(queueClass, {
                 constructorArgs: [application]
@@ -257,14 +226,9 @@ class AppKernel extends Kernel {
             registerGatewayEventListeners(application.client, queue);
             await queue.onAppBoot?.();
 
-            application
-                .service<QueueManagerService>(ServiceID.QUEUE_MANAGER)
-                .register(queue);
+            application.service<QueueManagerService>(ServiceID.QUEUE_MANAGER).register(queue);
 
-            application.logger.debug(
-                "Loaded queue: ",
-                path.basename(filepath).replace(/\..*$/, "")
-            );
+            application.logger.debug("Loaded queue: ", path.basename(filepath).replace(/\..*$/, ""));
         };
 
         if (isBundle) {
@@ -282,18 +246,10 @@ class AppKernel extends Kernel {
         }
 
         await application.classLoader.loadClassesRecursive<
-            DefaultExport<
-                new (
-                    application: Application,
-                    queueManager: QueueManager
-                ) => AbstractQueuedJob<object>
-            >
+            DefaultExport<new (application: Application, queueManager: QueueManager) => AbstractQueuedJob<object>>
         >(this.queuesDirectory, {
             preLoad: filepath => {
-                application.logger.debug(
-                    "Loading queue: ",
-                    path.basename(filepath).replace(/\..*$/, "")
-                );
+                application.logger.debug("Loading queue: ", path.basename(filepath).replace(/\..*$/, ""));
             },
             postLoad: async (filepath, { default: QueueClass }) => {
                 await onLoad(filepath, QueueClass);
@@ -312,14 +268,9 @@ class AppKernel extends Kernel {
             registerGatewayEventListeners(application.client, rule);
             await rule.onAppBoot?.();
 
-            application
-                .service<RuleModerationService>(ServiceID.RULE_MODERATION)
-                .register(rule);
+            application.service<RuleModerationService>(ServiceID.RULE_MODERATION).register(rule);
 
-            application.logger.debug(
-                "Loaded rule: ",
-                path.basename(filepath).replace(/\..*$/, "")
-            );
+            application.logger.debug("Loaded rule: ", path.basename(filepath).replace(/\..*$/, ""));
         };
 
         if (isBundle) {
@@ -337,15 +288,10 @@ class AppKernel extends Kernel {
         }
 
         await application.classLoader.loadClassesRecursive<
-            DefaultExport<
-                new (application: Application) => Rule<RuleType, unknown>
-            >
+            DefaultExport<new (application: Application) => Rule<RuleType, unknown>>
         >(this.rulesDirectory, {
             preLoad: filepath => {
-                application.logger.debug(
-                    "Loading rule: ",
-                    path.basename(filepath).replace(/\..*$/, "")
-                );
+                application.logger.debug("Loading rule: ", path.basename(filepath).replace(/\..*$/, ""));
             },
             postLoad: async (filepath, { default: RuleClass }) => {
                 await onLoad(filepath, RuleClass);
@@ -354,13 +300,10 @@ class AppKernel extends Kernel {
     }
 
     private async loadCommands(application: Application): Promise<void> {
-        const commandManagerService = application.serviceManager.services.get(
-            ServiceID.COMMAND_MANAGER
-        ) as CommandManagerService | undefined;
-        const permissionManagerService =
-            application.serviceManager.services.get(
-                ServiceID.PERMISSION_MANAGER
-            ) as PermissionManagerService | undefined;
+        const commandManagerService = application.serviceManager.services.get(ServiceID.COMMAND_MANAGER) as
+            CommandManagerService | undefined;
+        const permissionManagerService = application.serviceManager.services.get(ServiceID.PERMISSION_MANAGER) as
+            PermissionManagerService | undefined;
 
         const onLoad = async (
             filepath: string,
@@ -375,9 +318,7 @@ class AppKernel extends Kernel {
 
             registerGatewayEventListeners(application.client, command);
             await command.onAppBoot?.();
-            const category = path
-                .basename(path.dirname(filepath))
-                .toLowerCase();
+            const category = path.basename(path.dirname(filepath)).toLowerCase();
 
             commandManagerService?.register(command, category);
             application.logger.debug(
@@ -401,17 +342,11 @@ class AppKernel extends Kernel {
 
         await application.classLoader.loadClassesRecursive<
             DefaultExport<
-                new (
-                    application: Application,
-                    permissionManagerService: PermissionManagerServiceInterface
-                ) => Command
+                new (application: Application, permissionManagerService: PermissionManagerServiceInterface) => Command
             >
         >(this.commandsDirectory, {
             preLoad: filepath => {
-                application.logger.debug(
-                    "Loading command: ",
-                    path.basename(filepath).replace(/\..*$/, "")
-                );
+                application.logger.debug("Loading command: ", path.basename(filepath).replace(/\..*$/, ""));
             },
             postLoad: async (filepath, { default: CommandClass }) => {
                 await onLoad(filepath, CommandClass);
