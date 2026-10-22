@@ -65,7 +65,7 @@ abstract class Application {
         this.projectRootDirectoryPath = options.projectRootDirectoryPath;
         this.version = options.version;
         this.totalShardCount = options.sharding?.totalShardCount ?? 1;
-        this.shards = options.sharding?.shards ? [...options.sharding.shards] : [];
+        this.shards = options.sharding?.shards ? [...options.sharding.shards] : [0];
         this.container = new Container();
         this.classLoader = new ClassLoader();
         this.serviceManager = new ServiceManager(this);

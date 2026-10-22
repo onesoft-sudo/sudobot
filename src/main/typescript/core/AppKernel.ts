@@ -365,7 +365,6 @@ class AppKernel extends Kernel {
     }
 
     public async run(_application: Application): Promise<void> {
-        await Promise.resolve();
         await this.client.login(getEnv().SUDOBOT_TOKEN);
     }
 }

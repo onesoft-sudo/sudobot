@@ -55,7 +55,7 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
     public readonly milliseconds: number;
 
     private _totalMilliseconds: number | null = null;
-    private static readonly _keys = {
+    private static readonly keys = {
         y: "years",
         mo: "months",
         w: "weeks",
@@ -196,12 +196,10 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
             if (unit === "") {
                 if (implicitUnit) {
                     unit = "s";
-                }
-                else {
+                } else {
                     throw new DurationParseError(`Expected unit at position ${i} in expression`);
                 }
-            }
-            else {
+            } else {
                 i--;
             }
 
@@ -209,9 +207,8 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
 
             if (retMs) {
                 ms += Duration.evalUnit(unit, value);
-            }
-            else {
-                const key = this._keys[unit as keyof typeof this._keys];
+            } else {
+                const key = this.keys[unit as keyof typeof this.keys];
                 payload[key] = value;
             }
         }

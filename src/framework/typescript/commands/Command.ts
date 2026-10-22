@@ -27,6 +27,7 @@ import Permission from "@framework/permissions/Permission.js";
 import PermissionDeniedError from "@framework/permissions/PermissionDeniedError.js";
 import type PermissionManagerServiceInterface from "@framework/permissions/PermissionManagerServiceInterface.js";
 import type { PermissionResolvable, RawPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
+import { CommandRateLimitConfiguration } from "@framework/security/CommandRateLimitConfiguration.js";
 import type { ArrayOrSingle } from "@framework/types/Utils.js";
 import {
     type APIInteractionGuildMember,
@@ -68,11 +69,15 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
      * The group which this command belongs to.
      * This is automatically initialized by the command manager.
+     *
+     * @type {string}
      */
     public readonly group: string = "";
 
     /**
      * Alias names of this command.
+     *
+     * @type {string[]}
      */
     public readonly aliases: string[] = [];
 
@@ -151,6 +156,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      * @type {ArgumentSchema}
      */
     public readonly argumentSchema?: ArgumentSchema;
+
+    /**
+     * Rate limit configuration for this command.
+     *
+     * @type {CommandRateLimitConfiguration}
+     */
+    public readonly ratelimit?: CommandRateLimitConfiguration;
 
     /**
      * The application instance.

@@ -19,9 +19,12 @@
 
 import Command from "@framework/commands/Command.js";
 import CommandContextType from "@framework/commands/CommandContextType.js";
+import Context from "@framework/commands/Context.js";
 import InteractionContext from "@framework/commands/InteractionContext.js";
 import LegacyContext from "@framework/commands/LegacyContext.js";
 import { Inject } from "@framework/container/Inject.js";
+import BasicCommandRateLimiter from "@framework/security/BasicCommandRateLimiter.js";
+import CommandRateLimiter from "@framework/security/CommandRateLimiter.js";
 import Service from "@framework/services/Service.js";
 import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
 import { isDevelopmentMode } from "@framework/utils/utils.js";
@@ -32,13 +35,15 @@ import {
     ChatInputCommandInteraction,
     Collection,
     ContextMenuCommandInteraction,
-    Message
+    Message,
+    time
 } from "discord.js";
 import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationManagerService.js";
 
 class CommandManagerService extends Service implements HasEventListeners {
     public override readonly name: string = ServiceID.COMMAND_MANAGER;
     public readonly commands = new Collection<string, Command>();
+    public readonly ratelimiter: CommandRateLimiter = new BasicCommandRateLimiter({ maxhits: 30, timeframe: 30_000 });
 
     @Inject()
     private readonly configurationManagerService!: ConfigurationManagerService;
@@ -83,7 +88,10 @@ class CommandManagerService extends Service implements HasEventListeners {
             return false;
         }
 
-        await command.run(new LegacyContext(this.application, message, commandName, commandContent, argv, args));
+        await this.callCommandRun(
+            command,
+            new LegacyContext(this.application, message, commandName, commandContent, argv, args)
+        );
 
         return true;
     }
@@ -97,9 +105,25 @@ class CommandManagerService extends Service implements HasEventListeners {
             return false;
         }
 
-        await command.run(new InteractionContext(this.application, interaction));
-
+        await this.callCommandRun(command, new InteractionContext(this.application, interaction));
         return true;
+    }
+
+    private async callCommandRun(command: Command, context: Context) {
+        if (!this.ratelimiter.tryHit(command)) {
+            let message: string;
+
+            if (isDevelopmentMode()) {
+                message = `You are being rate limited: please try again in ${time(Math.round(this.ratelimiter.limitedUntil(command) / 1000), "R")}.`;
+            } else {
+                message = "You are being rate limited: please try again later.";
+            }
+
+            await context.error(message);
+            return;
+        }
+
+        await command.run(context);
     }
 
     public async sync({ homeGuild }: SyncOptions): Promise<number> {
