@@ -18,6 +18,7 @@
  */
 
 import type MessageBus from "@framework/bus/MessageBus.js";
+import type ShardIPC from "@framework/bus/ShardIPC.js";
 import ClassLoader from "@framework/class/ClassLoader.js";
 import Container, { type ConstructorOf } from "@framework/container/Container.js";
 import type Kernel from "@framework/core/Kernel.js";
@@ -30,8 +31,12 @@ export type ApplicationOptions = {
     rootDirectoryPath: string;
     projectRootDirectoryPath: string;
     version: string;
-    shards?: number[];
-    shardCount?: number;
+    sharding?: ApplicationShardingOptions;
+};
+
+export type ApplicationShardingOptions = {
+    shards: number[];
+    totalShardCount: number;
 };
 
 abstract class Application {
@@ -45,8 +50,9 @@ abstract class Application {
     public readonly serviceManager: ServiceManager;
 
     public readonly shards: number[] = [];
-    public readonly shardCount: number = 1;
+    public readonly totalShardCount: number = 1;
     public abstract readonly bus: MessageBus;
+    public abstract readonly ipc: ShardIPC;
 
     private static _self: Application;
 
@@ -58,8 +64,8 @@ abstract class Application {
         this.rootDirectoryPath = options.rootDirectoryPath;
         this.projectRootDirectoryPath = options.projectRootDirectoryPath;
         this.version = options.version;
-        this.shardCount = options.shardCount ?? 1;
-        this.shards = options.shards ? [...options.shards] : [];
+        this.totalShardCount = options.sharding?.totalShardCount ?? 1;
+        this.shards = options.sharding?.shards ? [...options.sharding.shards] : [];
         this.container = new Container();
         this.classLoader = new ClassLoader();
         this.serviceManager = new ServiceManager(this);
@@ -76,6 +82,8 @@ abstract class Application {
     }
 
     public async run(kernel: Kernel) {
+        await this.bus.initialize();
+        await this.ipc.subscribe();
         await kernel.bootPhase1(this);
 
         Object.defineProperty(this, "client", {

@@ -25,9 +25,7 @@ import ShardProcessManager from "@main/sharding/ShardProcessManager.js";
 import { parseArgs, type ParseArgsConfig } from "util";
 
 const { _meta, version } = packageJSON;
-const argv0 = process.env.SUDOBOT_WRAPPER
-    ? "sudobot"
-    : path.basename(process.argv[1]);
+const argv0 = process.env.SUDOBOT_WRAPPER ? "sudobot" : path.basename(process.argv[1]);
 
 function usage() {
     console.info("Usage:");
@@ -37,34 +35,20 @@ function usage() {
     console.info("  -h, --help                Show this help and exit.");
     console.info("  -v, --version             Show version information.");
     console.info("  -s, --shard=ID            Set shard ID for this process.");
-    console.info(
-        "                            Can be passed multiple times with"
-    );
+    console.info("                            Can be passed multiple times with");
     console.info("                            different values.");
-    console.info(
-        "  -S, --shardcount=<COUNT>  Set total shard count. Required to be used"
-    );
-    console.info(
-        "                            When the --shard option is used."
-    );
-    console.info(
-        "  -M, --master              Become the master process, and spawn shards"
-    );
+    console.info("  -S, --shardcount=<COUNT>  Set total shard count. Required to be used");
+    console.info("                            When the --shard option is used.");
+    console.info("  -M, --master              Become the master process, and spawn shards");
     console.info("                            as needed.");
-    console.info(
-        "  -U, --update=[MODE]       Update application commands. MODE can be"
-    );
+    console.info("  -U, --update=[MODE]       Update application commands. MODE can be");
     console.info("                            either 'local' or 'global'.");
 }
 
 function showVersion() {
     console.info(`SudoBot version ${version} (${_meta.release_codename})`);
-    console.info(
-        `Copyright (C) 2022-${new Date().getFullYear()} OSN Developers.`
-    );
-    console.info(
-        "License AGPLv3.0+: This is free software. There is no warranty."
-    );
+    console.info(`Copyright (C) 2022-${new Date().getFullYear()} OSN Developers.`);
+    console.info("License AGPLv3.0+: This is free software. There is no warranty.");
 }
 
 type OptionValues = typeof values;
@@ -80,8 +64,7 @@ const parseArgsOptions = {
     options: {
         shard: {
             short: "s",
-            type: "string",
-            multiple: true
+            type: "string"
         },
         shardcount: {
             short: "S",
@@ -119,9 +102,7 @@ try {
                 break;
 
             case "ERR_PARSE_ARGS_UNEXPECTED_POSITIONAL":
-                console.error(
-                    `${argv0}: unexpected positional argument: ${error.message}`
-                );
+                console.error(`${argv0}: unexpected positional argument: ${error.message}`);
                 break;
 
             case "ERR_PARSE_ARGS_UNEXPECTED_OPTION":
@@ -161,13 +142,11 @@ async function main() {
 
     if (values.shard?.length) {
         if (values.master) {
-            console.error(
-                `${argv0}: Cannot use --shard (-S) with --master (-M)`
-            );
+            console.error(`${argv0}: Cannot use --shard (-S) with --master (-M)`);
             process.exit(1);
         }
 
-        for (const shard of values.shard) {
+        for (const shard of values.shard.split(/,+/)) {
             if (!shard || Number.isNaN(+shard)) {
                 console.error(`${argv0}: Invalid shard ID: ${shard}`);
                 process.exit(1);
@@ -189,30 +168,17 @@ async function main() {
     }
 
     if (values.master && shardCount === undefined) {
-        console.error(
-            `${argv0}: Please use --shardcount (-S) with --master (-M)`
-        );
+        console.error(`${argv0}: Please use --shardcount (-S) with --master (-M)`);
         process.exit(1);
     }
 
-    if (
-        !values.master &&
-        ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount))
-    ) {
-        console.error(
-            `${argv0}: Please use both --shard (-s) and --shardcount (-S) together`
-        );
+    if (!values.master && ((shards.size > 0 && !shardCount) || (shards.size <= 0 && shardCount))) {
+        console.error(`${argv0}: Please use both --shard (-s) and --shardcount (-S) together`);
         process.exit(1);
     }
 
-    if (
-        values.update &&
-        values.update !== "local" &&
-        values.update !== "global"
-    ) {
-        console.error(
-            `${argv0}: Option --update (-U) only accepts either 'local' or 'global' as argument`
-        );
+    if (values.update && values.update !== "local" && values.update !== "global") {
+        console.error(`${argv0}: Option --update (-U) only accepts either 'local' or 'global' as argument`);
         process.exit(1);
     }
 

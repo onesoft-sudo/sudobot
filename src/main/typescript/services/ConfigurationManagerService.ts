@@ -45,37 +45,25 @@ class ConfigurationManagerService extends Service {
     public override readonly name: string = ServiceID.CONFIGURATION_MANAGER;
 
     public static readonly CONFIG_BY_ID_DIR = systemPrefix("config/by-id");
-    public static readonly CONFIG_SYSTEM_FILE =
-        systemPrefix("config/system.json");
+    public static readonly CONFIG_SYSTEM_FILE = systemPrefix("config/system.json");
 
-    private readonly cache = new LRUCache<
-        `${ConfigurationType}::${Snowflake}`,
-        GuildConfigurationType
-    >({
+    private readonly cache = new LRUCache<`${ConfigurationType}::${Snowflake}`, GuildConfigurationType>({
         max: 5000,
         ttl: 1000 * 60 * 60
     });
-    private readonly syncFiles = new Set<
-        `${ConfigurationType}::${Snowflake}` | "system"
-    >();
+    private readonly syncFiles = new Set<`${ConfigurationType}::${Snowflake}` | "system">();
     private _timeout?: ReturnType<typeof setTimeout>;
-    public systemConfig: SystemConfigurationType = structuredClone(
-        SystemConfigurationDefaultValue
-    );
+    public systemConfig: SystemConfigurationType = structuredClone(SystemConfigurationDefaultValue);
 
     public async reloadAll(): Promise<void> {
-        const guildConfigFiles = await readdir(
-            ConfigurationManagerService.CONFIG_BY_ID_DIR
-        );
+        const guildConfigFiles = await readdir(ConfigurationManagerService.CONFIG_BY_ID_DIR);
 
         for (const guildConfigFile of guildConfigFiles) {
             if (!guildConfigFile.endsWith(".json")) {
                 continue;
             }
 
-            const [type, id] = guildConfigFile
-                .replace(/\.json$/, "")
-                .split("_");
+            const [type, id] = guildConfigFile.replace(/\.json$/, "").split("_");
 
             if ((type !== "d" && type !== "g") || !isSnowflake(id)) {
                 continue;
@@ -88,28 +76,19 @@ class ConfigurationManagerService extends Service {
     public async reloadSystem(): Promise<void> {
         this.logger.info("Reloading system-wide configuration");
 
-        const configJSON = await FileSystem.readFileContents(
-            ConfigurationManagerService.CONFIG_SYSTEM_FILE,
-            {
-                json: true
-            }
-        );
+        const configJSON = await FileSystem.readFileContents(ConfigurationManagerService.CONFIG_SYSTEM_FILE, {
+            json: true
+        });
 
         try {
             const config = SystemConfigurationSchema.parse(configJSON);
             this.systemConfig = config;
         } catch (error) {
-            this.logger.error(
-                "Validation error for system configuration: ",
-                error
-            );
+            this.logger.error("Validation error for system configuration: ", error);
         }
     }
 
-    public async reload(
-        type?: ConfigurationType,
-        id?: string
-    ): Promise<GuildConfigurationType | undefined> {
+    public async reload(type?: ConfigurationType, id?: string): Promise<GuildConfigurationType | undefined> {
         if (!type || !id) {
             await this.reloadAll();
             return;
@@ -131,10 +110,7 @@ class ConfigurationManagerService extends Service {
         }
     }
 
-    public async get(
-        type: ConfigurationType,
-        id: Snowflake
-    ): Promise<Readonly<GuildConfigurationType>> {
+    public async get(type: ConfigurationType, id: Snowflake): Promise<Readonly<GuildConfigurationType>> {
         const cachedConfig = this.cache.get(`${type}::${id}`);
 
         if (cachedConfig !== undefined) {
@@ -142,11 +118,7 @@ class ConfigurationManagerService extends Service {
         }
 
         if (type === ConfigurationType.Guild) {
-            const isOwnedByShard = isInShards(
-                this.application.shards,
-                this.application.shardCount,
-                id
-            );
+            const isOwnedByShard = isInShards(this.application.shards, this.application.totalShardCount, id);
 
             if (!isOwnedByShard) {
                 BUG(
@@ -168,10 +140,7 @@ class ConfigurationManagerService extends Service {
             return config;
         } catch (error) {
             this.logger.debug(error);
-            this.cache.set(
-                `${type}::${id}`,
-                structuredClone(GuildConfigurationDefaultValue)
-            );
+            this.cache.set(`${type}::${id}`, structuredClone(GuildConfigurationDefaultValue));
         }
 
         return GuildConfigurationDefaultValue;
@@ -180,20 +149,14 @@ class ConfigurationManagerService extends Service {
     public async set(
         type: ConfigurationType,
         id: Snowflake,
-        setter: (
-            config: GuildConfigurationType
-        ) => Awaitable<void | GuildConfigurationType>
+        setter: (config: GuildConfigurationType) => Awaitable<void | GuildConfigurationType>
     ): Promise<void> {
         let cachedConfig = this.cache.get(`${type}::${id}`);
         let set = false;
 
         if (cachedConfig === undefined) {
             if (type === ConfigurationType.Guild) {
-                const isOwnedByShard = isInShards(
-                    this.application.shards,
-                    this.application.shardCount,
-                    id
-                );
+                const isOwnedByShard = isInShards(this.application.shards, this.application.totalShardCount, id);
 
                 if (!isOwnedByShard) {
                     BUG(

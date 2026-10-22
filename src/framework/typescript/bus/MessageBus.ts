@@ -23,57 +23,6 @@ import { randomBytes } from "crypto";
 import { Collection, type Awaitable } from "discord.js";
 import EventEmitter from "events";
 
-type MessageBusEventMap = {
-    error: [error: unknown];
-};
-
-export type MessageDetails<T> = {
-    data: T;
-};
-
-export enum IPCResponseStatus {
-    OK = 200,
-    CLIENT_ERROR = 400,
-    SERVER_ERROR = 500
-}
-
-export type IPCRequest<T> = {
-    id: number;
-    sourceBusId: string;
-    targetResourceId: string;
-    targetBusId: string;
-    payload?: T;
-};
-
-export type IPCRequestOptions<T> = {
-    payload?: T;
-    timeout?: number; /* milliseconds */
-};
-
-export type IPCResponse<T> = {
-    requestId: number;
-    sourceBusId: string;
-    status: IPCResponseStatus;
-    payload?: T;
-};
-
-export type IPCResponseOptions<T> = {
-    status?: IPCResponseStatus;
-    payload?: T;
-};
-
-export type MessageBusOptions = {
-    busIds?: string[];
-    canonicalBusId?: string;
-    defaultRequestTimeout?: number;
-    factory?: <T>(controllerClass: new (...args: unknown[]) => T) => Awaitable<T>;
-};
-
-export type RequestHandlerDescriptor = {
-    controller?: object;
-    method: (request: IPCRequest<unknown>) => Awaitable<IPCResponse<unknown>>;
-};
-
 abstract class MessageBus extends EventEmitter<MessageBusEventMap> {
     protected readonly busOptions: MessageBusOptions;
     protected readonly busIds: string[];
@@ -90,7 +39,13 @@ abstract class MessageBus extends EventEmitter<MessageBusEventMap> {
     }
 
     public abstract initialize(): Awaitable<void>;
+    public abstract subscribe(channel: string): Awaitable<void>;
     public abstract subscribe<T>(
+        channel: string,
+        callback: (message: MessageDetails<T>) => Awaitable<void>
+    ): Awaitable<void>;
+    public abstract unsubscribe(channel: string): Awaitable<void>;
+    public abstract unsubscribe<T>(
         channel: string,
         callback: (message: MessageDetails<T>) => Awaitable<void>
     ): Awaitable<void>;
@@ -171,5 +126,56 @@ abstract class MessageBus extends EventEmitter<MessageBusEventMap> {
         };
     }
 }
+
+type MessageBusEventMap = {
+    error: [error: unknown];
+};
+
+export type MessageDetails<T> = {
+    data: T;
+};
+
+export enum IPCResponseStatus {
+    OK = 200,
+    CLIENT_ERROR = 400,
+    SERVER_ERROR = 500
+}
+
+export type IPCRequest<T> = {
+    id: number;
+    sourceBusId: string;
+    targetResourceId: string;
+    targetBusId: string;
+    payload?: T;
+};
+
+export type IPCRequestOptions<T> = {
+    payload?: T;
+    timeout?: number; /* milliseconds */
+};
+
+export type IPCResponse<T> = {
+    requestId: number;
+    sourceBusId: string;
+    status: IPCResponseStatus;
+    payload?: T;
+};
+
+export type IPCResponseOptions<T> = {
+    status?: IPCResponseStatus;
+    payload?: T;
+};
+
+export type MessageBusOptions = {
+    busIds?: string[];
+    canonicalBusId?: string;
+    defaultRequestTimeout?: number;
+    factory?: <T>(controllerClass: new (...args: unknown[]) => T) => Awaitable<T>;
+};
+
+export type RequestHandlerDescriptor = {
+    controller?: object;
+    method: (request: IPCRequest<unknown>) => Awaitable<IPCResponse<unknown>>;
+};
 
 export default MessageBus;

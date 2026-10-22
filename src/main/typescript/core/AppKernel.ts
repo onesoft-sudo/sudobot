@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { ApplicationShardingOptions } from "@framework/app/Application.js";
 import BaseApplication from "@framework/app/Application.js";
 import ClassLoader from "@framework/class/ClassLoader.js";
 import type Command from "@framework/commands/Command.js";
@@ -46,8 +47,7 @@ import { Client, GatewayIntentBits, Partials } from "discord.js";
 import path from "path";
 
 export type AppKernelOptions = {
-    shards?: number[];
-    shardCount?: number;
+    sharding?: ApplicationShardingOptions;
 };
 
 class AppKernel extends Kernel {
@@ -77,14 +77,12 @@ class AppKernel extends Kernel {
     public readonly queuesDirectory: string = path.join(import.meta.dirname, "../queues");
     public readonly rulesDirectory: string = path.join(import.meta.dirname, "../rules");
 
-    public readonly shards?: number[];
-    public readonly shardCount?: number;
+    public readonly shardingOptions?: ApplicationShardingOptions;
     public override readonly client: Client<boolean>;
 
     public constructor(options?: AppKernelOptions) {
         super();
-        this.shards = options?.shards;
-        this.shardCount = options?.shardCount;
+        this.shardingOptions = options?.sharding;
         this.client = this.createClient();
     }
 
@@ -100,9 +98,9 @@ class AppKernel extends Kernel {
             partials: [Partials.Channel]
         };
 
-        if (this.shards && this.shardCount) {
-            options.shards = this.shards;
-            options.shardCount = this.shardCount;
+        if (this.shardingOptions) {
+            options.shards = this.shardingOptions.shards;
+            options.shardCount = this.shardingOptions.totalShardCount;
         }
 
         return new Client(options);

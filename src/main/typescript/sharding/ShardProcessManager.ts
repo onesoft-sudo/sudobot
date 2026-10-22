@@ -1,3 +1,4 @@
+import type { ApplicationShardingOptions } from "@framework/app/Application.js";
 import { Logger } from "@framework/log/Logger.js";
 import Resource from "@framework/resources/Resource.js";
 import AppKernel from "@main/core/AppKernel.js";
@@ -12,38 +13,35 @@ import path from "node:path";
 class ShardProcessManager {
     private readonly logger = Logger.getLogger(ShardProcessManager);
 
-    public async start(shards: Set<number>, shardCount: number | undefined) {
-        if (shardCount === undefined) {
+    public async start(shards: Set<number>, totalShardsCount: number | undefined) {
+        if (totalShardsCount === undefined) {
             await BannerPrinter.printBanner();
         }
 
         await this.loadEnvironmentData();
 
         Application.setupGlobals();
-        Resource.registerResourcePaths(
-            path.resolve(import.meta.dirname, "../resources")
-        );
+        Resource.registerResourcePaths(path.resolve(import.meta.dirname, "../resources"));
 
         const rootDirectoryPath = path.resolve(import.meta.dirname);
-        const projectRootDirectoryPath = path.resolve(
-            import.meta.dirname,
-            "../../.."
-        );
+        const projectRootDirectoryPath = path.resolve(import.meta.dirname, "../../..");
+
+        const sharding: ApplicationShardingOptions | undefined =
+            shards.size === 0
+                ? undefined
+                : {
+                      shards: Array.from(shards),
+                      totalShardCount: totalShardsCount!
+                  };
 
         const application = new Application({
             rootDirectoryPath,
             projectRootDirectoryPath,
             version: process.env.SUDOBOT_VERSION ?? version,
-            shards: shards.size === 0 ? undefined : Array.from(shards),
-            shardCount: shards.size === 0 ? undefined : shardCount
+            sharding
         });
 
-        await application.run(
-            new AppKernel({
-                shards: shards.size === 0 ? undefined : Array.from(shards),
-                shardCount: shards.size === 0 ? undefined : shardCount
-            })
-        );
+        await application.run(new AppKernel({ sharding }));
     }
 
     private async loadEnvironmentData() {

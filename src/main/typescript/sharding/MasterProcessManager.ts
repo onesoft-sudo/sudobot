@@ -31,9 +31,7 @@ class MasterProcessManager {
             this.logger.info("Found restart.json file: ", restartJsonFile);
 
             try {
-                const { key } = JSON.parse(
-                    await readFile(restartJsonFile, { encoding: "utf-8" })
-                );
+                const { key } = JSON.parse(await readFile(restartJsonFile, { encoding: "utf-8" }));
                 restartKey = key;
             } catch (error) {
                 this.logger.error(error);
@@ -61,13 +59,8 @@ class MasterProcessManager {
     }
 
     private async authenticate(url: string, key: string) {
-        if (
-            !url.startsWith("https://") &&
-            !url.startsWith("http://localhost:")
-        ) {
-            this.logger.error(
-                "Two-factor authentication URL must be secure HTTPS"
-            );
+        if (!url.startsWith("https://") && !url.startsWith("http://localhost:")) {
+            this.logger.error("Two-factor authentication URL must be secure HTTPS");
             return null;
         }
 
@@ -80,35 +73,21 @@ class MasterProcessManager {
 
         try {
             return await twoFactorAuthenticator.fetchCredentials(
-                Buffer.from(
-                    await readFile(this.encryptedEnvFilePath, "binary"),
-                    "binary"
-                ),
+                Buffer.from(await readFile(this.encryptedEnvFilePath, "binary"), "binary"),
                 url,
                 key
             );
         } catch (error) {
-            this.logger.error(
-                `${error instanceof Error ? error.message : `${error}`}`
-            );
+            this.logger.error(`${error instanceof Error ? error.message : `${error}`}`);
             return null;
         }
     }
 
-    private createChild(
-        data: DotenvParseOutput | null,
-        signal?: AbortSignal,
-        argv: string[] = []
-    ) {
+    private createChild(data: DotenvParseOutput | null, signal?: AbortSignal, argv: string[] = []) {
         return new Promise<void>(resolve => {
             const child = fork(
                 path.resolve(this.argv[1]),
-                [
-                    ...argv,
-                    ...process.argv
-                        .slice(2)
-                        .filter(arg => arg != "-M" && arg != "--master")
-                ],
+                [...argv, ...process.argv.slice(2).filter(arg => arg != "-M" && arg != "--master")],
                 {
                     stdio: "inherit",
                     env: {
@@ -148,9 +127,7 @@ class MasterProcessManager {
                         : null;
 
                 if (messageData?.type === IPCMessageType.SECRETS_ACK) {
-                    this.logger.info(
-                        `${child.pid}: Child process acknowledged secret data`
-                    );
+                    this.logger.info(`${child.pid}: Child process acknowledged secret data`);
                     return;
                 }
 
@@ -162,9 +139,7 @@ class MasterProcessManager {
                         data
                     });
 
-                    this.logger.info(
-                        `${child.pid}: Sent secret data to child process`
-                    );
+                    this.logger.info(`${child.pid}: Sent secret data to child process`);
                     return;
                 }
 
@@ -204,16 +179,12 @@ class MasterProcessManager {
             ]);
 
             if (Date.now() - lastRestart <= 30000 && restarts >= 10) {
-                this.logger.error(
-                    `Shard ${shardId}: 10 restarts in 30 seconds -- aborting now`
-                );
+                this.logger.error(`Shard ${shardId}: 10 restarts in 30 seconds -- aborting now`);
 
                 return false;
             }
 
-            this.logger.info(
-                `Shard ${shardId} exited, starting again in 5 seconds`
-            );
+            this.logger.info(`Shard ${shardId} exited, starting again in 5 seconds`);
             await new Promise<void>(resolve => setTimeout(resolve, 5000));
             lastRestart = Date.now();
             restarts++;
@@ -221,8 +192,7 @@ class MasterProcessManager {
     }
 
     public async start(
-        shardCount = process.env.SUDOBOT_SHARD_COUNT &&
-        +process.env.SUDOBOT_SHARD_COUNT
+        shardCount = process.env.SUDOBOT_SHARD_COUNT && +process.env.SUDOBOT_SHARD_COUNT
             ? +process.env.SUDOBOT_SHARD_COUNT
             : 0
     ) {
@@ -232,21 +202,16 @@ class MasterProcessManager {
 
         let result: DotenvParseOutput | null = null;
 
-        if (process.env.TWO_FACTOR_AUTH_URL) {
+        if (process.env.SUDOBOT_TWO_FACTOR_AUTH_URL) {
             const key = await this.promptForCode();
-            result = await this.authenticate(
-                process.env.TWO_FACTOR_AUTH_URL,
-                key
-            );
+            result = await this.authenticate(process.env.SUDOBOT_TWO_FACTOR_AUTH_URL, key);
 
             if (!result) {
                 this.logger.fatal("Kernel boot aborted");
                 process.exit(-1);
             }
         } else if (existsSync(this.encryptedEnvFilePath)) {
-            this.logger.warn(
-                "Encrypted environment file found, but no 2FA URL provided. Ignoring..."
-            );
+            this.logger.warn("Encrypted environment file found, but no 2FA URL provided. Ignoring...");
         }
 
         await BannerPrinter.printBanner();
@@ -262,12 +227,7 @@ class MasterProcessManager {
                 const abortController = new AbortController();
 
                 for (let i = 0; i < shardCount; i++) {
-                    const promise = this.createShard(
-                        result,
-                        i,
-                        shardCount,
-                        abortController.signal
-                    );
+                    const promise = this.createShard(result, i, shardCount, abortController.signal);
 
                     exitStatus[i] = { exited: false };
                     promises[i] = promise.then(result => {
@@ -290,12 +250,7 @@ class MasterProcessManager {
                             continue;
                         }
 
-                        const promise = this.createShard(
-                            result,
-                            i,
-                            shardCount,
-                            abortController.signal
-                        );
+                        const promise = this.createShard(result, i, shardCount, abortController.signal);
 
                         exitStatus[i] = { exited: false };
                         promises[i] = promise.then(result => {
@@ -319,9 +274,7 @@ class MasterProcessManager {
                 process.exit(-1);
             }
 
-            this.logger.info(
-                "Main process exited, starting again in 5 seconds"
-            );
+            this.logger.info("Main process exited, starting again in 5 seconds");
             await new Promise<void>(resolve => setTimeout(resolve, 5000));
             lastRestart = Date.now();
             restarts++;

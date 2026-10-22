@@ -44,7 +44,7 @@ export class Logger {
 
     private get shardId() {
         if (!this._shardId) {
-            this._shardId = Application.current()?.shards.join("_") ?? "";
+            this._shardId = Application.current()?.shards.join(", ") ?? "";
         }
 
         return this._shardId;
@@ -55,9 +55,7 @@ export class Logger {
         private readonly logTime: boolean = true,
         private readonly formattedTime: boolean = false
     ) {
-        (this as unknown as Logger).log = (this as unknown as Logger).log.bind(
-            this
-        );
+        (this as unknown as Logger).log = (this as unknown as Logger).log.bind(this);
         this.print = this.print.bind(this);
         this.colorize = this.colorize.bind(this);
         this.debug = this.debug.bind(this as unknown as void);
@@ -77,9 +75,7 @@ export class Logger {
     public log(level: LogLevel, ...args: unknown[]) {
         const levelName = LogLevel[level].toLowerCase();
         const methodName =
-            level === LogLevel.Info ||
-            level === LogLevel.Success ||
-            level === LogLevel.Event
+            level === LogLevel.Info || level === LogLevel.Success || level === LogLevel.Event
                 ? "info"
                 : level === LogLevel.Debug || level === LogLevel.Performance
                   ? "debug"
@@ -93,7 +89,7 @@ export class Logger {
                     ? `${chalk.gray(this.formatter.format(new Date()))} `
                     : `${(methodName === "error" || methodName === "warn" ? chalk.red : chalk.green)(`[${process.uptime().toFixed(7).toString().padStart(13, " ")}]`)} `
                 : ""
-        }${this.shardId ? chalk.blue(`shard${this.shardId}: `.padEnd(6)) : ""}${this.colorize(`${levelName}:`.padEnd(6), level)} ${chalk.yellowBright(this.name)}:`;
+        }${this.shardId ? chalk.blue(`shard[${this.shardId}]: `.padEnd(6)) : ""}${this.colorize(`${levelName}:`.padEnd(6), level)} ${chalk.yellowBright(this.name)}:`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
@@ -102,10 +98,7 @@ export class Logger {
         }
     }
 
-    public print(
-        methodName: "log" | "info" | "warn" | "error" | "debug" | "trace",
-        ...args: unknown[]
-    ) {
+    public print(methodName: "log" | "info" | "warn" | "error" | "debug" | "trace", ...args: unknown[]) {
         if (process.env.SUPPRESS_LOGS) {
             return;
         }
@@ -158,11 +151,7 @@ export class Logger {
     }
 
     public bug(this: void, ...args: unknown[]) {
-        (this as unknown as Logger).log(
-            LogLevel.Bug,
-            chalk.red("BUG:"),
-            ...args
-        );
+        (this as unknown as Logger).log(LogLevel.Bug, chalk.red("BUG:"), ...args);
     }
 
     public perfStart(id: string, ...args: unknown[]) {
@@ -173,22 +162,13 @@ export class Logger {
         this.perf("timeEnd", id, ...args);
     }
 
-    private perf(
-        this: void,
-        method: "time" | "timeEnd",
-        id: string,
-        ...args: unknown[]
-    ) {
+    private perf(this: void, method: "time" | "timeEnd", id: string, ...args: unknown[]) {
         if (!isDevelopmentMode()) {
             return;
         }
 
         console[method](id);
-        (this as unknown as Logger).log(
-            LogLevel.Performance,
-            chalk.magenta(id),
-            ...args
-        );
+        (this as unknown as Logger).log(LogLevel.Performance, chalk.magenta(id), ...args);
     }
 
     public info(this: void, ...args: unknown[]) {

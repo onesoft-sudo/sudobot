@@ -165,6 +165,23 @@ class RedisMessageBus extends MessageBus {
         }
     }
 
+    public override async unsubscribe<T>(
+        channel: string,
+        callback?: (message: MessageDetails<T>) => Awaitable<void>
+    ): Promise<void> {
+        if (!callback) {
+            this.emitter.removeAllListeners(channel);
+            await this.subscriber.unsubscribe(channel);
+            return;
+        }
+
+        this.emitter.off(channel, callback);
+
+        if (!this.emitter.listenerCount(channel)) {
+            await this.subscriber.unsubscribe(channel);
+        }
+    }
+
     public override async request<T, R>(
         targetBusId: string,
         resourceId: string,

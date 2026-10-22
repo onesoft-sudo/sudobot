@@ -54,7 +54,7 @@ class RedisMessageBusTest {
         RedisConstructorMock.mockClear();
 
         const url = "redis://localhost:1234/0";
-        new RedisMessageBus(url);
+        new RedisMessageBus({ url });
 
         expect(RedisConstructorMock).toHaveBeenNthCalledWith(1, url, {});
         expect(RedisConstructorMock).toHaveBeenNthCalledWith(2, url, {});
@@ -66,9 +66,7 @@ class RedisMessageBusTest {
         ((ioredis as unknown as ioredis.Redis).subscribe as Mock).mockClear();
 
         const url = "redis://localhost:1234/0";
-        const bus = new RedisMessageBus(url, undefined, {
-            socketTimeout: 60_000
-        });
+        const bus = new RedisMessageBus({ url, redisOptions: { socketTimeout: 60_000 } });
 
         const onEvent = vi.fn();
         await bus.subscribe("event", onEvent);
@@ -94,7 +92,7 @@ class RedisMessageBusTest {
         ((ioredis as unknown as ioredis.Redis).subscribe as Mock).mockClear();
 
         const url = "redis://localhost:1234/0";
-        const bus = new RedisMessageBus(url);
+        const bus = new RedisMessageBus({ url });
         await bus.publish("event", { data: "idk" });
 
         expect(
