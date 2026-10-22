@@ -110,4 +110,5 @@ enum Events {
 
 type ArgsOfEventListener<T extends Events> = ClientEvents[T];
 
-export { ClientEvents, Events, ArgsOfEventListener };
+export { ArgsOfEventListener, Events };
+export type { ClientEvents };

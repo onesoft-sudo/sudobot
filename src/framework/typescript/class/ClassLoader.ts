@@ -30,39 +30,25 @@ export type ClassLoadOptions<T, R> = {
 };
 
 class ClassLoader {
-    private static readonly SRC_ROOT_DIR = path.resolve(
-        import.meta.dirname,
-        "../../.."
-    );
+    private static readonly SRC_ROOT_DIR = path.resolve(import.meta.dirname, "../../..");
 
-    public async loadClass<T, R = T>(
-        file: string,
-        options?: ClassLoadOptions<T, R>
-    ): Promise<R> {
+    public async loadClass<T, R = T>(file: string, options?: ClassLoadOptions<T, R>): Promise<R> {
         if (file[0] !== "/") {
             file = path.join(ClassLoader.SRC_ROOT_DIR, file);
         }
 
-        if (
-            !options?.disableAutoExtensionAppend &&
-            path.basename(file).indexOf(".") === -1
-        ) {
+        if (!options?.disableAutoExtensionAppend && path.basename(file).indexOf(".") === -1) {
             file += isTypeScript ? ".ts" : ".js";
         }
 
         await options?.preLoad?.(file);
         const module = await import(file);
-        const processedModule = (
-            options?.loader ? options.loader(module) : module
-        ) as R;
+        const processedModule = (options?.loader ? options.loader(module) : module) as R;
         await options?.postLoad?.(file, processedModule);
         return processedModule;
     }
 
-    public async loadClassesRecursive<T, R = T>(
-        directory: string,
-        options?: ClassLoadOptions<T, R>
-    ): Promise<R[]> {
+    public async loadClassesRecursive<T, R = T>(directory: string, options?: ClassLoadOptions<T, R>): Promise<R[]> {
         if (directory[0] !== "/") {
             directory = path.join(ClassLoader.SRC_ROOT_DIR, directory);
         }
@@ -87,9 +73,7 @@ class ClassLoader {
             }
 
             const module = await import(fullpath);
-            const processedModule = options?.loader
-                ? options.loader(module)
-                : module;
+            const processedModule = options?.loader ? options.loader(module) : module;
             modules.push(processedModule);
             await options?.postLoad?.(fullpath, processedModule);
         }

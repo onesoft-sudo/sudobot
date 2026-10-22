@@ -43,3 +43,5 @@ export function promiseWithResolvers<T>(): PromiseWithResolversReturn<T> {
 
     return { promise, resolve, reject };
 }
+
+export type PromiseResolver<T> = (value: T) => void;

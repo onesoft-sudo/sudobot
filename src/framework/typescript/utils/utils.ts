@@ -60,19 +60,18 @@ export function suppressErrorNoReturn(value: unknown): void {
 }
 
 export function sourceFile(moduleName: string): string {
-    if (process.isBun) {
+    if (isTypeScript) {
         return `${moduleName}.ts`;
     }
 
     return `${moduleName}.js`;
 }
 
-export const effectiveExtension = process.isBun ? "ts" : "js";
+export const isTypeScript = import.meta.filename.endsWith(".ts");
+export const effectiveExtension = isTypeScript ? "ts" : "js";
 
 export function assertNotNull<T>(test: T, message: string = "Invalid condition"): asserts test is NonNullable<T> {
     if (test === undefined || test === null) {
         throw new Error(`Assertion failed: ${message}`);
     }
 }
-
-export const isTypeScript = import.meta.filename.endsWith(".ts");

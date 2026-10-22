@@ -17,40 +17,45 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { promiseWithResolvers } from "@framework/polyfills/Promise.js";
+import type { PromiseResolver } from "@framework/polyfills/Promise.js";
 import { decode, encode } from "@msgpack/msgpack";
 import type { Awaitable } from "discord.js";
 import EventEmitter from "events";
 import type { RedisOptions } from "ioredis";
 import { Redis } from "ioredis";
-import MessageBus, {
-    type MessageBusRequest,
-    type MessageDetails
-} from "./MessageBus.js";
+import type { IPCRequest, IPCRequestOptions, IPCResponse, MessageBusOptions } from "./MessageBus.js";
+import MessageBus, { type MessageDetails } from "./MessageBus.js";
+
+export type RedisMessageBusOptions = MessageBusOptions & {
+    url: string;
+    redisOptions?: RedisOptions;
+};
+
+export enum RedisMessageBusRequestChannelPrefix {
+    Request = "--request-",
+    Response = "--response-"
+}
+
+type RequestQueueEntry = {
+    resolver: PromiseResolver<IPCResponse<unknown>>;
+    timeout: NodeJS.Timeout;
+};
 
 class RedisMessageBus extends MessageBus {
     private readonly subscriber: Redis;
     private readonly publisher: Redis;
 
     private readonly emitter = new EventEmitter();
-    private nextRequestId: number = 0;
-    private readonly responseControls = new Map<
-        number,
-        { callback: (data: unknown) => void; timeout: Timer }
-    >();
-    private requestHandler?: (request: MessageBusRequest) => unknown;
-    private readonly busId: string;
+    private readonly requestQueue = new Map<number, RequestQueueEntry>();
+    private nextRequestId = 0;
 
-    public constructor(
-        url: string,
-        busId = Date.now().toString(),
-        options: RedisOptions = {}
-    ) {
-        super();
+    public constructor(options: RedisMessageBusOptions) {
+        super(options);
 
-        this.busId = busId;
-        this.subscriber = new Redis(url, options);
-        this.publisher = new Redis(url, options);
+        const { url, redisOptions = {} } = options;
+
+        this.subscriber = new Redis(url, redisOptions);
+        this.publisher = new Redis(url, redisOptions);
 
         this.subscriber.on("error", error => {
             if (process.env.NODE_ENV === "production") {
@@ -78,22 +83,17 @@ class RedisMessageBus extends MessageBus {
 
         this.subscriber.on("messageBuffer", async (channel, message) => {
             try {
-                const data = decode(message);
                 const channelName = channel.toString("utf-8");
+                const data = decode(message);
 
-                if (channelName.startsWith("request_")) {
-                    await this.handleRequest(data);
-                    return;
-                }
-
-                if (channelName.startsWith("response_")) {
-                    this.handleResponse(data);
+                if (channelName.startsWith("--")) {
+                    await this.handleSubscriberSpecialMessage(channelName, data);
                     return;
                 }
 
                 this.emitter.emit(channelName, {
                     data
-                } satisfies MessageDetails);
+                } satisfies MessageDetails<unknown>);
             } catch (error) {
                 console.error(error);
                 this.emit("error", error);
@@ -101,107 +101,94 @@ class RedisMessageBus extends MessageBus {
         });
     }
 
-    public override async enableRequestResponse() {
-        await this.subscriber.subscribe(
-            `request_${this.busId}`,
-            `response_${this.busId}`
-        );
-    }
-
-    public override publish(channel: string, data: unknown): Promise<number> {
-        return this.publisher.publish(channel, Buffer.from(encode(data)));
-    }
-
-    public override async subscribe(
-        channel: string,
-        callback: (message: MessageDetails) => Awaitable<void>
-    ) {
+    private async handleSubscriberSpecialMessage(channelName: string, data: unknown) {
         try {
-            await this.subscriber.subscribe(channel);
-            this.emitter.on(channel, callback);
+            if (channelName.startsWith(RedisMessageBusRequestChannelPrefix.Request)) {
+                const request = data as IPCRequest<unknown>;
+
+                if (typeof request.sourceBusId !== "string") {
+                    return;
+                }
+
+                const [error, response] = await this.invokeRequestHandler(request);
+
+                await this.publish(
+                    `${RedisMessageBusRequestChannelPrefix.Response}${request.sourceBusId}`,
+                    error ?? response
+                );
+            } else if (channelName.startsWith(RedisMessageBusRequestChannelPrefix.Response)) {
+                const response = data as IPCResponse<unknown>;
+
+                if (typeof response.sourceBusId !== "string") {
+                    return;
+                }
+
+                const queueEntry = this.requestQueue.get(response.requestId);
+
+                if (!queueEntry) {
+                    return;
+                }
+
+                this.requestQueue.delete(response.requestId);
+                clearTimeout(queueEntry.timeout);
+                queueEntry.resolver(response);
+            }
         } catch (error) {
-            console.error(error);
             this.emit("error", error);
         }
     }
 
-    public override async request<T>(
-        toBusId: string,
-        data: unknown
-    ): Promise<T> {
-        const id = this.nextRequestId++;
-        const { promise, resolve, reject } = promiseWithResolvers<T>();
+    public override async initialize() {
+        for (const busId of this.busIds) {
+            await this.subscribe(`${RedisMessageBusRequestChannelPrefix.Request}${busId}`);
+            await this.subscribe(`${RedisMessageBusRequestChannelPrefix.Response}${busId}`);
+        }
+    }
 
-        this.responseControls.set(id, {
-            callback: resolve as (data: unknown) => void,
-            timeout: setTimeout(() => {
-                if (this.responseControls.delete(id)) {
-                    reject(new Error("Request timed out"));
-                }
-            }, 30_000)
-        });
+    public override async publish(channel: string, data: unknown): Promise<void> {
+        try {
+            await this.publisher.publish(channel, Buffer.from(encode(data)));
+        } catch (error) {
+            this.emit("error", error);
+        }
+    }
 
-        await this.publish(`request_${toBusId}`, {
-            requestId: id,
-            payload: data,
-            fromBusId: this.busId
-        });
+    public override async subscribe<T>(channel: string, callback?: (message: MessageDetails<T>) => Awaitable<void>) {
+        try {
+            await this.subscriber.subscribe(channel);
+
+            if (callback) {
+                this.emitter.on(channel, callback);
+            }
+        } catch (error) {
+            this.emit("error", error);
+        }
+    }
+
+    public override async request<T, R>(
+        targetBusId: string,
+        resourceId: string,
+        options?: IPCRequestOptions<T>
+    ): Promise<IPCResponse<R>> {
+        const { promise, reject, resolve } = Promise.withResolvers<IPCResponse<R>>();
+        const requestId = this.nextRequestId++;
+
+        const timeout = setTimeout(() => {
+            this.requestQueue.delete(requestId);
+            reject(new Error(`Request to bus ${targetBusId} at resource ${resourceId} timed out`));
+        }, options?.timeout ?? this.defaultRequestTimeout);
+
+        this.requestQueue.set(requestId, { resolver: resolve as PromiseResolver<unknown>, timeout });
+
+        await this.publish(`${RedisMessageBusRequestChannelPrefix.Request}${targetBusId}`, {
+            id: requestId,
+            sourceBusId: this.canonicalBusId,
+            targetResourceId: resourceId,
+            payload: options?.payload,
+            targetBusId
+        } satisfies IPCRequest<T>);
 
         return promise;
-    }
-
-    public override setRequestHandler(
-        callback: (request: MessageBusRequest) => unknown
-    ) {
-        this.requestHandler = callback;
-    }
-
-    private handleResponse(data: unknown) {
-        if (
-            data &&
-            typeof data === "object" &&
-            "requestId" in data &&
-            typeof data.requestId === "number" &&
-            "payload" in data &&
-            "fromBusId" in data &&
-            data.fromBusId !== this.busId
-        ) {
-            const control = this.responseControls.get(data.requestId);
-
-            if (control) {
-                clearTimeout(control.timeout);
-                this.responseControls.delete(data.requestId);
-                control.callback(data.payload);
-            }
-        }
-    }
-
-    private async handleRequest(data: unknown) {
-        if (
-            data &&
-            typeof data === "object" &&
-            "requestId" in data &&
-            typeof data.requestId === "number" &&
-            "payload" in data &&
-            "fromBusId" in data &&
-            data.fromBusId !== this.busId
-        ) {
-            if (!this.requestHandler) {
-                return;
-            }
-
-            const responseData = await this.requestHandler?.({
-                id: data.requestId,
-                payload: data.payload,
-                fromBusId: this.busId
-            });
-
-            await this.publish(`response_${data.fromBusId}`, {
-                requestId: data.requestId,
-                payload: responseData,
-                fromBusId: this.busId
-            });
-        }
     }
 }
 
