@@ -1,6 +1,7 @@
+import { readFileSync } from "fs";
 import path from "path";
-import { defineConfig } from "vitest/config";
 import swc from "unplugin-swc";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     test: {
@@ -17,10 +18,14 @@ export default defineConfig({
             tsconfig: "./src/tests/tsconfig.json"
         },
         env: {
-            SUDOBOT_PREFIX: process.platform === 'win32' ? undefined : "/tmp"
+            SUDOBOT_PREFIX: process.platform === "win32" ? undefined : "/tmp"
         }
     },
-    plugins: [swc.vite()],
+    plugins: [
+        swc.vite({
+            ...JSON.parse(readFileSync(path.resolve(import.meta.dirname, ".swcrc"), "utf-8"))
+        })
+    ],
     resolve: {
         alias: {
             "@": path.resolve(import.meta.dirname, "./src/main/typescript"),
