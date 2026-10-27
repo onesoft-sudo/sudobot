@@ -46,12 +46,16 @@ class ClientReadyEventListener extends EventListener<Events.ClientReady> {
     @Inject()
     private readonly queueManagerService!: QueueManagerService;
 
-    public override onEvent(client: Client<true>) {
+    public override async onEvent(client: Client<true>) {
         this.logger.info(`Logged in successfully as: ${client.user.username} (${client.user.id})`);
 
         void this.database.drizzle.execute(sql`SELECT 1;`).then();
         this.commandManagerService.onClientReady().catch(this.logger.error);
         this.queueManagerService.onReady().catch(this.logger.error);
+
+        this.logger.debug("Caching application emojis");
+        const { size: emojiCount } = await this.application.client.application!.emojis.fetch();
+        this.logger.debug(`Cached ${emojiCount} emojis`);
 
         const presence = this.configurationManagerService.systemConfig.presence;
         this.logger.debug("Setting client presence");

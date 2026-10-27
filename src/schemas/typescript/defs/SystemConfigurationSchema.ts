@@ -17,20 +17,37 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SnowflakeSchema } from "./SnowflakeSchema.js";
 import z from "zod";
+import { SnowflakeSchema } from "./SnowflakeSchema.js";
 
 export const SystemConfigurationSchema = z.object({
     system_admins: z.array(SnowflakeSchema).prefault([]),
     emoji_resolve_strategy: z.enum(["application", "home_guild", "both"]).prefault("both"),
     restart_exit_code: z.int().min(0).max(255).prefault(0),
-    presence: z.object({
-        type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Custom"),
-        name: z.string().prefault("Moderating the server"),
-        url: z.url().optional(),
-        status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
-    }).prefault({}),
-    guilds_with_selinux_permission_mode_allowed: z.array(SnowflakeSchema).prefault([]),
+    presence: z
+        .object({
+            type: z.enum(["Playing", "Streaming", "Listening", "Watching", "Competing", "Custom"]).prefault("Custom"),
+            name: z.string().prefault("Moderating the server"),
+            url: z.url().optional(),
+            status: z.enum(["online", "idle", "dnd", "invisible"]).prefault("dnd")
+        })
+        .prefault({}),
+    commands: z
+        .object({
+            ratelimits: z
+                .object({
+                    table: z.record(
+                        z.string(),
+                        z.object({
+                            maxhits: z.int().nonnegative().prefault(1),
+                            timeframe: z.int().min(1000).prefault(1000)
+                        })
+                    )
+                })
+                .optional()
+        })
+        .optional(),
+    guilds_with_selinux_permission_mode_allowed: z.array(SnowflakeSchema).prefault([])
 });
 
 export type SystemConfigurationType = z.infer<typeof SystemConfigurationSchema>;

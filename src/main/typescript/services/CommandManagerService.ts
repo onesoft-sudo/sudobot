@@ -17,19 +17,20 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Application from "@framework/app/Application.js";
 import Command from "@framework/commands/Command.js";
 import CommandContextType from "@framework/commands/CommandContextType.js";
 import Context from "@framework/commands/Context.js";
 import InteractionContext from "@framework/commands/InteractionContext.js";
 import LegacyContext from "@framework/commands/LegacyContext.js";
 import { Inject } from "@framework/container/Inject.js";
-import BasicCommandRateLimiter from "@framework/security/BasicCommandRateLimiter.js";
 import CommandRateLimiter from "@framework/security/CommandRateLimiter.js";
 import Service from "@framework/services/Service.js";
 import type { HasEventListeners } from "@framework/types/HasEventListeners.js";
 import { isDevelopmentMode } from "@framework/utils/utils.js";
 import { ServiceID } from "@main/core/ServiceID.js";
 import { getEnv } from "@main/env/env.js";
+import AppCommandRateLimiter from "@main/security/AppCommandRateLimiter.js";
 import {
     calculateShardId,
     ChatInputCommandInteraction,
@@ -43,10 +44,22 @@ import ConfigurationManagerService, { ConfigurationType } from "./ConfigurationM
 class CommandManagerService extends Service implements HasEventListeners {
     public override readonly name: string = ServiceID.COMMAND_MANAGER;
     public readonly commands = new Collection<string, Command>();
-    public readonly ratelimiter: CommandRateLimiter = new BasicCommandRateLimiter({ maxhits: 30, timeframe: 30_000 });
+    public readonly ratelimiter: CommandRateLimiter;
 
-    @Inject()
-    private readonly configurationManagerService!: ConfigurationManagerService;
+    private readonly configurationManagerService: ConfigurationManagerService;
+
+    public constructor(application: Application, @Inject() configurationManagerService: ConfigurationManagerService) {
+        super(application);
+
+        this.configurationManagerService = configurationManagerService;
+        this.ratelimiter = new AppCommandRateLimiter(
+            {
+                maxhits: 30,
+                timeframe: 30_000
+            },
+            this.configurationManagerService
+        );
+    }
 
     public register(command: Command, group?: string) {
         this.commands.set(command.name, command);
@@ -71,7 +84,7 @@ class CommandManagerService extends Service implements HasEventListeners {
     private async runFromMessage(message: Message): Promise<boolean> {
         const config = await this.configurationManagerService.get(
             message.inGuild() ? ConfigurationType.Guild : ConfigurationType.DirectMessage,
-            message.guildId || message.author.id
+            message.guildId || message.channelId
         );
         const prefix = config.commands?.prefix || "-";
 
@@ -110,11 +123,11 @@ class CommandManagerService extends Service implements HasEventListeners {
     }
 
     private async callCommandRun(command: Command, context: Context) {
-        if (!this.ratelimiter.tryHit(command)) {
+        if (!(await this.ratelimiter.tryHit(command, context))) {
             let message: string;
 
             if (isDevelopmentMode()) {
-                message = `You are being rate limited: please try again in ${time(Math.round(this.ratelimiter.limitedUntil(command) / 1000), "R")}.`;
+                message = `You are being rate limited: please try again in ${time(Math.round((await this.ratelimiter.limitedUntil(command, context)) / 1000), "R")}.`;
             } else {
                 message = "You are being rate limited: please try again later.";
             }
