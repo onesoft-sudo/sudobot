@@ -22,7 +22,7 @@ import type InteractionContext from "@framework/commands/InteractionContext.js";
 import type LegacyContext from "@framework/commands/LegacyContext.js";
 import ArgumentParseError from "./ArgumentParseError.js";
 import type { ArgumentDefinition, ArgumentOverload, ArgumentSchema } from "./ArgumentSchema.js";
-import { InvalidArgumentError } from "./InvalidArgumentError.js";
+import { ArgumentErrorType, InvalidArgumentError } from "./InvalidArgumentError.js";
 
 type ParserContext = {
     args: readonly string[];
@@ -174,7 +174,9 @@ class ArgumentParser {
             }
 
             return {
-                error: `Argument '${(parserContext.context.isInteractive() ? definition.interactionName : null) ?? definition.name}' is required`
+                error:
+                    definition.errorMessages?.[ArgumentErrorType.Required] ??
+                    `Argument '${(parserContext.context.isInteractive() ? definition.interactionName : null) ?? definition.name}' is required`
             };
         }
 
@@ -183,7 +185,7 @@ class ArgumentParser {
                 ? [definition.type[definition.defaultIndex ?? 0]]
                 : definition.type
             : [definition.type];
-        let lastError: ArgumentParseError | undefined;
+        let lastError: ArgumentParseError | InvalidArgumentError | undefined;
 
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
@@ -220,7 +222,12 @@ class ArgumentParser {
         }
 
         return {
-            error: lastError?.message ?? "Invalid parser state: No types to parse or no value could be computed"
+            error: lastError
+                ? lastError.message ||
+                  (lastError instanceof InvalidArgumentError && lastError.meta.type !== undefined
+                      ? definition.errorMessages?.[lastError.meta.type]
+                      : "Unknown error")
+                : "Invalid parser state: No types to parse or no value could be computed"
         };
     }
 

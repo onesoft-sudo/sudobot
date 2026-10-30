@@ -37,8 +37,8 @@ export enum LogEventType {
     MemberMuteRemove = "member_mute_remove",
     MemberTimeoutAdd = "member_timeout_add",
     MemberTimeoutRemove = "member_timeout_remove",
-    MemberWarningAdd = "member_warning_add",
-    MemberModeratorMessageAdd = "member_mod_message_add",
+    UserWarningAdd = "user_warning_add",
+    UserModeratorMessageAdd = "user_moderator_message_add",
     UserNoteAdd = "user_note_add",
     MemberRoleModification = "member_role_modification",
     SystemAutoModRuleModeration = "system_automod_rule_moderation",
@@ -88,9 +88,7 @@ export const LoggingSchema = z.object({
     default_enabled: z
         .boolean()
         .default(true)
-        .describe(
-            "Whether to consider all events as enabled if no override is found"
-        ),
+        .describe("Whether to consider all events as enabled if no override is found"),
     primary_channel: SnowflakeSchema.optional(),
     hooks: z.record(SnowflakeSchema, SnowflakeSchema).default({}),
     overrides: z.array(LogConfigOverride).default([]),

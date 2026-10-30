@@ -35,10 +35,10 @@ export class InvalidArgumentError extends Error {
     public override readonly name = "InvalidArgumentError";
 
     public constructor(
-        message: string,
+        message: string | null,
         public readonly meta: InvalidArgumentErrorMeta
     ) {
-        super(message, {
+        super(message ?? "", {
             cause: meta.cause
         });
     }

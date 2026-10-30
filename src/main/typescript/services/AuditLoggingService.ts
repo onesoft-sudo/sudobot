@@ -40,19 +40,19 @@ import {
     LogMemberMassBanPayload,
     LogMemberMassKickPayload,
     LogMemberMassUnbanPayload,
-    LogMemberModMessageAddPayload,
     LogMemberMuteAddPayload,
     LogMemberMuteRemovePayload,
     LogMemberNicknameModificationPayload,
     LogMemberRoleModificationPayload,
     LogMemberTimeoutAddPayload,
     LogMemberTimeoutRemovePayload,
-    LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
     LogMessageReactionClearPayload,
     LogNewMemberMessageInspectionPayload,
     LogRaidAlertPayload,
+    LogUserModMessageAddPayload as LogUserModeratorMessageAddPayload,
     LogUserNoteAddPayload,
+    LogUserWarningAddPayload,
     LoggingExclusionType
 } from "@main/schemas/LoggingSchema.js";
 import type ConfigurationManagerService from "@main/services/ConfigurationManagerService.js";
@@ -104,18 +104,12 @@ type WebhookInfo =
 class AuditLoggingService extends Service {
     public override readonly name: string = ServiceID.AUDIT_LOGGING;
 
-    private readonly webhooks = new LRUCache<
-        `${Snowflake}::${Snowflake}`,
-        WebhookInfo
-    >({
+    private readonly webhooks = new LRUCache<`${Snowflake}::${Snowflake}`, WebhookInfo>({
         max: 5000,
         ttl: 1000 * 60 * 60
     });
 
-    private readonly channels = new LRUCache<
-        `${Snowflake}::${string}`,
-        Snowflake
-    >({ max: 5000, ttl: 1000 * 60 * 60 });
+    private readonly channels = new LRUCache<`${Snowflake}::${string}`, Snowflake>({ max: 5000, ttl: 1000 * 60 * 60 });
 
     private readonly loadedGuilds = new Set<Snowflake>();
 
@@ -140,24 +134,18 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberMuteRemove]: this.logMemberUnmute,
         [LogEventType.MemberTimeoutAdd]: this.logMemberTimeoutAdd,
         [LogEventType.MemberTimeoutRemove]: this.logMemberTimeoutRemove,
-        [LogEventType.MemberWarningAdd]: this.logMemberWarn,
-        [LogEventType.MemberModeratorMessageAdd]: this.logMemberModMessageAdd,
+        [LogEventType.UserWarningAdd]: this.logUserWarning,
+        [LogEventType.UserModeratorMessageAdd]: this.logUserModeratorMessageAdd,
         [LogEventType.UserNoteAdd]: this.logUserNoteAdd,
         [LogEventType.MemberRoleModification]: this.logMemberRoleModification,
-        [LogEventType.SystemAutoModRuleModeration]:
-            this.logMessageRuleModeration,
+        [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration,
         [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave,
         [LogEventType.RaidAlert]: this.logRaidAlert,
-        [LogEventType.MemberNicknameModification]:
-            this.logMemberNicknameModification,
-        [LogEventType.GuildVerificationAttempt]:
-            this.logGuildVerificationAttempt,
-        [LogEventType.GuildVerificationSuccess]:
-            this.logGuildVerificationSuccess,
-        [LogEventType.GuildVerificationNotEnoughInfo]:
-            this.logGuildVerificationNotEnoughInfo,
-        [LogEventType.NewMemberMessageInspection]:
-            this.logNewMemberMessageInspection,
+        [LogEventType.MemberNicknameModification]: this.logMemberNicknameModification,
+        [LogEventType.GuildVerificationAttempt]: this.logGuildVerificationAttempt,
+        [LogEventType.GuildVerificationSuccess]: this.logGuildVerificationSuccess,
+        [LogEventType.GuildVerificationNotEnoughInfo]: this.logGuildVerificationNotEnoughInfo,
+        [LogEventType.NewMemberMessageInspection]: this.logNewMemberMessageInspection,
         [LogEventType.MemberVoiceChannelJoin]: this.logMemberVoiceChannelJoin,
         [LogEventType.MemberVoiceChannelLeave]: this.logMemberVoiceChannelLeave
     };
@@ -173,12 +161,7 @@ class AuditLoggingService extends Service {
     }
 
     public async reloadConfig(guildId: string) {
-        const config = (
-            await this.configurationManagerService.get(
-                ConfigurationType.Guild,
-                guildId
-            )
-        )?.logging;
+        const config = (await this.configurationManagerService.get(ConfigurationType.Guild, guildId))?.logging;
 
         this.loadedGuilds.add(guildId);
 
@@ -215,17 +198,8 @@ class AuditLoggingService extends Service {
         this.logger.debug("Configuration reloaded for: ", guildId);
     }
 
-    public async emitLogEvent<T extends LogEventType>(
-        guildId: Snowflake,
-        type: T,
-        ...args: LogEventArgs[T]
-    ) {
-        const config = (
-            await this.configurationManagerService.get(
-                ConfigurationType.Guild,
-                guildId
-            )
-        )?.logging;
+    public async emitLogEvent<T extends LogEventType>(guildId: Snowflake, type: T, ...args: LogEventArgs[T]) {
+        const config = (await this.configurationManagerService.get(ConfigurationType.Guild, guildId))?.logging;
         const defaultEnabled = config?.default_enabled ?? true;
 
         if (!config?.enabled) {
@@ -234,10 +208,7 @@ class AuditLoggingService extends Service {
 
         const channel = this.channels.get(`${guildId}::${type}`);
 
-        if (
-            (defaultEnabled && channel === "") ||
-            (!defaultEnabled && channel === undefined)
-        ) {
+        if ((defaultEnabled && channel === "") || (!defaultEnabled && channel === undefined)) {
             return null;
         }
 
@@ -256,11 +227,7 @@ class AuditLoggingService extends Service {
         return this.logHandlers[type].call(this, ...args);
     }
 
-    private testExclusion<T extends LogEventType>(
-        exclusion: LoggingExclusionType,
-        type: T,
-        ...args: LogEventArgs[T]
-    ) {
+    private testExclusion<T extends LogEventType>(exclusion: LoggingExclusionType, type: T, ...args: LogEventArgs[T]) {
         if (exclusion.events !== undefined) {
             const includes = exclusion.events.includes(type);
 
@@ -289,10 +256,7 @@ class AuditLoggingService extends Service {
                     target = (args[0] as Message<true>).author.id;
                 } else if (exclusion.type === "channel") {
                     target = (args[0] as Message<true>).channelId;
-                } else if (
-                    exclusion.type === "category_channel" &&
-                    (args[0] as Message<true>).channel.parentId
-                ) {
+                } else if (exclusion.type === "category_channel" && (args[0] as Message<true>).channel.parentId) {
                     target = (args[0] as Message<true>).channel.parentId!;
                 }
 
@@ -301,7 +265,7 @@ class AuditLoggingService extends Service {
             case LogEventType.MemberBanAdd:
             case LogEventType.MemberBanRemove:
             case LogEventType.UserNoteAdd:
-            case LogEventType.MemberModeratorMessageAdd:
+            case LogEventType.UserModeratorMessageAdd:
                 if (exclusion.type === "user") {
                     target = (args[0] as { user: User }).user.id;
                 }
@@ -318,7 +282,7 @@ class AuditLoggingService extends Service {
             case LogEventType.MemberMuteAdd:
             case LogEventType.MemberMuteRemove:
             case LogEventType.MemberRoleModification:
-            case LogEventType.MemberWarningAdd:
+            case LogEventType.UserWarningAdd:
                 if (exclusion.type === "user") {
                     target = (args[0] as { member: GuildMember }).member.id;
                 }
@@ -333,9 +297,7 @@ class AuditLoggingService extends Service {
                         target = payload.user?.id;
                     } else {
                         target =
-                            exclusion.type === "channel"
-                                ? payload.channel.id
-                                : (payload.channel.parentId ?? undefined);
+                            exclusion.type === "channel" ? payload.channel.id : (payload.channel.parentId ?? undefined);
                     }
                 }
 
@@ -381,23 +343,14 @@ class AuditLoggingService extends Service {
         return false;
     }
 
-    private async send({
-        guildId,
-        messageCreateOptions,
-        eventType
-    }: SendLogOptions): Promise<Message | undefined> {
+    private async send({ guildId, messageCreateOptions, eventType }: SendLogOptions): Promise<Message | undefined> {
         const guild = this.client.guilds.cache.get(guildId);
 
         if (!guild) {
             return;
         }
 
-        const config = (
-            await this.configurationManagerService.get(
-                ConfigurationType.Guild,
-                guildId
-            )
-        )?.logging;
+        const config = (await this.configurationManagerService.get(ConfigurationType.Guild, guildId))?.logging;
 
         if (!config?.enabled) {
             return;
@@ -410,14 +363,11 @@ class AuditLoggingService extends Service {
         const overriddenChannel = this.channels.get(`${guildId}::${eventType}`);
         const defaultEnabled = config.default_enabled;
         const channelId =
-            (eventType && overriddenChannel !== null
-                ? overriddenChannel
-                : config.primary_channel) ?? config.primary_channel;
+            (eventType && overriddenChannel !== null ? overriddenChannel : config.primary_channel) ??
+            config.primary_channel;
 
         if (!channelId) {
-            this.logger.warn(
-                `No logging channel found for guild ${guild.name} (${guild.id})`
-            );
+            this.logger.warn(`No logging channel found for guild ${guild.name} (${guild.id})`);
             return;
         }
 
@@ -440,12 +390,8 @@ class AuditLoggingService extends Service {
             }
 
             if (webhookClient.attempts >= 3) {
-                this.logger.warn(
-                    `Failed to find log webhook for guild ${guild.name} (${guild.id})`
-                );
-                this.logger.warn(
-                    "Cancelling webhook fetch task for this channel"
-                );
+                this.logger.warn(`Failed to find log webhook for guild ${guild.name} (${guild.id})`);
+                this.logger.warn("Cancelling webhook fetch task for this channel");
                 return;
             }
 
@@ -455,21 +401,15 @@ class AuditLoggingService extends Service {
                 FIXME: Instead of fetching the channel, we should store the webhook
                        ID and token in the configuration/db and fetch the webhook directly.
             */
-            const channel =
-                guild.channels.cache.get(channelId) ??
-                (await fetchChannel(guildId, channelId));
+            const channel = guild.channels.cache.get(channelId) ?? (await fetchChannel(guildId, channelId));
 
             if (!channel) {
-                this.logger.warn(
-                    `Couldn't fetch logging channel for guild ${guild.name} (${guild.id})`
-                );
+                this.logger.warn(`Couldn't fetch logging channel for guild ${guild.name} (${guild.id})`);
                 return;
             }
 
             if (!channel.isTextBased()) {
-                this.logger.warn(
-                    `Logging channel for guild ${guild.name} (${guild.id}) is not text based`
-                );
+                this.logger.warn(`Logging channel for guild ${guild.name} (${guild.id}) is not text based`);
                 return;
             }
 
@@ -477,31 +417,21 @@ class AuditLoggingService extends Service {
                 const hooks = await channel.fetchWebhooks();
 
                 for (const hook of hooks.values()) {
-                    if (
-                        config?.hooks?.[channel.id] === hook.id &&
-                        hook.applicationId === this.client.application?.id
-                    ) {
+                    if (config?.hooks?.[channel.id] === hook.id && hook.applicationId === this.client.application?.id) {
                         webhookClient = {
                             status: "success",
                             webhook: hook
                         };
 
-                        this.webhooks.set(
-                            `${guildId}::${channelId}`,
-                            webhookClient
-                        );
+                        this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
                         this.logger.debug("Refreshed cache (hook found)");
                         break;
                     }
                 }
 
                 if (webhookClient.status === "error") {
-                    this.logger.debug(
-                        `Couldn't find log webhook for guild ${guild.name} (${guild.id})`
-                    );
-                    this.logger.debug(
-                        `Creating log webhook for guild ${guild.name} (${guild.id})`
-                    );
+                    this.logger.debug(`Couldn't find log webhook for guild ${guild.name} (${guild.id})`);
+                    this.logger.debug(`Creating log webhook for guild ${guild.name} (${guild.id})`);
 
                     const webhook = await channel.createWebhook({
                         name: "SudoBot Logging",
@@ -514,23 +444,16 @@ class AuditLoggingService extends Service {
                         webhook
                     };
 
-                    this.webhooks.set(
-                        `${guildId}::${channelId}`,
-                        webhookClient
-                    );
+                    this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
 
-                    await this.configurationManagerService.set(
-                        ConfigurationType.Guild,
-                        guildId,
-                        config => {
-                            if (!config.logging) {
-                                return;
-                            }
-
-                            config.logging.hooks ??= {};
-                            config.logging.hooks[channel.id] = webhook.id;
+                    await this.configurationManagerService.set(ConfigurationType.Guild, guildId, config => {
+                        if (!config.logging) {
+                            return;
                         }
-                    );
+
+                        config.logging.hooks ??= {};
+                        config.logging.hooks[channel.id] = webhook.id;
+                    });
                 }
             }
         } else {
@@ -547,8 +470,7 @@ class AuditLoggingService extends Service {
             const message = await webhook.send({
                 ...(messageCreateOptions as MessageCreateOptions),
                 allowedMentions:
-                    "allowedMentions" in messageCreateOptions &&
-                    messageCreateOptions.allowedMentions
+                    "allowedMentions" in messageCreateOptions && messageCreateOptions.allowedMentions
                         ? messageCreateOptions.allowedMentions
                         : {
                               parse: [],
@@ -567,9 +489,7 @@ class AuditLoggingService extends Service {
                 webhookClient.useFailedAttempts++;
 
                 if (webhookClient.useFailedAttempts >= 3) {
-                    this.logger.warn(
-                        "Failed to send log message 3 times, removing webhook from cache"
-                    );
+                    this.logger.warn("Failed to send log message 3 times, removing webhook from cache");
 
                     this.webhooks.delete(`${guildId}::${channelId}`);
                 }
@@ -597,9 +517,7 @@ class AuditLoggingService extends Service {
             attributes += `${bold("Conditional")}: This rule only applies when certain conditions are met.\n`;
         }
 
-        return attributes === ""
-            ? italic("No additional attributes")
-            : attributes;
+        return attributes === "" ? italic("No additional attributes") : attributes;
     }
 
     private async logMessageRuleModeration(
@@ -608,12 +526,8 @@ class AuditLoggingService extends Service {
         rule: RuleDefinition,
         result: RuleExecResult
     ): Promise<Message | undefined> {
-        const member =
-            messageOrMember instanceof GuildMember
-                ? messageOrMember
-                : messageOrMember.member!;
-        const message =
-            messageOrMember instanceof Message ? messageOrMember : undefined;
+        const member = messageOrMember instanceof GuildMember ? messageOrMember : messageOrMember.member!;
+        const message = messageOrMember instanceof Message ? messageOrMember : undefined;
 
         return this.send({
             guildId: message?.guildId ?? member.guild.id,
@@ -639,16 +553,12 @@ class AuditLoggingService extends Service {
                             },
                             {
                                 name: "Reason",
-                                value:
-                                    result.reason ??
-                                    italic("No reason provided")
+                                value: result.reason ?? italic("No reason provided")
                             },
                             {
                                 name: "Actions Taken",
                                 value: this.application
-                                    .service<ModerationActionService>(
-                                        ServiceID.MODERATION_ACTION
-                                    )
+                                    .service<ModerationActionService>(ServiceID.MODERATION_ACTION)
                                     .summarizeActions(rule.actions),
                                 inline: true
                             },
@@ -661,10 +571,7 @@ class AuditLoggingService extends Service {
                         title: "AutoMod Rule Action",
                         author: {
                             name: (message?.author ?? member.user).username,
-                            icon_url:
-                                (
-                                    message?.author ?? member.user
-                                ).displayAvatarURL() ?? undefined
+                            icon_url: (message?.author ?? member.user).displayAvatarURL() ?? undefined
                         }
                     }
                 ]
@@ -721,10 +628,7 @@ class AuditLoggingService extends Service {
 
         const components = [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
-                new ButtonBuilder()
-                    .setStyle(ButtonStyle.Link)
-                    .setURL(message.url)
-                    .setLabel("Context")
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(message.url).setLabel("Context")
             )
         ];
 
@@ -737,8 +641,7 @@ class AuditLoggingService extends Service {
                             `https://discord.com/channels/${message.guild.id}/${message.reference.channelId}/${message.reference.messageId}`
                         )
                         .setLabel(
-                            message.reference.type ===
-                                MessageReferenceType.Forward
+                            message.reference.type === MessageReferenceType.Forward
                                 ? "Forwarded Message"
                                 : "Referenced Message"
                         )
@@ -761,8 +664,7 @@ class AuditLoggingService extends Service {
                         title: "Message Deleted",
                         author: {
                             name: message.author.username,
-                            icon_url:
-                                message.author.displayAvatarURL() ?? undefined
+                            icon_url: message.author.displayAvatarURL() ?? undefined
                         },
                         description: message.content,
                         color: Colors.Red,
@@ -779,10 +681,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMessageUpdate(
-        oldMessage: Message<true>,
-        newMessage: Message<true>
-    ) {
+    private async logMessageUpdate(oldMessage: Message<true>, newMessage: Message<true>) {
         const fields = [
             {
                 name: "Channel",
@@ -837,10 +736,7 @@ class AuditLoggingService extends Service {
             const tooLarge = content.length >= 2000;
 
             if (tooLarge) {
-                const beforeChunks = chunkedString(
-                    `## Before\n${oldMessage.content}`,
-                    2000
-                );
+                const beforeChunks = chunkedString(`## Before\n${oldMessage.content}`, 2000);
 
                 for (const chunk of beforeChunks) {
                     embeds.push({
@@ -849,10 +745,7 @@ class AuditLoggingService extends Service {
                     });
                 }
 
-                const afterChunks = chunkedString(
-                    `## After\n${newMessage.content}`,
-                    2000
-                );
+                const afterChunks = chunkedString(`## After\n${newMessage.content}`, 2000);
 
                 for (const chunk of afterChunks) {
                     embeds.push({
@@ -867,10 +760,7 @@ class AuditLoggingService extends Service {
 
         const components = [
             new ActionRowBuilder<ButtonBuilder>().addComponents(
-                new ButtonBuilder()
-                    .setStyle(ButtonStyle.Link)
-                    .setURL(newMessage.url)
-                    .setLabel("Context")
+                new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(newMessage.url).setLabel("Context")
             )
         ];
 
@@ -883,8 +773,7 @@ class AuditLoggingService extends Service {
                             `https://discord.com/channels/${newMessage.guild.id}/${newMessage.reference.channelId}/${newMessage.reference.messageId}`
                         )
                         .setLabel(
-                            newMessage.reference.type ===
-                                MessageReferenceType.Forward
+                            newMessage.reference.type === MessageReferenceType.Forward
                                 ? "Forwarded Message"
                                 : "Referenced Message"
                         )
@@ -963,12 +852,7 @@ class AuditLoggingService extends Service {
                     {
                         attachment: Buffer.from(
                             JSON.stringify(
-                                messages
-                                    .filter(
-                                        (m): m is Message | PartialMessage =>
-                                            !!m
-                                    )
-                                    .map(m => m.toJSON()),
+                                messages.filter((m): m is Message | PartialMessage => !!m).map(m => m.toJSON()),
                                 null,
                                 2
                             ),
@@ -1113,13 +997,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberBanRemove({
-        guild,
-        moderator,
-        user,
-        reason,
-        infractionId
-    }: LogMemberBanRemovePayload) {
+    private async logMemberBanRemove({ guild, moderator, user, reason, infractionId }: LogMemberBanRemovePayload) {
         const fields = [
             {
                 name: "User",
@@ -1204,8 +1082,7 @@ class AuditLoggingService extends Service {
         let description = "";
 
         for (const resolvable of users) {
-            const id =
-                typeof resolvable === "string" ? resolvable : resolvable.id;
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
             description += `${userMention(id)} (${id})\n`;
         }
 
@@ -1217,8 +1094,7 @@ class AuditLoggingService extends Service {
                         title: `Mass Banned ${users.length} users`,
                         color: Colors.Red,
                         timestamp: new Date().toISOString(),
-                        description:
-                            description.length < 2000 ? description : undefined,
+                        description: description.length < 2000 ? description : undefined,
                         fields,
                         footer: {
                             text: "Banned"
@@ -1239,12 +1115,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberMassKick({
-        guild,
-        moderator,
-        members,
-        reason
-    }: LogMemberMassKickPayload) {
+    private async logMemberMassKick({ guild, moderator, members, reason }: LogMemberMassKickPayload) {
         const fields = [
             {
                 name: "Responsible Moderator",
@@ -1260,8 +1131,7 @@ class AuditLoggingService extends Service {
         let description = "";
 
         for (const resolvable of members) {
-            const id =
-                typeof resolvable === "string" ? resolvable : resolvable.id;
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
             description += `${userMention(id)} (${id})\n`;
         }
 
@@ -1273,8 +1143,7 @@ class AuditLoggingService extends Service {
                         title: `Mass Kicked ${members.length} users`,
                         color: Colors.Red,
                         timestamp: new Date().toISOString(),
-                        description:
-                            description.length < 2000 ? description : undefined,
+                        description: description.length < 2000 ? description : undefined,
                         fields,
                         footer: {
                             text: "Kicked"
@@ -1295,12 +1164,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberMassUnban({
-        guild,
-        moderator,
-        users,
-        reason
-    }: LogMemberMassUnbanPayload) {
+    private async logMemberMassUnban({ guild, moderator, users, reason }: LogMemberMassUnbanPayload) {
         const fields = [
             {
                 name: "Responsible Moderator",
@@ -1316,8 +1180,7 @@ class AuditLoggingService extends Service {
         let description = "";
 
         for (const resolvable of users) {
-            const id =
-                typeof resolvable === "string" ? resolvable : resolvable.id;
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
             description += `${userMention(id)} (${id})\n`;
         }
 
@@ -1329,8 +1192,7 @@ class AuditLoggingService extends Service {
                         title: `Mass Unbanned ${users.length} users`,
                         color: Colors.Green,
                         timestamp: new Date().toISOString(),
-                        description:
-                            description.length < 2000 ? description : undefined,
+                        description: description.length < 2000 ? description : undefined,
                         fields,
                         footer: {
                             text: "Unbanned"
@@ -1352,17 +1214,11 @@ class AuditLoggingService extends Service {
     }
 
     private async logGuildMemberAdd(member: GuildMember) {
-        const memberCount = Math.max(
-            member.guild.members.cache.size,
-            member.guild.memberCount
-        );
+        const memberCount = Math.max(member.guild.members.cache.size, member.guild.memberCount);
         const fields: APIEmbedField[] = [
             {
                 name: "New Account?",
-                value:
-                    Date.now() - member.user.createdTimestamp > 604800000
-                        ? "No"
-                        : "⚠️ Yes ⚠️", // 7 days
+                value: Date.now() - member.user.createdTimestamp > 604800000 ? "No" : "⚠️ Yes ⚠️", // 7 days
                 inline: true
             },
             {
@@ -1417,8 +1273,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "New Member Joined",
                         thumbnail: {
@@ -1480,8 +1335,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Nickname Modified",
                         color: Colors.Blue,
@@ -1497,10 +1351,7 @@ class AuditLoggingService extends Service {
     }
 
     private async logGuildMemberRemove(member: GuildMember) {
-        const memberCount = Math.max(
-            member.guild.members.cache.size,
-            member.guild.memberCount
-        );
+        const memberCount = Math.max(member.guild.members.cache.size, member.guild.memberCount);
         const fields = [
             {
                 name: "User Information",
@@ -1509,9 +1360,7 @@ class AuditLoggingService extends Service {
             },
             {
                 name: "Joined At",
-                value: member.joinedAt
-                    ? `${time(member.joinedAt, "f")} (${time(member.joinedAt, "R")})`
-                    : "[Unknown]"
+                value: member.joinedAt ? `${time(member.joinedAt, "f")} (${time(member.joinedAt, "R")})` : "[Unknown]"
             },
             {
                 name: "Roles",
@@ -1541,8 +1390,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Left",
                         color: Colors.Red,
@@ -1563,12 +1411,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logGuildMemberKick({
-        member,
-        infractionId,
-        moderator,
-        reason
-    }: LogMemberKickPayload) {
+    private async logGuildMemberKick({ member, infractionId, moderator, reason }: LogMemberKickPayload) {
         const fields = [
             {
                 name: "User",
@@ -1604,8 +1447,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Kicked",
                         color: Colors.DarkGold,
@@ -1621,10 +1463,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logGuildVerificationNotEnoughInfo({
-        member,
-        ip
-    }: LogGuildVerificationNotEnoughInfoPayload) {
+    private async logGuildVerificationNotEnoughInfo({ member, ip }: LogGuildVerificationNotEnoughInfoPayload) {
         const fields = [
             {
                 name: "Member",
@@ -1645,8 +1484,7 @@ class AuditLoggingService extends Service {
                 embeds: [
                     {
                         title: "Not enough information",
-                        description:
-                            "The system could not collect enough information to check for alt accounts.",
+                        description: "The system could not collect enough information to check for alt accounts.",
                         color: Colors.Blue,
                         timestamp: new Date().toISOString(),
                         fields,
@@ -1684,9 +1522,7 @@ class AuditLoggingService extends Service {
         if (altAccountIds?.length) {
             fields.push({
                 name: "Possible Alt Account(s)",
-                value: altAccountIds
-                    .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
-                    .join("\n")
+                value: altAccountIds.map(altAccountId => `<@${altAccountId}> [${altAccountId}]`).join("\n")
             });
         }
 
@@ -1694,9 +1530,7 @@ class AuditLoggingService extends Service {
             fields.push({
                 name: "Actions Taken",
                 value: this.application
-                    .service<ModerationActionService>(
-                        ServiceID.MODERATION_ACTION
-                    )
+                    .service<ModerationActionService>(ServiceID.MODERATION_ACTION)
                     .summarizeActions(actionsTaken)
             });
         }
@@ -1742,9 +1576,7 @@ class AuditLoggingService extends Service {
         if (altAccountIds?.length) {
             fields.push({
                 name: "Possible Alt Account(s)",
-                value: altAccountIds
-                    .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
-                    .join("\n")
+                value: altAccountIds.map(altAccountId => `<@${altAccountId}> [${altAccountId}]`).join("\n")
             });
         }
 
@@ -1774,14 +1606,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberMute({
-        guild,
-        member,
-        moderator,
-        infractionId,
-        reason,
-        duration
-    }: LogMemberMuteAddPayload) {
+    private async logMemberMute({ guild, member, moderator, infractionId, reason, duration }: LogMemberMuteAddPayload) {
         const fields = [
             {
                 name: "User",
@@ -1825,8 +1650,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Muted",
                         color: Colors.Red,
@@ -1842,13 +1666,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberUnmute({
-        guild,
-        member,
-        moderator,
-        infractionId,
-        reason
-    }: LogMemberMuteRemovePayload) {
+    private async logMemberUnmute({ guild, member, moderator, infractionId, reason }: LogMemberMuteRemovePayload) {
         const fields = [
             {
                 name: "User",
@@ -1885,8 +1703,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Unmuted",
                         color: Colors.Green,
@@ -1953,8 +1770,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Timed Out",
                         color: Colors.Red,
@@ -2013,8 +1829,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Member Timeout Removed",
                         color: Colors.Green,
@@ -2030,16 +1845,11 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberWarn({
-        infractionId,
-        member,
-        moderator,
-        reason
-    }: LogMemberWarningAddPayload) {
+    private async logUserWarning({ infractionId, user, guildId, moderator, reason }: LogUserWarningAddPayload) {
         const fields = [
             {
                 name: "User",
-                value: userInfo(member.user),
+                value: userInfo(user),
                 inline: true
             },
             {
@@ -2049,7 +1859,7 @@ class AuditLoggingService extends Service {
             },
             {
                 name: "User ID",
-                value: member.id
+                value: user.id
             },
             {
                 name: "Reason",
@@ -2065,16 +1875,15 @@ class AuditLoggingService extends Service {
         }
 
         return this.send({
-            guildId: member.guild.id,
+            guildId,
             messageCreateOptions: {
                 embeds: [
                     {
                         author: {
-                            name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            name: user.username,
+                            icon_url: user.displayAvatarURL() ?? undefined
                         },
-                        title: "Member Warned",
+                        title: "User Warned",
                         color: Colors.Gold,
                         timestamp: new Date().toISOString(),
                         fields,
@@ -2084,20 +1893,21 @@ class AuditLoggingService extends Service {
                     }
                 ]
             },
-            eventType: LogEventType.MemberWarningAdd
+            eventType: LogEventType.UserWarningAdd
         });
     }
 
-    private async logMemberModMessageAdd({
+    private async logUserModeratorMessageAdd({
         infractionId,
-        member,
+        user,
+        guildId,
         moderator,
         reason
-    }: LogMemberModMessageAddPayload) {
+    }: LogUserModeratorMessageAddPayload) {
         const fields = [
             {
                 name: "User",
-                value: userInfo(member.user),
+                value: userInfo(user),
                 inline: true
             },
             {
@@ -2107,7 +1917,7 @@ class AuditLoggingService extends Service {
             },
             {
                 name: "User ID",
-                value: member.id
+                value: user.id
             },
             {
                 name: "Reason",
@@ -2123,16 +1933,15 @@ class AuditLoggingService extends Service {
         }
 
         return this.send({
-            guildId: member.guild.id,
+            guildId,
             messageCreateOptions: {
                 embeds: [
                     {
                         author: {
-                            name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            name: user.username,
+                            icon_url: user.displayAvatarURL() ?? undefined
                         },
-                        title: "Moderator Message was sent to a member",
+                        title: "Moderator Message was sent to a user",
                         color: Colors.Gold,
                         timestamp: new Date().toISOString(),
                         fields,
@@ -2142,17 +1951,11 @@ class AuditLoggingService extends Service {
                     }
                 ]
             },
-            eventType: LogEventType.MemberModeratorMessageAdd
+            eventType: LogEventType.UserModeratorMessageAdd
         });
     }
 
-    private async logUserNoteAdd({
-        infractionId,
-        user,
-        moderator,
-        reason,
-        guild
-    }: LogUserNoteAddPayload) {
+    private async logUserNoteAdd({ infractionId, user, moderator, reason, guild }: LogUserNoteAddPayload) {
         const fields: APIEmbedField[] = [
             {
                 name: "User",
@@ -2275,8 +2078,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         title: "Role(s) modified for member",
                         color: Colors.Primary,
@@ -2292,11 +2094,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberVoiceChannelLeave(
-        member: GuildMember,
-        channel: GuildBasedChannel,
-        _state: VoiceState
-    ) {
+    private async logMemberVoiceChannelLeave(member: GuildMember, channel: GuildBasedChannel, _state: VoiceState) {
         return this.send({
             guildId: member.guild.id,
             messageCreateOptions: {
@@ -2305,8 +2103,7 @@ class AuditLoggingService extends Service {
                         title: "Member left voice channel",
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         color: Colors.Red,
                         timestamp: new Date().toISOString(),
@@ -2329,11 +2126,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberVoiceChannelJoin(
-        member: GuildMember,
-        channel: GuildBasedChannel,
-        _state: VoiceState
-    ) {
+    private async logMemberVoiceChannelJoin(member: GuildMember, channel: GuildBasedChannel, _state: VoiceState) {
         return this.send({
             guildId: member.guild.id,
             messageCreateOptions: {
@@ -2342,8 +2135,7 @@ class AuditLoggingService extends Service {
                         title: "Member joined voice channel",
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         color: Colors.Green,
                         timestamp: new Date().toISOString(),
@@ -2375,8 +2167,7 @@ class AuditLoggingService extends Service {
                         title: "Message Saved",
                         author: {
                             name: message.author.username,
-                            icon_url:
-                                message.author.displayAvatarURL() ?? undefined
+                            icon_url: message.author.displayAvatarURL() ?? undefined
                         },
                         description: message.content,
                         color: Colors.Green,
@@ -2401,13 +2192,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    public async logRaidAlert({
-        actions,
-        serverAction,
-        guild,
-        membersJoined,
-        duration
-    }: LogRaidAlertPayload) {
+    public async logRaidAlert({ actions, serverAction, guild, membersJoined, duration }: LogRaidAlertPayload) {
         return this.send({
             guildId: guild.id,
             eventType: LogEventType.RaidAlert,
@@ -2436,9 +2221,7 @@ class AuditLoggingService extends Service {
                                     actions.length === 0
                                         ? "None"
                                         : this.application
-                                              .service<ModerationActionService>(
-                                                  ServiceID.MODERATION_ACTION
-                                              )
+                                              .service<ModerationActionService>(ServiceID.MODERATION_ACTION)
                                               .summarizeActions(actions),
 
                                 inline: true
@@ -2469,10 +2252,7 @@ class AuditLoggingService extends Service {
         return this.send({
             guildId: message.guild!.id,
             messageCreateOptions: {
-                content:
-                    mentions.length > 0
-                        ? mentions.map(m => `<@${m}>`).join(" ")
-                        : undefined,
+                content: mentions.length > 0 ? mentions.map(m => `<@${m}>`).join(" ") : undefined,
                 allowedMentions: {
                     users: mentions,
                     roles: []
@@ -2480,20 +2260,17 @@ class AuditLoggingService extends Service {
                 embeds: [
                     {
                         title: "New Member Message Inspection Log",
-                        description:
-                            "The following message was flagged as suspicious by the system.",
+                        description: "The following message was flagged as suspicious by the system.",
                         color: Colors.Gold,
                         timestamp: new Date().toISOString(),
                         fields: [
                             {
                                 name: "Reason",
-                                value:
-                                    data.reason || italic("No reason provided")
+                                value: data.reason || italic("No reason provided")
                             },
                             {
                                 name: "Summary",
-                                value:
-                                    categorySummary || italic("Not available")
+                                value: categorySummary || italic("Not available")
                             },
                             {
                                 name: "User",
@@ -2507,9 +2284,7 @@ class AuditLoggingService extends Service {
                             },
                             {
                                 name: "Channel",
-                                value: channelInfo(
-                                    message.channel as GuildBasedChannel
-                                ),
+                                value: channelInfo(message.channel as GuildBasedChannel),
                                 inline: true
                             }
                         ]
@@ -2517,8 +2292,7 @@ class AuditLoggingService extends Service {
                     {
                         author: {
                             name: member.user.username,
-                            icon_url:
-                                member.user.displayAvatarURL() ?? undefined
+                            icon_url: member.user.displayAvatarURL() ?? undefined
                         },
                         color: Colors.Gold,
                         description: message.content,
@@ -2527,10 +2301,7 @@ class AuditLoggingService extends Service {
                 ],
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(message.url)
-                            .setLabel("Context")
+                        new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(message.url).setLabel("Context")
                     )
                 ],
                 files: [...message.attachments.values()].map(file => ({

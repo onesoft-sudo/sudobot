@@ -33,13 +33,10 @@ import { LRUCache } from "lru-cache";
 const SYMBOL_NO_ENTRY = Symbol("NO_ENTRY");
 
 class AwayFromKeyboardService extends Service implements HasEventListeners {
-    public override readonly name: string = ServiceID.AUDIT_LOGGING;
+    public override readonly name: string = ServiceID.AWAY_FROM_KEYBOARD;
     declare protected readonly application: Application;
 
-    protected readonly guildCache = new Collection<
-        string,
-        LRUCache<Snowflake, AFKEntry | typeof SYMBOL_NO_ENTRY>
-    >();
+    protected readonly guildCache = new Collection<string, LRUCache<Snowflake, AFKEntry | typeof SYMBOL_NO_ENTRY>>();
 
     protected readonly LRU_OPTIONS = {
         max: 15000,
@@ -57,9 +54,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
         let cache = this.guildCache.get(guildId);
 
         if (!cache) {
-            cache = new LRUCache<Snowflake, AFKEntry | typeof SYMBOL_NO_ENTRY>(
-                this.LRU_OPTIONS
-            );
+            cache = new LRUCache<Snowflake, AFKEntry | typeof SYMBOL_NO_ENTRY>(this.LRU_OPTIONS);
             this.guildCache.set(guildId, cache);
         }
 
@@ -102,13 +97,9 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
     }
 
     protected async fetchEntry(guildId: Snowflake, userId: Snowflake) {
-        const existingEntry =
-            await this.application.database.query.afkEntries.findFirst({
-                where: and(
-                    eq(afkEntries.guildId, guildId),
-                    eq(afkEntries.userId, userId)
-                )
-            });
+        const existingEntry = await this.application.database.query.afkEntries.findFirst({
+            where: and(eq(afkEntries.guildId, guildId), eq(afkEntries.userId, userId))
+        });
 
         if (!existingEntry) {
             this.getGuildCache(guildId).set(userId, SYMBOL_NO_ENTRY);
@@ -162,17 +153,12 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
         cache.clear();
         this.guildCache.delete(guildId);
 
-        this.application.logger.debug(
-            `Removed ${rowCount} AFK entries for guild ${guildId}.`
-        );
+        this.application.logger.debug(`Removed ${rowCount} AFK entries for guild ${guildId}.`);
 
         return rowCount;
     }
 
-    public async removeAFK(
-        userId: Snowflake,
-        guildId: Snowflake
-    ): Promise<AFKEntry | undefined> {
+    public async removeAFK(userId: Snowflake, guildId: Snowflake): Promise<AFKEntry | undefined> {
         const cache = this.getGuildCache(guildId);
 
         if (cache.get(userId) === SYMBOL_NO_ENTRY) {
@@ -183,12 +169,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
 
         const deleted = await this.application.database.drizzle
             .delete(afkEntries)
-            .where(
-                and(
-                    eq(afkEntries.guildId, guildId),
-                    eq(afkEntries.userId, userId)
-                )
-            )
+            .where(and(eq(afkEntries.guildId, guildId), eq(afkEntries.userId, userId)))
             .returning();
 
         cache.set(userId, SYMBOL_NO_ENTRY);
@@ -197,12 +178,8 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
 
     private queueSync() {
         this.timeout ??= setTimeout(async () => {
-            for (const [key, { reason, mentions, mentionCount }] of this
-                .modified) {
-                const [guildId, userId] = key.split("::") as [
-                    Snowflake,
-                    Snowflake
-                ];
+            for (const [key, { reason, mentions, mentionCount }] of this.modified) {
+                const [guildId, userId] = key.split("::") as [Snowflake, Snowflake];
 
                 const cache = this.getGuildCache(guildId);
                 const entry = cache.get(userId);
@@ -233,13 +210,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
         }, 10_000);
     }
 
-    public async addMention({
-        guildId,
-        mentionFromId,
-        userId,
-        channelId,
-        messageId
-    }: AddMentionOptions) {
+    public async addMention({ guildId, mentionFromId, userId, channelId, messageId }: AddMentionOptions) {
         const cache = this.getGuildCache(guildId);
         let entry = cache.get(userId) ?? null;
 
@@ -261,9 +232,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
             entry.mentions.shift();
         }
 
-        entry.mentions.unshift(
-            `${mentionFromId}::${guildId}::${channelId}::${messageId}::${new Date().toISOString()}`
-        );
+        entry.mentions.unshift(`${mentionFromId}::${guildId}::${channelId}::${messageId}::${new Date().toISOString()}`);
 
         this.modified.set(`${guildId}::${userId}`, {
             mentionCount: entry.mentionCount,
@@ -276,10 +245,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
     }
 
     public generateAFKSummary(global: AFKEntry, guild?: AFKEntry): string;
-    public generateAFKSummary(
-        global: AFKEntry | undefined,
-        guild: AFKEntry
-    ): string;
+    public generateAFKSummary(global: AFKEntry | undefined, guild: AFKEntry): string;
 
     public generateAFKSummary(entry: AFKEntry) {
         let description = `You're no longer AFK. You've had **${entry.mentionCount ?? 0}** mentions total.\n`;
@@ -304,10 +270,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
     }
 
     public async onMessageCreate(message: Message<boolean>) {
-        const entry = await this.removeAFK(
-            message.author.id,
-            message.guildId || `gc_${message.channelId}`
-        );
+        const entry = await this.removeAFK(message.author.id, message.guildId || `gc_${message.channelId}`);
 
         if (entry) {
             await message.reply({
@@ -333,9 +296,7 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
                 continue;
             }
 
-            const cache = this.getGuildCache(
-                message.guildId || `gc_${message.channelId}`
-            );
+            const cache = this.getGuildCache(message.guildId || `gc_${message.channelId}`);
 
             const guildAFK = cache.get(mentionedUser.id);
 
@@ -392,14 +353,13 @@ class AwayFromKeyboardService extends Service implements HasEventListeners {
     }
 
     private formatMentionString(mentionString: string) {
-        const [mentionId, guildId, channelId, messageId, timestamp] =
-            mentionString.split("::") as [
-                Snowflake,
-                Snowflake,
-                Snowflake,
-                Snowflake,
-                string
-            ];
+        const [mentionId, guildId, channelId, messageId, timestamp] = mentionString.split("::") as [
+            Snowflake,
+            Snowflake,
+            Snowflake,
+            Snowflake,
+            string
+        ];
 
         return `- By <@${mentionId}> - ${time(new Date(timestamp), "R")} - [Navigate](${messageLink(channelId, messageId, guildId)})\n`;
     }

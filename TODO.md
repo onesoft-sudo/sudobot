@@ -1,5 +1,6 @@
 # Todo List
 
+- Legacy command option parsing
 - Subcommand support
 - Store configuration in PostgreSQL and LRU-cache it
 

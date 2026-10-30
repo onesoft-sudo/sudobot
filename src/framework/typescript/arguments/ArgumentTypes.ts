@@ -17,21 +17,49 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type Command from "@framework/commands/Command.js";
-import type Argument from "./Argument.js";
+import type { ArgumentSchema, OptionDefinition } from "@framework/arguments/ArgumentSchema.js";
 
 export type ArgumentTypes<
-    D extends readonly { name: string; type: object; isOptional?: boolean | null | undefined }[]
+    D extends readonly {
+        readonly name: string;
+        readonly type: object;
+        readonly isOptional?: boolean | null | undefined;
+    }[]
 > = {
-    [K in D[number] as K["name"]]: K["type"] extends typeof Argument<unknown>
-        ? InstanceType<K["type"]>["_type"] | (K["isOptional"] extends true ? null : never)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [K in D[number] as K["name"]]: K["type"] extends new (...args: any[]) => any
+        ? InstanceType<K["type"]> extends { readonly _type: infer T }
+            ? T | (K["isOptional"] extends true ? null : never)
+            : never
         : never;
 };
 
-export type ArgumentsOf<T extends Command> = NonNullable<T["argumentSchema"]>["overloads"][number] extends {
+export type ArgumentsOf<T extends { argumentSchema: ArgumentSchema }> = NonNullable<
+    T["argumentSchema"]
+>["overloads"][number] extends {
     definitions: infer D;
 }
-    ? D extends readonly { name: string; type: object; isOptional?: boolean | null | undefined }[]
+    ? D extends readonly {
+          readonly name: string;
+          readonly type: object;
+          readonly isOptional?: boolean | null | undefined;
+      }[]
         ? ArgumentTypes<D>
+        : never
+    : never;
+
+export type OptionsOf<T extends { argumentSchema: ArgumentSchema }> = NonNullable<
+    T["argumentSchema"]
+>["overloads"][number] extends {
+    options: infer O;
+}
+    ? O extends Record<string, OptionDefinition>
+        ? {
+              [K in keyof O]: O[K]["multiple"] extends true
+                  ? ReadonlyArray<O[K]["argument"] extends true ? string | null : "yes" | null>
+                  : O[K]["argument"] extends true
+                    ? string | null
+                    : "yes" | null;
+          }
         : never
     : never;

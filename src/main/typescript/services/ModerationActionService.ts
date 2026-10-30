@@ -20,26 +20,14 @@
 import { Inject } from "@framework/container/Inject.js";
 import Duration from "@framework/datetime/Duration.js";
 import Service from "@framework/services/Service.js";
-import type { Infraction } from "@main/models/Infraction.js";
 import { ServiceID } from "@main/core/ServiceID.js";
+import type { Infraction } from "@main/models/Infraction.js";
 import { ModerationActionType } from "@schemas/defs/ModerationActionSchema.js";
 import { formatDistanceToNowStrict } from "date-fns";
-import {
-    Guild,
-    GuildMember,
-    GuildTextBasedChannel,
-    Message,
-    User,
-    bold,
-    italic,
-    roleMention
-} from "discord.js";
+import { Guild, GuildMember, GuildTextBasedChannel, Message, User, bold, italic, roleMention } from "discord.js";
 import type InfractionManagerService from "./InfractionManagerService.js";
 
-type MemberOnlyAction = Extract<
-    ModerationActionType,
-    { type: "kick" | "mute" | "role" | "warn" }
->;
+type MemberOnlyAction = Extract<ModerationActionType, { type: "kick" | "mute" | "role" | "warn" }>;
 
 type TakeActionResult = {
     failedActions: ModerationActionType["type"][];
@@ -69,12 +57,7 @@ class ModerationActionService extends Service {
         const user = target instanceof GuildMember ? target.user : target;
 
         for (const action of actions) {
-            const isMemberOnlyAction = [
-                "kick",
-                "mute",
-                "role",
-                "warn"
-            ].includes(action.type);
+            const isMemberOnlyAction = ["kick", "mute", "role"].includes(action.type);
 
             if (isMemberOnlyAction && target instanceof User) {
                 this.application.logger.warn(
@@ -86,11 +69,7 @@ class ModerationActionService extends Service {
 
             const result =
                 isMemberOnlyAction && target instanceof GuildMember
-                    ? await this.takeActionOnMember(
-                          guild,
-                          target,
-                          action as MemberOnlyAction
-                      )
+                    ? await this.takeActionOnMember(guild, target, action as MemberOnlyAction)
                     : await this.takeActionOnUser(guild, user, action, payload);
 
             if (result instanceof Message) {
@@ -107,10 +86,7 @@ class ModerationActionService extends Service {
 
         if (failedActions.length) {
             this.application.logger.debug("Failed actions: ", failedActions);
-            this.application.logger.debug(
-                "Failed action results: ",
-                failedActionResults
-            );
+            this.application.logger.debug("Failed action results: ", failedActionResults);
         }
 
         return {
@@ -119,11 +95,7 @@ class ModerationActionService extends Service {
         };
     }
 
-    private async takeActionOnMember(
-        guild: Guild,
-        target: GuildMember,
-        action: MemberOnlyAction
-    ) {
+    private async takeActionOnMember(guild: Guild, target: GuildMember, action: MemberOnlyAction) {
         switch (action.type) {
             case "kick":
                 return await this.infractionManagerService.createKick({
@@ -139,40 +111,25 @@ class ModerationActionService extends Service {
                     moderator: this.application.client.user!,
                     member: target,
                     reason: action.reason,
-                    duration: action.duration
-                        ? Duration.fromMilliseconds(action.duration)
-                        : undefined,
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined,
                     guildId: guild.id,
                     notify: action.notify
                 });
 
             case "role":
-                return await this.infractionManagerService.createRoleModification(
-                    {
-                        moderator: this.application.client.user!,
-                        member: target,
-                        reason: action.reason,
-                        guildId: guild.id,
-                        roles: action.roles,
-                        notify: action.notify,
-                        mode: action.mode,
-                        duration: action.duration
-                            ? Duration.fromMilliseconds(action.duration)
-                            : undefined
-                    }
-                );
-
-            case "warn":
-                return await this.infractionManagerService.createWarning({
+                return await this.infractionManagerService.createRoleModification({
                     moderator: this.application.client.user!,
                     member: target,
                     reason: action.reason,
                     guildId: guild.id,
-                    notify: action.notify
+                    roles: action.roles,
+                    notify: action.notify,
+                    mode: action.mode,
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined
                 });
 
             default:
-                throw new Error(`Invalid action type: ${action as string}`);
+                throw new Error(`Invalid action type: ${action.type as string}`);
         }
     }
 
@@ -192,9 +149,7 @@ class ModerationActionService extends Service {
                         ? Duration.fromMilliseconds(action.delete_timeframe)
                         : undefined,
                     guildId: guild.id,
-                    duration: action.duration
-                        ? Duration.fromMilliseconds(action.duration)
-                        : undefined
+                    duration: action.duration ? Duration.fromMilliseconds(action.duration) : undefined
                 });
 
             case "verbal_warn":
@@ -224,18 +179,23 @@ class ModerationActionService extends Service {
 
             case "delete_message":
                 if (!message) {
-                    throw new Error(
-                        "Message is required for delete_message action"
-                    );
+                    throw new Error("Message is required for delete_message action");
                 }
 
                 if (message.deletable) {
-                    return await message
-                        .delete()
-                        .catch(this.application.logger.error);
+                    return await message.delete().catch(this.application.logger.error);
                 }
 
                 break;
+
+            case "warn":
+                return await this.infractionManagerService.createWarning({
+                    moderator: this.application.client.user!,
+                    user: target,
+                    reason: action.reason,
+                    guildId: guild.id,
+                    notify: action.notify
+                });
 
             default:
                 throw new Error(`Invalid action type: ${action.type}`);
@@ -274,17 +234,11 @@ class ModerationActionService extends Service {
                     summary += this.commonSummary(action, "Warned");
                     break;
                 case "clear":
-                    summary += this.commonSummary(
-                        action,
-                        "Cleared recent messages"
-                    );
+                    summary += this.commonSummary(action, "Cleared recent messages");
                     summary += `Count: ${action.count ?? italic("None")}\n`;
                     break;
                 case "role":
-                    summary += this.commonSummary(
-                        action,
-                        `Roles ${action.mode === "give" ? "Added" : "Removed"}`
-                    );
+                    summary += this.commonSummary(action, `Roles ${action.mode === "give" ? "Added" : "Removed"}`);
                     summary += `Roles: ${action.roles.map(r => roleMention(r)).join(", ")}\n`;
                     break;
                 case "verbal_warn":

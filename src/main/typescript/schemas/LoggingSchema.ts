@@ -62,18 +62,10 @@ export type PaxmodModerateTextSuccessResponse = {
 };
 
 export type LogEventArgs = {
-    [LogEventType.MessageDelete]: [
-        message: Message<true>,
-        moderator?: User | PartialUser
-    ];
-    [LogEventType.MessageUpdate]: [
-        oldMessage: Message<true>,
-        newMessage: Message<true>
-    ];
+    [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User | PartialUser];
+    [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
     [LogEventType.MessageDeleteBulk]: [payload: LogMessageBulkDeletePayload];
-    [LogEventType.MessageReactionClear]: [
-        payload: LogMessageReactionClearPayload
-    ];
+    [LogEventType.MessageReactionClear]: [payload: LogMessageReactionClearPayload];
     [LogEventType.SystemAutoModRuleModeration]: [
         type: "profile" | "message",
         messageOrMember: Message | GuildMember,
@@ -91,44 +83,20 @@ export type LogEventArgs = {
     [LogEventType.MemberMuteAdd]: [payload: LogMemberMuteAddPayload];
     [LogEventType.MemberMuteRemove]: [payload: LogMemberMuteRemovePayload];
     [LogEventType.MemberTimeoutAdd]: [payload: LogMemberTimeoutAddPayload];
-    [LogEventType.MemberTimeoutRemove]: [
-        payload: LogMemberTimeoutRemovePayload
-    ];
-    [LogEventType.MemberWarningAdd]: [payload: LogMemberWarningAddPayload];
-    [LogEventType.MemberModeratorMessageAdd]: [
-        payload: LogMemberModMessageAddPayload
-    ];
+    [LogEventType.MemberTimeoutRemove]: [payload: LogMemberTimeoutRemovePayload];
+    [LogEventType.UserWarningAdd]: [payload: LogUserWarningAddPayload];
+    [LogEventType.UserModeratorMessageAdd]: [payload: LogUserModMessageAddPayload];
     [LogEventType.UserNoteAdd]: [payload: LogUserNoteAddPayload];
-    [LogEventType.MemberRoleModification]: [
-        payload: LogMemberRoleModificationPayload
-    ];
+    [LogEventType.MemberRoleModification]: [payload: LogMemberRoleModificationPayload];
     [LogEventType.SystemUserMessageSave]: [message: Message, moderator: User];
     [LogEventType.RaidAlert]: [payload: LogRaidAlertPayload];
-    [LogEventType.MemberNicknameModification]: [
-        payload: LogMemberNicknameModificationPayload
-    ];
-    [LogEventType.GuildVerificationAttempt]: [
-        payload: LogGuildVerificationAttemptPayload
-    ];
-    [LogEventType.GuildVerificationSuccess]: [
-        payload: LogGuildVerificationSuccessPayload
-    ];
-    [LogEventType.GuildVerificationNotEnoughInfo]: [
-        payload: LogGuildVerificationNotEnoughInfoPayload
-    ];
-    [LogEventType.NewMemberMessageInspection]: [
-        payload: LogNewMemberMessageInspectionPayload
-    ];
-    [LogEventType.MemberVoiceChannelJoin]: [
-        member: GuildMember,
-        channel: GuildBasedChannel,
-        state: VoiceState
-    ];
-    [LogEventType.MemberVoiceChannelLeave]: [
-        member: GuildMember,
-        channel: GuildBasedChannel,
-        state: VoiceState
-    ];
+    [LogEventType.MemberNicknameModification]: [payload: LogMemberNicknameModificationPayload];
+    [LogEventType.GuildVerificationAttempt]: [payload: LogGuildVerificationAttemptPayload];
+    [LogEventType.GuildVerificationSuccess]: [payload: LogGuildVerificationSuccessPayload];
+    [LogEventType.GuildVerificationNotEnoughInfo]: [payload: LogGuildVerificationNotEnoughInfoPayload];
+    [LogEventType.NewMemberMessageInspection]: [payload: LogNewMemberMessageInspectionPayload];
+    [LogEventType.MemberVoiceChannelJoin]: [member: GuildMember, channel: GuildBasedChannel, state: VoiceState];
+    [LogEventType.MemberVoiceChannelLeave]: [member: GuildMember, channel: GuildBasedChannel, state: VoiceState];
 };
 
 export type LogNewMemberMessageInspectionPayload = {
@@ -188,22 +156,13 @@ export type LogMemberMassBanPayload = LogModerationActionCommonPayload & {
     deletionTimeframe?: Duration;
 };
 
-export type LogMemberMassUnbanPayload = Omit<
-    LogMemberMassBanPayload,
-    "duration" | "deletionTimeframe"
->;
+export type LogMemberMassUnbanPayload = Omit<LogMemberMassBanPayload, "duration" | "deletionTimeframe">;
 
-export type LogMemberMassKickPayload = Omit<
-    LogMemberMassBanPayload,
-    "duration" | "deletionTimeframe" | "users"
-> & {
+export type LogMemberMassKickPayload = Omit<LogMemberMassBanPayload, "duration" | "deletionTimeframe" | "users"> & {
     members: Array<Snowflake | GuildMember>;
 };
 
-export type LogMemberRoleModificationPayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator"
-> & {
+export type LogMemberRoleModificationPayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
     member: GuildMember;
     infractionId?: number;
     moderator?: User;
@@ -229,24 +188,15 @@ export type LogMemberTimeoutAddPayload = LogMemberTimeoutRemovePayload & {
     duration: Duration;
 };
 
-export type LogMessageBulkDeletePayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator" | "guild"
-> & {
-    messages: ReadonlyCollection<
-        string,
-        Message<boolean> | PartialMessage | undefined
-    >;
+export type LogMessageBulkDeletePayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {
+    messages: ReadonlyCollection<string, Message<boolean> | PartialMessage | undefined>;
     channel: GuildTextBasedChannel;
     moderator?: User | PartialUser;
     infractionId?: number;
     user?: User;
 };
 
-export type LogMessageReactionClearPayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator" | "guild"
-> & {
+export type LogMessageReactionClearPayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {
     reactions: MessageReaction[];
     channel: GuildTextBasedChannel;
     moderator?: User;
@@ -254,33 +204,25 @@ export type LogMessageReactionClearPayload = Omit<
     user?: User;
 };
 
-export type LogMemberWarningAddPayload = Omit<
-    LogModerationActionCommonPayload,
-    "guild"
-> & {
-    member: GuildMember;
+export type LogUserWarningAddPayload = Omit<LogModerationActionCommonPayload, "guild"> & {
+    user: User;
+    guildId: Snowflake;
     infractionId: number;
 };
 
-export type LogMemberModMessageAddPayload = LogMemberWarningAddPayload;
+export type LogUserModMessageAddPayload = LogUserWarningAddPayload;
 export type LogUserNoteAddPayload = LogModerationActionCommonPayload & {
     user: User;
     infractionId: number;
 };
 
-export type LogMemberKickPayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator" | "guild"
-> & {
+export type LogMemberKickPayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {
     moderator?: User;
     member: GuildMember;
     infractionId?: number;
 };
 
-export type LogMemberBanAddPayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator"
-> & {
+export type LogMemberBanAddPayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
     moderator?: User;
     user: User;
     infractionId?: number;
@@ -288,10 +230,7 @@ export type LogMemberBanAddPayload = Omit<
     deletionTimeframe?: Duration;
 };
 
-export type LogMemberBanRemovePayload = Omit<
-    LogModerationActionCommonPayload,
-    "moderator"
-> & {
+export type LogMemberBanRemovePayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
     moderator?: User;
     user: User;
     infractionId?: number;

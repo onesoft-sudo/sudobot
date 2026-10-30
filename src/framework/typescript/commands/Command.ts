@@ -210,8 +210,8 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
      */
     protected abstract execute(
         context: Context,
-        args: Readonly<Record<string, unknown>>,
-        options: Readonly<Record<string, string>>
+        args: Record<string, unknown>,
+        options: Record<string, string | null>
     ): Awaitable<void>;
 
     /**
@@ -420,7 +420,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     /**
      * Builds a slash command.
      *
-     * @returns {SlashCommandBuilder} Builder for this command.
+     * @returns Builder for this command.
      */
     protected buildChatInput(): SlashCommandBuilder {
         const { contexts, permissions } = this.prepareDetails();
@@ -522,6 +522,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             return;
         }
 
+        /* TODO: Command options */
         await this.execute(context, result?.args || {}, {});
     }
 }
