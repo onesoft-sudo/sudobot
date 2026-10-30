@@ -57,3 +57,12 @@ export type ArgumentSchema = {
     overloads: ArgumentOverload[];
     defaultIndex?: number;
 };
+
+export type ArgumentOverloadExtended = ArgumentOverload & {
+    /* Maps short options too */
+    optionsPlainMap: Record<string, OptionDefinition & { canonicalName: string }>;
+};
+
+export type ArgumentParserSchema = Omit<ArgumentSchema, "overloads"> & {
+    overloads: ReadonlyArray<ArgumentOverloadExtended>;
+};

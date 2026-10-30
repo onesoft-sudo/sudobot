@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import Argument from "./Argument.js";
-import { ArgumentErrorType } from "./InvalidArgumentError.js";
+import RestArgument from "@framework/arguments/RestArgument.js";
 import LegacyContext from "@framework/commands/LegacyContext.js";
 import assert from "assert";
+import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import { ArgumentErrorType } from "./InvalidArgumentError.js";
 
-class RestStringArgument extends Argument<string> {
+class RestStringArgument extends RestArgument<string> {
     public override readonly abortAfterParsing = true;
 
     public override toString(): string {

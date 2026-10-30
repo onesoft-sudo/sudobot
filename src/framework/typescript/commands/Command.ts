@@ -19,7 +19,7 @@
 
 import type Application from "@framework/app/Application.js";
 import ArgumentParser from "@framework/arguments/ArgumentParser.js";
-import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
+import type { ArgumentParserSchema, ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
 import { Memoize } from "@framework/decorators/Memoize.js";
 import Guard from "@framework/guards/Guard.js";
 import type { GuardResolvable } from "@framework/guards/GuardResolvable.js";
@@ -158,6 +158,13 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     public readonly argumentSchema?: ArgumentSchema;
 
     /**
+     * Cached extended argument schema passed to the parser for this command.
+     *
+     * @type {ArgumentParserSchema}
+     */
+    public cachedArgumentSchema?: ArgumentParserSchema;
+
+    /**
      * Rate limit configuration for this command.
      *
      * @type {CommandRateLimitConfiguration}
@@ -211,7 +218,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     protected abstract execute(
         context: Context,
         args: Record<string, unknown>,
-        options: Record<string, string | null>
+        options: Record<string, string | readonly string[] | null>
     ): Awaitable<void>;
 
     /**
@@ -502,8 +509,34 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             }
         }
 
-        const result = this.argumentSchema
-            ? await this.argumentParser.parse(context as LegacyContext | InteractionContext, this.argumentSchema)
+        let schema: ArgumentParserSchema | undefined = this.cachedArgumentSchema;
+
+        if (!schema && this.argumentSchema) {
+            schema = this.cachedArgumentSchema = {
+                ...this.argumentSchema,
+                overloads: this.argumentSchema.overloads.map(overload => {
+                    const options = Object.create(null);
+
+                    if (overload.options) {
+                        for (const [optionName, config] of Object.entries(overload.options)) {
+                            options[optionName] = { ...config, canonicalName: optionName };
+
+                            if (config.short) {
+                                options[config.short] = { ...config, canonicalName: optionName };
+                            }
+                        }
+                    }
+
+                    return {
+                        ...overload,
+                        optionsPlainMap: options
+                    };
+                })
+            };
+        }
+
+        const result = schema
+            ? await this.argumentParser.parse(context as LegacyContext | InteractionContext, schema)
             : undefined;
 
         if (result?.errors?.length) {
@@ -523,7 +556,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
         }
 
         /* TODO: Command options */
-        await this.execute(context, result?.args || {}, {});
+        await this.execute(context, result?.args || {}, result?.options ?? {});
     }
 }
 
