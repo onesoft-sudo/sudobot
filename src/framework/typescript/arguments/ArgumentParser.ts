@@ -40,6 +40,8 @@ type ParseStepResult<T extends object = Record<never, never>> = T & {
     error?: string;
 };
 
+export const OPTION_PRESENT_NO_ARG = `${Math.round(Math.random() * 1000000000)}`;
+
 class ArgumentParser {
     protected readonly application: Application;
 
@@ -52,7 +54,7 @@ class ArgumentParser {
         schema: ArgumentParserSchema
     ): Promise<{
         args?: Record<string, unknown>;
-        options?: Record<string, string | readonly string[] | undefined>;
+        options?: Record<string, string | ReadonlyArray<string | undefined> | undefined>;
         overloadIndex?: number;
         errors?: string[];
     }> {
@@ -95,7 +97,7 @@ class ArgumentParser {
         schema: ArgumentParserSchema
     ): Promise<{
         args?: Record<string, unknown>;
-        options?: Record<string, string | readonly string[] | undefined>;
+        options?: Record<string, string | ReadonlyArray<string | undefined> | undefined>;
         overloadIndex?: number;
         errors?: string[];
     }> {
@@ -143,11 +145,11 @@ class ArgumentParser {
     ): Promise<
         ParseStepResult<{
             args?: Record<string, unknown>;
-            options?: Record<string, string | readonly string[] | undefined>;
+            options?: Record<string, string | ReadonlyArray<string | undefined> | undefined>;
         }>
     > {
         const args: Record<string, unknown> = Object.create(null);
-        const options: Record<string, string | readonly string[] | undefined> = Object.create(null);
+        const options: Record<string, string | ReadonlyArray<string | undefined> | undefined> = Object.create(null);
 
         for (const definition of overload.definitions) {
             const result = await this.parseDefinition(parserContext, overload, definition, options);
@@ -175,13 +177,15 @@ class ArgumentParser {
         parserContext: ParserContext,
         overload: ArgumentOverloadExtended,
         definition: ArgumentDefinition,
-        outOptions: Record<string, string | readonly string[] | undefined>
+        outOptions: Record<string, string | ReadonlyArray<string | undefined> | undefined>
     ): Promise<ParseStepResult<{ value?: unknown; break?: boolean }>> {
-        let done = true;
+        let done;
         let lastError: ArgumentParseError | InvalidArgumentError | string | undefined;
-        const options: Record<string, string | readonly string[] | undefined> = Object.create(null);
+        const options = outOptions;
 
         outer: do {
+            done = true;
+
             const rawValue = parserContext.context.isInteractive()
                 ? parserContext.context.commandMessage.options.get(definition.interactionName ?? definition.name)
                 : parserContext.args[parserContext.index];
@@ -207,10 +211,19 @@ class ArgumentParser {
             for (let i = 0; i < types.length; i++) {
                 const type = types[i];
 
-                if (!parserContext.isInteractive && parserContext.args[parserContext.index][0] === "-") {
-                    while (!parserContext.isInteractive && parserContext.args[parserContext.index][0] === "-") {
+                if (
+                    !parserContext.isInteractive &&
+                    !parserContext.abortOptionParsing &&
+                    parserContext.args[parserContext.index]?.[0] === "-"
+                ) {
+                    while (
+                        !parserContext.isInteractive &&
+                        !parserContext.abortOptionParsing &&
+                        parserContext.args[parserContext.index]?.[0] === "-"
+                    ) {
                         if (type.prototype instanceof RestArgument) {
                             parserContext.abortOptionParsing = true;
+                            break;
                         } else if (parserContext.args[parserContext.index] === "--") {
                             parserContext.abortOptionParsing = true;
                             parserContext.index++;
@@ -236,27 +249,30 @@ class ArgumentParser {
 
                                 if (!optionSchema) {
                                     lastError = `Invalid option '${isLongOption ? "--" : "-"}${optionName}'.`;
+                                    parserContext.index++;
                                     continue outer;
                                 }
 
-                                let optionArgument: string | null = null;
+                                let optionArgument: string | undefined = undefined;
 
                                 if (optionSchema.argument) {
                                     if (j !== optionStrings.length - 1) {
                                         lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept an argument in condensed form. Please pass it seperately.`;
+                                        parserContext.index++;
                                         continue outer;
                                     }
 
                                     optionArgument =
                                         equalPosition === -1
                                             ? optionSchema.argument === "required"
-                                                ? parserContext.args[parserContext.index++]
+                                                ? parserContext.args[++parserContext.index]
                                                 : ""
                                             : parserContext.args[parserContext.index].substring(equalPosition + 1);
 
                                     if (!optionArgument) {
                                         if (optionSchema.argument === "required") {
                                             lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' requires an argument.`;
+                                            parserContext.index++;
                                             continue outer;
                                         }
 
@@ -264,29 +280,33 @@ class ArgumentParser {
                                     }
                                 } else if (equalPosition !== -1) {
                                     lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept arguments.`;
+                                    parserContext.index++;
                                     continue outer;
                                 }
 
-                                if (optionSchema.multiple && optionArgument !== null) {
+                                if (optionSchema.multiple) {
                                     if (Array.isArray(options[optionSchema.canonicalName])) {
-                                        (options[optionSchema.canonicalName] as Array<string>)?.push(optionArgument);
-                                    } else if (optionArgument !== null) {
-                                        options[optionSchema.canonicalName] = [optionArgument];
+                                        (options[optionSchema.canonicalName] as Array<string | undefined>)?.push(
+                                            optionArgument ?? OPTION_PRESENT_NO_ARG
+                                        );
+                                    } else {
+                                        options[optionSchema.canonicalName] = [optionArgument ?? OPTION_PRESENT_NO_ARG];
                                     }
                                 } else {
                                     if (optionSchema.canonicalName in options) {
                                         lastError = `Cannot accept '${isLongOption ? "--" : "-"}${optionName}' multiple times.`;
+                                        parserContext.index++;
                                         continue outer;
                                     }
 
-                                    options[optionSchema.canonicalName] = optionArgument ?? "yes";
+                                    options[optionSchema.canonicalName] = optionArgument ?? OPTION_PRESENT_NO_ARG;
                                 }
                             }
 
                             parserContext.index++;
                         }
                     }
-                } else if (parserContext.isInteractive && overload.options) {
+                } else if (parserContext.isInteractive && !parserContext.abortOptionParsing && overload.options) {
                     for (const optionName in overload.options) {
                         const value = overload.options?.[optionName].argument
                             ? ((parserContext.context.commandMessage as ChatInputCommandInteraction).options.getString(
@@ -295,14 +315,17 @@ class ArgumentParser {
                             : ((parserContext.context.commandMessage as ChatInputCommandInteraction).options.getBoolean(
                                     optionName
                                 ) ?? undefined)
-                              ? "yes"
+                              ? OPTION_PRESENT_NO_ARG
                               : undefined;
 
                         options[optionName] = value;
                     }
                 }
 
-                Object.assign(outOptions, options);
+                if (parserContext.index >= parserContext.args.length) {
+                    done = false;
+                    continue outer;
+                }
 
                 try {
                     const argument = parserContext.isInteractive
@@ -337,14 +360,15 @@ class ArgumentParser {
         } while (!done);
 
         return {
-            error: lastError
-                ? typeof lastError === "string"
-                    ? lastError
-                    : lastError.message ||
-                      (lastError instanceof InvalidArgumentError && lastError.meta.type !== undefined
-                          ? definition.errorMessages?.[lastError.meta.type]
-                          : "Unknown error")
-                : "Invalid parser state: No types to parse or no value could be computed"
+            error:
+                (lastError
+                    ? typeof lastError === "string"
+                        ? lastError
+                        : lastError.message ||
+                          (lastError instanceof InvalidArgumentError && lastError.meta.type !== undefined
+                              ? definition.errorMessages?.[lastError.meta.type]
+                              : "Unknown error")
+                    : null) ?? "Invalid parser state: No types to parse or no value could be computed"
         };
     }
 

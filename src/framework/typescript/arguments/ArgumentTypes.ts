@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { OPTION_PRESENT_NO_ARG } from "@framework/arguments/ArgumentParser.js";
 import type { ArgumentSchema, OptionDefinition } from "@framework/arguments/ArgumentSchema.js";
 
 export type ArgumentTypes<
@@ -61,7 +62,7 @@ export type OptionsOf<T extends { argumentSchema: ArgumentSchema }> = NonNullabl
                     ? string | undefined
                     : O[K]["argument"] extends "required"
                       ? string | undefined
-                      : "yes" | undefined;
+                      : typeof OPTION_PRESENT_NO_ARG | undefined;
           }
         : never
     : never;

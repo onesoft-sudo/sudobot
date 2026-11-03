@@ -10,5 +10,6 @@
         },
         "keepClassNames": true,
         "target": "es2023"
-    }
+    },
+    "sourceMaps": true
 }
