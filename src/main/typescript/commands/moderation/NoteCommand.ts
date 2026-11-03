@@ -14,7 +14,7 @@ import { CommandInteraction, Message } from "discord.js";
 
 class NoteCommand extends Command {
     public override readonly name = "note";
-    public override readonly description = "Save a note on a user.";
+    public override readonly description = "Saves a note on a user.";
     public override readonly aliases = [];
     public override readonly modes: CommandMode[] = [CommandMode.Guild];
 
@@ -25,14 +25,16 @@ class NoteCommand extends Command {
                     {
                         name: "user",
                         type: UserArgument,
-                        errorMessages: UserArgument.defaultErrors
+                        errorMessages: UserArgument.defaultErrors,
+                        description: "The target user."
                     },
                     {
                         name: "reason",
                         type: RestStringArgument,
                         rules: DefaultArgumentRules.Reason,
                         errorMessages: DefaultArgumentErrorMessages.Reason,
-                        isOptional: true
+                        isOptional: true,
+                        description: "Reason for this infraction."
                     }
                 ]
             }

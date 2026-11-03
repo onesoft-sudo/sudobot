@@ -25,19 +25,22 @@ class WarnCommand extends Command {
                     {
                         name: "user",
                         type: UserArgument,
-                        errorMessages: UserArgument.defaultErrors
+                        errorMessages: UserArgument.defaultErrors,
+                        description: "The target user."
                     },
                     {
                         name: "reason",
                         type: RestStringArgument,
                         rules: DefaultArgumentRules.Reason,
                         errorMessages: DefaultArgumentErrorMessages.Reason,
-                        isOptional: true
+                        isOptional: true,
+                        description: "Reason for this infraction."
                     }
                 ],
                 options: {
                     silent: {
-                        short: "s"
+                        short: "s",
+                        description: "Whether to skip notifying the user."
                     }
                 }
             }
@@ -79,12 +82,10 @@ class WarnCommand extends Command {
                   ? [...context.commandMessage.attachments.values()]
                   : undefined;
 
-        const silent =
+        const notify =
             context.isInteractive() && context.commandMessage.isChatInputCommand()
-                ? typeof context.commandMessage.options.getBoolean("notify") === "boolean"
-                    ? !context.commandMessage.options.getBoolean("notify")
-                    : false
-                : options.silent === "yes";
+                ? !!context.commandMessage.options.getBoolean("notify")
+                : options.silent !== "yes";
 
         const { overviewEmbed, status } = await this.infractionManager.createWarning({
             guildId: context.guildId,
@@ -93,7 +94,7 @@ class WarnCommand extends Command {
             reason: reason ?? undefined,
             attachments,
             generateOverviewEmbed: true,
-            notify: !silent
+            notify
         });
 
         if (status === "failed") {
