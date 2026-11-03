@@ -1,3 +1,4 @@
+import { OPTION_PRESENT_NO_ARG } from "@framework/arguments/ArgumentParser.js";
 import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
 import type { ArgumentsOf, OptionsOf } from "@framework/arguments/ArgumentTypes.js";
 import DurationArgument from "@framework/arguments/DurationArgument.js";
@@ -145,11 +146,11 @@ class MuteCommand extends Command {
 
         const notify = context.isInteractive()
             ? !context.commandMessage.options.getBoolean("notify")
-            : options.silent !== "yes";
+            : options.silent !== OPTION_PRESENT_NO_ARG;
 
         const hard = context.isInteractive()
             ? context.commandMessage.options.getString("mode") === "hard"
-            : options.hard === "yes";
+            : options.hard === OPTION_PRESENT_NO_ARG;
 
         const clearCount = context.isInteractive()
             ? (context.commandMessage.options.getInteger("clear_count") ?? 0)

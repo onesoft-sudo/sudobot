@@ -1478,14 +1478,6 @@ class InfractionManagerService extends Service {
         }
 
         try {
-            if (mode === "timeout" && duration) {
-                await member.timeout(duration.toMilliseconds(), `${moderator.username} - ${reason}`);
-            } else if (mode === "role" && role) {
-                await member.roles.add(role, `${moderator.username} - ${reason}`);
-            } else {
-                throw new Error("Unreachable");
-            }
-
             if (rolesTaken) {
                 try {
                     await member.roles.set([], `${moderator.username} - ${reason}`);
@@ -1493,6 +1485,14 @@ class InfractionManagerService extends Service {
                     this.application.logger.error(error);
                     rolesTaken = [];
                 }
+            }
+
+            if (mode === "timeout" && duration) {
+                await member.timeout(duration.toMilliseconds(), `${moderator.username} - ${reason}`);
+            } else if (mode === "role" && role) {
+                await member.roles.add(role, `${moderator.username} - ${reason}`);
+            } else {
+                throw new Error("Unreachable");
             }
         } catch (error) {
             this.application.logger.error(error);
@@ -1582,14 +1582,25 @@ class InfractionManagerService extends Service {
             })
             .catch(this.application.logger.error);
 
-        return {
-            status: "success",
-            infraction,
-            overviewEmbed: (generateOverviewEmbed
+        const overviewEmbed = (
+            generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, member.user, moderator, {
                       duration
                   })
-                : undefined) as E extends true ? APIEmbed : undefined
+                : undefined
+        ) as E extends true ? APIEmbed : undefined;
+
+        if (overviewEmbed && roleTakeout) {
+            overviewEmbed.fields?.push({
+                name: "Additional Information",
+                value: "All Roles Removed"
+            });
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed
         };
     }
 
@@ -1668,6 +1679,31 @@ class InfractionManagerService extends Service {
         }
 
         const reason = (await this.processReason(guildId, rawReason)) ?? rawReason;
+        const records = await this.application.database.query.muteRecords.findMany({
+            where: and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, guild.id))
+        });
+
+        let roleRestoreSuccess = true;
+
+        if (records?.length) {
+            try {
+                await member.roles.add(records[0].roles, `${moderator.username} - ${reason}`);
+            } catch (error) {
+                this.application.logger.error(error);
+                roleRestoreSuccess = false;
+            }
+
+            this.application.database.drizzle
+                .delete(infractions)
+                .where(
+                    inArray(
+                        infractions.id,
+                        records.map(r => r.id)
+                    )
+                )
+                .then()
+                .catch(this.application.logger.error);
+        }
 
         try {
             if (finalMode === "timeout" && member.communicationDisabledUntilTimestamp && member.moderatable) {
@@ -1717,37 +1753,11 @@ class InfractionManagerService extends Service {
             attachments,
             payload: {
                 metadata: {
-                    finalMode
+                    mode: finalMode
                 }
             },
             processReason: false
         });
-
-        const records = await this.application.database.query.muteRecords.findMany({
-            where: and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, guild.id))
-        });
-
-        let roleRestoreSuccess = true;
-
-        if (records?.length) {
-            try {
-                await member.roles.add(records[0].roles, `${moderator.username} - ${reason}`);
-            } catch (error) {
-                this.application.logger.error(error);
-                roleRestoreSuccess = false;
-            }
-
-            this.application.database.drizzle
-                .delete(infractions)
-                .where(
-                    inArray(
-                        infractions.id,
-                        records.map(r => r.id)
-                    )
-                )
-                .then()
-                .catch(this.application.logger.error);
-        }
 
         this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberMuteRemove, {

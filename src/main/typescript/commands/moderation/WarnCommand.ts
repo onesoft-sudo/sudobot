@@ -1,3 +1,4 @@
+import { OPTION_PRESENT_NO_ARG } from "@framework/arguments/ArgumentParser.js";
 import type { ArgumentSchema } from "@framework/arguments/ArgumentSchema.js";
 import type { ArgumentsOf, OptionsOf } from "@framework/arguments/ArgumentTypes.js";
 import RestStringArgument from "@framework/arguments/RestStringArgument.js";
@@ -85,7 +86,7 @@ class WarnCommand extends Command {
         const notify =
             context.isInteractive() && context.commandMessage.isChatInputCommand()
                 ? !!context.commandMessage.options.getBoolean("notify")
-                : options.silent !== "yes";
+                : options.silent !== OPTION_PRESENT_NO_ARG;
 
         const result = await this.infractionManager.createWarning({
             guildId: context.guildId,
