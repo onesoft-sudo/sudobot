@@ -51,7 +51,7 @@ class WarnCommand extends Command {
             .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
             .addStringOption(option => option.setName("reason").setDescription("Reason for this infraction"))
             .addBooleanOption(option =>
-                option.setName("silent").setDescription("Whether to supress notification for the user (default: false)")
+                option.setName("notify").setDescription("Whether to notify the user (default: true)")
             )
             .addAttachmentOption(option =>
                 option.setName("attachment").setDescription("Additional attachment (if any)")
@@ -70,14 +70,20 @@ class WarnCommand extends Command {
             throw new InvalidStateError();
         }
 
-        const attachment =
+        const attachments =
             context.commandMessage instanceof CommandInteraction && context.commandMessage.isChatInputCommand()
                 ? context.commandMessage.options.getAttachment("attachment")
-                : null;
+                    ? [context.commandMessage.options.getAttachment("attachment")!]
+                    : undefined
+                : context.commandMessage instanceof Message
+                  ? [...context.commandMessage.attachments.values()]
+                  : undefined;
 
         const silent =
             context.isInteractive() && context.commandMessage.isChatInputCommand()
-                ? (context.commandMessage.options.getBoolean("silent") ?? false)
+                ? typeof context.commandMessage.options.getBoolean("notify") === "boolean"
+                    ? !context.commandMessage.options.getBoolean("notify")
+                    : false
                 : options.silent === "yes";
 
         const { overviewEmbed, status } = await this.infractionManager.createWarning({
@@ -85,18 +91,13 @@ class WarnCommand extends Command {
             moderator: context.user,
             user,
             reason: reason ?? undefined,
-            attachments:
-                context.commandMessage instanceof Message
-                    ? [...context.commandMessage.attachments.values()]
-                    : attachment
-                      ? [attachment]
-                      : [],
+            attachments,
             generateOverviewEmbed: true,
             notify: !silent
         });
 
         if (status === "failed") {
-            await context.error("Error occurred while creating an infraction.");
+            await context.error("Error occurred while creating the infraction.");
             return;
         }
 
