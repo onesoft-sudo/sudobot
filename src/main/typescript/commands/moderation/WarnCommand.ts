@@ -87,7 +87,7 @@ class WarnCommand extends Command {
                 ? !!context.commandMessage.options.getBoolean("notify")
                 : options.silent !== "yes";
 
-        const { overviewEmbed, status } = await this.infractionManager.createWarning({
+        const result = await this.infractionManager.createWarning({
             guildId: context.guildId,
             moderator: context.user,
             user,
@@ -97,12 +97,12 @@ class WarnCommand extends Command {
             notify
         });
 
-        if (status === "failed") {
-            await context.error("Error occurred while creating the infraction.");
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Error occurred while creating the infraction.");
             return;
         }
 
-        await context.reply({ embeds: [overviewEmbed] });
+        await context.reply({ embeds: [result.overviewEmbed] });
     }
 }
 

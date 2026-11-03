@@ -1209,7 +1209,7 @@ class InfractionManagerService extends Service {
                     status: "failed",
                     infraction: null,
                     overviewEmbed: null,
-                    errorType: error.code === 10026 ? "unknown_ban" : "api_Error",
+                    errorType: error.code === 10026 ? "unknown_ban" : "api_error",
                     code: +error.code
                 });
             }

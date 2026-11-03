@@ -129,9 +129,6 @@ class MuteCommand extends Command {
         options: OptionsOf<MuteCommand>
     ) {
         const { member, reason } = args;
-        console.log(args, options);
-
-        if (true as boolean) return;
 
         if (!context.inGuild()) {
             throw new InvalidStateError();
@@ -156,7 +153,7 @@ class MuteCommand extends Command {
 
         const clearCount = context.isInteractive()
             ? (context.commandMessage.options.getInteger("clear_count") ?? 0)
-            : options.clear !== null
+            : options.clear !== undefined
               ? options.clear === ""
                   ? 20
                   : +options.clear
@@ -167,7 +164,7 @@ class MuteCommand extends Command {
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createMute({
+        const result = await this.infractionManager.createMute({
             guildId: context.guildId,
             moderator: context.user,
             member,
@@ -181,12 +178,12 @@ class MuteCommand extends Command {
             roleTakeout: hard
         });
 
-        if (status === "failed") {
-            await context.error("Error occurred while performing the mute.");
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Error occurred while performing the mute.");
             return;
         }
 
-        await context.reply({ embeds: [overviewEmbed] });
+        await context.reply({ embeds: [result.overviewEmbed] });
     }
 }
 

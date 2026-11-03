@@ -52,7 +52,7 @@ class ArgumentParser {
         schema: ArgumentParserSchema
     ): Promise<{
         args?: Record<string, unknown>;
-        options?: Record<string, string | readonly string[] | null>;
+        options?: Record<string, string | readonly string[] | undefined>;
         overloadIndex?: number;
         errors?: string[];
     }> {
@@ -95,7 +95,7 @@ class ArgumentParser {
         schema: ArgumentParserSchema
     ): Promise<{
         args?: Record<string, unknown>;
-        options?: Record<string, string | readonly string[] | null>;
+        options?: Record<string, string | readonly string[] | undefined>;
         overloadIndex?: number;
         errors?: string[];
     }> {
@@ -143,11 +143,11 @@ class ArgumentParser {
     ): Promise<
         ParseStepResult<{
             args?: Record<string, unknown>;
-            options?: Record<string, string | readonly string[] | null>;
+            options?: Record<string, string | readonly string[] | undefined>;
         }>
     > {
         const args: Record<string, unknown> = Object.create(null);
-        const options: Record<string, string | readonly string[] | null> = Object.create(null);
+        const options: Record<string, string | readonly string[] | undefined> = Object.create(null);
 
         for (const definition of overload.definitions) {
             const result = await this.parseDefinition(parserContext, overload, definition, options);
@@ -175,11 +175,11 @@ class ArgumentParser {
         parserContext: ParserContext,
         overload: ArgumentOverloadExtended,
         definition: ArgumentDefinition,
-        outOptions: Record<string, string | readonly string[] | null>
+        outOptions: Record<string, string | readonly string[] | undefined>
     ): Promise<ParseStepResult<{ value?: unknown; break?: boolean }>> {
         let done = true;
         let lastError: ArgumentParseError | InvalidArgumentError | string | undefined;
-        const options: Record<string, string | readonly string[] | null> = Object.create(null);
+        const options: Record<string, string | readonly string[] | undefined> = Object.create(null);
 
         outer: do {
             const rawValue = parserContext.context.isInteractive()
@@ -289,20 +289,20 @@ class ArgumentParser {
                 } else if (parserContext.isInteractive && overload.options) {
                     for (const optionName in overload.options) {
                         const value = overload.options?.[optionName].argument
-                            ? (parserContext.context.commandMessage as ChatInputCommandInteraction).options.getString(
+                            ? ((parserContext.context.commandMessage as ChatInputCommandInteraction).options.getString(
                                   optionName
-                              )
-                            : (parserContext.context.commandMessage as ChatInputCommandInteraction).options.getBoolean(
+                              ) ?? undefined)
+                            : ((parserContext.context.commandMessage as ChatInputCommandInteraction).options.getBoolean(
                                     optionName
-                                )
+                                ) ?? undefined)
                               ? "yes"
-                              : null;
+                              : undefined;
 
                         options[optionName] = value;
                     }
                 }
 
-                console.log(options);
+                Object.assign(outOptions, options);
 
                 try {
                     const argument = parserContext.isInteractive
@@ -324,7 +324,6 @@ class ArgumentParser {
                           });
 
                     const value = argument.getValue();
-                    Object.assign(outOptions, options);
                     return { value, break: argument.abortAfterParsing };
                 } catch (error) {
                     if (error instanceof ArgumentParseError || error instanceof InvalidArgumentError) {

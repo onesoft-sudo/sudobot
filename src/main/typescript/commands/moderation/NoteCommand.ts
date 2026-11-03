@@ -73,7 +73,7 @@ class NoteCommand extends Command {
                   ? [...context.commandMessage.attachments.values()]
                   : undefined;
 
-        const { overviewEmbed, status } = await this.infractionManager.createNote({
+        const result = await this.infractionManager.createNote({
             guildId: context.guildId,
             moderator: context.user,
             user,
@@ -82,12 +82,12 @@ class NoteCommand extends Command {
             generateOverviewEmbed: true
         });
 
-        if (status === "failed") {
-            await context.error("Error occurred while creating the note.");
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Error occurred while creating the note.");
             return;
         }
 
-        await context.reply({ embeds: [overviewEmbed] });
+        await context.reply({ embeds: [result.overviewEmbed] });
     }
 }
 

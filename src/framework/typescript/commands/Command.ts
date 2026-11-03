@@ -29,6 +29,7 @@ import type PermissionManagerServiceInterface from "@framework/permissions/Permi
 import type { PermissionResolvable, RawPermissionResolvable } from "@framework/permissions/PermissionResolvable.js";
 import { CommandRateLimitConfiguration } from "@framework/security/CommandRateLimitConfiguration.js";
 import type { ArrayOrSingle } from "@framework/types/Utils.js";
+import { ClientEmojiIdentifiers } from "@main/utils/ClientEmojiIdentifiers.js";
 import {
     type APIInteractionGuildMember,
     ApplicationCommandType,
@@ -218,7 +219,7 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
     protected abstract execute(
         context: Context,
         args: Record<string, unknown>,
-        options: Record<string, string | readonly string[] | null>
+        options: Record<string, string | readonly string[] | undefined>
     ): Awaitable<void>;
 
     /**
@@ -543,10 +544,30 @@ abstract class Command<C extends CommandContextType = CommandContextType> {
             if (result.errors.length === 1 || !this.argumentSchema) {
                 context.error(result?.errors[0]).catch(this.application.logger.error);
             } else {
-                let str = "No overloads of this command could be used with the given arguments:\n";
+                const errors = Object.create(null) as Record<string, number[]>;
 
                 for (let i = 0; i < result.errors.length; i++) {
-                    str += `\n${i + 1}. ${inlineCode(this.argumentParser.overloadSignatureToString(this.argumentSchema.overloads[i]))} gave the following error:\n  ${result.errors[i]}`;
+                    errors[result.errors[i]] ??= [];
+                    errors[result.errors[i]].push(i);
+                }
+
+                let str = "No overloads of this command could be used with the given arguments:\n";
+                let i = 0;
+
+                for (const [errorMessage, overloadIndexes] of Object.entries(errors)) {
+                    if (overloadIndexes.length === 1) {
+                        str += `\n${i + 1}. ${inlineCode(this.argumentParser.overloadSignatureToString(this.argumentSchema.overloads[overloadIndexes[0]]))} gave the following error:\n  ${context.emoji(ClientEmojiIdentifiers.Error)} ${errorMessage}`;
+                    } else {
+                        str += `\n${i + 1}. The following overloads:\n`;
+
+                        for (const overloadIndex of overloadIndexes) {
+                            str += `\t- ${inlineCode(this.argumentParser.overloadSignatureToString(this.argumentSchema.overloads[overloadIndex]))}\n`;
+                        }
+
+                        str += `  gave the following error:\n\n\t${context.emoji(ClientEmojiIdentifiers.Error)} ${errorMessage}`;
+                    }
+
+                    i++;
                 }
 
                 context.error(str).catch(this.application.logger.error);
