@@ -46,7 +46,7 @@ export type ArgumentDefinition<T extends typeof Argument<unknown> = typeof Argum
 export type OptionDefinition = {
     short?: string;
     multiple?: boolean;
-    argument?: boolean;
+    argument?: "required" | "optional";
     description?: string;
 };
 

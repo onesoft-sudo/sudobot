@@ -17,6 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type Application from "@framework/app/Application.js";
+import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder.js";
+import { requireNonNull } from "@framework/utils/utils.js";
 import {
     MessageFlags,
     type ChatInputCommandInteraction,
@@ -27,19 +30,16 @@ import {
 } from "discord.js";
 import CommandContextType from "./CommandContextType.js";
 import Context, { type ContextReplyOptions } from "./Context.js";
-import { requireNonNull } from "@framework/utils/utils.js";
-import type Application from "@framework/app/Application.js";
-import type RichEmbedBuilder from "@framework/embed/RichEmbedBuilder.js";
 
-class InteractionContext extends Context<CommandContextType.Interactive> {
+class InteractionContext<
+    T extends ChatInputCommandInteraction | ContextMenuCommandInteraction =
+        ChatInputCommandInteraction | ContextMenuCommandInteraction
+> extends Context<CommandContextType.Interactive> {
     public override readonly type = CommandContextType.Interactive;
-    public override readonly commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction;
+    public override readonly commandMessage: T;
     public override readonly commandName: string;
 
-    public constructor(
-        application: Application,
-        commandMessage: ChatInputCommandInteraction | ContextMenuCommandInteraction
-    ) {
+    public constructor(application: Application, commandMessage: T) {
         super(application);
         this.commandMessage = commandMessage;
         this.commandName = commandMessage.commandName;
@@ -59,9 +59,7 @@ class InteractionContext extends Context<CommandContextType.Interactive> {
         return requireNonNull(response.resource?.message);
     }
 
-    public override replyRichEmbed(
-        ...richEmbeds: RichEmbedBuilder[]
-    ): Promise<Message<boolean>> {
+    public override replyRichEmbed(...richEmbeds: RichEmbedBuilder[]): Promise<Message<boolean>> {
         return this.reply({
             flags: MessageFlags.IsComponentsV2,
             components: richEmbeds

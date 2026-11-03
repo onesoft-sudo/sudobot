@@ -57,9 +57,11 @@ export type OptionsOf<T extends { argumentSchema: ArgumentSchema }> = NonNullabl
         ? {
               [K in keyof O]: O[K]["multiple"] extends true
                   ? ReadonlyArray<O[K]["argument"] extends true ? string | null : "yes" | null>
-                  : O[K]["argument"] extends true
+                  : O[K]["argument"] extends "optional"
                     ? string | null
-                    : "yes" | null;
+                    : O[K]["argument"] extends "required"
+                      ? string | null
+                      : "yes" | null;
           }
         : never
     : never;

@@ -204,81 +204,87 @@ class ArgumentParser {
                     : definition.type
                 : [definition.type];
 
-            typeLoop: for (let i = 0; i < types.length; i++) {
+            for (let i = 0; i < types.length; i++) {
                 const type = types[i];
 
                 if (!parserContext.isInteractive && parserContext.args[parserContext.index][0] === "-") {
-                    if (type.prototype instanceof RestArgument) {
-                        parserContext.abortOptionParsing = true;
-                    } else if (parserContext.args[parserContext.index] === "--") {
-                        parserContext.abortOptionParsing = true;
-                        parserContext.index++;
-                        done = false;
-                        continue outer;
-                    } else {
-                        const isLongOption = parserContext.args[parserContext.index][1] === "-";
-                        const equalPosition = isLongOption ? parserContext.args[parserContext.index].indexOf("=") : -1;
-                        const optionStrings = isLongOption
-                            ? [parserContext.args[parserContext.index].substring(2)]
-                            : parserContext.args[parserContext.index].substring(1).split("");
+                    while (!parserContext.isInteractive && parserContext.args[parserContext.index][0] === "-") {
+                        if (type.prototype instanceof RestArgument) {
+                            parserContext.abortOptionParsing = true;
+                        } else if (parserContext.args[parserContext.index] === "--") {
+                            parserContext.abortOptionParsing = true;
+                            parserContext.index++;
+                            done = false;
+                            continue outer;
+                        } else {
+                            const isLongOption = parserContext.args[parserContext.index][1] === "-";
+                            const equalPosition = isLongOption
+                                ? parserContext.args[parserContext.index].indexOf("=")
+                                : -1;
+                            const optionStrings = isLongOption
+                                ? [parserContext.args[parserContext.index].substring(2)]
+                                : parserContext.args[parserContext.index].substring(1).split("");
 
-                        for (let j = 0; j < optionStrings.length; j++) {
-                            const optionString = optionStrings[j];
-                            const optionName = optionString
-                                .substring(
+                            for (let j = 0; j < optionStrings.length; j++) {
+                                const optionString = optionStrings[j];
+                                const optionName = optionString.substring(
                                     0,
                                     equalPosition === -1 ? undefined : equalPosition - 1 - (isLongOption ? 1 : 0)
-                                )
-                                .toLowerCase();
+                                );
 
-                            const optionSchema = overload.optionsPlainMap?.[optionName];
+                                const optionSchema = overload.optionsPlainMap?.[optionName];
 
-                            if (!optionSchema) {
-                                lastError = `Invalid option '${isLongOption ? "--" : "-"}${optionName}'.`;
-                                continue typeLoop;
+                                if (!optionSchema) {
+                                    lastError = `Invalid option '${isLongOption ? "--" : "-"}${optionName}'.`;
+                                    continue outer;
+                                }
+
+                                let optionArgument: string | null = null;
+
+                                if (optionSchema.argument) {
+                                    if (j !== optionStrings.length - 1) {
+                                        lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept an argument in condensed form. Please pass it seperately.`;
+                                        continue outer;
+                                    }
+
+                                    optionArgument =
+                                        equalPosition === -1
+                                            ? optionSchema.argument === "required"
+                                                ? parserContext.args[parserContext.index++]
+                                                : ""
+                                            : parserContext.args[parserContext.index].substring(equalPosition + 1);
+
+                                    if (!optionArgument) {
+                                        if (optionSchema.argument === "required") {
+                                            lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' requires an argument.`;
+                                            continue outer;
+                                        }
+
+                                        optionArgument = "";
+                                    }
+                                } else if (equalPosition !== -1) {
+                                    lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept arguments.`;
+                                    continue outer;
+                                }
+
+                                if (optionSchema.multiple && optionArgument !== null) {
+                                    if (Array.isArray(options[optionSchema.canonicalName])) {
+                                        (options[optionSchema.canonicalName] as Array<string>)?.push(optionArgument);
+                                    } else if (optionArgument !== null) {
+                                        options[optionSchema.canonicalName] = [optionArgument];
+                                    }
+                                } else {
+                                    if (optionSchema.canonicalName in options) {
+                                        lastError = `Cannot accept '${isLongOption ? "--" : "-"}${optionName}' multiple times.`;
+                                        continue outer;
+                                    }
+
+                                    options[optionSchema.canonicalName] = optionArgument ?? "yes";
+                                }
                             }
 
-                            let optionArgument: string | null = null;
-
-                            if (optionSchema.argument) {
-                                if (j !== optionStrings.length - 1) {
-                                    lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept an argument in condensed form. Please pass it seperately.`;
-                                    continue typeLoop;
-                                }
-
-                                optionArgument =
-                                    equalPosition === -1
-                                        ? parserContext.args[parserContext.index + 1]
-                                        : parserContext.args[parserContext.index].substring(equalPosition + 1);
-
-                                if (!optionArgument) {
-                                    lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' requires an argument.`;
-                                    continue typeLoop;
-                                }
-
-                                parserContext.index++;
-                            } else if (equalPosition !== -1) {
-                                lastError = `Option '${isLongOption ? "--" : "-"}${optionName}' cannot accept arguments.`;
-                                continue typeLoop;
-                            }
-
-                            if (optionSchema.multiple && optionArgument) {
-                                if (Array.isArray(options[optionSchema.canonicalName])) {
-                                    (options[optionSchema.canonicalName] as Array<string>)?.push(optionArgument);
-                                } else if (optionArgument) {
-                                    options[optionSchema.canonicalName] = [optionArgument];
-                                }
-                            } else {
-                                if (optionSchema.canonicalName in options) {
-                                    lastError = `Cannot accept '${isLongOption ? "--" : "-"}${optionName}' multiple times.`;
-                                    continue typeLoop;
-                                }
-
-                                options[optionSchema.canonicalName] = optionArgument ?? "yes";
-                            }
+                            parserContext.index++;
                         }
-
-                        parserContext.index++;
                     }
                 } else if (parserContext.isInteractive && overload.options) {
                     for (const optionName in overload.options) {
@@ -295,6 +301,8 @@ class ArgumentParser {
                         options[optionName] = value;
                     }
                 }
+
+                console.log(options);
 
                 try {
                     const argument = parserContext.isInteractive
