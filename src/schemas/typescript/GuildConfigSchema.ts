@@ -213,6 +213,7 @@ export const GuildConfigSchema = z.object({
         .object({
             enabled: z.boolean().optional().default(false),
             vpn_proxy_check_enabled: z.boolean().prefault(true),
+            vpn_proxy_check_provider: z.enum(["proxycheck", "vpndetection"]).default("proxycheck"),
             conditions: z.object({
                 age_less_than: z.number().int().optional(),
                 no_avatar: z.boolean().optional(),

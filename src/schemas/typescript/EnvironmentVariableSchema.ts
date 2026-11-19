@@ -69,6 +69,7 @@ export const EnvironmentVariableSchema = z.object({
     SYSTEM_SHELL_EXEC_STREAM_PORT: z.string().regex(/^\d+/).optional(),
     CF_TURNSTILE_SECRET: z.string().optional(),
     PROXYCHECKIO_API_KEY: z.string().optional(),
+    VPNDETECTION_API_KEY: z.string().optional(),
     DISCORD_INTENTS: z.string().optional(),
     MODIFICATIONS_PUBLIC_URL: z.string().optional(),
     HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional(),

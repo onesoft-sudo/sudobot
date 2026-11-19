@@ -120,7 +120,10 @@ class VerificationController extends Controller {
             await this.verificationService.isProxy(ip, {
                 vpn_proxy_check_enabled:
                     !!this.configManager.config[guildId]?.member_verification
-                        ?.vpn_proxy_check_enabled
+                        ?.vpn_proxy_check_enabled,
+                vpn_proxy_check_provider:
+                    this.configManager.config[guildId]?.member_verification
+                        ?.vpn_proxy_check_provider
             })
         ) {
             return this.response(400, {
