@@ -398,9 +398,16 @@ class VerificationService extends Service {
         });
     }
 
-    public async isProxy(ip: string, config: { vpn_proxy_check_enabled: boolean }) {
+    public async isProxy(
+        ip: string,
+        config: { vpn_proxy_check_enabled: boolean; vpn_proxy_check_provider?: "proxycheck" | "vpndetection" }
+    ) {
         if (!config.vpn_proxy_check_enabled) {
             return false;
+        }
+
+        if (config.vpn_proxy_check_provider === "vpndetection") {
+            return this.isProxyVPNDetection(ip);
         }
 
         const env = getEnvData();
@@ -421,6 +428,28 @@ class VerificationService extends Service {
             response.data[ip].vpn === "yes" ||
             response.data[ip].type === "VPN" ||
             response.data[ip].type === "Tor"
+        );
+    }
+
+    private async isProxyVPNDetection(ip: string) {
+        const env = getEnvData();
+        const response = await getAxiosClient().get(`https://api.vpndetection.io/${encodeURIComponent(ip)}`, {
+            headers: env.VPNDETECTION_API_KEY ? { Authorization: `Bearer ${env.VPNDETECTION_API_KEY}` } : {},
+            validateStatus: () => true
+        });
+
+        this.logger.debug(ip, response.data);
+
+        if (response.status !== 200 || typeof response.data?.is_vpn !== "boolean") {
+            return true;
+        }
+
+        return (
+            response.data.is_vpn === true ||
+            response.data.is_tor === true ||
+            response.data.is_resproxy === true ||
+            response.data.is_dcproxy === true ||
+            response.data.is_pubproxy === true
         );
     }
 
